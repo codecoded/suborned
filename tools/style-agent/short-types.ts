@@ -1,6 +1,8 @@
+import { isDeepStrictEqual } from 'node:util';
 import { z } from 'zod';
 import { GuideNatural } from './short-natural';
-import type { Authorization, Call, Evidence, Limits, Source } from './types';
+import { GuideAi } from './short-natural14';
+import { AuthorizationSchema, type Authorization, type Call, type Evidence, type Limits, type Source } from './types';
 
 /** Short lines (Sky 2026-11-07, asked whether the loop covers more than the Inez conversations: "sure", so nothing ships unscored): the barks, the why block and the debrief page, written by
  *  Fable and scored by Motive in the same loop as the conversations, a family per run. */
@@ -48,10 +50,22 @@ export type ShortRuleId = z.infer<typeof AnyRuleId>;
  *  hold the no-mechanics rule (no line tells the player a rule or a consequence, whoever says it), with brief 102's failing examples, Sky's two kept lines and a calibration
  *  from briefs/102/fable/natural.json; a reply's facts are split from what the person says; a code check holds the family Sky named (remember, a face, a search, notice).
  *  The why block, the debrief page and the labels read as at /12. No /13 bark run applies before Sky's yes. */
-export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12', 13: 'suborned.style-short-guide/13' } as const;
+/** /14 (brief 102's sweep; Sky 2026-11-08 said yes to the /13 sample, "yes - rewrites are much better", and on the four lines it kept on purpose: "not into those e.g.
+ *  'Citizen. Walking is encouraged. Running is noted.' - that noted is AI sounding"): NATURAL fails AI-sounding words whoever says them (noted, understood, proceeding,
+ *  acknowledged, affirmative, rest assured and their kind; briefs/102/fable/ai-words.json), with a code check; Sky's four go into the failing lines and the /13 pass Sky
+ *  turned down leaves the bar; the Mislead is a scene with a person (`bark/mislead`: the Scout's tip and the rival's answer); rows marked `sky` (Sky's approved rewrites)
+ *  are not items, and the family's context gives them; one new label family, the news card for the rivals following our car out. The rest reads as at /13. */
+/** /15 (brief 102's sweep): /14, and the evaluator gives a finding for every rule it scores below 10 (Opus scored a family 9 throughout with no finding, so the writer had
+ *  nothing to revise). The rubric and the families read as at /14, so a /15 run may continue a /14 run of the same family (`sameRubric`). */
+/** /16 (brief 102's sweep): /15, and a cut item's field with no lines counts as no lines (the writer cut alarm/watcher as `fields: [{ lines: [] }]` four rounds running and
+ *  the check "a cut item has no lines" blocked a 10 every time). A /16 run may continue a /14 or /15 run of the same family. */
+export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12', 13: 'suborned.style-short-guide/13', 14: 'suborned.style-short-guide/14', 15: 'suborned.style-short-guide/15', 16: 'suborned.style-short-guide/16' } as const;
 export type ShortGuideVersion = keyof typeof SHORT_GUIDES;
 /** The version new runs use; a saved run replays with its own. */
-export const SHORT_NOW: ShortGuideVersion = 13;
+export const SHORT_NOW: ShortGuideVersion = 16;
+/** Two guides with the same rubric, sources and families, the later on a newer protocol (from /15 a run may continue a /14 run's last round). */
+export const sameRubric = (earlier: ShortGuide, later: ShortGuide) => shortGuideVersion(earlier) <= shortGuideVersion(later) && shortGuideVersion(earlier) >= 14
+  && isDeepStrictEqual(JSON.parse(JSON.stringify({ ...earlier, schema: later.schema })), JSON.parse(JSON.stringify(later)));
 export const shortGuideVersion = (g: Pick<ShortGuide, 'schema'>): ShortGuideVersion => (Number(Object.entries(SHORT_GUIDES).find(([, v]) => v === g.schema)?.[0] ?? 4)) as ShortGuideVersion;
 export const SHORT_RUN = 'suborned.style-short-run/1';
 
@@ -77,6 +91,8 @@ export type ShortGuide = {
   sheet?: GuideSheet;
   /** /13: Sky's kept lines and the no-mechanics calibration (briefs/102/fable/natural.json). */
   natural?: GuideNatural;
+  /** /14: the AI-sounding words, Sky's four rejected lines and today's lines with such a word (briefs/102/fable/ai-words.json). */
+  ai?: GuideAi;
 };
 
 /** Fable's voice sheet (guide /12's source): each agent's voice, the calibration lines, and the speech tiers the families are cut by. */
@@ -142,12 +158,15 @@ export type AnyEvaluation = ShortEvaluation | ShortEvaluation12;
 export const evaluationFor = (g: Pick<ShortGuide, 'schema'>, kind: ShortKind) => shortGuideVersion(g) >= 12 && kind === 'bark' ? ShortEvaluation12 : ShortEvaluation;
 export type ShortIssue = { rule: ShortRuleId; reason: string };
 export type ShortRound = { set: ShortSet; evaluation: AnyEvaluation; hardIssues: ShortIssue[] };
+/** A run that continues an earlier run's last round (brief 102: Opus judging, three revisions often end on an 8 or a 9): the earlier run by its folder, and that round. */
+export type ShortContinue = ShortRound & { run: string };
 export type ShortResult = {
   schema: typeof SHORT_RUN; mode: 'live' | 'test-fixture';
   status: 'ACCEPTED' | 'INCOMPLETE' | 'ERROR'; stopReason: string;
   startedAt: number; finishedAt: number | null;
   evidence: Evidence | null; authorization: Authorization | null;
   brief: ShortBrief; guide: ShortGuide; limits: Limits; rounds: ShortRound[]; calls: Call[];
+  continues?: ShortContinue;
 };
 
 const Sha = z.string().regex(/^[a-f0-9]{64}$/);
@@ -170,7 +189,7 @@ export const ShortGuideSchema = z.object({
   sources: z.array(z.object({ id: z.string(), file: z.string(), locator: z.string(), sha256: Sha, excerpt: z.string() }).strict()).min(1),
   kinds: z.object({ bark: KindSchema, why: KindSchema, debrief: KindSchema, label: KindSchema.optional() }).strict(),
   voices: z.record(z.string(), z.string()), avoid: z.array(z.string()), profanity: z.array(z.string()), named: z.array(z.string()), cell: z.array(z.string()),
-  sheet: GuideSheet.optional(), natural: GuideNatural.optional(),
+  sheet: GuideSheet.optional(), natural: GuideNatural.optional(), ai: GuideAi.optional(),
 }).strict();
 export const ShortResultSchema = z.object({
   schema: z.literal(SHORT_RUN), mode: z.enum(['live', 'test-fixture']),
@@ -180,11 +199,13 @@ export const ShortResultSchema = z.object({
     sources: z.array(z.object({ file: z.string(), sha256: Sha }).strict()).min(1).max(30),
     tooling: z.array(z.object({ file: z.string(), sha256: Sha }).strict()).min(1).max(80), toolingSha256: Sha,
   }).strict().nullable(),
-  authorization: z.object({ provider: z.literal('codex'), model: z.string().min(1), approvedBy: z.string().trim().min(1) }).strict().nullable(),
+  authorization: AuthorizationSchema.nullable(),
   brief: ShortBriefSchema, guide: ShortGuideSchema,
   limits: z.object({ maxCalls: z.number(), maxTokens: z.number(), maxRevisions: z.number(), maxMs: z.number() }).strict(),
   rounds: z.array(z.object({ set: ShortSet, evaluation: z.union([ShortEvaluation, ShortEvaluation12]),
     hardIssues: z.array(z.object({ rule: AnyRuleId, reason: z.string() }).strict()) }).strict()).max(4),
+  continues: z.object({ run: z.string().regex(/^[0-9T:.Z-]+-(bark|why|debrief|label)-[a-z0-9-]+$/), set: ShortSet, evaluation: z.union([ShortEvaluation, ShortEvaluation12]),
+    hardIssues: z.array(z.object({ rule: AnyRuleId, reason: z.string() }).strict()) }).strict().optional(),
   calls: z.array(z.object({
     stage: z.enum(['generate', 'evaluate', 'refine']), role: z.enum(['dialogue-designer', 'systems-designer']), prompt: z.string(),
     startedAt: Time, finishedAt: Time.nullable(), timeoutMs: z.number().int().positive().max(180000), schemaSha256: Sha,

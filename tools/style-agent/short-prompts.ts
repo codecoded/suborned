@@ -1,6 +1,7 @@
 import type { Stage } from './types';
 import { shortGuideVersion, type AnyEvaluation, type Field, type ShortBrief, type ShortGuide, type ShortIssue, type ShortItem, type ShortSet } from './short-types';
 import { calibration13, TASKS_13 } from './short-natural';
+import { calibration14, TASKS_14, TASKS_15 } from './short-natural14';
 import { calibration12, TASKS_12, voices12 } from './short-voice';
 
 /** A field as the writer and the evaluator see it: its limits, its fills (or none), what a test pins. */
@@ -25,7 +26,8 @@ export function shortPrompt(stage: Stage, guide: ShortGuide, brief: ShortBrief, 
   if (!kind) throw new Error(`${brief.id}: guide ${guide.schema} has no ${brief.kind} kind (labels start at guide /10)`);
   const v12 = shortGuideVersion(guide) >= 12 && brief.kind === 'bark' ? guide.sheet : undefined; // guide /12: the voice sheet and calibration lead a bark family
   const v13 = v12 && guide.natural; // guide /13 (brief 102): the no-mechanics calibration in place of /12's agent one
-  const task = v13 ? TASKS_13[stage] : v12 ? TASKS_12[stage] : stage === 'generate'
+  const v14 = v13 && guide.ai; // guide /14 (brief 102's sweep): the AI-sounding words, Sky's four, Sky's rows in the context
+  const task = v14 ? (shortGuideVersion(guide) >= 15 ? TASKS_15 : TASKS_14)[stage] : v13 ? TASKS_13[stage] : v12 ? TASKS_12[stage] : stage === 'generate'
     ? 'Write every item of this family for The Suborned\'s Handover, following the rubric and each item\'s facts. Return each item once: its key, cut false, an empty reason, and each field it asks for with exactly that many variants. An item may be cut only where it says mayCut true, and only when even its best line would tell the player nothing they can use: then return cut true, the reason in one sentence, and no fields.'
     : stage === 'evaluate'
       ? 'Score this family of short lines against every rule of the rubric and every item\'s facts (`tells`, `where`). Return SCORE (1–10) and a REASON that explains the score, plus a finding for each problem: the rule, the item key, an exact quote of the words at fault (empty only for something missing or for a cut), why it breaks the rule, and how to fix it. Be a demanding editor: 10 means you would ship every line unchanged, every rule holds and there are no findings. For each line ask: does it tell the player something true and useful at that spot, in plain words, within its limit, with people named as the player knows them, in the voice of who says it? A cut is right only where the item may be cut and even its best line would be filler; say so if a cut is wrong, or if a kept line should be cut. You are independent of the writer: do not trust its claims.'
@@ -37,7 +39,7 @@ export function shortPrompt(stage: Stage, guide: ShortGuide, brief: ShortBrief, 
     `Where these words show: ${kind.use}`,
     `Rubric:\n${JSON.stringify(kind.rules.map(r => ({ rule: r.id, kind: r.kind, instruction: r.instruction })), null, 2)}`,
     v12 ? `Voice sheet:\n${JSON.stringify(voices12(guide, speakers), null, 2)}` : speakers.length ? `Voices:\n${JSON.stringify(Object.fromEntries(speakers.map(s => [s, guide.voices[s] ?? 'short and human'])), null, 2)}` : '',
-    v13 ? calibration13(v13) : v12 ? calibration12(v12) : '',
+    v14 && v13 ? calibration14(v13, v14) : v13 ? calibration13(v13) : v12 ? calibration12(v12) : '',
     `Words the mission's filter rejects: ${guide.avoid.join(', ')}.`,
     `Family ${brief.id}: ${brief.context}`,
     `Items:\n${JSON.stringify(brief.items.map(itemView), null, 1)}`,

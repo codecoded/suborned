@@ -84,14 +84,14 @@ describe('the voice sheet and Fable\'s frequency', () => {
     expect(at('bark/ack-acts', 'ack/watch/scout').where).toContain('first time this agent takes this order');
     expect(at('bark/ack-acts', 'ack/call/fixer').where).toContain('Every time');
     expect(at('bark/done', 'done/enter/enforcer').tells).toContain('come back out of the Office with Popovic');
-    expect(at('bark/done', 'done/turn/fixer/refused').fields[0]!.keep).toEqual(["You said no. You'll remember me."]); // text.test.ts still pins it
+    expect(at('bark/done', 'done/turn/fixer/refused').fields[0]!.keep).toEqual([text.dialogue.find((r: { event: string; verb?: string; outcome?: string }) => r.event === 'done' && r.verb === 'turn' && r.outcome === 'refused').lines[0]]); // /12 kept the row's first line (text.test.ts pinned it until brief 102)
     expect(at('bark/arrive', 'arrive/help/fixer').stays).toContain('approach scenes');
     expect(at('bark/ack-acts', 'ack/watch/scout').stays).toBeNull(); // a /12 cut is silence (step 2's silent rows), not the stock "On it."
   });
   test('every calibration line is a real row; every gold line is in a /12 family and passes the code checks there', () => {
     const rows = new Set(live.map(r => barkKey(r as never)));
     for (const x of [...sheet.fail, ...sheet.pass]) expect(rows.has(x.key), x.key).toBe(true);
-    for (const x of sheet.fail) expect((text.dialogue as { lines: string[] }[]).find(r => barkKey(r as never) === x.key)!.lines, x.key).toContain(x.line);
+    // the failing lines were today's when /12 was built; brief 102's sweep has since rewritten some of their rows (the Enforcer's "In. Looking for Popovic."), so the row is what stays
     for (const x of sheet.pass) {
       const b = b12.find(f => f.items.some(i => i.key === x.key))!;
       expect(b, x.key).toBeTruthy();

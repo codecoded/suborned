@@ -5,12 +5,12 @@ import { root } from '../rag/config';
 import { loadBriefs, todaysLines } from './briefs';
 import { archiveEvidence, readRun, RUN_FILE, RUNS, verifyRun, writeRun } from './evidence';
 import { loadGuide, readerFor } from './guide';
-import { liveCaller } from './live';
+import { liveSetup } from './live';
 import { corrected, defaults, runLoop, validateLimits } from './loop';
 import { DEMOS, runHtml, submissionHtml, WHO } from './report';
 import { applyShort } from './short-apply';
 import { loadShortBriefs } from './short-briefs';
-import { acceptedByFamily, listShort, liveShort, replayShort } from './short-cli';
+import { acceptedByFamily, continuable, listShort, liveShort, replayShort } from './short-cli';
 import { verifyShort } from './short-evidence';
 import { SHORT_RUN } from './short-types';
 import type { Brief, Result } from './types';
@@ -32,8 +32,10 @@ Live (Codex subscription; needs SUBORNED_LIVE=1 and a recorded approval):
   bun run style:run BRIEF_ID LIVE
   bun run style:chain LIVE [--concurrency N] [--again]
   bun run style:run FAMILY LIVE       one short-line family (bark/…, why/…, debrief/…, label/…; see shorts)
-  bun run style:chain --short LIVE [--kind bark|why|debrief|label] [--only a,b] [--concurrency N] [--again]
-  LIVE = --model MODEL --approved-by NAME --max-calls N --max-tokens N [--max-revisions N]
+  bun run style:chain --short LIVE [--kind bark|why|debrief|label] [--only a,b] [--concurrency N] [--again] [--continue]
+  --continue: each family picks up its latest run that ran out of revisions on this rubric, from that run's last round (brief 102)
+  LIVE = --model MODEL --approved-by NAME --max-calls N --max-tokens N [--max-revisions N] [--judge-model CLAUDE_MODEL]
+  --judge-model: Motive's evaluations on Claude through the claude CLI (brief 102: claude-opus-5-5); Fable still writes on --model
 
 Runs are saved in ${RUNS}/<time>-<brief>/; nothing in the game is changed.`;
 
@@ -49,7 +51,7 @@ function parse(args: string[], known: string[], switches: string[] = []) {
   }
   return { options, positional };
 }
-const LIVE = ['--model', '--approved-by', '--max-calls', '--max-tokens', '--max-revisions'];
+const LIVE = ['--model', '--approved-by', '--max-calls', '--max-tokens', '--max-revisions', '--judge-model'];
 
 async function live(options: Map<string, string>, jobs: { brief: Brief; steer: string | null; tag: string }[], concurrency = 1) {
   const limits = { ...defaults, maxCalls: Number(options.get('--max-calls')), maxTokens: Number(options.get('--max-tokens')),
@@ -57,9 +59,8 @@ async function live(options: Map<string, string>, jobs: { brief: Brief; steer: s
   validateLimits(limits); // before any directory or credential is touched
   const probe = Bun.spawnSync([process.env.CODEX_BIN ?? 'codex', '--version'], { stdout: 'pipe', stderr: 'pipe' });
   if (probe.exitCode !== 0) throw new Error('Codex CLI not found: install it and sign in with ChatGPT (codex login)');
-  const invoke = liveCaller(options.get('--model') ?? '', options.get('--approved-by') ?? '');
-  const guide = loadGuide(root), evidence = archiveEvidence(root, guide);
-  const authorization = { provider: 'codex' as const, model: options.get('--model')!, approvedBy: options.get('--approved-by')! };
+  const { invoke, authorization, roles } = liveSetup(options);
+  const guide = loadGuide(root), evidence = archiveEvidence(root, guide, undefined, roles);
   const queue = [...jobs], results: Result[] = [];
   const worker = async () => {
     for (let job = queue.shift(); job; job = queue.shift()) {
@@ -136,7 +137,7 @@ async function replay(args: string[]) {
   const r = v.result!, b = r.brief, say = (s = '') => console.log(s);
   const show = (lines: Result['rounds'][number]['conversation']['lines'], before?: string[]) => lines.forEach((l, i) =>
     say(`  ${before && before[i] !== l.line ? '~' : ' '} ${(WHO[l.speaker] ?? l.speaker).padEnd(9)} ${l.line}`));
-  say(`${b.id} · ${b.verb}, ${b.seconds} s, ${b.lines[0]}–${b.lines[1]} lines · ${r.mode}${r.authorization ? `, ${r.authorization.model}` : ''}`);
+  say(`${b.id} · ${b.verb}, ${b.seconds} s, ${b.lines[0]}–${b.lines[1]} lines · ${r.mode}${r.authorization ? `, ${r.authorization.model}${r.authorization.judge ? `, judged by ${r.authorization.judge.model}` : ''}` : ''}`);
   say(`Must reveal: ${b.reveals.join('; ')}`);
   say(`Sets up:     ${b.leadsTo}`);
   if (r.steer) say(`Wrong push (first draft only): ${r.steer}`);
@@ -195,15 +196,17 @@ async function main() {
     return live(options, [{ brief: byId(positional[0]!), steer: null, tag: tag(byId(positional[0]!)) }]);
   }
   if (command === 'chain' && args.includes('--short')) {
-    const { options } = parse(args.filter(a => a !== '--short'), [...LIVE, '--concurrency', '--kind', '--only'], ['--again']);
+    const { options } = parse(args.filter(a => a !== '--short'), [...LIVE, '--concurrency', '--kind', '--only'], ['--again', '--continue']);
     const only = options.has('--only') ? new Set(options.get('--only')!.split(',')) : null; // --only a,b: these families, accepted or not
     const done = options.has('--again') || only ? new Set<string>() : new Set((await acceptedByFamily()).keys()), kind = options.get('--kind');
     const concurrency = Number(options.get('--concurrency') ?? 3);
     if (!Number.isSafeInteger(concurrency) || concurrency < 1 || concurrency > 4) throw new Error('--concurrency must be 1..4');
     const families = loadShortBriefs(root).filter(b => !done.has(b.id) && (!kind || b.kind === kind) && (!only || only.has(b.id)));
     if (only && families.length !== only.size) throw new Error(`No such family in --only: ${[...only].filter(id => !families.some(b => b.id === id)).join(', ')}`);
-    for (const k of ['--concurrency', '--again', '--kind', '--only']) options.delete(k);
-    return liveShort(options, families, concurrency);
+    const continues = options.has('--continue') ? await continuable(families) : undefined;
+    if (continues) { const none = families.filter(b => !continues.has(b.id)).map(b => b.id); if (none.length) throw new Error(`--continue: no run to continue for ${none.join(', ')}`); }
+    for (const k of ['--concurrency', '--again', '--kind', '--only', '--continue']) options.delete(k);
+    return liveShort(options, families, concurrency, continues);
   }
   if (command === 'chain') {
     const { options } = parse(args, [...LIVE, '--concurrency'], ['--again']);

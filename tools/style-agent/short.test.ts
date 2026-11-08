@@ -78,7 +78,7 @@ describe('the families: every short line in the game, a family per run', () => {
     const live = (text.dialogue as { parked?: string; pending?: string }[]).filter(r => !r.parked && !r.pending).map(r => barkKey(r as never));
     expect(new Set(keys).size).toBe(keys.length);
     expect([...keys].sort()).toEqual([...live].sort());
-    expect(keys.length).toBe(497);
+    expect(keys.length).toBe(492); // brief 102's sweep cut five rows as filler: the patrol's three status lines, the camera room's alarm, a rival's "I'm out"
     // Sky 2026-11-07 ("what is this stupid words at the start of every game?"): the game opens quiet. No start event (its four speakers would ask text.test.ts for
     // the cut barks), no start bark, and the start log line silent on purpose.
     expect(text.events.start).toBeUndefined(); expect(live.some(k => k.startsWith('start/'))).toBe(false); expect(text.silentLogs.start).toContain('stupid words');
@@ -91,7 +91,7 @@ describe('the families: every short line in the game, a family per run', () => {
     expect(at('bark/read-people', 'read/listen/scout/fearful/waitress').tells).toContain('(GDD §04: responds to Pressure');
     expect(at('bark/done', 'done/turn/fixer/refused').tells).toContain('Said to the person\'s face after their reply'); // brief 085, the pinned line's own use
     expect(family('why/on-the-way').items.find(i => i.key === 'onWay.ways.walk')!.fields[1]!.fills.find(x => x.id === 'who')!.means).toMatch(/^the person walking/); // /5: per-cause fills
-    expect(at('bark/done', 'done/turn/fixer/refused').fields[0]!.keep).toEqual(["You said no. You'll remember me."]); // text.test.ts pins it
+    expect(at('bark/done', 'done/turn/fixer/refused').fields[0]!.keep).toEqual([text.dialogue.find((r: { event: string; verb?: string; outcome?: string }) => r.event === 'done' && r.verb === 'turn' && r.outcome === 'refused').lines[0]]); // up to /12 the brief kept its first line (text.test.ts pinned it until brief 102)
     expect(at('bark/guard-call', 'guard-leaves-cafe/guard').fields[0]!.patterns[0]!.re).toBe('Break|Back to my post'); // Proof085Scenes
     expect(at('bark/ack-acts', 'ack/pay/fixer').stays).toContain('stock "On it."');
     expect(family('bark/ack-guns').items.filter(i => i.key.startsWith('ack/fire/')).map(i => i.speaker!.split(':')[0])).toEqual(['scout', 'fixer', 'tech', 'enforcer']); // guide /4: a verb's four voices side by side
@@ -153,7 +153,7 @@ describe('the families: every short line in the game, a family per run', () => {
     const b = family('label/hud'), keys = b.items.map(i => i.key), ok = today(b), bad = (s: ShortSet) => checkShort(b, s, guide).map(i => i.reason).join('\n');
     expect(keys[0]).toBe('less.street.loud'); expect(b.items[0]!.current.label).toEqual([text.less.street.loud]);
     expect(keys.filter(k => k.startsWith('briefing.timeline.'))).toEqual(text.briefing.timeline.map((m: { at: string }) => `briefing.timeline.${m.at}`));
-    for (const k of Object.keys(text.book.feed.cards)) expect(keys.includes(`book.feed.cards.${k}`), k).toBe(!['police', 'seal'].includes(k)); // the police title is the why block's (and its {s} keys the ticket); the seal is never a card
+    for (const k of Object.keys(text.book.feed.cards)) expect(keys.includes(`book.feed.cards.${k}`), k).toBe(!['police', 'seal', 'rivals-follow'].includes(k)); // rivals-follow: guide /14's own family (brief 102) // the police title is the why block's (and its {s} keys the ticket); the seal is never a card
     expect(b.items.find(i => i.key === 'book.feed.cards.boxed')!.current).toEqual({ title: [text.book.feed.cards.boxed.title], line: [text.book.feed.cards.boxed.line] }); // today is the file's
     expect(b.items.find(i => i.key === 'book.feed.cards.seen')!.fields.map(f => f.id)).toEqual(['title']); // the host clears its line
     expect(b.items.every(i => i.stays)).toBe(true); expect(keys).toContain('book.feed.of');
@@ -213,7 +213,7 @@ describe('code checks', () => {
     expect(issues(end, { items: good.items.filter(i => i.key !== 'win/tech') })).toContain('win/tech: missing');
     expect(issues(end, { items: good.items.map(i => i.key === 'win/fixer' ? { ...i, cut: true, reason: 'filler', fields: [] } : i) })).toContain('may not be cut');
     const done = family('bark/done'), dset = today(done);
-    expect(issues(done, edit(dset, 'done/turn/fixer/refused', ['A no, then.', 'That went badly.', 'A no. Noted.']))).toContain('keep "You said no. You\'ll remember me."');
+    expect(issues(done, edit(dset, 'done/turn/fixer/refused', ['A no, then.', 'That went badly.', 'A no. Noted.']))).toContain(`keep "${text.dialogue.find((r: { event: string; verb?: string; outcome?: string }) => r.event === 'done' && r.verb === 'turn' && r.outcome === 'refused').lines[0]}"`);
     expect(issues(done, edit(dset, 'done/turn/fixer/turned', ['He is with us now.', 'Good. That\'s settled.', 'Done. You\'re with us now.']))).toContain('must not have');
     const call = family('bark/guard-call');
     expect(issues(call, edit(today(call), 'guard-leaves-cafe/guard', ['Duty calls.', 'Back to the door.']))).toContain('Proof085Scenes');

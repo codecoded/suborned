@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>bark/rivals</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:1180px;margin:0 auto;padding:32px;color:#17302f;background:#f7f4ec}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #cbc6c3;padding:6px;text-align:left;vertical-align:top}th{background:#d9ebe5}code{font-size:12px}</style>
+<h1>bark/rivals: The rival crew moves; the cell is hurt</h1><p><b>ACCEPTED</b> · Scored 10/10 with no findings, and the code checks pass · live · gpt-6.1-sol, judged by claude-opus-5-5 · 4 calls · 69880 tokens</p><h2>First draft · SCORE 9/10</h2><p><b>REASON:</b> Both of last round's findings are fixed. &quot;I'll cover you!&quot; is gone from the police row, and &quot;Clear the street! Make them drop those guns!&quot; is now a policeman's shout. The two rivals-drawn lines no longer share &quot;Get to the Office&quot;. One takes the other gunmen's noise as cover, and the other is cold impatience. Neither breaks a rule.
+
+The rival rows sound like a hired crew: they talk about pay, the job and cutting losses, they say no names, and nobody explains the game. Cutting ai-gone is still right, because the car driving off shows it.
+
+No line has a digit, a rule word, an AI-sounding word, a filter word or a name. Every line is true when it plays and fits the bubble.
+
+Two lines hold VOICE at 9. Each is a phrase anyone could say:
+- &quot;Get in there!&quot; is a generic squad order, not a policeman's.
+- &quot;Slow and steady&quot; is a stock saying, not this crew's cold trade talk.</p>
+    <ul><li><b>VOICE</b> ai-join/security “Get in there! Stop them firing!”: &quot;Get in there!&quot; is an order any squad, crew or guard could shout, so it isn't the police's crisp beat. The other police line is fine; this one doesn't sound like a policeman yet.<br><small>Fix: Put the police job in it: &quot;Round the side! Stop them firing!&quot; Or: &quot;Get these people back! Stop that shooting!&quot;</small></li><li><b>VOICE</b> ai-advance/rivals “Walk up on them. Slow and steady.”: &quot;Slow and steady&quot; is a stock saying anyone could use. It weakens the crew's cold, businesslike voice, which the other two variants keep.<br><small>Fix: Keep &quot;Walk up on them.&quot; and swap the tail for something a hired gun would say: &quot;Walk up on them. No hurry, we're paid either way.&quot; Or: &quot;Walk up on them. Make every shot count.&quot;</small></li></ul>
+    <table><tr><th>key</th><th>today</th><th>this round</th></tr><tr><td><code>rivals-retreat/rivals</code></td><td>Pull back. Regroup.<br>We're being pushed back. Withdraw.</td><td>Pull back. Nobody's paying us to stand here.<br>Back off. I need you working, not dead.</td></tr><tr><td><code>rivals-drawn/rivals</code></td><td>Shots! That's the Office. Move!<br>Gunfire at the Office. Move in.</td><td>Let them make the noise. Get to the Office.<br>We're not waiting for the shooting to stop. Move in.</td></tr><tr><td><code>rivals-saw-takedown/rivals</code></td><td>He's down. That was them. Fire.<br>They took him down. Shoot them.</td><td>Kill the one who did that.<br>That's one of ours. Open up on them.</td></tr><tr><td><code>ai-break/rivals</code></td><td>Too many down! Back to the car!<br>We're pulling out. Get to the car.</td><td>The job's not worth this. Get to the car.<br>Cut our losses. We're finished here.</td></tr><tr><td><code>ai-gone/rivals</code></td><td>I'm out. Keep driving.<br>I'm clear. Drive on.</td><td><i>cut: His departure already says everything, and a departing gunman's update adds neither character nor a useful warning.</i></td></tr><tr><td><code>ai-join/security</code></td><td>Move in! Stop the shooting!<br>Move in! Break up the fight!</td><td>Get in there! Stop them firing!<br>Clear the street! Make them drop those guns!</td></tr><tr><td><code>ai-advance/rivals</code></td><td>Too far away. Move closer.<br>Close in on the nearest one.<br>Can't hit from here. Move up.</td><td>I'll go first. Stay on my shoulder.<br>Keep moving. We're here to do a job.<br>Walk up on them. Slow and steady.</td></tr></table><h2>Revision 1 · SCORE 10/10</h2><p><b>REASON:</b> Both findings from last round are fixed, and neither fix breaks a rule:
+- The police row now reads &quot;Round the side! Stop them firing!&quot;, which is the fix I suggested. It's a policeman placing his men, so no squad or crew could say it unchanged.
+- The ai-advance tail is now &quot;Don't waste the ammunition.&quot; It's a hired gun saving his rounds: cold, businesslike, and nobody explains the game.
+
+Reading the whole draft afresh, the rival crew sounds like one crew all the way through. They talk about pay (&quot;Nobody's paying us to stand here&quot;), the job (&quot;The job's not worth this&quot;, &quot;We're here to do a job&quot;), losses and ammunition. They say no names, never call anyone rivals, and never tell the player what follows. Each line is an order or a warning to the crew, as the tells ask.
+
+The variants are real different takes, not swapped words:
+- Retreat: pay, or keeping the crew alive.
+- Drawn: using the noise as cover, or cold impatience.
+- Takedown: a flat kill order, or &quot;one of ours&quot;.
+- Break: the job's not worth it, or cut our losses.
+- Advance: leading from the front, keeping on with the job, or saving ammunition.
+
+The two police shouts are crisp and different from each other.
+
+Cutting ai-gone is right. The car driving off shows the moment, and even the best line would be a departing gunman's filler.
+
+The code checks all pass:
+- No digits, rule words, AI-sounding words, filter words or names.
+- No &quot;alert&quot; in the ai-advance lines.
+- Every line is true when it plays.
+- Every line is within 12 words and 80 characters, and each sentence ends in . ? or !.
+- Exclamation marks appear only on the police shouts.
+
+I would ship every line unchanged.</p>
+    <ul></ul>
+    <table><tr><th>key</th><th>today</th><th>this round</th></tr><tr><td><code>rivals-retreat/rivals</code></td><td>Pull back. Regroup.<br>We're being pushed back. Withdraw.</td><td>Pull back. Nobody's paying us to stand here.<br>Back off. I need you working, not dead.</td></tr><tr><td><code>rivals-drawn/rivals</code></td><td>Shots! That's the Office. Move!<br>Gunfire at the Office. Move in.</td><td>Let them make the noise. Get to the Office.<br>We're not waiting for the shooting to stop. Move in.</td></tr><tr><td><code>rivals-saw-takedown/rivals</code></td><td>He's down. That was them. Fire.<br>They took him down. Shoot them.</td><td>Kill the one who did that.<br>That's one of ours. Open up on them.</td></tr><tr><td><code>ai-break/rivals</code></td><td>Too many down! Back to the car!<br>We're pulling out. Get to the car.</td><td>The job's not worth this. Get to the car.<br>Cut our losses. We're finished here.</td></tr><tr><td><code>ai-gone/rivals</code></td><td>I'm out. Keep driving.<br>I'm clear. Drive on.</td><td><i>cut: His departure already says everything, and a departing gunman's update adds neither character nor a useful warning.</i></td></tr><tr><td><code>ai-join/security</code></td><td>Move in! Stop the shooting!<br>Move in! Break up the fight!</td><td>Round the side! Stop them firing!<br>Clear the street! Make them drop those guns!</td></tr><tr><td><code>ai-advance/rivals</code></td><td>Too far away. Move closer.<br>Close in on the nearest one.<br>Can't hit from here. Move up.</td><td>I'll go first. Stay on my shoulder.<br>Keep moving. We're here to do a job.<br>Walk up on them. Don't waste the ammunition.</td></tr></table>
+<p><small>run.json.zst holds every prompt, transcript (Codex, and Claude for a Claude judge), score and revision: <code>bun run style:replay</code>, <code>bun run style:verify</code>.</small></p></html>

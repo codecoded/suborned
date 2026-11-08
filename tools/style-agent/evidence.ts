@@ -6,6 +6,7 @@ import { interpretCodex, tokenUsage } from '../goals/codex';
 import { briefsFromFiles } from './briefs';
 import { fingerprintOnly, guideFromFiles, hash } from './guide';
 import { corrected, runLoop } from './loop';
+import { JUDGE_CARD, verifyClaude } from './live-claude';
 import { guideVersion, ResultSchema, type Authorization, type Call, type Evidence, type Result, type Source } from './types';
 
 export const RUNS = 'runs/style-agent';
@@ -21,6 +22,8 @@ export function writeRun(dir: string, r: unknown) {
   renameSync(resolve(dir, `${RUN_FILE}.tmp`), resolve(dir, RUN_FILE));
 }
 export const ROLE_FILES = ['.codex/agents/dialogue-designer.toml', '.codex/agents/systems-designer.toml'];
+/** The role cards a run archives: the two Codex cards, and Motive's Claude card when Motive judged on Claude (brief 102). */
+export const roleFiles = (a: Pick<Authorization, 'judge'> | null | undefined) => a?.judge ? [...ROLE_FILES, JUDGE_CARD] : ROLE_FILES;
 const normalized = (value: unknown) => JSON.parse(JSON.stringify(value));
 export const equal = (a: unknown, b: unknown) => isDeepStrictEqual(normalized(a), normalized(b));
 export function requireThat(condition: unknown, message: string): asserts condition { if (!condition) throw new Error(message); }
@@ -33,9 +36,9 @@ export function toolingManifest(base: string) {
 }
 
 /** Snapshot every source the guide and briefs read, plus the role cards, into the shared store. */
-export function archiveEvidence(base: string, guide: { sources: Source[] }, store = resolve(base, STORE)): Evidence {
+export function archiveEvidence(base: string, guide: { sources: Source[] }, store = resolve(base, STORE), roles = ROLE_FILES): Evidence {
   mkdirSync(store, { recursive: true });
-  const sources = [...new Set([...guide.sources.map(s => s.file), ...ROLE_FILES])].sort().map(file => {
+  const sources = [...new Set([...guide.sources.map(s => s.file), ...roles])].sort().map(file => {
     const text = readFileSync(resolve(base, file), 'utf8'), sha256 = hash(text), path = resolve(store, `${sha256}.zst`);
     if (!fingerprintOnly(file) && !existsSync(path)) writeFileSync(path, pack(text));
     return { file, sha256 };
@@ -55,12 +58,14 @@ export function archivedFiles(evidence: Evidence, store: string): Record<string,
   }));
 }
 
-/** Every live call is bound to its Codex transcript, the archived role card, the model and the approval (conversations and short lines alike). */
+/** Every live call is bound to its transcript, the archived role card, the model and the approval (conversations and short lines alike): Codex's for Fable,
+ *  and Claude's for Motive's evaluations when the run had a Claude judge (brief 102). */
 export function verifyProvider(r: { authorization: Authorization | null; calls: Call[]; status: string }, files: Record<string, string>) {
   requireThat(r.authorization, 'Missing live approval');
   for (const call of r.calls) {
     // A call that failed before the adapter ran has no transcript and cannot lead to acceptance.
     if (call.raw === undefined && call.output === undefined && call.error && r.status === 'ERROR') continue;
+    if (r.authorization.judge && call.stage === 'evaluate') { verifyClaude(call, files, r.authorization.judge, r.authorization.approvedBy); continue; }
     const raw = call.raw as Record<string, any> | undefined;
     requireThat(raw && typeof raw.stdout === 'string' && Number.isInteger(raw.exitCode), 'Missing Codex transcript');
     const source = `.codex/agents/${call.role}.toml`, card = files[source];
@@ -92,7 +97,7 @@ export async function verifyRun(input: unknown, base: string, store = resolve(ba
     const notes = changed.length ? [`Replayed with code changed since the run: ${changed.join(', ')}`] : [];
     const files = archivedFiles(r.evidence, store), shas = Object.fromEntries(r.evidence.sources.map(s => [s.file, s.sha256]));
     const version = guideVersion(r.guide), guide = guideFromFiles(files, shas, version); // a run replays with the guide version it ran with
-    requireThat(equal(Object.keys(shas).sort(), [...new Set([...guide.sources.map(s => s.file), ...ROLE_FILES])].sort()), 'Unexpected or missing sources');
+    requireThat(equal(Object.keys(shas).sort(), [...new Set([...guide.sources.map(s => s.file), ...roleFiles(r.authorization)])].sort()), 'Unexpected or missing sources');
     requireThat(equal(guide, r.guide), 'The recorded guide differs from its sources');
     const brief = briefsFromFiles(files, shas, version).find(b => b.id === r.brief.id);
     requireThat(brief && equal(brief, r.brief), 'The recorded brief differs from its sources');

@@ -70,7 +70,11 @@ export type Call = {
 export type Round = { conversation: Conversation; evaluation: Evaluation; hardIssues: HardIssue[] };
 /** Sources are stored once under runs/style-agent/sources/<sha256>; a run names them by hash. */
 export type Evidence = { sources: { file: string; sha256: string }[]; tooling: { file: string; sha256: string }[]; toolingSha256: string };
-export type Authorization = { provider: 'codex'; model: string; approvedBy: string };
+/** Who wrote and who judged: Fable on Codex; from brief 102 Motive may judge on Claude (`judge`, Sky 2026-11-08: "we can try - sure"). A run without `judge` ran on Codex alone. */
+export type Authorization = { provider: 'codex'; model: string; approvedBy: string; judge?: { provider: 'claude'; model: string } };
+/** The approval as a run records it (conversations and short lines alike). */
+export const AuthorizationSchema = z.object({ provider: z.literal('codex'), model: z.string().min(1), approvedBy: z.string().trim().min(1),
+  judge: z.object({ provider: z.literal('claude'), model: z.string().min(1) }).strict().optional() }).strict();
 export type Result = {
   schema: 'suborned.style-run/2'; mode: 'live' | 'test-fixture';
   status: 'ACCEPTED' | 'INCOMPLETE' | 'ERROR'; stopReason: string;
@@ -106,7 +110,7 @@ export const ResultSchema = z.object({
     sources: z.array(z.object({ file: z.string(), sha256: Sha }).strict()).min(1).max(20),
     tooling: z.array(z.object({ file: z.string(), sha256: Sha }).strict()).min(1).max(60), toolingSha256: Sha,
   }).strict().nullable(),
-  authorization: z.object({ provider: z.literal('codex'), model: z.string().min(1), approvedBy: z.string().trim().min(1) }).strict().nullable(),
+  authorization: AuthorizationSchema.nullable(),
   brief: BriefSchema, steer: z.string().nullable(), guide: GuideSchema,
   limits: z.object({ maxCalls: z.number(), maxTokens: z.number(), maxRevisions: z.number(), maxMs: z.number() }).strict(),
   rounds: z.array(z.object({ conversation: Conversation, evaluation: Evaluation,

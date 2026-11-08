@@ -2,6 +2,7 @@ import { block, gddNames, gddNamesFromFiles, gddPair, hash, lineOf, pick, reader
 import { SHORT_GUIDES, SHORT_NOW, VoiceSheet, type ShortGuide, type ShortGuideVersion, type ShortKindRules, type ShortRule } from './short-types';
 import { BARK_13, NATURAL_BAR, NATURAL_BRIEF, naturalWords, readNatural, USE_13 } from './short-natural';
 import { BARK_12, VOICE_SHEET } from './short-voice';
+import { AI_WORDS_FILE, BARK_14, natural14, readAiWords } from './short-natural14';
 import type { Source } from './types';
 
 /** The short lines' sources. The briefs read only these, so a saved run rebuilds from its archive. */
@@ -58,6 +59,9 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
     add('natural-words', NATURAL_BRIEF, 'Sky 2026-11-08, decisions 1 and 2', naturalWords(words102));
     add('natural', NATURAL_BAR, 'kept, fail, pass', [natural.status, natural.why, ...natural.kept.map(x => `kept: ${x.line}`)].join('\n'));
   }
+  // guide /14 (brief 102's sweep): the AI-sounding words and Sky's four, after the /13 sources so a /13 guide rebuilds with exactly the sources it ran with
+  const ai = version >= 14 ? readAiWords(read) : null, bar = natural && ai ? natural14(natural, ai) : natural;
+  if (ai) add('ai-words', AI_WORDS_FILE, 'words, kind, rejected, fail', [ai.status, ai.why, `words: ${ai.words.join(', ')}; their kind: ${ai.kind.join(', ')}`, ...ai.rejected.map(x => `rejected: ${x.line}`)].join('\n'));
 
   const words = Number(pick(schema, /export const MAX_WORDS = (\d+);/, 'MAX_WORDS')[0]), chars = Number(pick(schema, /export const MAX_LINE = (\d+);/, 'MAX_LINE')[0]);
   const lim = (kind: string) => pick(why, new RegExp(`${kind}: \\{ chars: (\\d+), words: (\\d+)`), `why LIMITS.${kind}`).map(Number);
@@ -66,7 +70,7 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
   const rule = (id: ShortRule['id'], kind: string, sources: string[], instruction: string): ShortRule => ({ id, kind, instruction, sources }), v4 = version >= 4;
   const named = (text.names.named as string[]).join(' and ');
   const kinds: ShortGuide['kinds'] = {
-    bark: { use: `A bark is a speech bubble at the speaker, in play: at most two at once, 3 s each, and every one also lands in the book's Journal. The play HUD shows no other sentences (§10), so a bark is often the only word the player gets about a moment.${natural ? USE_13 : sheet ? USE_12 : ''}`, rules: natural ? BARK_13(words, chars, named, cell, text.tone.world, OPENING, words102, natural) : sheet ? BARK_12(words, chars, named, cell, text.tone.world, OPENING) : v4 ? BARK_4(words, chars, named, cell, text.tone.world) : [
+    bark: { use: `A bark is a speech bubble at the speaker, in play: at most two at once, 3 s each, and every one also lands in the book's Journal. The play HUD shows no other sentences (§10), so a bark is often the only word the player gets about a moment.${natural ? USE_13 : sheet ? USE_12 : ''}`, rules: ai && bar ? BARK_14(words, chars, named, cell, text.tone.world, OPENING, words102, bar, ai) : natural ? BARK_13(words, chars, named, cell, text.tone.world, OPENING, words102, natural) : sheet ? BARK_12(words, chars, named, cell, text.tone.world, OPENING) : v4 ? BARK_4(words, chars, named, cell, text.tone.world) : [
       rule('USEFUL', 'tells the player something they can use', ['opening', 'fable', 'lines'], 'A bark exists to tell the player something they can use now: that an order was taken and what it will do, what just happened, what a person is about to do (call it in, run, fight), what changed and what it opens or costs. Every line carries a fact from its item\'s `tells`. A line that says only that someone is ready, waiting, worried or in a mood is filler and fails. The four opening barks Sky cut ("what is this stupid words at the start of every game?") are the failing example: "The square looks perfectly ordinary. That\'s what worries me.", "Friends first, force last. Remember.", "Waiting. Always waiting.", "Tell me when." Where even the best line would be filler and the item may be cut, cut it and give the reason in one sentence.'),
       rule('TRUE', 'true to what the engine did', ['fable', 'motive', 'world'], 'Say only what the item\'s `tells` and `where` give: no invented facts, numbers, times, places, people, motives or outcomes, and no promise the act may not keep. People say only what they could know: a passer-by never knows the cell, its plan or its roles; the cell never states what it has not watched or heard. Every variant of an item is true whenever that item plays.'),
       rule('PLAIN', 'plain everyday words', ['world', 'voices', 'plain'], `Plain, everyday spoken words of this world: ${text.tone.world} No report or form tone, no design jargon in anyone's mouth (target, hostile, objective, Alert level, Trail, approach), no stage directions.`),
@@ -95,7 +99,7 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
     ...(version >= 10 ? { label: LABEL_10(named, version) } : {}),
   };
   return { schema: SHORT_GUIDES[version], game: 'The Suborned', gdd: pair.agent.version, sources, kinds, voices: text.tone.voices, avoid: text.tone.avoid, profanity: text.tone.profanity,
-    named: text.names.named, cell, ...(sheet ? { sheet: { voices: sheet.voices, fail: sheet.fail, pass: sheet.pass } } : {}), ...(natural ? { natural: { kept: natural.kept, fail: natural.fail, pass: natural.pass } } : {}) };
+    named: text.names.named, cell, ...(sheet ? { sheet: { voices: sheet.voices, fail: sheet.fail, pass: sheet.pass } } : {}), ...(bar ? { natural: { kept: bar.kept, fail: bar.fail, pass: bar.pass } } : {}), ...(ai ? { ai: { words: ai.words, kind: ai.kind, rejected: ai.rejected, fail: ai.fail } } : {}) };
 }
 
 export const loadShortGuide = (base: string, version: ShortGuideVersion = SHORT_NOW) => buildShortGuide(readerFor(base), gddNames(base), undefined, version);

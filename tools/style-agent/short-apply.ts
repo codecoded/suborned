@@ -40,13 +40,18 @@ export async function applyShort(dry: boolean, o: { runs?: Map<string, { run: Sh
   const restored = (run: ShortResult): ShortSet['items'] => !o.restore?.has(run.brief.id) ? run.rounds.at(-1)!.set.items
     : run.brief.items.map(i => ({ key: i.key, cut: false, reason: '', fields: i.fields.map(f => ({ id: f.id, lines: i.current[f.id] ?? [] })) }));
   if (o.restore) for (const id of o.restore) { if (!best.has(id)) throw new Error(`--restore ${id}: no accepted run to restore from`); if (best.get(id)!.run.brief.kind === 'debrief') throw new Error(`--restore ${id}: the page is restored by leaving its family out`); }
-  const missing = families.filter(f => !best.has(f.id)).map(f => f.id);
+  const missing = families.filter(f => !best.has(f.id)).map(f => f.id), held: string[] = [];
+  // a row two families have (a family split or renamed at /13 and /14: the cell's scene lines, the guard's replies, the Mislead) is written by the newest run that has it
+  const owner = new Map<string, string>();
+  for (const [id, { run }] of [...best].filter(([, x]) => x.run.brief.kind === 'bark').sort((a, b) => a[1].run.startedAt - b[1].run.startedAt)) for (const i of run.brief.items) owner.set(i.key, id);
   // barks: each row is one line of the file
   for (const [id, { run, path }] of best) {
     if (run.brief.kind !== 'bark') continue;
     for (const x of restored(run)) {
       const row = (text.dialogue as Row[]).find(r => barkKey(r as never) === x.key);
       if (!row) throw new Error(`${id}: no row ${x.key} in text.json`);
+      if (owner.get(x.key) !== id) continue; // a newer family's run writes it
+      if (row.sky) { held.push(x.key); continue; } // Sky's own words win over any run (brief 102), as "Turn driver by"
       if (x.cut) { raw = once(raw, `  ${JSON.stringify(row)},\n`, '', x.key); cuts.push(`${x.key}: ${x.reason}`); continue; }
       const lines = x.fields.find(f => f.id === 'lines')!.lines;
       if (JSON.stringify(lines) !== JSON.stringify(row.lines)) { raw = once(raw, JSON.stringify(row), JSON.stringify({ ...row, lines }), x.key); log.push(`${x.key}`); }
@@ -94,10 +99,16 @@ export async function applyShort(dry: boolean, o: { runs?: Map<string, { run: Sh
     const w = writeLabels(raw, labels.map(({ run }) => ({ id: run.brief.id, items: restored(run) })));
     raw = w.raw; log.push(...w.changed, ...labels.map(({ path }) => `  ← ${relative(root, path)}`));
   }
-  // a cut speaker leaves its event
+  // a cut speaker leaves its event; a cut of its last speaker quiets the event: its log codes join silentLogs with the cut's reason (brief 102: the patrol's status lines)
   for (const c of cuts) {
     const [event, ...rest] = c.split(':')[0]!.split('/'), parsed = JSON.parse(raw), ev = parsed.events[event!];
     for (const sp of ev.speakers as string[]) if (!(parsed.dialogue as Row[]).some(r => r.event === event && r.speaker === sp)) {
+      if (ev.speakers.length === 1 && Array.isArray(ev.log) && ev.log.length && !(ev.log as string[]).some(k => k in parsed.silentLogs)) {
+        raw = once(raw, `  "${event}": ${JSON.stringify(ev)},\n`, '', `event ${event}`);
+        const why = `brief 102's sweep (Fable 2026-11-08): the loop cut ${event}'s last line: ${c.slice(c.indexOf(':') + 1).trim()}`;
+        raw = once(raw, ' "silentLogs": {\n', ` "silentLogs": {\n${(ev.log as string[]).map(k => `  ${JSON.stringify(k)}: ${JSON.stringify(why)},\n`).join('')}`, 'silentLogs');
+        log.push(`${event}: quiet (${(ev.log as string[]).join(', ')} into silentLogs)`); break;
+      }
       if (ev.speakers.length === 1) throw new Error(`${event}: its last speaker was cut; silence the event by hand (${rest.join('/')})`);
       raw = once(raw, `"${event}": ${JSON.stringify(ev)}`, `"${event}": ${JSON.stringify({ ...ev, speakers: ev.speakers.filter((s: string) => s !== sp) })}`, `event ${event}`);
     }
@@ -108,6 +119,7 @@ export async function applyShort(dry: boolean, o: { runs?: Map<string, { run: Sh
   console.log(log.join('\n'));
   if (cuts.length) console.log(`\nCut:\n${cuts.join('\n')}`);
   if (missing.length) console.log(`\nNo accepted run yet: ${missing.join(', ')}`);
+  if (held.length) console.log(`\nSky's words, kept over the runs: ${[...new Set(held)].join(', ')}`);
   if (problems.length || dups.length) throw new Error(`Not written: ${[...problems, ...dups.map(d => `repeated line ${d}`)].join('; ')}`);
   if (dry) { console.log('\n(dry run: text.json unchanged)'); return; }
   writeFileSync(file, raw);

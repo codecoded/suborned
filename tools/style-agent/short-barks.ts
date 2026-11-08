@@ -1,11 +1,12 @@
 import { gddPair, pick, type Read } from './guide';
 import { VoiceSheet, type Field, type Pattern, type ShortBrief, type ShortGuideVersion, type ShortItem } from './short-types';
 import { FAMILIES_13, GONE_13, REACTS_13, reply13, scene13, WORLD_13 } from './short-natural';
+import { ANSWER_14, family14, MISLEAD_14, scene14 } from './short-natural14';
 import { speech12, VOICE_SHEET } from './short-voice';
 
 /** The bark table (text.json `dialogue`) as families, one run each: what each bark must tell the player, from the event's own trigger,
  *  the verb's plain line (`actions.*.does`), what a Watch or a Listen teaches (`targets`) and the GDD's temperaments (§04). */
-type Row = { event: string; verb?: string; speaker: string; outcome?: string; temperament?: string; about?: string; pending?: string; parked?: string; silent?: string; lines: string[] };
+type Row = { event: string; verb?: string; speaker: string; outcome?: string; temperament?: string; about?: string; pending?: string; parked?: string; silent?: string; sky?: string; lines: string[] };
 const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'];
 const MACHINES = ['camera-entrance', 'camera-pickup', 'camera-mast-z0', 'patrol', 'rivals'];
 const any = (...events: string[]) => (r: Row) => events.includes(r.event);
@@ -49,7 +50,7 @@ const ACKS_12: [string, string, string[]][] = [
   ['fight', 'Acknowledgements: draw, and everyone fire', ['draw', 'panic']], ['bodies', 'Acknowledgements: carry, hide, tie up', ['carry', 'stash', 'restrain']],
 ];
 const familiesFor = (v: ShortGuideVersion) => v < 4 ? BARK_FAMILIES : v >= 13 ? [ // guide /13 (brief 102): the agents' families go; the cell's scene lines have their own
-  ...FAMILIES_13, ...BARK_FAMILIES.filter(f => !GONE_13.test(f.id)).flatMap(f => f.id === 'bark/witnesses' ? WITNESSES_6 : [f]),
+  ...FAMILIES_13, ...(v >= 14 ? [MISLEAD_14] : []), ...BARK_FAMILIES.filter(f => !GONE_13.test(f.id)).map(f => v >= 14 ? family14(f) : f).flatMap(f => f.id === 'bark/witnesses' ? WITNESSES_6 : [f]),
 ] : [
   ...(v >= 12 ? ACKS_12 : ACKS_4).map(([id, title, verbs]) => ({ id: `bark/ack-${id}`, title, pick: (r: Row) => r.event === 'ack' && verbs.includes(r.verb!) })),
   ...BARK_FAMILIES.filter(f => !f.id.startsWith('bark/ack-')).flatMap(f => v >= 6 && f.id === 'bark/witnesses' ? WITNESSES_6 : [f]),
@@ -167,12 +168,15 @@ const SPEAKS: Record<string, string> = {
 const NAMED = new Set(['rivals-arrive/rivals', 'drawn-seen/guard', 'run-seen/guard', 'run-seen/patrol', 'alarm/security', 'going-loud/enforcer', 'fight-loud/security', 'fight-safe/rivals',
   'fight-warned/waitress', 'win/fixer', 'win/councillor', 'cliffhanger/councillor', 'guard-at-cafe/waitress']);
 const CATALOGUE = ['reply', 'confirm', 'questioned', 'saw-gunfire', 'gunfire'];
+/** The cell's scene lines by version: /13's, and from /14 the Scout's tip in a Mislead. */
+const sceneAt = (v: ShortGuideVersion) => v >= 14 ? scene14 : scene13;
 function stays(r: Row, v: ShortGuideVersion): string | null {
   if (v >= 3 && (PINNED_ROWS.has(`${r.event}/${r.speaker}`) || PINNED_ROWS.has(keyOf(r)))) return 'text.test.ts needs this event\'s line from this speaker.';
   // guide /12: the approach scenes play the Fixer's opener and closer; any other order's beat may go silent (a silent row, step 2), since the host's stock line goes too
   if (v >= 12 && r.speaker === 'fixer' && ((r.event === 'arrive' && ['ask', 'pay', 'help', 'pressure'].includes(r.verb!)) || (r.event === 'done' && r.verb === 'turn')))
     return 'The approach scenes play it (text.json scenes, brief 085).';
-  if (v >= 13 && scene13(r, '')) return 'A scene with a person plays it (brief 102: the cell speak only there).';
+  if (v >= 13 && sceneAt(v)(r, '')) return 'A scene with a person plays it (brief 102: the cell speak only there).';
+  if (v >= 14 && r.event === 'rivals-misled') return 'The Mislead\'s cutaway plays his answer (HostLogic.Quiet102.cs: the rival answers).';
   if (v >= 12 && ['ack', 'arrive', 'done'].includes(r.event)) return null;
   if (['ack', 'arrive', 'done'].includes(r.event)) return 'Every order has this beat for each agent who can give it (text.test.ts); without a line the host speaks a stock "On it."';
   if (['reply', 'read', 'confirm', 'taken'].includes(r.event)) return 'The rulebook can produce it, and the host, the scenes and the checks read it (text.test.ts).';
@@ -230,8 +234,9 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
   const tells = (r: Row): string => {
     const ev = text.events[r.event], who = WHO[r.speaker] ?? r.speaker, subject = r.event === 'read' ? WHO[r.about ?? ''] ?? 'the person' : who;
     const temp = r.temperament ? ` ${subject[0]!.toUpperCase() + subject.slice(1)} is ${v >= 6 && r.event === 'read' && r.about === 'councillor' ? popovic(r.temperament) : temperament(r.temperament)}.` : '';
-    const sc = v >= 13 ? scene13(r, text.actions[r.verb!]?.does ?? '') : null; // guide /13: the cell's scene lines, said to the person
+    const sc = v >= 13 ? sceneAt(v)(r, text.actions[r.verb!]?.does ?? '') : null; // guide /13: the cell's scene lines, said to the person
     if (sc) return sc.tells;
+    if (v >= 14 && r.event === 'rivals-misled') return ANSWER_14.tells; // guide /14: the rival answers the Scout's tip, to her face
     switch (r.event) {
       case 'ack': if (v >= 12) return `Say what only ${who} would say as they take this order, now: how they take the job, a feeling or a detail the card can't give; never the order read back. Facts, on the order's card already and not to be read out: "${text.actions[r.verb!]?.does ?? ''}" ${ORDER[`${r.verb}/${r.outcome}`] ?? ORDER[r.verb!] ?? ''}`.trim();
         return v >= 4
@@ -265,14 +270,17 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
       }
     }
   };
-  const where = (r: Row) => (v >= 13 ? scene13(r, '')?.where : undefined) ?? (r.event === 'arrive' ? 'The Journal only: the moment itself plays in the scene.'
+  const where = (r: Row) => (v >= 13 ? sceneAt(v)(r, '')?.where : undefined) ?? (v >= 14 && r.event === 'rivals-misled' ? ANSWER_14.where : undefined) ?? (r.event === 'arrive' ? 'The Journal only: the moment itself plays in the scene.'
     : r.event === 'questioned' ? 'Not played yet: a debrief hook for when investigators run.' : ['win', 'fail', 'withdraw', 'cliffhanger'].includes(r.event) ? 'A bubble at the speaker as the game ends, then the Journal.'
       : 'A speech bubble at the speaker in play (3 s), then the Journal.');
   const told = (r: Row) => { const s = tells(r); return s[0]!.toUpperCase() + s.slice(1); };
   // guide /12: only the rows the host speaks under Fable's frequency are written; the silent ones keep their reason (short-voice.ts) for step 2's silent rows
   // guide /13 (brief 102): the agents are quiet in play, so a row marked `silent` in text.json is not written (its reason is there)
   const speech = v === 12 ? speech12(text, VoiceSheet.parse(JSON.parse(read(VOICE_SHEET))).speech) : null;
-  const rows: Row[] = (text.dialogue as Row[]).filter(r => !r.parked && !r.pending && !speech?.silent(r as never) && !(v >= 13 && r.silent));
+  // guide /14 (brief 102's sweep): a row of Sky's own words (`sky`) is not an item; its family's context gives it, so nobody repeats it
+  const rows: Row[] = (text.dialogue as Row[]).filter(r => !r.parked && !r.pending && !speech?.silent(r as never) && !(v >= 13 && r.silent) && !(v >= 14 && r.sky));
+  const skys = (f: { pick: (r: Row) => boolean }) => v >= 14 ? (text.dialogue as Row[]).filter(r => r.sky && !r.silent && f.pick(r)) : [];
+  const skyWords = (f: { pick: (r: Row) => boolean }) => skys(f).length ? ` Sky's own words, already in the game and not items here: never rewrite them, and never say them in another row: ${skys(f).map(r => `${keyOf(r)}: ${r.lines.map(l => JSON.stringify(l)).join(' / ')}`).join('; ')}.` : '';
   return familiesFor(v).filter(f => (!speech && v < 13) || rows.some(f.pick)).map(f => {
     const mine = rows.filter(f.pick);
     const items: ShortItem[] = mine.map(r => {
@@ -284,7 +292,7 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
     });
     if (!items.length) throw new Error(`${f.id} has no barks: update the families`);
     return { id: f.id, kind: 'bark' as const, title: f.title, context: v >= 13
-      ? `${f.title}. Each item is one bark row of the mission's table (event / verb / speaker / outcome / temperament / about) that the host speaks, and its \`where\` says when and how often. Write its variants, each a different take on the moment in its speaker's voice. Keep a line of today's only where it already holds the bar; rewrite every line that explains the game (a rule, or what follows), reads the HUD back, or could come from anyone.`
+      ? `${f.title}. Each item is one bark row of the mission's table (event / verb / speaker / outcome / temperament / about) that the host speaks, and its \`where\` says when and how often. Write its variants, each a different take on the moment in its speaker's voice. Keep a line of today's only where it already holds the bar; rewrite every line that explains the game (a rule, or what follows), reads the HUD back, or could come from anyone.${skyWords(f)}`
       : v >= 12
       ? `${f.title}. Each item is one bark row of the mission's table (event / verb / speaker / outcome / temperament / about) that the host speaks, and its \`where\` says when and how often. Write its variants, each a different take on the moment in its speaker's voice. Keep a line of today's only where it already earns its place in that voice; rewrite every line that reads the click back, narrates what the screen shows, talks mechanics, or could come from any of the four.`
       : v >= 4

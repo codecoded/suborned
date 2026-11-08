@@ -36,7 +36,7 @@
 // modern speech; no strong profanity; every engine verb, refusal and fail has text; every reply the rulebook can produce has a line
 // for each Handover role and each temperament the role allows; every line naming Halcyon is marked pending.
 import { z } from 'zod';
-import { SILENT } from './speech.schema.ts'; // brief 102: which rows speak in play
+import { SILENT, SkyWords } from './speech.schema.ts'; // brief 102: which rows speak in play, and Sky's words
 import { TEMPERAMENTS } from '../../people/people.rules.schema.ts';
 import { fnv1a32 } from '../../rules/rulebook.ref.ts';
 import { CaptureClip, Conversations } from './conversations.schema.ts';
@@ -225,7 +225,7 @@ export const Entry = z.strictObject({
   temperament: Temperament.optional(),
   about: z.enum([...PEOPLE, ...WATCHED]).optional().describe('read: whom or what the Scout is reading (a person, a camera or the patrol)'),
   pending: z.string().optional().describe('the line waits on a decision; the host ships the `unnamed` alternative until it is made'),
-  parked: Parked,
+  parked: Parked, sky: SkyWords,
   silent: z.string().startsWith(SILENT).optional().describe('brief 102 (Sky 2026-11-08): the row is not spoken in play, with the reason; its lines stay only so one moment can come back if play feels too quiet'),
   lines: z.array(z.string().min(1).max(MAX_LINE).regex(/^[^\n<>]+$/)).min(2).max(4),
 });

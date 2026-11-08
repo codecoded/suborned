@@ -1,0 +1,28 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>bark/alarm</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:1180px;margin:0 auto;padding:32px;color:#17302f;background:#f7f4ec}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #cbc6c3;padding:6px;text-align:left;vertical-align:top}th{background:#d9ebe5}code{font-size:12px}</style>
+<h1>bark/alarm: The alarm, the response and going loud</h1><p><b>ACCEPTED</b> · Scored 10/10 with no findings, and the code checks pass · live · gpt-6.1-sol, judged by claude-opus-5-5 · 2 calls · 34165 tokens</p><h2>First draft · SCORE 10/10</h2><p><b>REASON:</b> Score: 10. I'd ship every line as written.
+
+**Last round's two findings are fixed:**
+- **NATURAL:** response-checks/nothing now says &quot;Keep your eyes open. I don't like this.&quot; It's a whole spoken thought from a policeman to his partner, with no clipped fragment left.
+- **VARIANTS:** response-sent now says &quot;Whoever goes, tell them to go careful.&quot; It's built around the caution, so it no longer echoes &quot;Pull someone off the beat and get them over there.&quot; The three lines now give three different orders: who's nearest, take a man off the beat, and tell them to be careful.
+
+Neither fix breaks a rule.
+
+**Reading the whole draft again:**
+- **Nobody explains the game.** Every line is a policeman giving an order or saying a worry, in plain, crisp words. None says what the game will do next.
+- **No banned words.** There are no AI-sounding words, digits, rule words or names.
+- **Every line is true when it plays.**
+  - &quot;See if they're breathing&quot; holds whether the person was knocked out or killed.
+  - &quot;Don't touch the body&quot; fits the moment, since the police have just found one.
+  - &quot;Close off the streets&quot; and &quot;nobody leaves&quot; are orders the lockdown actually carries out.
+  - &quot;Shots&quot; from today's line was dropped, which is right: not every report is about gunfire.
+- **Variants differ.**
+  - The two lockdown lines take different angles: one is final (&quot;That's it.&quot;), the other is an urgent shout.
+  - The two found-a-body lines check the victim and hold the scene.
+  - The two found-nothing lines are uneasy and brisk.
+- **Every line fits the bubble.** Only the shouts end in &quot;!&quot;.
+
+**The watcher cut is right.** The alarm is already voiced by alarm/security, and no camera detail would be true every time this item plays. The code check flagging &quot;a cut item has no lines&quot; is just what a cut looks like, not a fault.</p>
+    <ul></ul>
+    <table><tr><th>key</th><th>today</th><th>this round</th></tr><tr><td><code>alarm/security</code></td><td>All units. Shots at the Records Office.<br>Response unit moving. Cordon forming.</td><td>Every available officer, get to the scene!<br>All units. Close off the streets. Move!</td></tr><tr><td><code>alarm/watcher</code></td><td>Alarm sounded. Close the district.<br>Camera room. Seal the district.</td><td><i>cut: No specific camera detail is true at every trigger, and a generic plea adds nothing worth hearing.</i></td></tr><tr><td><code>response-checks/security/found</code></td><td>Body here. Call it in.<br>Found someone. Seal the area.</td><td>Over here. See if they're breathing.<br>Keep everyone back. Don't touch the body.</td></tr><tr><td><code>response-checks/security/nothing</code></td><td>Nothing here. Moving on.<br>Empty. Check the next one.</td><td>Keep your eyes open. I don't like this.<br>There's nothing here. Come on, we've got work to do.</td></tr><tr><td><code>response-sent/security</code></td><td>All units. Report from the Records Office.<br>A report has come in. Units moving.<br>Another unit. Same address.</td><td>Who's nearest? Take that call.<br>Pull someone off the beat and get them over there.<br>Whoever goes, tell them to go careful.</td></tr><tr><td><code>lockdown/security</code></td><td>Attention. The district is closing. Go home.<br>Doors are sealed. Please remain calm.</td><td>That's it. Lock everything, nobody leaves.<br>Get those doors shut before anyone gets out!</td></tr></table>
+<p><small>run.json.zst holds every prompt, transcript (Codex, and Claude for a Claude judge), score and revision: <code>bun run style:replay</code>, <code>bun run style:verify</code>.</small></p></html>

@@ -31,6 +31,8 @@ export async function runRounds<C, E extends Scored, H, R>(o: {
   history?: boolean;
   /** When a score accepts, if not a plain 10 (guide /12's barks: a 10 on every rule); findings and code checks must still be empty. */
   accepts?: (evaluation: E) => boolean;
+  /** A run that continues another's last round (brief 102): its first call revises that draft from that round's findings, which the evaluator then sees as its own last. */
+  start?: { draft: C; feedback: { evaluation: E; hardIssues: H[] } };
 }): Promise<void> {
   const { result, limits, now, started, save } = o;
   const ask = async <T>(stage: Stage, schema: z.ZodType<T>, candidate: C | null, feedback: { evaluation: E; hardIssues: H[] } | null): Promise<T> => {
@@ -53,7 +55,8 @@ export async function runRounds<C, E extends Scored, H, R>(o: {
     return parsed;
   };
   try {
-    let draft: C = await ask('generate', o.draftSchema, null, null), last: { evaluation: E; hardIssues: H[] } | null = null;
+    let draft: C = o.start ? await ask('refine', o.draftSchema, o.start.draft, o.start.feedback) : await ask('generate', o.draftSchema, null, null);
+    let last: { evaluation: E; hardIssues: H[] } | null = o.start?.feedback ?? null;
     for (let revision = 0; revision <= limits.maxRevisions; revision++) {
       const hardIssues = o.check(draft);
       const evaluation: E = await ask<E>('evaluate', o.evaluationSchema, draft, o.history ? last : null);

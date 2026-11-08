@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { questionCount, sentenceCount } from '../../contracts/missions/handover/conversations.schema.ts';
-import { SCENE_ROWS, speaks } from '../../contracts/missions/handover/speech.schema.ts';
+import { SCENE_ROWS, SKY_WORDS, speaks } from '../../contracts/missions/handover/speech.schema.ts';
 import { AGENTS } from '../../contracts/missions/handover/text.schema.ts';
 import { root } from '../rag/config';
 import { loadBriefs } from './briefs';
@@ -31,11 +31,13 @@ const barks = b13.filter(b => b.kind === 'bark'), item = (key: string) => barks.
 const familyOf = (key: string) => barks.find(b => b.items.some(i => i.key === key))!;
 const today = (b: ShortBrief): ShortSet => ({ items: b.items.map(i => ({ key: i.key, cut: false, reason: '', fields: i.fields.map(f => ({ id: f.id, lines: (i.current[f.id] ?? []).slice(0, f.count) })) })) });
 const edit = (s: ShortSet, key: string, lines: string[]): ShortSet => ({ items: s.items.map(i => i.key !== key ? i : { ...i, fields: i.fields.map(f => ({ ...f, lines })) }) });
-const rows = text.dialogue as { event: string; speaker: string; lines: string[]; silent?: string; parked?: string; pending?: string }[];
+const rows = text.dialogue as { event: string; speaker: string; lines: string[]; silent?: string; parked?: string; pending?: string; sky?: string }[];
+/** Guide /14's Mislead tip (brief 102's sweep): a scene row today that /13 never wrote. */
+const AT_14 = ['arrive/mislead/scout'];
 
 describe('guide /13: nobody explains the game', () => {
-  test('new runs use /13; the bark rubric keeps /12\'s eight rules, NATURAL and TRUE hold the no-mechanics rule in Sky\'s words, and every rule cites a source', () => {
-    expect(SHORT_NOW).toBe(13);
+  test('/13\'s bark rubric keeps /12\'s eight rules, NATURAL and TRUE hold the no-mechanics rule in Sky\'s words, and every rule cites a source', () => {
+    expect(SHORT_NOW).toBeGreaterThanOrEqual(13); // new runs use /14 (natural14.test.ts)
     expect(g13.kinds.bark.rules.map(r => r.id)).toEqual([...BARK_RULES_12]);
     for (const r of g13.kinds.bark.rules) for (const id of r.sources) expect(g13.sources.some(s => s.id === id), `${r.id} ${id}`).toBe(true);
     expect(g13.sources.find(s => s.id === 'natural')!.sha256).toBe(hash(readFileSync(join(root, NATURAL_BAR), 'utf8')));
@@ -53,8 +55,8 @@ describe('guide /13: nobody explains the game', () => {
     const keys = barks.flatMap(b => b.items.map(i => i.key));
     expect(new Set(keys).size).toBe(keys.length);
     expect(keys.filter(k => (AGENTS as readonly string[]).includes(k.split('/').find(p => (AGENTS as readonly string[]).includes(p)) ?? '')).sort())
-      .toEqual(SCENE_ROWS.filter(k => !k.endsWith('/named')).sort());
-    expect(rows.filter(r => speaks(r)).map(r => barkKey(r as never)).sort()).toEqual([...keys].sort());
+      .toEqual(SCENE_ROWS.filter(k => !k.endsWith('/named') && !AT_14.includes(k)).sort());
+    expect(rows.filter(r => speaks(r)).map(r => barkKey(r as never)).filter(k => !AT_14.includes(k)).sort()).toEqual([...keys].sort());
     for (const k of ['arrive/help/fixer', 'done/turn/fixer/refused', 'ack/call/fixer', 'done/take/enforcer']) expect(item(k).tells, k).toMatch(/Said to (the person|them|Inez|Popovic)/);
     expect(item('done/turn/fixer/refused').fields[0]!.keep).toEqual([]); // brief 102 took text.test.ts's pin on "You said no. You'll remember me."
   });
@@ -68,8 +70,9 @@ describe('guide /13: nobody explains the game', () => {
   test('the code check holds the family Sky named at /13, whoever says it, but not at /12 and not when an investigator asks', () => {
     const f = familyOf('done/turn/fixer/refused'), good = today(f);
     const issues = (s: ShortSet, g = g13, b = f) => checkShort(b, s, g, { dialogue: text.dialogue }).filter(i => i.rule === 'NATURAL' && /explains the game/.test(i.reason));
-    expect(issues(good).map(i => i.reason)).toEqual([expect.stringContaining('done/turn/fixer/refused.lines #1: "You\'ll remember" explains the game')]); // today's line, until the sweep
-    expect(issues(edit(good, 'done/turn/fixer/refused', ['Of course. Forget I asked.', 'Then we\'ll say no more about it.', 'That\'s all right. I won\'t keep you.']))).toEqual([]);
+    const before = ['You said no. You\'ll remember me.', 'All right. Next time, we\'ll have to offer more.', 'No, then. You\'ll want more next time.']; // the row before Sky's yes
+    expect(issues(edit(good, 'done/turn/fixer/refused', before)).map(i => i.reason)).toEqual([expect.stringContaining('done/turn/fixer/refused.lines #1: "You\'ll remember" explains the game')]);
+    expect(issues(good)).toEqual([]); // Sky's words (brief 102): "Of course. Forget I asked." and the rest
     const at12 = loadShortBriefs(root, 12).find(b => b.id === 'bark/done')!;
     expect(issues(today(at12), g12, at12)).toEqual([]); // a /12 run is checked as it ran
     const q = familyOf('questioned/waitress/gives');
@@ -82,10 +85,11 @@ describe('guide /13: nobody explains the game', () => {
     expect(p).toContain('These fail: they explain the game'); expect(p).toContain('Sky kept these: the standard.'); expect(p).not.toContain('These fail (lines in today\'s text.json that the old bar let through)');
     expect(p).toContain('Voice sheet:'); expect(p).toContain('remembering a face, coming back, reporting it');
     const live = new Map(rows.map(r => [barkKey(r as never), r]));
-    for (const x of [...bar.kept, ...bar.fail, ...bar.pass].filter(x => x.key !== 'sky')) expect(live.get(x.key)?.lines, x.key).toContain(x.line);
+    for (const x of [...bar.kept, ...bar.fail, ...bar.pass].filter(x => x.key !== 'sky')) expect(live.has(x.key), x.key).toBe(true); // the failing lines are being rewritten (brief 102)
+    for (const x of bar.kept) expect(live.get(x.key)?.lines, x.key).toContain(x.line); // Sky's standard stays word for word
     for (const x of [...bar.kept, ...bar.pass]) expect(speaks(live.get(x.key)!), x.key).toBe(true);
   });
-  test('a /13 run is not accepted on a 9 for NATURAL, waits for Sky before it applies, and rebuilds from its archive (which holds the bar)', async () => {
+  test('a /13 run is not accepted on a 9 for NATURAL, applies after Sky\'s yes (a /12 bark run never does), and rebuilds from its archive (which holds the bar)', async () => {
     const f = familyOf('done/turn/fixer/refused'), good = today(f), ten = Object.fromEntries(BARK_RULES_12.map(r => [r, 10])) as ShortEvaluation12['scores'];
     const fixed = edit(good, 'done/turn/fixer/refused', ['Of course. Forget I asked.', 'Then we\'ll say no more about it.', 'That\'s all right. I won\'t keep you.']);
     const outputs: unknown[] = [fixed, { scores: { ...ten, NATURAL: 9 }, score: 10, reason: 'A line still reads the rule out.', findings: [] }, fixed, { scores: ten, score: 10, reason: 'People talking.', findings: [] }];
@@ -96,30 +100,34 @@ describe('guide /13: nobody explains the game', () => {
     expect([r.status, r.rounds.length]).toEqual(['ACCEPTED', 2]);
     expect(evidence.sources.some(s => s.file === NATURAL_BAR)).toBe(true);
     expect((await verifyShort(r, root, store)).errors).toEqual([]);
-    expect(waitsForSky({ brief: { id: f.id, kind: 'bark' }, guide: g13 } as unknown as ShortResult)).toBe(true);
+    expect(waitsForSky({ brief: { id: f.id, kind: 'bark' }, guide: g13 } as unknown as ShortResult)).toBe(false); // Sky 2026-11-08: "yes - rewrites are much better"
+    expect(waitsForSky({ brief: { id: 'bark/done', kind: 'bark' }, guide: g12 } as unknown as ShortResult)).toBe(true); // /12's agents' voices: Sky quieted them
   });
 });
 
 describe('Sky\'s sample (briefs/102/fable/sample.json)', () => {
   const sample = JSON.parse(readFileSync(join(root, 'briefs/102/fable/sample.json'), 'utf8')) as { rows: { key: string; where: string; before: string[]; after: string[] }[] };
-  test('about twenty, each "before" is today\'s, and every "after" passes the /13 code checks where it would go', () => {
+  test('Sky said yes (2026-11-08): every "after" is in text.json in place of its "before", each row marked as Sky\'s words, and passes the /13 code checks', () => {
     expect(sample.rows.length).toBeGreaterThanOrEqual(18); expect(sample.rows.length).toBeLessThanOrEqual(24);
     const all = sample.rows.flatMap(r => r.after.filter(l => !r.before.includes(l)));
     expect(new Set(all).size).toBe(all.length);
     for (const r of sample.rows) {
       for (const l of r.after) expect(l, r.key).not.toMatch(FORETELLS);
       if (r.where === 'row') {
-        const f = familyOf(r.key), it = f.items.find(i => i.key === r.key)!;
-        expect(it.current.lines, r.key).toEqual(r.before);
+        const f = familyOf(r.key), it = f.items.find(i => i.key === r.key)!, row = rows.find(x => barkKey(x as never) === r.key)!;
+        expect(it.current.lines, r.key).toEqual(r.after); expect(row.sky, r.key).toStartWith(SKY_WORDS);
         expect(r.after.length, r.key).toBe(it.fields[0]!.count);
-        expect(checkShort(f, edit(today(f), r.key, r.after), g13, { dialogue: text.dialogue }).map(i => i.reason).filter(x => x.startsWith(`${r.key}.`) || x.startsWith(`${r.key}:`)), r.key).toEqual([]);
-        for (const l of r.after.filter(x => !r.before.includes(x))) expect(rows.some(x => x.lines.includes(l)), `${r.key}: "${l}" is another row's`).toBe(false);
+        expect(checkShort(f, today(f), g13, { dialogue: text.dialogue }).map(i => i.reason).filter(x => x.startsWith(`${r.key}.`) || x.startsWith(`${r.key}:`)), r.key).toEqual([]);
+        for (const l of r.after) expect(rows.filter(x => x.lines.includes(l)).length, `${r.key}: "${l}" is in one row`).toBe(1);
       } else if (r.where === 'scene') {
-        for (const l of r.before) expect(text.scenes.items.some((s: { variants: { beats: { line?: string }[] }[] }) => s.variants.some(v => v.beats.some(b => b.line === l))), l).toBe(true);
+        const has = (l: string) => text.scenes.items.some((s: { variants: { beats: { line?: string }[] }[] }) => s.variants.some(v => v.beats.some(b => b.line === l)));
+        for (const l of r.before) expect(has(l), l).toBe(false);
+        for (const l of r.after) expect(has(l), l).toBe(true);
         for (const l of r.after) { expect(wordCount(l), l).toBeLessThanOrEqual(12); expect(l.length, l).toBeLessThanOrEqual(80); }
       } else {
         const c = text.scenes.conversations.items.find((x: { id: string }) => x.id === r.key.split('/')[1])!;
-        for (const l of r.before) expect(JSON.stringify(c), l).toContain(JSON.stringify(l));
+        for (const l of r.before) expect(JSON.stringify(c), l).not.toContain(JSON.stringify(l));
+        for (const l of r.after) expect(JSON.stringify(c), l).toContain(JSON.stringify(l));
         for (const l of r.after) { expect(wordCount(l)).toBeLessThanOrEqual(25); expect(l.length).toBeLessThanOrEqual(160); expect(sentenceCount(l)).toBeLessThanOrEqual(2); expect(questionCount(l)).toBeLessThanOrEqual(1); }
       }
     }

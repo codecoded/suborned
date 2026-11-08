@@ -1878,8 +1878,8 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
     const h = t.hints.items.H19!;
     expect(h.line).toMatch(/standing still or running/); expect(h.short).toBe('Walk, or leave its sight.');
     expect(JSON.stringify(h)).not.toMatch(/Keep moving/);
-    // the patrol's phrase is "noted": a first sighting is a note, and only a long run in sight is reported
-    expect(t.tone.voices.patrol).toMatch(/Running is noted/);
+    // the patrol's phrases are the city's regulations, never an AI's words (brief 102, Sky 2026-11-08, on "Running is noted.": "that noted is AI sounding"); only a long run in sight is reported
+    expect(t.tone.voices.patrol).toMatch(/Walking is encouraged/); expect(t.tone.voices.patrol).not.toMatch(/Running is noted/);
     expect(t.dialogue.filter((e) => e.event === 'run-seen').flatMap((e) => e.lines).join(' ')).not.toMatch(/reported/);
     expect(t.silentLogs['attention.noticed']).toMatch(/runner/);
     // the price line of a run keeps name and eye: no Alert field (and since brief 101 no time)

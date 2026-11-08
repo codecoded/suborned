@@ -1,0 +1,30 @@
+{
+ "schema": "suborned.natural-hand/1",
+ "status": "In text.json (Fable, 2026-11-08, brief 102's sweep). `by: sky` lines are Sky's yes to Fable's sample (\"yes - rewrites are much better\"); `by: fable` lines are the sweep's hand edits to the same bar, for Sky's read on briefs/102/fable/sweep.html. The scenes and conversations are not in the style loop's families, so these have no loop score.",
+ "edits": [
+  { "where": "scenes.items", "scenes": [17, 18, 19, 20, 21, 22, 23], "variant": 0, "speaker": "fixer", "before": "Could you do me a small favour? I can't pay.", "after": "Could you do me a small favour? It's nothing much.", "by": "sky", "kind": "rule",
+    "why": "\"I can't pay\" reads out what Ask means. Nobody asking a favour says so." },
+  { "where": "scenes.items", "scenes": [45, 46, 47, 52, 53, 57, 58, 59, 68, 69], "variant": 0, "speaker": "driver", "before": "Yes? Ask me straight and I'll listen.", "after": "Yes? Be quick, I'm waiting on the Councillor.", "by": "fable", "kind": "next",
+    "why": "His opener told the player how to talk to him. Now he's a driver on duty, short with a stranger; the cards say what an Ask is." },
+  { "where": "scenes.items", "scenes": [73, 74], "variant": 1, "speaker": "fixer", "before": "A small favour, officer. Free of charge.", "after": "Only a small favour, officer. Hear me out.", "by": "fable", "kind": "rule",
+    "why": "\"Free of charge\" answered his joke by naming the Ask's price. She asks, as a person would." },
+  { "where": "scenes.items", "scenes": [2], "variant": 0, "speaker": "guard", "before": "The patrol keeps to the yard. Nothing here for minutes.", "after": "Quiet enough. The patrol's off round the yard.", "by": "fable", "kind": "rule",
+    "why": "\"Nothing here for minutes\" timed the patrol for the player. He says what he sees; the Watch's chip carries the rounds." },
+  { "where": "scenes.items", "scenes": [2], "variant": 1, "speaker": "guard", "before": "Five minutes. Then back on the steps.", "after": "Just the one. Then back on the steps.", "by": "fable", "kind": "rule",
+    "why": "Not in the offenders list: found on the way. A number in a person's mouth (Sky's rule on numbers in play), timing his break. Just the one coffee says he won't be long without a clock." },
+  { "where": "scenes.items", "scenes": [91], "variant": 1, "speaker": "clerk", "before": "Mind the patrol, if you go round the back.", "after": "Let's hope it stays that way.", "by": "fable", "kind": "rule",
+    "why": "A clerk warning the guard about his own patrol was the player's tip in a clerk's mouth. Now they talk about the quiet day, which the player knows won't last." },
+  { "where": "scenes.items", "scenes": [91], "variant": 1, "speaker": "guard", "before": "I know. It sweeps the yard.", "after": "It will, while I'm on it.", "by": "fable", "kind": "rule",
+    "why": "He explained the patrol's rounds. Now he's a guard sure of his door." },
+  { "where": "scenes.items", "scenes": [92], "variant": 0, "speaker": "guard", "before": "Quiet on the door. The patrol is out in the yard.", "after": "Not here, Inez. People talk.", "by": "fable", "kind": "rule",
+    "why": "He told Inez, and the player, why the door was safe to leave. Now he's a man seeing someone in secret, uneasy to be seen with her." },
+  { "where": "scenes.items", "scenes": [92], "variant": 0, "speaker": "waitress", "before": "Then stay. A few minutes.", "after": "Let them talk. Stay a while.", "by": "fable", "kind": "flow",
+    "why": "Her answer to his new line, so the pair still talk to each other; no time in her mouth." },
+  { "where": "conversations", "ids": ["help-inez-2", "help-inez-2-known"], "part": "beats", "speaker": "waitress", "before": "Then I'm with you. I watch that square all day, and if trouble's coming for you, I'll find a way to warn you.", "after": "Then I'm with you. Whatever this is, please be careful.", "by": "sky", "kind": "forecast",
+    "why": "It announced a feature: helped, she warns the cell at the car. Unannounced, her shout of \"Careful! Men by the car!\" comes as a surprise that her kindness earned." },
+  { "where": "conversations", "ids": ["call-inez-pressure"], "part": "street", "speaker": "guard", "before": "Then my door's standing empty. Stay here, Inez.", "after": "Stay inside, Inez. I'm getting back to that door.", "by": "fable", "kind": "rule",
+    "why": "\"My door's standing empty\" spelled out the consequence. He says what he means to do now, and does it: he runs back to his door." },
+  { "where": "conversations", "ids": ["pay-driver"], "part": "beats", "speaker": "driver", "before": "The east yard. I'll give you a couple of minutes there, and then I drive on.", "after": "The east yard. Fine, but I'll keep the engine running.", "by": "fable", "kind": "rule", "rejected": true,
+    "why": "One of the four lines Sky rejected (\"none stays as it is\"): it read out the bay's window. A nervous driver's own condition, a car man's detail; the Learned chip carries the wait." }
+ ]
+}

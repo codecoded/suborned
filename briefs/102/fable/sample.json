@@ -1,6 +1,6 @@
 {
   "schema": "suborned.natural-sample/1",
-  "status": "For Sky's yes (brief 102, Fable 2026-11-08). Nothing here is in text.json: the sweep applies only after the yes.",
+  "status": "Sky said yes on 2026-11-08 (\"yes - rewrites are much better\"). In text.json as Sky's words: the 20 rows carry `sky` (no run replaces them), the Ask scenes and the two full-Help conversations carry the new lines (briefs/102/fable/hand.json).",
   "rows": [
     { "key": "done/turn/fixer/refused", "where": "row", "kind": "remember", "who": "The Fixer, to the person's face after a no",
       "before": ["You said no. You'll remember me.", "All right. Next time, we'll have to offer more.", "No, then. You'll want more next time."],

@@ -1,0 +1,20 @@
+{
+ "schema": "suborned.ai-words/1",
+ "status": "Guide /14's source (Fable, 2026-11-08, brief 102's sweep): the AI-sounding words, Sky's four rejected lines and the lines of today's text.json that carry such a word. Older guides never read it.",
+ "why": "Sky 2026-11-08, on the four lines Fable kept on purpose: \"not into those e.g. 'Citizen. Walking is encouraged. Running is noted.' - that noted is AI sounding\". None of the four stays as it is, and AI-sounding words fail the bar: no person in the street says them.",
+ "words": ["noted", "understood", "proceeding", "acknowledged", "affirmative", "rest assured"],
+ "kind": ["copy that", "confirmed", "logged", "standing by", "duly", "as requested", "be advised", "negative", "processing", "compliance"],
+ "rejected": [
+  { "where": "run-seen/patrol", "line": "Citizen. Walking is encouraged. Running is noted.", "why": "Sky's own example: \"that noted is AI sounding\". A recorded 1950s announcement would ask the citizen to walk; it would never log him." },
+  { "where": "questioned/waitress/gives", "line": "I remember them, officer. Here, let me tell you what happened.", "why": "Kept on purpose (questioned, so remembering was the answer); Sky: none of the four stays. It still says the game's word, remember, for the player." },
+  { "where": "alarm/security", "line": "Response unit moving. Cordon forming.", "why": "Kept on purpose as police radio; Sky: none of the four stays. It is a procedure read out, not policemen talking." },
+  { "where": "conv:pay-driver", "line": "The east yard. I'll give you a couple of minutes there, and then I drive on.", "why": "The driver in the Pay conversation, kept on purpose as his own terms; Sky: none of the four stays. It reads out the bay's window." }
+ ],
+ "fail": [
+  { "key": "run-seen/patrol", "line": "Running noted. Please walk.", "why": "NATURAL: \"noted\" is a computer logging an event. The patrol is a 1950s machine with a recorded voice." },
+  { "key": "patrol-alarm/patrol", "line": "Alarm noted. Proceeding to the scene.", "why": "NATURAL: two of Sky's words in four. A clockwork patrol says what it wants of the citizen, never a status." },
+  { "key": "patrol-rerouted/patrol", "line": "New orders received. Proceeding.", "why": "NATURAL: a robot from a later century's films. The machine's phrases are polite city regulations, not acknowledgements." },
+  { "key": "takedown-seen/patrol", "line": "A disturbance has been noted. Please remain still.", "why": "NATURAL: \"has been noted\" is the form's voice." },
+  { "key": "reply/ask/driver/suspicious/loyal", "line": "I drive the Councillor. Nothing else. Noted.", "why": "NATURAL: a driver doesn't stamp his refusal. \"Nothing else.\" already ends it." }
+ ]
+}

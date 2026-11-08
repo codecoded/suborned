@@ -22,7 +22,7 @@ export const Book = z.strictObject({
     filters: z.array(z.strictObject({ id: z.enum(['all', 'crucial', 'learned', 'turned', 'city']), word })).min(1) }).optional().describe('the Journal: the full log'),
   key: z.strictObject({ rule: z.string().min(1), word, stop: word.optional() }).optional().describe('the HUD\'s Book button and the fire line\'s Stop button'),
   feed: z.strictObject({ rule: z.string().min(1), of: z.string().includes('{n}'),
-    cards: z.record(z.enum(['seal', 'police', 'down', 'for-car', 'alert', 'seen', 'target-out', 'rival-car', 'turned', 'refused', 'body', 'vale-out', 'lent', 'lookout', 'boxed', 'hurt-carry', 'hurt']),
+    cards: z.record(z.enum(['seal', 'police', 'down', 'for-car', 'alert', 'seen', 'target-out', 'rival-car', 'turned', 'refused', 'body', 'vale-out', 'lent', 'lookout', 'boxed', 'hurt-carry', 'hurt', 'rivals-follow']),
       z.strictObject({ title: z.string().min(1).max(32), line: z.string().min(1).max(40).optional(), fixes: z.array(z.strictObject({ icon, word: z.string().min(1).max(20), agent: z.enum(['scout', 'fixer', 'tech', 'enforcer']).optional().describe('brief 096: a chip with an agent is a button: that agent selected and the card\'s person\'s ring opened (the lookout card)') })).max(3).optional() })) }).optional().describe('the slim feed\'s crucial cards, most urgent first'),
   heldGo: z.strictObject({ rule: z.string().min(1), heldBy: word, fix: z.string().min(1).max(60) }).optional().describe('Go on the car\'s ring while rivals hold it'),
   // brief 096, the lend and the rules round (engines 0.40.0-0.42.0): placeholders for Fable, each optional (HostBook.WordsLend.cs)

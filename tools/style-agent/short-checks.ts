@@ -2,6 +2,7 @@ import { Why, whyProblems } from '../../contracts/missions/handover/why.schema.t
 import { shortGuideVersion, type Field, type Form, type ShortBrief, type ShortGuide, type ShortIssue, type ShortSet } from './short-types';
 import { barkKey } from './short-barks';
 import { FORETELLS } from './short-natural';
+import { aiWords } from './short-natural14';
 
 /** The checks code can make for certain on a short-line family (Keel's side of the review); meaning, truth and voice are Motive's. */
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -25,7 +26,7 @@ const AS_12: Partial<Record<ShortIssue['rule'], ShortIssue['rule']>> = { USEFUL:
 export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, base: { why?: unknown; dialogue?: unknown } = {}): ShortIssue[] {
   const v12 = brief.kind === 'bark' && shortGuideVersion(guide) >= 12, repeat = v12 ? 'VARIANTS' as const : 'SHORT' as const;
   const bad: ShortIssue[] = [], flag = (rule: ShortIssue['rule'], reason: string) => bad.push({ rule: v12 ? AS_12[rule] ?? rule : rule, reason });
-  const items = new Map(brief.items.map(i => [i.key, i]));
+  const items = new Map(brief.items.map(i => [i.key, i])), ai = brief.kind === 'bark' && guide.ai ? aiWords(guide.ai) : null;
   const seen = new Map<string, string>();
   // guide /5: the other rows of the table, as the text the run read has them (a line is never in two rows: text.test.ts)
   if (brief.kind === 'bark' && shortGuideVersion(guide) >= 5 && Array.isArray(base.dialogue))
@@ -38,7 +39,8 @@ export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, 
     if (x.cut) {
       if (it.stays) flag('USEFUL', `${x.key}: may not be cut: ${it.stays}`);
       if (!x.reason.trim()) flag('USEFUL', `${x.key}: a cut needs its reason in one sentence.`);
-      if (x.fields.length) flag('SHORT', `${x.key}: a cut item has no lines.`);
+      // guide /16: a field with no lines is no lines (the writer returned `fields: [{ lines: [] }]` four rounds running, and the check's words read as a fact, not a fix)
+      if (shortGuideVersion(guide) >= 16 ? x.fields.some(f => f.lines.length) : x.fields.length) flag('SHORT', shortGuideVersion(guide) >= 16 ? `${x.key}: a cut item says no line; return its fields with no lines.` : `${x.key}: a cut item has no lines.`);
       continue;
     }
     for (const id of x.fields.map(f => f.id).filter((d, i, a) => a.indexOf(d) !== i)) flag('SHORT', `${x.key}: field ${id} written twice.`);
@@ -73,6 +75,9 @@ export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, 
         // guide /13 (brief 102): the family Sky named ("'I will remember you.' lines etc - so unnatural"), whoever says it; a questioned row answers an investigator
         const told = v12 && shortGuideVersion(guide) >= 13 && !x.key.startsWith('questioned/') ? l.match(FORETELLS) : null;
         if (told) flag('NATURAL', `${at}: "${told[0]}" explains the game (brief 102): say what this person would say now; the world and the HUD show what follows.`);
+        // guide /14: Sky's AI-sounding words ("that noted is AI sounding"), whoever says them
+        const machine = ai ? l.match(ai) : null;
+        if (machine) flag('NATURAL', `${at}: "${machine[0]}" is an AI-sounding word (Sky 2026-11-08: "that noted is AI sounding"); no person, policeman or clockwork patrol in this world says it.`);
         // guide /12: nor in the cell's (Sky's rule on numbers in play: the game draws a key event's time, and no act's)
         if (v12 && /^(scout|fixer|tech|enforcer):/.test(it.speaker ?? '') && /\d/.test(l)) flag('MECHANICS', `${at}: no digits in a line: the game draws its own numbers, and only a key event's (Sky's rule on numbers in play).`);
         if ((brief.kind === 'debrief' || brief.kind === 'label') && /[a-z]+-[a-z]+-[a-z]+|\bhash\b|replay|\btick\b|operative|engine|ledger/i.test(l)) flag('PLAIN', `${at}: an engine word; the ${brief.kind === 'label' ? 'HUD' : 'page'} uses the player's words (text.test.ts).`);

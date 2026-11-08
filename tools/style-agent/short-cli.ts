@@ -1,16 +1,17 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { relative, resolve } from 'node:path';
+import { basename, relative, resolve } from 'node:path';
 import { root } from '../rag/config';
 import { defaults, validateLimits } from './core';
 import { archiveEvidence, readRun, RUN_FILE, writeRun } from './evidence';
 import { TEXT_FILE } from './guide';
-import { liveCaller } from './live';
+import { liveSetup } from './live';
 import { loadShortBriefs } from './short-briefs';
 import { SHORT_RUNS, verifyShort } from './short-evidence';
 import { loadShortGuide } from './short-guide';
 import { runShort } from './short-loop';
-import { shortGuideVersion, type ShortBrief, type ShortResult } from './short-types';
+import { sameRubric, shortGuideVersion, type ShortBrief, type ShortContinue, type ShortResult } from './short-types';
+import { equal } from './evidence';
 import { BARKS_12_APPLY } from './short-voice';
 
 const esc = (v: unknown) => String(v).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -23,8 +24,8 @@ export function shortRunHtml(r: ShortResult): string {
       return `<tr><td><code>${esc(it.key)}</code></td><td>${Object.values(b?.current ?? {}).flat().map(esc).join('<br>')}</td><td>${it.cut ? `<i>cut: ${esc(it.reason)}</i>` : it.fields.map(f => f.lines.map(esc).join('<br>')).join('<br>')}</td></tr>`; }).join('')}</table>`).join('');
   return `<!doctype html><html lang="en"><meta charset="utf-8"><title>${esc(r.brief.id)}</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:1180px;margin:0 auto;padding:32px;color:#17302f;background:#f7f4ec}
 table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #cbc6c3;padding:6px;text-align:left;vertical-align:top}th{background:#d9ebe5}code{font-size:12px}</style>
-<h1>${esc(r.brief.id)}: ${esc(r.brief.title)}</h1><p><b>${esc(r.status)}</b> · ${esc(r.stopReason)} · ${esc(r.mode)}${r.authorization ? ` · ${esc(r.authorization.model)}` : ''} · ${r.calls.length} calls · ${tokens(r)} tokens</p>${rounds}
-<p><small>run.json.zst holds every prompt, Codex transcript, score and revision: <code>bun run style:replay</code>, <code>bun run style:verify</code>.</small></p></html>`;
+<h1>${esc(r.brief.id)}: ${esc(r.brief.title)}</h1><p><b>${esc(r.status)}</b> · ${esc(r.stopReason)} · ${esc(r.mode)}${r.authorization ? ` · ${esc(r.authorization.model)}${r.authorization.judge ? `, judged by ${esc(r.authorization.judge.model)}` : ''}` : ''} · ${r.calls.length} calls · ${tokens(r)} tokens</p>${rounds}
+<p><small>run.json.zst holds every prompt, transcript (Codex, and Claude for a Claude judge), score and revision: <code>bun run style:replay</code>, <code>bun run style:verify</code>.</small></p></html>`;
 }
 
 /** Every saved short run that rebuilds from its archive; a run that doesn't is skipped and said. */
@@ -42,8 +43,9 @@ export async function savedShortRuns(): Promise<{ run: ShortResult; path: string
 }
 /** Guide /4's rubric is the one the lines are written to (/5 adds a check); a run under /1–/3 stays on record, superseded. */
 const CURRENT_RULES = 4;
-/** A /12 or later bark run waits on Sky's yes (brief 099 voices; at /13, brief 102's sample, briefs/102/fable/index.html): until then its family keeps the lines of its last run before /12. */
-export const waitsForSky = (r: ShortResult) => r.brief.kind === 'bark' && shortGuideVersion(r.guide) >= 12 && !BARKS_12_APPLY;
+/** A /12 bark run never applies: Sky's answer to its sample was to quiet the agents (brief 102: "Maybe even drop them?"). From /13 bark runs apply: Sky said yes to the /13
+ *  sample on 2026-11-08 ("yes - rewrites are much better", briefs/102/fable/index.html), and the sweep runs to that bar at /14. */
+export const waitsForSky = (r: ShortResult) => r.brief.kind === 'bark' && shortGuideVersion(r.guide) === 12 && !BARKS_12_APPLY;
 /** The run a family's lines come from: its latest accepted live run under the current rubric. `skip` leaves families out (today's lines stay). */
 export async function acceptedByFamily(skip = new Set<string>()): Promise<Map<string, { run: ShortResult; path: string }>> {
   const best = new Map<string, { run: ShortResult; path: string }>();
@@ -51,24 +53,34 @@ export async function acceptedByFamily(skip = new Set<string>()): Promise<Map<st
   return best;
 }
 
-export async function liveShort(options: Map<string, string>, briefs: ShortBrief[], concurrency = 1) {
+/** For `chain --short --continue` (brief 102): each family's latest live run that ran out of revisions on this very rubric and family, to pick up from its last round. */
+export async function continuable(briefs: ShortBrief[]): Promise<Map<string, ShortContinue>> {
+  const guide = loadShortGuide(root), out = new Map<string, ShortContinue>();
+  for (const { run, path } of await savedShortRuns()) {
+    const b = briefs.find(x => x.id === run.brief.id);
+    if (!b || run.mode !== 'live' || run.status !== 'INCOMPLETE' || !run.rounds.length || !run.stopReason.startsWith('Revision limit') || !(equal(run.guide, guide) || sameRubric(run.guide, guide)) || !equal(run.brief, b)) continue;
+    out.set(b.id, { run: basename(path), ...run.rounds.at(-1)! }); // the latest wins (the runs are in time order)
+  }
+  return out;
+}
+
+export async function liveShort(options: Map<string, string>, briefs: ShortBrief[], concurrency = 1, continues = new Map<string, ShortContinue>()) {
   const limits = { ...defaults, maxCalls: Number(options.get('--max-calls')), maxTokens: Number(options.get('--max-tokens')),
     maxRevisions: options.has('--max-revisions') ? Number(options.get('--max-revisions')) : defaults.maxRevisions };
   validateLimits(limits);
   const probe = Bun.spawnSync([process.env.CODEX_BIN ?? 'codex', '--version'], { stdout: 'pipe', stderr: 'pipe' });
   if (probe.exitCode !== 0) throw new Error('Codex CLI not found: install it and sign in with ChatGPT (codex login)');
-  const invoke = liveCaller(options.get('--model') ?? '', options.get('--approved-by') ?? '');
-  const guide = loadShortGuide(root), evidence = archiveEvidence(root, guide), text = JSON.parse(await Bun.file(resolve(root, TEXT_FILE)).text());
-  const authorization = { provider: 'codex' as const, model: options.get('--model')!, approvedBy: options.get('--approved-by')! };
+  const { invoke, authorization, roles } = liveSetup(options);
+  const guide = loadShortGuide(root), evidence = archiveEvidence(root, guide, undefined, roles), text = JSON.parse(await Bun.file(resolve(root, TEXT_FILE)).text());
   const queue = [...briefs], results: ShortResult[] = [];
   const worker = async () => {
     for (let brief = queue.shift(); brief; brief = queue.shift()) {
       const dir = resolve(root, SHORT_RUNS, `${new Date().toISOString().replaceAll(':', '-')}-${brief.id.replaceAll('/', '-')}`);
       await mkdir(dir, { recursive: true });
       const checkpoint = async (r: ShortResult) => { writeRun(dir, r); await writeFile(resolve(dir, 'index.html'), shortRunHtml(r)); };
-      const r = await runShort({ guide, brief, invoke, limits, mode: 'live', checkpoint, evidence, authorization, base: { why: text.why, dialogue: text.dialogue } });
+      const r = await runShort({ guide, brief, invoke, limits, mode: 'live', checkpoint, evidence, authorization, base: { why: text.why, dialogue: text.dialogue }, continues: continues.get(brief.id) });
       results.push(r);
-      console.log(JSON.stringify({ family: r.brief.id, status: r.status, stopReason: r.stopReason, scores: r.rounds.map(x => x.evaluation.score),
+      console.log(JSON.stringify({ family: r.brief.id, ...(r.continues ? { continues: r.continues.run, from: r.continues.evaluation.score } : {}), status: r.status, stopReason: r.stopReason, scores: r.rounds.map(x => x.evaluation.score),
         findings: r.rounds.map(x => x.evaluation.findings.length + x.hardIssues.length), calls: r.calls.length, tokens: tokens(r), run: relative(root, dir) }));
     }
   };
@@ -86,9 +98,10 @@ export async function replayShort(file: string) {
   const v = await verifyShort(readRun(file), root);
   if (!v.ok) throw new Error(`Not a valid run: ${v.errors.join('; ')}`);
   const r = v.result!, say = (s = '') => console.log(s);
-  say(`${r.brief.id} · ${r.brief.items.length} items · ${r.mode}${r.authorization ? `, ${r.authorization.model}` : ''}`);
+  say(`${r.brief.id} · ${r.brief.items.length} items · ${r.mode}${r.authorization ? `, ${r.authorization.model}${r.authorization.judge ? `, judged by ${r.authorization.judge.model}` : ''}` : ''}`);
+  if (r.continues) say(`Continues ${r.continues.run}, from its last round (SCORE ${r.continues.evaluation.score}/10)`);
   r.rounds.forEach((round, i) => {
-    say(); say(i === 0 ? '▶ Fable writes the first draft' : '▶ Fable revises from Motive\'s reasons');
+    say(); say(i === 0 && !r.continues ? '▶ Fable writes the first draft' : '▶ Fable revises from Motive\'s reasons');
     for (const it of round.set.items) say(`  ${it.key.padEnd(40)} ${it.cut ? `CUT: ${it.reason}` : it.fields.map(f => f.lines.join(' | ')).join(' ‖ ')}`);
     say(); say(`▶ Motive scores it: SCORE ${round.evaluation.score}/10`); say(`  REASON: ${round.evaluation.reason}`);
     for (const f of round.evaluation.findings) say(`  - ${f.rule} ${f.key}${f.quote ? ` "${f.quote}"` : ''}: ${f.reason}\n    fix: ${f.fix}`);
