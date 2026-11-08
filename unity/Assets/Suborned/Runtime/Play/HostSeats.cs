@@ -50,23 +50,41 @@ namespace Suborned.Play
             {
                 if (g.Tick < w.From[i] || g.Tick >= w.To[i]) continue;
                 if (!w.Out[i] || !host.CafeSeats.Chairs.TryGetValue(AltChairOf(key) ?? w.Place[i], out var ch)) return null; // brief 098 L9: a chair taken instead of their own (BodyMove.AltChair)
-                var at = frame.World(ch.at); var d = at - drawn; d.y = 0f; if (d.magnitude > 0.35f) return null;
-                var fw = frame.World(new Pt(ch.at.X + ch.face.X, ch.at.Y + ch.face.Y)) - at;
-                return (new Vector3(at.x, drawn.y, at.z), Mathf.Atan2(fw.x, fw.z) * Mathf.Rad2Deg, w.From[i], w.To[i]);
+                return OnChair(ch, drawn) is { } c ? (c.at, c.yaw, w.From[i], w.To[i]) : null;
             }
             return null;
         }
 
+        /// <summary>Engine 0.49.0 (brief 098, Sky 2026-11-08: "Sit them down if they're listening, they're just regular people"): an operative on his chair now, drawn as SeatNow
+        /// draws a customer, else null. The engine walks him in (the walk's last step crosses the table's ground at a walk) and says when he sits (Game.SeatedAt); drawn at rest on
+        /// it, he sits facing the table until his next order walks him off. The walk in and out is the engine's: no slide. Was (0.39.0 to 0.48.0) ListenSeat: the engine held him
+        /// about a metre off the chair and the view slid him on in 0.8 s.</summary>
+        (Vector3 at, float yaw, int from, int to)? OpSeat(string key, Vector3 drawn, Game g)
+        {
+            if (host.CafeSeats == null || !key.StartsWith("op/") || g.SeatedAt(key[3..]) is not { } s || !host.CafeSeats.Chairs.TryGetValue(s.chair, out var ch)) return null;
+            return OnChair(ch, drawn) is { } c ? (c.at, c.yaw, 0, int.MaxValue) : null; // seated until he stands: his next order's walk
+        }
+
+        /// <summary>A chair's point at the drawn height and the way it faces (to the table), when the figure is drawn within 0.35 m of it (the engine walks them there); else null.</summary>
+        (Vector3 at, float yaw)? OnChair((Pt at, Pt face) ch, Vector3 drawn)
+        {
+            var at = frame.World(ch.at); var d = at - drawn; d.y = 0f; if (d.magnitude > 0.35f) return null;
+            var fw = frame.World(new Pt(ch.at.X + ch.face.X, ch.at.Y + ch.face.Y)) - at;
+            return (new Vector3(at.x, drawn.y, at.z), Mathf.Atan2(fw.x, fw.z) * Mathf.Rad2Deg);
+        }
+        /// <summary>For the proofs and the shots: the view is drawn seated now (a customer on a chair, an operative in his).</summary>
+        public bool SeatedDrawn(string key) => figs.TryGetValue(key, out var f) && f.seated;
+
         /// <summary>Forma's seated clips (tools/figures/seat.json): stand_to_sit for its 2.3 s from the tick the figure is first drawn on the
         /// chair after walking to it, then one of three loops picked by the figure's phase (sit, sit_alt, sit_talk, so a table does not move in step), and
         /// sit_to_stand over the last 2.3 s of the span, ending standing over the seat as the engine walks them off. Ticks, not frames: pause
-        /// and speed hold it, and the same run draws the same.</summary>
-        string SeatState(Fig f, int from, int to, Game g)
+        /// and speed hold it, and the same run draws the same. `alone`: an operative in his chair, who takes sit or sit_alt, never sit_talk's gestures.</summary>
+        string SeatState(Fig f, int from, int to, Game g, bool alone = false)
         {
             if (f.sitTick < 0 || f.sitTick > g.Tick) f.sitTick = f.state is "walk" or "walk_f" or "walk_old" or "run" ? g.Tick : g.Tick - SitTicks; // sits down only when walked there; seated at the opening or after a skip: already down
             if (SeatTransitions && Has(f, "sit_to_stand") && to - g.Tick <= SitTicks) return "sit_to_stand";
             if (SeatTransitions && Has(f, "stand_to_sit") && g.Tick - f.sitTick < SitTicks) return "stand_to_sit";
-            int i = (int)(f.phase * 3f) % 3; var loop = i == 1 ? "sit_alt" : i == 2 ? "sit_talk" : "sit";
+            int i = (int)(f.phase * 3f) % (alone ? 2 : 3); var loop = i == 1 ? "sit_alt" : i == 2 ? "sit_talk" : "sit"; // brief 098: an operative sits alone (a listener), so never the talking loop's gestures
             return Has(f, loop) ? loop : "sit";
         }
         const int SitTicks = 23; // the clips' 2.3 s, in the engine's tenths

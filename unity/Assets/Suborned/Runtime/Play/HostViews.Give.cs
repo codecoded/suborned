@@ -6,7 +6,7 @@ namespace Suborned.Play
 {
     /// <summary>Brief 098 L9, the give and take as the host draws it (Keel, engine 0.47.0; briefs/098/keel/give-and-take.html, "What Latch must draw").
     /// Places need nothing new: the engine moves every body at its own pace, so the views draw CrowdPos as it is. Read once a tick from
-    /// Game.BodyMove (never hashed), for the city's people (the only ones it moves this way):
+    /// Game.BodyMove (never hashed), for the city's people and, since engine 0.49.0, an idle operative (making room only):
     ///  · squeezing past (SqueezeWith, SqueezeFacing): the figure turns side-on toward the way the engine faces it (across the gap, toward the other)
     ///    as it walks its way at the engine's 0.5 m/s on the walk clip's slowest stride. The turn is the figure's own yaw, SqueezeTurnDeg off its
     ///    walk: every figure imports with Optimize Game Objects (brief 069 A), so the spine is not a transform a pass after the clip could turn;
@@ -41,6 +41,14 @@ namespace Suborned.Play
                     { var d = frame.World(by.at) - th.to; d.y = 0f; if (d.sqrMagnitude > 0.04f) faces[key] = d.normalized; }
                 }
                 if (m.Replanned) { ReplanSeen.Add(key); if (m.AltChair != null) altChair[key] = m.AltChair; }
+            }
+            // engine 0.49.0 (Aster's reading of Sky's "they're just regular people", for Sky to confirm): an idle operative makes room as anyone does (Game.BodyIdle): the engine walks him
+            // aside and back at a walk, drawn from his place each tick (Set from op.Pos), so no snap; standing aside he faces the one passing, as a person of the city does
+            for (int k = 0; k < 4; k++)
+            {
+                if (g.BodyMove(Op.Name((OpId)k)) is not BodyMoveRead m || m.RoomFor == null) continue;
+                var key = OpKeys[k]; RoomSeen.Add(key);
+                if (g.BodyInfo(m.RoomFor) is { } by && things.TryGetValue(key, out var th)) { var d = frame.World(by.at) - th.to; d.y = 0f; if (d.sqrMagnitude > 0.04f) faces[key] = d.normalized; }
             }
         }
 

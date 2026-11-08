@@ -27,9 +27,9 @@ namespace Suborned.World.Play
         public sealed class Miss { public string Route = "", At = "", Moment = "", Target = "", Selection = "", Where = "", Fault = ""; }
         public sealed class Result { public readonly List<Miss> Misses = new(); public readonly SortedDictionary<string, int> Kinds = new(); public int Panels, Hovers; public readonly List<string> Moments = new(); public double Ms; }
 
-        /// <summary>The routes swept: the front door with a kill, a body and the patrol rerouted; the loud fight; route B (turn, listen, take);
-        /// route A (a turned contact called).</summary>
-        public static readonly string[] Routes = { "route-g-kill-board", "loud-fight", "route-b-board", "route-a-board" };
+        /// <summary>The routes swept: the front door with a kill, a body and the patrol rerouted; the loud fight; route B (turn, listen, take, the lent car's Go:
+        /// route-b, since brief 098's Waymark note: route-b-board's plan is retired and it has not reached the Take since engine 0.41); route A (a turned contact called).</summary>
+        public static readonly string[] Routes = { "route-g-kill-board", "loud-fight", "route-b", "route-a-board" };
         /// <summary>The target kinds every sweep must have opened the panel on at least once.</summary>
         public static readonly string[] MustCover = { "person:waitress", "person:driver", "person:guard", "person:councillor", "patrol", "camera", "rivals", "security", "car:official", "car:getaway", "door", "cabinet", "crowd", "body", "op" };
 

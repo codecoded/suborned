@@ -228,9 +228,9 @@ namespace Suborned.Play
 
             // ---- an agent down (items 29, 31)
             {
-                var pinKeep = HandoverHost.SeedPin; HandoverHost.SeedPin = 14; // brief 080: shots roll: seed 14 of this route is one where the Scout goes down (4:37, suborned-sim batch routes/loud-left-downed.json --seeds n); this section reads her body, not the roll
+                var pinKeep = HandoverHost.SeedPin; HandoverHost.SeedPin = 1; // brief 080: shots roll; this section reads her body, not the roll. Engine 0.50.0 (Latch): route G on seed 1 downs the Scout at 4:05.3 and the Fixer holds her at 4:08.3 (headless, out/scratch/latch/down-scan.txt); loud-left-downed (seed 14 until 0.48.0) now downs her only at 5:05 to 5:15, too close to its 5:17.1 seal for any carry
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; HandoverHost.SeedPin = pinKeep;
-                var g = h.Game; PlayUntil(h, Route("loud-left-downed"), () => g.Ops[0].Down, 5100); // engine 0.35.1 (one input, Waymark's re-record): the Scout goes down at her own tick, not 0.34's 4:47.6
+                var g = h.Game; PlayUntil(h, Route("route-g"), () => g.Ops[0].Down, 5100); // engine 0.35.1 (one input, Waymark's re-record): the Scout goes down at her own tick, not 0.34's 4:47.6
                 for (int i = 0; i < 60 && !g.Ops[0].Down && !g.Over; i++) h.RunTo(g.Tick + 1);
                 bool down = g.Ops[0].Down; string carRing = "", bodyRing = "", beside = "", carried = "", putDown = ""; bool scoutGives = true, carryTaken = false, carryingNow = false, laid = false, knob1 = false;
                 if (down && !g.Over)

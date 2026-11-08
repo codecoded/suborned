@@ -20,7 +20,8 @@ namespace Suborned.Play
             var mil = h.Views.Find(h.Views.ListenPartnerUp("waitress") ?? ""); float gap = mil ? Vector3.Distance(mil.position, inez.position) : 99f; var inezFace = Quaternion.Euler(0f, h.Views.FigureYaw("waitress") ?? 0f, 0f) * Vector3.forward; float toMil = mil ? Vector3.Angle(inezFace, mil.position - inez.position) : 180f; var scFace = Quaternion.Euler(0f, h.Views.FigureYaw("op/scout") ?? 0f, 0f) * Vector3.forward; var scTo = inez.position - sc.position; scTo.y = 0f; float scAt = Vector3.Angle(scFace, scTo);
             bool pick = false; foreach (var q in h.Pickables()) if (mil && q.T?.Key == mil.name) pick = true;
             row("r085partnerOut", mil && h.Views.ListenPartnerAlong >= 1f && gap < 1.8f && toMil < 30f && !pick, $"walked out in {took:0.0} s; {gap:0.00} m from Inez, Inez {toMil:0} deg off her, pickable {pick}; clip {h.Views.FigureClip(mil ? mil.name : "").Item1}");
-            row("r085scoutSideOn", scAt > 60f, $"{scAt:0} deg off looking at her, clip {h.Views.FigureClip("op/scout").Item1}, plate '{h.PlateWords(0)}'");
+            var chair = g.SeatedAt("scout"); bool seated = h.Views.SeatedDrawn("op/scout"); float chairOff = chair is { } ch0 && h.CafeSeats != null && h.CafeSeats.Chairs.TryGetValue(ch0.chair, out var cs) ? Mathf.Abs(Mathf.DeltaAngle(h.Views.FigureYaw("op/scout") ?? 0f, Mathf.Atan2(h.frame.Dir(cs.face).x, h.frame.Dir(cs.face).z) * Mathf.Rad2Deg)) : 180f;
+            row("r085scoutSideOn", chair != null ? seated && chairOff < 5f : scAt > 60f, chair != null ? $"seated in {chair.Value.chair} as a customer, facing the table ({chairOff:0} deg off the chair's way), {scAt:0} deg off looking at her; clip {h.Views.FigureClip("op/scout").Item1}" : $"standing, {scAt:0} deg off looking at her, clip {h.Views.FigureClip("op/scout").Item1}, plate '{h.PlateWords(0)}'"); // engine 0.49.0: seated, she faces the table as a customer does; standing, side on
         }
 
         /// <summary>The Scout not beside her (the routes still walk him to beside-inez): 4 m off, as the rule has him: the plate while he waits, and the shot frames the pair with him off to the side.</summary>
@@ -39,20 +40,34 @@ namespace Suborned.Play
             yield return EndScene(h); h.SetPaused(false); float t1 = Time.unscaledTime; while (h.Views.ListenPartnerAlong >= 0f && Time.unscaledTime - t1 < 16f) yield return null; row("r085partnerBack", h.Views.ListenPartnerAlong < 0f, $"gone in after {Time.unscaledTime - t1:0.0} s"); h.SetPaused(true);
         }
 
-        /// <summary>The chair, when the engine gives one (as LS-CHAIR finds it): he slides on and sits, by Forma's clips.</summary>
+        /// <summary>The chair (engine 0.49.0, brief 098: "Sit them down if they're listening"; sitting is the strong default): the engine walks her into the seat, the last step across the
+        /// table's ground at a walk, and sits her (Game.SeatedAt). Drawn, she walks that step (no slide, no jump: the figure never faster than a stride over a walk) and sits on the chair as
+        /// a customer does, facing the table, by Forma's clips (HostSeats.OpSeat).</summary>
         static IEnumerator ListenOnChair(HandoverHost h, string dir, List<string> log, System.Action<string, bool, string> row)
         {
             yield return Fresh(h, ConversationScenes.Never); var g = h.Game; string got = ""; h.Issue(new Order { Op = "scout", Do = "watch", Target = "waitress" }); for (int i = 0; i < 1500 && !g.PersonByRole("waitress").KRoutine; i++) h.RunTo(g.Tick + 5);
-            foreach (var name in h.CafeSeats.Chairs.Keys)
+            if (g.ListenSpotAhead("scout", "waitress") is { } a0 && a0.chair.Length > 0) { got = a0.chair; h.Issue(new Order { Op = "scout", Do = "listen", Target = "waitress" }); } // from where she watched: the strong default
+            else foreach (var name in h.CafeSeats.Chairs.Keys)
             {
                 var st = g.Walk.NearestFree(g.People2.Places.TryGetValue(name, out var pl) ? pl : default); if (!st.HasValue || g.Walk.Route(g.Ops[0].Pos, st.Value) == null) continue;
                 h.Issue(new Order { Op = "scout", Do = "move", Point = st.Value }); for (int i = 0; i < 900 && g.Ops[0].Walk != null; i++) h.RunTo(g.Tick + 1);
                 if (g.ListenSpotAhead("scout", "waitress") is { } a && a.chair.Length > 0) { got = a.chair; h.Issue(new Order { Op = "scout", Do = "listen", Target = "waitress" }); break; }
             }
             if (got.Length == 0) { row("r085scoutChair", false, "no chair came up from any table"); yield break; }
-            for (int i = 0; i < 1500 && (g.Ops[0].Walk != null) && !g.Over; i++) h.RunTo(g.Tick + 1);
-            var sc = h.Views.Find("op/scout"); h.LookAt(sc.position); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.5f); h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r085-chair-slide", log); h.SetPaused(false); yield return new WaitForSecondsRealtime(3.4f); h.SetPaused(true);  yield return Frames(2); yield return Shoot(dir, "r085-chair-sitting", log);
-            var clip = h.Views.FigureClip("op/scout").Item1; var now = g.ListenSpotNow("scout"); row("r085scoutChair", clip.Contains("sit") && h.Views.ListenSeatedNow, $"chair {got}, clip {clip}, seated {h.Views.ListenSeatedNow}; now: spot {now?.at} '{now?.chair}' waiting {now?.waiting}, walk {g.Ops[0].Walk != null}, busy {g.Ops[0].Busy?.Do}, act {g.Ops[0].Act?.Do}, at {g.Ops[0].Pos} tick {g.Tick}; plate '{h.PlateWords(0)}'");
+            var seat = g.People2.Places[got]; for (int i = 0; i < 1500 && g.Ops[0].Walk != null && !G.Within(g.Ops[0].Pos, seat, 300) && !g.Over; i++) h.RunTo(g.Tick + 1); // headless to her last 3 m
+            var sc = h.Views.Find("op/scout"); var seatW = h.frame.World(seat); h.LookAt(sc.position); h.SetSpeed(1); h.SetPaused(false);
+            Vector3 Feet() { foreach (var (k, feet, _) in h.Views.FigureFeet()) if (k == "op/scout") return feet; return sc.position; }
+            float most = 0f, t0 = Time.unscaledTime; var was = Feet(); string walked = ""; bool stepShot = false; int from = g.Tick + 2; // the view catches up the headless ticks first (one lerp over them): measured from the second tick played in time
+            while (!h.Views.SeatedDrawn("op/scout") && Time.unscaledTime - t0 < 8f && !g.Over)
+            {
+                yield return null; var now0 = Feet(); var mv = now0 - was; mv.y = 0f; was = now0; if (g.Tick >= from) most = Mathf.Max(most, mv.magnitude / Mathf.Max(Time.unscaledDeltaTime, 1e-4f));
+                var c0 = h.Views.FigureClip("op/scout").Item1; if (c0.StartsWith("walk")) walked = c0;
+                if (!stepShot && G.Within(g.Ops[0].Pos, seat, 120)) { stepShot = true; h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r085-chair-step", log); h.SetPaused(false); was = Feet(); from = g.Tick + 2; }
+            }
+            yield return new WaitForSecondsRealtime(0.6f); h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r085-chair-sitting", log);
+            var at = Feet(); at.y = seatW.y; float off = Vector3.Distance(at, seatW); var clip = h.Views.FigureClip("op/scout").Item1; var now = g.ListenSpotNow("scout"); bool seated = h.Views.SeatedDrawn("op/scout");
+            row("r085chairStep", walked.Length > 0 && most <= 2.7f, $"the last 3 m into {got} drawn on {(walked.Length > 0 ? walked : "no walk clip")}, the figure at most {most:0.00} m/s (the cell walks 1.8; 2.7 is a stride over: a slide or a jump would pass it)");
+            row("r085scoutChair", clip.Contains("sit") && seated && off < 0.05f && g.SeatedAt("scout")?.chair == got, $"chair {got}, clip {clip}, seated {seated}, {off * 100f:0} cm off the seat, engine seated in '{g.SeatedAt("scout")?.chair}'; now: spot {now?.at} '{now?.chair}' waiting {now?.waiting}, walk {g.Ops[0].Walk != null}, busy {g.Ops[0].Busy?.Do}, act {g.Ops[0].Act?.Do}, at {g.Ops[0].Pos} tick {g.Tick}; plate '{h.PlateWords(0)}'");
         }
 
         /// <summary>From the third line of listen-inez to the end: the lean, the doorway and the frame's edge, the reveal by its time and by clicks, the live face, the listener alone.</summary>
@@ -64,7 +79,7 @@ namespace Suborned.Play
             Vector3 VP(Transform t, float up) => cam.WorldToViewportPoint(t.position + Vector3.up * up);
             var vm = VP(mil, 1.2f); var vi = VP(inez, 1.2f); var vs = VP(sc, 1.2f); var toInez = inez.position - sc.position; toInez.y = 0f; var facing = Quaternion.Euler(0f, h.Views.FigureYaw("op/scout") ?? 0f, 0f) * Vector3.forward; float atHer = Vector3.Angle(facing, toInez);
             bool pairIn = vm.z > 0f && vi.z > 0f && vm.x > 0.05f && vm.x < 0.95f && vi.x > 0.05f && vi.x < 0.95f, inTheWay = vs.z > 0f && vs.z < Mathf.Min(vm.z, vi.z) && vs.x > Mathf.Min(vm.x, vi.x) - 0.08f && vs.x < Mathf.Max(vm.x, vi.x) + 0.08f;
-            row("r085listenFrame", c.Shot == "profile" && c.LivePartner && mil.gameObject.activeInHierarchy && pairIn && !inTheWay && atHer > 60f, $"{c.Shot}, partner live {c.LivePartner}; Milena viewport {vm:0.00}, Inez {vi:0.00}, Scout {vs:0.00} ({Vector3.Distance(sc.position, inez.position):0.0} m from her), {atHer:0} deg off looking at her");
+            row("r085listenFrame", c.Shot is "profile" or "high" && c.LivePartner && mil.gameObject.activeInHierarchy && pairIn && !inTheWay && atHer > 60f, $"{c.Shot} (the ladder's two-shot: profile where a lens on the ground holds both clear, else high; engine 0.49.0 lands route A's Listen among the terrace tables), partner live {c.LivePartner}; Milena viewport {vm:0.00}, Inez {vi:0.00}, Scout {vs:0.00} ({Vector3.Distance(sc.position, inez.position):0.0} m from her), {atHer:0} deg off looking at her");
             yield return Shoot(dir, "r085-listen-frame", log);
             string Spk() => c.Beat < c.Lines.Count ? c.Lines[c.Beat].speaker : "";
             // on to each moment by Space; a live face on every line, whoever speaks

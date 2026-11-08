@@ -65,7 +65,8 @@ public class Dial098
         Assert.That(h.ShowBriefing, Is.False, "Play begins"); Assert.That(h.DialPending, Is.False);
         var cg = g.Census.Single(c => c.Kind == "guards"); var cp = g.Census.Single(c => c.Kind == "people");
         Assert.That(cg.Count, Is.EqualTo(tg.Today + 3)); Assert.That(cg.Added, Is.EqualTo(new[] { "x-guard-001", "x-guard-002", "x-guard-003" })); Assert.That(cg.Removed, Is.Empty);
-        Assert.That(cp.Count, Is.EqualTo(tp.Today + more)); Assert.That(cp.Added.Count, Is.GreaterThan(more), "on the street at a time: each more there takes several passers-by"); Assert.That(cp.Added[0], Is.EqualTo("x-person-0001"));
+        Assert.That(cp.Count, Is.EqualTo(tp.Today + more)); Assert.That(cp.Added.Count, Is.GreaterThan(more), "on the street at a time: each more there takes several passers-by");
+        Assert.That(cp.Added, Is.All.StartsWith("x-person-"), "the dial's own passers-by"); Assert.That(cp.Added, Is.Ordered, "in id order (one whose visit misses the mission's clock is never seen and skipped: which ids those are is the street's, not this test's)");
         Assert.That(Math.Abs(cp.Street10 - 10 * cp.Count), Is.LessThanOrEqualTo(7), $"the street holds the count asked (within 0.75): {cp.Street10 / 10.0}");
         var added = g.Walkers.Where(w => w.Added).ToList(); Assert.That(added.Count, Is.EqualTo(3 + cp.Added.Count));
         Assert.That(added.Where(w => w.P.Job == "guard").Select(w => HostViews.FamilyOf(w.P.Job)).Distinct(), Is.EqualTo(new[] { "guard" }), "an added guard dresses as a guard");
@@ -73,6 +74,9 @@ public class Dial098
         Assert.That(g.Walkers.Single(w => w.P.Id == "x-guard-001").P.Name, Is.EqualTo("Guard 1"));
         Assert.That(HandoverHost.CensusLine(cg), Does.Contain("x-guard-001..x-guard-003").And.Contain($"plays {tg.Today + 3}"));
         Assert.That(HandoverHost.CensusLine(cp), Does.Contain("(on the street)").And.Contain("the street holds").And.Contain(" in the zone"));
+        var addedNow = cp.Added.ToList(); var walkersNow = g.Walkers.Select(w => w.P.Id).ToList(); h.BeginSameSeed(); var g2 = h.Game; // the law: the same seed and numbers build the same street
+        Assert.That(g2.Seed, Is.EqualTo(g.Seed)); Assert.That(g2.StartHash, Is.EqualTo(g.StartHash), "the same street");
+        Assert.That(g2.Census.Single(c => c.Kind == "people").Added, Is.EqualTo(addedNow), "the same passers-by"); Assert.That(g2.Walkers.Select(w => w.P.Id), Is.EqualTo(walkersNow), "the same walkers, in the same order");
     }
 
     [Test] public void BeginWithChangedNumbersBuildsThemFirst()

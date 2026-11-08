@@ -180,8 +180,8 @@ namespace Suborned.Play
                 bool drawing = armed && nowU - f.drawAt < host.DrawS && host.DrawS > 0f;
                 bool aimPose = opIdx >= 0 && armed && (key == DriveKey && host.Aiming || host.FireNow[opIdx].Mode.Length > 0 && host.FireNow[opIdx].Target.Length > 0);
                 if (opIdx >= 0 && aimPose && key == DriveKey && host.Aiming && host.AimFaceOn && speed < 0.15f) f.yaw = Mathf.MoveTowardsAngle(f.yaw, host.AimFace, 900f * Time.unscaledDeltaTime); // the driven agent faces the reticle
-                // Pulse's seats (HostSeats): a café customer standing on their chair within their span sits on it, facing the table (Forma's sit)
-                var seat = !down && !carried && !startled && speed < 0.15f && Has(f, "sit") ? SeatNow(key, t.position, g) : null; ListenSeat(key, f, t, g, ref speed, ref seat); // brief 085: the Scout on a chair (HostViews.Listen)
+                // Pulse's seats (HostSeats): a café customer standing on their chair within their span sits on it, facing the table (Forma's sit); engine 0.49.0: an operative the engine sat in one, the same way
+                var seat = !down && !carried && !startled && speed < 0.15f && Has(f, "sit") ? SeatNow(key, t.position, g) ?? OpSeat(key, t.position, g) : null;
                 f.seated = seat is { }; /* Suture's triage: the feet checks read this, not sitTick (negative for 2.3 s for those seated at the opening) */ if (seat is { } st) { f.yaw = st.yaw; f.model.SetPositionAndRotation(st.at, Quaternion.Euler(0f, st.yaw, 0f)); } else f.sitTick = -1;
                 string state; float natural = 0f;
                 if (carried) state = Has(f, "carried_drape") ? "carried_drape" : "carried"; // Forma: never the flat "carried" when the drape is there
@@ -192,7 +192,7 @@ namespace Suborned.Play
                 else if (speed > 0.15f) state = phases.TryGetValue(key, out var pw) && pw is "to table" or "from table" && Has(f, "serve_walk") ? "serve_walk" : f.female && !((speed > WalkFMaxS || f.state == "walk" && speed > WalkFMaxS - 0.3f) && Has(f, "walk")) ? "walk_f" : "walk"; // Forma: walk_armed is a 2.44 m/s clip, slow motion at a walk; round 2: the tray carried to and from the table; engine 0.34.0: walk_f (0.99 m/s) only up to WalkFMaxS
                 else if (phases.TryGetValue(key, out var ph) && ph == "serving") state = Has(f, "serve") ? "serve" : "talk"; // brief 022: at the table she serves (faces it), the tray on her hand
                 else if (phases.TryGetValue(key, out var pt) && pt == "together") state = "talk"; // with the guard they talk
-                else if (seat is { } so) state = SeatState(f, so.from, so.to, g); // HostSeats: sit down, a seated loop, stand up
+                else if (seat is { } so) state = SeatState(f, so.from, so.to, g, opIdx >= 0); // HostSeats: sit down, a seated loop, stand up
                 else if (opIdx >= 0 && shotRecent && Has(f, "shoot")) state = "shoot"; // brief 024 (Sky: "a clear animation when the player fires"): the recoil, restarted on every engine shot
                 else if (opIdx >= 0 && drawing && Has(f, "draw")) state = "draw"; // the raise: the draw clip over the rulebook's draw time
                 else if (aiming || aimPose) state = shotRecent && Has(f, "shoot") ? "shoot" : AimClip(f, key, g); // standing on a target: the aim, the shot when one was fired
