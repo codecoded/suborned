@@ -78,3 +78,21 @@ Sky, after round 1: "I agree" (no hit chance in play). Then: "Playing the game t
 
 Latch removes these from today's HUD now. Glyph's round 2 mocks the new HUD by the same rule.
 
+
+## Sky's pick (2026-11-08)
+"Corner tokens": round 2's direction 2, Glyph's pick (`briefs/101/glyph/r2/`, `T-*.png`).
+- **The tokens:** small flat enamel tokens only for what is glanced at constantly: the clock, the seal as an orange roundel, the news and the Book. Everything else is drawn on people and places in the street.
+- **Screen share:** 3.0 % at rest and 5.1 % at the busiest moment, against today's 4.6 % and 10.0 %.
+
+**Build order (Latch, each piece shot at 2x and checked on its own):**
+1. The kit.
+2. The clock token and the seal roundel. This retires the status pill and the seal card.
+3. The news lozenge and the Book roundel.
+
+Then stop for Sky to see a real capture. After that come:
+
+4. The roster.
+5. The scope.
+6. The street layer.
+
+Fable writes the new labels ("Goes loud") and retires the keys brief 101's removal left unused. The GDD's HUD kit (§15) changes once Sky has seen the real capture.
