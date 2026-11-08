@@ -1157,7 +1157,7 @@ namespace Suborned.Play
             if (!f && !followHid) return; followHid = f;
             foreach (var c in marks.Children())
             {
-                bool keep = c == world || c == actBadge || c == actMarkRoot || c == fireLayer || c == vpill || c == vpillTail; /* brief 041: the pill in both views */ foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
+                bool keep = c == world || c == actBadge || c == actMarkRoot || c == fireLayer || c == vpill || c == vpillTail; /* brief 041: the pill in both views */ foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.Root == c) keep = true;
                 c.style.visibility = f && !keep ? Visibility.Hidden : StyleKeyword.Null;
             }
         }

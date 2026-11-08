@@ -15,6 +15,9 @@ namespace Suborned.Play
         KeyText clockK, speedK, trailK, cashK, nextWordK, nextTimeK, nextTipK, respK, respTimeK; KeyIcon alertIc, trailIc, cashIc, nextIc, nextUnkIc;
         VisualElement clockRow, statsRow, nextRow, clockLamps, respRow; bool nextHover;
         static readonly string[] KeyPeople = { "waitress", "guard", "driver", "councillor" };
+        readonly VisualElement[] keyDots = new VisualElement[4];
+        /// <summary>The proof reads it: whose key face carries the Book's new dot (a card waiting for them off screen), "" none.</summary>
+        public static string KeyDotFor { get; private set; } = "";
         /// <summary>The stack's right edge from the screen's (Glyph's S mocks: the type's right edge at 1898 of 1920).</summary>
         const float ClockRight = 20f, ClockTop = 14f;
 
@@ -54,7 +57,7 @@ namespace Suborned.Play
             nextTimeK = KText(nextRow, 17f); nextTimeK.Root.style.marginLeft = 6; nextTime = nextTimeK.Face;
             nextRow.RegisterCallback<PointerEnterEvent>(_ => nextHover = true); nextRow.RegisterCallback<PointerLeaveEvent>(_ => nextHover = false);
             manifest.Add((nextIc.Root, "image", () => "next icon")); manifest.Add((nextUnknown, "image", () => "next unknown"));
-            manifest.Add((nextRow, "marker", () => nextUnknown.resolvedStyle.display != DisplayStyle.None || nextWordK.Words.Length == 0 ? nextTimeK.Words : nextWordK.Words + " " + nextTimeK.Words)); // the next key event: a timeline mark (its short word and its time), never a line
+            manifest.Add((nextRow, "next", () => nextUnknown.resolvedStyle.display != DisplayStyle.None || nextWordK.Words.Length == 0 ? nextTimeK.Words : nextWordK.Words + " " + nextTimeK.Words)); // the next key event: a timeline mark (a name of at most 3 words and 16 characters, one m:ss: tools/hud-budget next.ts), never a line
             // the units on their way (police arriving is a key event: its time shows): the arrive mark, how many, how soon, orange; a click opens the response's drawer
             respRow = StackRow(pill, 28f); respRow.pickingMode = PickingMode.Position; respRow.name = "police-coming";
             KIcon(respRow, "arrive", 18f); KIcon(respRow, "units", 16f).Root.style.marginLeft = 6; respK = KText(respRow, 17f); respK.Root.style.marginLeft = 4;
@@ -68,6 +71,7 @@ namespace Suborned.Play
                 int k = i; var w = E(keys, null, w: 26, h: 26, pick: true); w.style.flexShrink = 0; w.style.marginLeft = i == 0 ? 0 : 4;
                 var sh = Disc(w, 26f, "e-shadow"); Pin(sh, new Vector2(0f, 2f)); sh.style.opacity = 0.6f;
                 var d = E(w, null, 0, 0, 26, 26); Round(d, 13f); BorderW(d, 2f); d.AddToClassList("e-inline"); d.AddToClassList("e-page"); Bg(d, FaceOf(KeyPeople[i])); peopleDiscs.Add(d);
+                var nd = E(w, "e-turq e-inline", 14f, -6f, 14, 14); Round(nd, 7f); BorderW(nd, 2f); keyDots[i] = nd; Show(nd, false); // brief 101 round 3: the Book's new dot while this person's card waits off screen
                 w.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { if (KnownPerson(KeyPeople[k])) FindPerson(KeyPeople[k]); else host.IntelOpen = !host.IntelOpen; e.StopPropagation(); } });
             }
             manifest.Add((keys, "image", () => "known people"));
@@ -125,7 +129,8 @@ namespace Suborned.Play
             bool coming = host.RespComing > 0 && !ended; Show(respRow, coming);
             if (coming) { int sec = host.RespSoonestS; respK.Set(host.RespComing.ToString()); respTimeK.Set(sec >= 0 ? $"{sec / 60}:{sec % 60:00}" : "?"); }
             Show(keys, !ended && !m.BriefingOpen);
-            for (int i = 0; i < 4; i++) { bool kn = KnownPerson(KeyPeople[i]); peopleDiscs[i].style.opacity = kn ? 1f : 0.6f; peopleDiscs[i].style.unityBackgroundImageTintColor = kn ? Color.white : new Color(0.55f, 0.6f, 0.6f); }
+            for (int i = 0; i < 4; i++) { bool kn = KnownPerson(KeyPeople[i]); peopleDiscs[i].style.opacity = kn ? 1f : 0.6f; peopleDiscs[i].style.unityBackgroundImageTintColor = kn ? Color.white : new Color(0.55f, 0.6f, 0.6f); Show(keyDots[i], slipWaitsFor == KeyPeople[i]); }
+            KeyDotFor = slipWaitsFor;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Suborned.Play
         VisualElement wayRow, wayKnock, wayKill, before, marks, respPill, respList; Label respLine; readonly List<(VisualElement row, VisualElement icon, Label text)> beforeRows = new();
         readonly List<(VisualElement row, VisualElement icon, Label label, Label text)> respRows = new();
 
-        sealed class Mark { public VisualElement Root, Plate, Glyph, Second, Tape, Leader; public Label Text; public bool Tight; public readonly List<VisualElement> Ring = new(), Outer = new(), Dots = new(), Pips = new(); }
+        sealed class Mark { public VisualElement Root, Plate, Glyph, Second, Tape, Leader; public Label Text; public KeyText Name; public bool Tight; public float Lead = -1f; public readonly List<VisualElement> Ring = new(), Outer = new(), Dots = new(), Pips = new(); }
         readonly List<Mark> bodyMarks = new(), stashMarks = new(), doorMarks = new(), reportMarks = new(), unitMarks = new(), edgeMarks = new(), headMarks = new();
 
         // ---------------------------------------------------------------- build
@@ -113,12 +113,9 @@ namespace Suborned.Play
             foreach (var b in m.Bodies)
             {
                 if (!Proj(b.World, out var p)) continue;
-                if (bodyMarks.Count <= bi) { var k = NewMark(bodyMarks, "s-disc_dark_24", 44, 44); k.Plate.style.left = 10; k.Plate.style.top = 10; k.Plate.style.width = 24; k.Plate.style.height = 24; k.Glyph.style.left = 4; k.Glyph.style.top = 4; Ring(k, 16, 22, 22, 15, 3.2f); Outer(k, 12, 22, 22, 20, 3f); k.Second = E(k.Root, "s-disc_dark_24", 30, 0, 16, 16); Icon(E(k.Second, null, 3, 3, 10, 10), "restrain", Cream); manifest.Add((k.Root, "image", () => k.Tight ? null : "body")); manifest.Add((k.Plate, "image", () => k.Tight ? "body" : null)); } // Glyph N5 (0.2.137): a bare kill is its 30 x 30 plate; a knockout (its wake ring), a found or tied body the whole 44 px root
+                if (bodyMarks.Count <= bi) { var k = NewMark(bodyMarks, "e-body e-inline", 44, 44); Round(k.Plate, 13f); BorderW(k.Plate, 2f); k.Plate.style.left = k.Plate.style.top = 9; k.Plate.style.width = k.Plate.style.height = 26; k.Glyph.style.left = k.Glyph.style.top = 6.25f; k.Glyph.style.width = k.Glyph.style.height = 13.5f; var bsh = Disc(k.Root, 26f, "e-shadow"); Pin(bsh, new Vector2(9f, 11f)); bsh.style.opacity = 0.6f; bsh.SendToBack(); Ring(k, 16, 22, 22, 16, 3.2f); Outer(k, 12, 22, 22, 20, 3f); k.Second = E(k.Root, "e-body e-inline", 30, 0, 16, 16); Round(k.Second, 8f); BorderW(k.Second, 1.6f); Icon(E(k.Second, null, 3.5f, 3.5f, 9, 9), "restrain", Cream); /* brief 101 round 3 (Glyph's rule 2): the body a round tab in its wake ring */ manifest.Add((k.Root, "image", () => k.Tight ? null : "body")); manifest.Add((k.Plate, "image", () => k.Tight ? "body" : null)); } // Glyph N5 (0.2.137): a bare kill is its 30 x 30 plate; a knockout (its wake ring), a found or tied body the whole 44 px root
                 var u = bodyMarks[bi++]; Show(u.Root, true); Place(u.Root, p, 44, 44);
-                Class(u.Plate, "s-disc_dark_24", !b.Dead); Class(u.Plate, "s-plate_dark", b.Dead); Round(u.Plate, b.Dead ? 4 : 12);
-                // Glyph G4 (0.2.135): a kill's square plate is 30 px at slice 0.3 with its glyph 14 px centred (a 24 px plate_dark at 0.5 left no 16 px glyph 4 px clear of its rim)
-                float pd = b.Dead ? 30f : 24f, gd = b.Dead ? 14f : 16f; u.Plate.style.left = u.Plate.style.top = (44f - pd) / 2f; u.Plate.style.width = u.Plate.style.height = pd;
-                u.Plate.style.unitySliceScale = b.Dead ? new StyleFloat(0.3f) : new StyleFloat(StyleKeyword.Null); u.Glyph.style.left = u.Glyph.style.top = (pd - gd) / 2f; u.Glyph.style.width = u.Glyph.style.height = gd;
+                // brief 101 round 3: knocked out or dead, the same round tab; its pictogram says which (body_out, body_dead)
                 Icon(u.Glyph, b.Dead ? "body_dead" : "body_out", Cream);
                 Fill(u, b.Wake, !b.Dead);
                 if (!b.Dead && b.Pulse) foreach (var d in u.Ring) d.style.opacity = 0.5f + 0.5f * pulse; else foreach (var d in u.Ring) d.style.opacity = 1f;
@@ -127,39 +124,33 @@ namespace Suborned.Play
                 u.Root.style.opacity = b.Hidden ? 0.75f : 1f;
             }
             for (int i = bi; i < bodyMarks.Count; i++) Show(bodyMarks[i].Root, false);
-            // stash plates: icon, name, pips (a filled pip = a body inside), a leader to a diamond on the object; behind a building hollow, dashed
+            // brief 101 round 3 (Glyph's rule 1): a stash's name is a street label under its point (its pictogram, the name, a pip a body: ink full, cream empty), a fine stem up
+            // to the point, so it never climbs into the clock stack; a later one drops below an earlier; behind a building it fades
             int si = 0; stashPlaced.Clear();
             foreach (var st in m.Stashes)
             {
                 if (!Proj(st.World, out var p)) continue;
                 if (stashMarks.Count <= si)
                 {
-                    var k = new Mark { Root = E(marks, null, 0, 0, 170, ChipH + 44) }; stashMarks.Add(k);
-                    k.Plate = E(k.Root, "s-plate_dark", 0, 0, float.NaN, ChipH); k.Plate.style.flexDirection = FlexDirection.Row; k.Plate.style.alignItems = Align.Center; k.Plate.style.paddingLeft = 16; k.Plate.style.paddingRight = 16; // the chips' rule: glyphs 4 px clear of the rim
-                    foreach (bool top in new[] { true, false }) // the plate's chrome rims are art, for the budget (a faded plate over a dithered wall
-                    {                                            // otherwise reads as a second row of words); its words stay text
-                        var band = E(k.Plate, null); band.style.position = Position.Absolute; band.style.left = 0; band.style.right = 0; band.style.height = 7;
-                        if (top) band.style.top = 0; else band.style.bottom = 0; band.pickingMode = PickingMode.Ignore; int kk = stashMarks.Count; manifest.Add((band, "image", () => $"stash plate {kk} rim"));
-                    }
-                    k.Glyph = E(k.Plate, null, w: Glyph, h: Glyph); Icon(k.Glyph, "stash", Cream); k.Text = L(k.Plate, "verb-name"); k.Text.style.marginLeft = 5; k.Text.style.marginRight = 6;
-                    for (int j = 0; j < 3; j++) { var pp = E(k.Plate, null, w: 8, h: 8); pp.style.marginLeft = 2; k.Pips.Add(pp); }
-                    for (int j = 0; j < 20; j++) k.Dots.Add(Dot(k.Root, 22, ChipH + 2 + j * 4, 1.8f, Cream)); // 8 under the plate; more when it lifts clear of another
-                    var dia = E(k.Root, null, 18, ChipH + 34, 8, 8); dia.style.rotate = new Rotate(45); dia.style.backgroundColor = Cream; k.Second = dia;
+                    var (row, ic, nmK) = KeyRow(marks, 16f, 15f); row.style.position = Position.Absolute; ic.Set(this, "stash"); ic.Look("ki-ink", "ki-key");
+                    var k = new Mark { Root = row, Plate = row, Name = nmK }; stashMarks.Add(k); var kk = k; manifest.Add((row, "marker", () => kk.Name.Root.style.display == DisplayStyle.None ? "" : kk.Name.Words)); // a stash's name is a street mark of a word or two (G2: every street mark in the manifest)
+                    k.Leader = P(row, 6f, -4f, 8f, 8f, (pp, rc) => // the stem from the label's top up to its point, the point a cream dot in an ink ring (drawn here: the street's paints reset after this pass)
+                    {
+                        float L = kk.Lead; if (L < 2f) return; var top = new Vector2(4f, 4f); var foot = new Vector2(4f, 4f + L);
+                        pp.lineCap = LineCap.Round; pp.strokeColor = new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.51f); pp.lineWidth = 4f; pp.BeginPath(); pp.MoveTo(top); pp.LineTo(foot); pp.Stroke();
+                        pp.strokeColor = StPage; pp.lineWidth = 2.2f; pp.BeginPath(); pp.MoveTo(top); pp.LineTo(foot); pp.Stroke();
+                        pp.fillColor = BkInk; pp.BeginPath(); pp.Arc(top, 3.8f, Deg(0), Deg(360)); pp.Fill(); pp.fillColor = StPage; pp.BeginPath(); pp.Arc(top, 2.6f, Deg(0), Deg(360)); pp.Fill();
+                    });
+                    for (int j = 0; j < 3; j++) { var pp = E(row, "e-inline", w: 8, h: 8); Round(pp, 4f); BorderW(pp, 1.4f); pp.style.marginLeft = j == 0 ? 5 : 2; pp.style.flexShrink = 0; k.Pips.Add(pp); }
                 }
-                var u = stashMarks[si++]; Show(u.Root, true); u.Root.style.left = p.x - 22; u.Root.style.top = p.y - (ChipH + 40);
-                // two plates never overlap (Glyph: "Dumpster" over "Service door"): a later one first leans the other way off its leader (the
-                // plates side by side, never a stack of text), and only if that still collides lifts above, its leader longer
-                float pw = u.Plate.resolvedStyle.width; if (float.IsNaN(pw) || pw < 1) pw = 140; float lift = 0, lean = 0;
-                bool Hits(Rect r) { foreach (var q in stashPlaced) if (q.Overlaps(r)) return true; return false; }
-                Rect At(float ln, float lf) => new Rect(p.x - 22 + ln, p.y - (ChipH + 40) - lf, pw, ChipH);
-                if (Hits(At(0, 0))) { if (!Hits(At(44 - pw, 0))) lean = 44 - pw; else for (int g2 = 0; g2 < 4 && Hits(At(0, lift)); g2++) lift += ChipH + 4; }
-                stashPlaced.Add(At(lean, lift)); u.Plate.style.left = lean; u.Plate.style.top = -lift;
-                Text(u.Text, st.Name);
-                for (int j = 0; j < u.Pips.Count; j++) { Show(u.Pips[j], j < st.Holds); if (j < st.Holds) Bg(u.Pips[j], j < st.Used ? "markers/pip_full" : "markers/pip_empty"); }
-                // behind a building: the whole plate fades (fill and rim together, never the outline alone: Glyph), the leader dashed
-                int dots = 8 + Mathf.CeilToInt(lift / 4f);
-                for (int j = 0; j < u.Dots.Count; j++) { u.Dots[j].style.top = ChipH + 2 - lift + j * 4 - 0.9f; Show(u.Dots[j], j < dots && (!st.Behind || j % 2 == 0)); u.Dots[j].style.height = st.Behind ? 1.8f : 4.2f; }
-                u.Root.style.opacity = st.Hover ? 1f : st.Behind ? 0.62f : 0.92f;
+                var u = stashMarks[si++]; Show(u.Root, true); u.Name.Set(st.Name);
+                float pw = u.Root.resolvedStyle.width; if (float.IsNaN(pw) || pw < 1) pw = 130; const float SH = 22f;
+                var at = new Rect(p.x - 10f, p.y + 16f, pw, SH); // the stem lands on the pictogram
+                for (int g2 = 0; g2 < 4; g2++) { bool hit = false; foreach (var q in stashPlaced) if (q.Overlaps(new Rect(at.x - 4, at.y - 4, at.width + 8, at.height + 8))) { at.y = q.yMax + 8f; hit = true; } if (!hit) break; }
+                stashPlaced.Add(at); u.Root.style.left = at.x; u.Root.style.top = at.y;
+                for (int j = 0; j < u.Pips.Count; j++) { Show(u.Pips[j], j < st.Holds); if (j < st.Holds) { bool full = j < st.Used; u.Pips[j].style.backgroundColor = full ? BkInk : StPage; RingColour(u.Pips[j], full ? (Color?)null : BkInk); } }
+                float al = st.Hover ? 1f : st.Behind ? 0.62f : 0.92f; u.Root.style.opacity = al;
+                float lead = at.y - p.y; if (Mathf.Abs(lead - u.Lead) > 0.5f) { u.Lead = lead; u.Leader.style.top = -lead - 4f; u.Leader.style.height = lead + 8f; u.Leader.MarkDirtyRepaint(); }
             }
             for (int i = si; i < stashMarks.Count; i++) Show(stashMarks[i].Root, false);
             stashPlaced.Clear();

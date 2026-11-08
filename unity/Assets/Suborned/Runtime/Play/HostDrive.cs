@@ -165,7 +165,7 @@ namespace Suborned.Play
             // ground view as a plain follow; only T (DriveLetGoToMap) goes back to the map
             if (toMap && Following && glide) FollowExitGlide(k); // brief 067 G3 (Sky on 0.2.122, Glyph): back on the map by a 0.5 s glide, centred on the agent at play zoom, at the quarter-step yaw it was left at (HostFollow)
             else if (toMap && Following) { FollowExit(); if (cam) { cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); centreGoal = null; centreStart = -1f; camFollow = false; } } // a script's let-go: the same map view at once (LookAt below)
-            if (k >= 0 && views?.Find("op/" + Op.Name((OpId)k)) is Transform t) { if (!Following) LookAt(t.position); PopKey("take-control", null, t.position, Feedback.Info); }
+            if (k >= 0 && views?.Find("op/" + Op.Name((OpId)k)) is Transform t && !Following) LookAt(t.position); // brief 101 round 3 (Aster, Fable, Glyph): no "Take control: T" pop: no click takes control, and it said nothing as control ended
             Status = Following ? "Follow view" : "Overhead view";
         }
 

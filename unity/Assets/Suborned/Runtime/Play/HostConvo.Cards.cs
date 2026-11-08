@@ -23,6 +23,12 @@ namespace Suborned.Play
             p.At = PersonCards.Count > 0 ? Mathf.Max(at, PersonCards[^1].Until) : at; p.Until = p.At + CardReadS(p); PersonCards.Add(p);
         }
         void ConvoCardsWait() { float dt = Time.unscaledDeltaTime; foreach (var p in PersonCards) { p.At += dt; p.Until += dt; } }
+        /// <summary>Brief 101 round 3 (Glyph's slip): a card whose person is off screen waits, its read time starting when she is in view; the cards after it wait with it.</summary>
+        public void PersonCardHold(PersonCard c, float dt)
+        {
+            int i = PersonCards.IndexOf(c); if (i < 0 || dt <= 0f) return; c.Until += dt;
+            for (int k = i + 1; k < PersonCards.Count; k++) { PersonCards[k].At += dt; PersonCards[k].Until += dt; }
+        }
 
         /// <summary>What the scene's people said before the cut isn't left to show after it (the mock's "Yes. Yes. And thank you." over Inez, beside her card).</summary>
         void ConvoSilence(Convo c)

@@ -22,8 +22,8 @@ namespace Suborned.Play
         static VisualElement MoodDiscOf(VisualElement pipRoot)
         {
             var d = pipRoot.Q("mood"); if (d != null) return d;
-            d = E(pipRoot, null, 26f + MoodGap, (26f - MoodEl) / 2f, MoodEl, MoodEl); d.name = "mood"; d.pickingMode = PickingMode.Ignore;
-            var f = E(d, null, (MoodEl - MoodFace) / 2f, (MoodEl - MoodFace) / 2f, MoodFace, MoodFace); f.name = "face"; f.pickingMode = PickingMode.Ignore;
+            d = E(pipRoot, "e-body e-inline", 26f + MoodGap, 2f, 22f, 22f); d.name = "mood"; d.pickingMode = PickingMode.Ignore; Round(d, 11f); BorderW(d, 2f); // brief 101 round 3: a small round tab (the book's body, the cream ring)
+            var f = E(d, null, 4f, 4f, 14f, 14f); f.name = "face"; f.pickingMode = PickingMode.Ignore;
             Show(d, false); return d;
         }
 
@@ -36,7 +36,7 @@ namespace Suborned.Play
             bool on = mood is "friendly" or "uneasy" or "scared";
             Show(d, on); if (!on) { moodShown.Remove(d); return; }
             if (moodShown.TryGetValue(d, out var was) && was == mood) return; moodShown[d] = mood; // Redline 064 #6: set when it changes, not every frame
-            Bg(d, "markers/disc_dark_24", Color.white); Icon(d.Q("face"), "mood_" + mood, Cream);
+            Icon(d.Q("face"), "mood_" + mood, Cream);
         }
 
         /// <summary>A prediction mark painted in a box: "likely" (dashed ring, tick), "hurt" (dashed ring, half disc). The ring is 15 px across,

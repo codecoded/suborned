@@ -1,0 +1,92 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 101 round 3 (Glyph's r3 board, Sky's yes; Latch's fifth round of the sweep): the real captures beside Glyph's r3 frames. Quiet is Glyph's quiet frame (route G's radio run, 3:28.6, the Office front at yaw 210); window is route A at the call (2:59: the guard's away window, the Fixer's chip); rest and loud are round 4's moments, for coverage; busy is the final fight with the pointer on the blocker (the aim row's faces, the lock tabs). The 2x rows are the same frames at 3840 x 2160 (panel scale 2) for the crop check. The slip on Inez, the card frame (r123), the act ring (r101) and the window's last 10 s come from the proof's pictures of the same build.",
+  "defaults": {
+    "hud": true
+  },
+  "shots": [
+    {
+      "name": "t101-rest",
+      "script": "briefs/100/latch/route-g-radio.json",
+      "tick": 1450,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "note": "2:25 on route G: at rest"
+    },
+    {
+      "name": "t101-quiet",
+      "script": "briefs/100/latch/route-g-radio.json",
+      "tick": 2086,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "note": "3:28.6: a shift guard radios the knocked-out guard in, the square camera on the Tech (Glyph's quiet frame)"
+    },
+    {
+      "name": "t101-window",
+      "script": "route-a-board",
+      "tick": 1790,
+      "focus": "guard",
+      "yaw": 2,
+      "note": "2:59 on route A: the call lands, the guard leaves his door; his away window runs (Glyph's window frame)"
+    },
+    {
+      "name": "t101-loud",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 1545,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "note": "2:34.5: the first shot raised Alert 2: the seal runs and Police coming"
+    },
+    {
+      "name": "t101-busy-aim",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 2275,
+      "focus": "car/getaway",
+      "yaw": 0,
+      "select": "scout",
+      "pointer": [
+        0.5625,
+        0.333
+      ],
+      "note": "3:47.5, the busiest moment, the pointer on the blocker"
+    },
+    {
+      "name": "t101-quiet-2x",
+      "script": "briefs/100/latch/route-g-radio.json",
+      "tick": 2086,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "size": [
+        3840,
+        2160
+      ]
+    },
+    {
+      "name": "t101-window-2x",
+      "script": "route-a-board",
+      "tick": 1790,
+      "focus": "guard",
+      "yaw": 2,
+      "size": [
+        3840,
+        2160
+      ]
+    },
+    {
+      "name": "t101-busy-2x",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 2275,
+      "focus": "car/getaway",
+      "yaw": 0,
+      "select": "scout",
+      "size": [
+        3840,
+        2160
+      ],
+      "pointer": [
+        0.5625,
+        0.333
+      ]
+    }
+  ]
+}

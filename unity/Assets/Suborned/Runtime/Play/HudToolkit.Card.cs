@@ -4,72 +4,100 @@ using UnityEngine.UIElements;
 
 namespace Suborned.Play
 {
-    /// <summary>Brief 085, look C (GDD v0.36.0 section 10; Glyph's mock, its right side): the card a conversation leaves, in play, on the person, in the done chip's spot: her face and name, what was learned,
-    /// a brass hairline, then "New" beside the actions it opened. Off screen it docks on the feed's top edge, the face saying who. It takes no clicks.</summary>
+    /// <summary>Brief 101 round 3, piece 1 (Glyph's slip, briefs/101/glyph/r3/conv.png; Sky: "yes"): the card a conversation leaves is a slip of the book's cream page on
+    /// a fine stem to the person's head, the bubbles' family: her face in the built cream ring breaks its top-left corner, her name small above the rows, each learned
+    /// row led by its label word's kit pictogram (Fable's "Debt:" and "Secret:" become the icons; the rest of the line as written), the book's hairline, then "New" in
+    /// the book's deep teal beside the ways it opened as capsules you can click (her ring opens on that way for the selection; no order is given: HandoverHost.WayClick, HostBook). Type 15
+    /// px, as the bubbles. Off screen it never docks: it waits, its read time starting when she is in view, and her face among the key people (top right) carries the
+    /// Book's new dot meanwhile (HudToolkit.Clock). It retires the panel_dark card and its dock beside the news (r123's "2 card panels").</summary>
     public sealed partial class HudToolkit
     {
-        VisualElement personCard, personCardTail; string personCardKey = "";
-        const float CardFace = 46f, CardType = 19f, CardNameType = 15f;
-        /// <summary>The proof reads them: the card is up, it's docked, what it says.</summary>
+        VisualElement personCard, slipFace, slipCol; string personCardKey = ""; float slipSeenAt = -1f;
+        const float SlipFace = 44f, SlipType = 15f, SlipRow = 23f, SlipR = 14f, SlipStem = 26f, SlipText = 42f;
+        /// <summary>The proof reads them: the slip is up; a card is due but its person is off screen, so it waits; what it says.</summary>
         public static bool PersonCardUp => live?.personCard != null && live.personCard.resolvedStyle.display != DisplayStyle.None;
-        public static bool PersonCardDocked { get; private set; }
+        public static bool PersonCardWaiting { get; private set; }
         public static string PersonCardWords => live == null || !PersonCardUp ? "" : live.personCardWords;
         string personCardWords = "";
+        /// <summary>Who a waiting card is about ("" none): that key face carries the Book's new dot.</summary>
+        string slipWaitsFor = "";
 
         void PersonCardHud(float W, float H)
         {
             var c = host.PersonCardNow; float now = Time.unscaledTime; bool on = c != null && !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None && !host.FailCamOn && !host.ConvoOn;
+            if (!on) { if (personCard != null) Show(personCard, false); PersonCardWaiting = false; slipWaitsFor = ""; slipSeenAt = -1f; return; }
             if (personCard == null)
             {
-                if (!on) return;
-                personCard = E(root, "s-panel_dark"); personCard.style.position = Position.Absolute; personCard.style.paddingLeft = 18; personCard.style.paddingRight = 22; personCard.style.paddingTop = 13; personCard.style.paddingBottom = 14; personCard.style.unitySliceScale = 0.5f; personCard.pickingMode = PickingMode.Ignore; personCard.style.overflow = Overflow.Visible;
+                personCard = E(root, null, 0, 0); personCard.name = "person-card"; personCard.style.overflow = Overflow.Visible; // in the root, as the old card: the follow view hides the street marks
+                var sh = E(personCard, "e-shadow"); sh.style.position = Position.Absolute; sh.style.left = sh.style.right = 0; sh.style.top = 3; sh.style.bottom = -3; Round(sh, SlipR); sh.style.opacity = 0.55f;
+                var page = E(personCard, "e-page"); page.style.position = Position.Absolute; page.style.left = page.style.right = page.style.top = page.style.bottom = 0; Round(page, SlipR);
+                slipCol = E(personCard); slipCol.style.paddingLeft = SlipText; slipCol.style.paddingRight = 26; slipCol.style.paddingTop = 3; slipCol.style.paddingBottom = 21;
+                slipFace = SFace(personCard, SlipFace, 2.5f); Pin(slipFace, new Vector2(-14f, -16f));
                 manifest.Add((personCard, "card", () => host.PersonCardNow is HandoverHost.PersonCard pc ? string.Join(" ", pc.Learned) + " " + string.Join(" ", pc.Opens) : ""));
             }
-            Show(personCard, on); if (!on) return;
-            PersonCardFill(c);
-            float cw = personCard.resolvedStyle.width, ch = personCard.resolvedStyle.height; if (float.IsNaN(cw) || cw < 1f) cw = 420f; if (float.IsNaN(ch) || ch < 1f) ch = 130f;
-            // on the person, as a done chip stands: above the head, above her own speech, clear of the pill; off screen, on the feed's top edge
-            bool seen = host.AnchorWorld(c.Who) is Vector3 at && Proj(at + Vector3.up * 2.3f, out var q) && InView(q) && q.y >= ch * 0.3f; q = default; if (host.AnchorWorld(c.Who) is Vector3 at2) Proj(at2 + Vector3.up * 2.3f, out q);
-            PersonCardDocked = !seen; Show(personCardTail, seen);
-            if (seen)
-            {
-                Rect pl = PillRect(); float x = q.x - cw / 2f, bottom = ClearOfSpeech(SpeechRects(), x, cw, q.y - 16f, ch);
-                if (pl.width > 0 && x < pl.xMax && x + cw > pl.xMin && bottom > pl.yMin - 8f && bottom - ch < pl.yMax) bottom = pl.yMin - 8f;
-                float cx = Mathf.Clamp(x, 14f, Mathf.Max(14f, W - cw - 14f)); personCard.style.left = cx; personCard.style.right = StyleKeyword.Auto; personCard.style.top = Mathf.Max(8f, bottom - ch);
-                personCardTail.style.left = Mathf.Clamp(q.x - cx - 6f, 20f, cw - 32f);
-            }
-            else
-            {
-                float top = feed != null && feed.resolvedStyle.display != DisplayStyle.None && feed.worldBound.height > 1f ? feed.worldBound.yMin : H - 130f;
-                personCard.style.left = StyleKeyword.Auto; personCard.style.right = 14; personCard.style.top = Mathf.Max(120f, top - ch - 10f);
-            }
-            personCard.style.opacity = Mathf.Clamp01(Mathf.Min((now - c.At) / 0.15f, (c.Until - now) / 0.3f)); personCard.BringToFront();
+            // on her, over her head, clear of her speech and the pill; off screen (or behind the roster) it waits: her read time held, her key face dotted
+            Vector2 q = default, qf = default; bool seen = host.AnchorWorld(c.Who) is Vector3 at && Proj(at + Vector3.up * 2.3f, out q) && Proj(at, out qf) && InPlay(q);
+            if (!seen) { Show(personCard, false); PersonCardWaiting = true; slipWaitsFor = c.Who; slipSeenAt = -1f; host.PersonCardHold(c, Time.unscaledDeltaTime); return; }
+            PersonCardWaiting = false; slipWaitsFor = ""; if (slipSeenAt < 0f) slipSeenAt = now;
+            Show(personCard, true); PersonCardFill(c);
+            float cw = personCard.resolvedStyle.width, ch = personCard.resolvedStyle.height; if (float.IsNaN(cw) || cw < 1f) cw = 360f; if (float.IsNaN(ch) || ch < 1f) ch = 137f;
+            float foot = q.y - 30f, x = q.x - cw / 2f, bottom = ClearOfSpeech(SpeechRects(), x - 14f, cw + 14f, foot - SlipStem, ch + 16f); // the stem's foot just over her pip
+            Rect pl = PillRect(); if (pl.width > 0 && x < pl.xMax && x + cw > pl.xMin && bottom > pl.yMin - 8f && bottom - ch < pl.yMax) bottom = pl.yMin - 8f;
+            bool under = bottom - ch < 24f && qf.y + 18f + SlipStem + ch < H - 120f; // no room over her head (she stands at the top of the view): the slip hangs under her feet, its stem up to them
+            float cx = Mathf.Clamp(x, 28f, Mathf.Max(28f, W - cw - 14f)), top = under ? qf.y + 18f + SlipStem : Mathf.Max(24f, bottom - ch); // the face breaks the corner 14 px out and 16 px up: room for it
+            personCard.style.left = cx; personCard.style.top = top;
+            float a = Mathf.Clamp01(Mathf.Min((now - slipSeenAt) / 0.15f, (c.Until - now) / 0.3f)); personCard.style.opacity = a;
+            float sx = Mathf.Clamp(q.x, cx + 22f, cx + cw - 22f);
+            if (under) Stem(new Vector2(sx, top + 1f), new Vector2(qf.x, qf.y + 6f), a); else Stem(new Vector2(sx, top + ch - 1f), new Vector2(q.x, foot), a);
+            personCard.BringToFront();
         }
 
-        /// <summary>Fable's cards as written; the header is the person's name, as the conversation names her.</summary>
+        /// <summary>A card's line split at its label word ("Debt: Bureau loan, and she's behind." is "Debt" and the rest); a line with no label, "" and the line. A way
+        /// with no label ("Call Inez") leads with its verb when the kit has the verb's pictogram.</summary>
+        (string label, string rest) CardSplit(string line, bool way)
+        {
+            int i = line.IndexOf(": ", System.StringComparison.Ordinal);
+            if (i > 0 && i <= 16) return (line[..i], line[(i + 2)..]);
+            if (way) { int s = line.IndexOf(' '); string w = s > 0 ? line[..s] : line; if (Sp("icons/singles/" + w.ToLowerInvariant()) != null) return (w, s > 0 ? line[(s + 1)..] : ""); }
+            return ("", line);
+        }
+
+        /// <summary>A label word's kit pictogram ("Debt" is icons/singles/debt; "Listen first" leads with listen), "" when the kit has none.</summary>
+        string CardIcon(string label)
+        {
+            if (label.Length == 0) return ""; int s = label.IndexOf(' '); string w = (s > 0 ? label[..s] : label).ToLowerInvariant();
+            return Sp("icons/singles/" + w) != null ? w : "";
+        }
+
+        /// <summary>Fable's cards as written; the name is the person's, as the conversation names her.</summary>
         void PersonCardFill(HandoverHost.PersonCard c)
         {
-            string key = c.Id + "|" + c.Who + "|" + string.Join(" ", c.Learned) + "|" + string.Join(" ", c.Opens); if (key == personCardKey) return; personCardKey = key; personCard.Clear();
-            personCardWords = (c.Learned.Count > 0 ? string.Join(" / ", c.Learned) + " " : "") + (c.Opens.Count > 0 ? (host.Text?.ConvNew ?? "New") + " " + string.Join(" / ", c.Opens) : "");
-            var top = E(personCard); top.style.flexDirection = FlexDirection.Row; top.style.alignItems = Align.Center;
-            var face = E(top, null, w: CardFace, h: CardFace); face.style.flexShrink = 0; Round(face, CardFace / 2f); Border(face, 2f, Chrome); Bg(face, FaceOf(c.Who), Color.white); face.style.marginRight = 12;
-            var col = E(top); var nm = Words(col, CardNameType, Dim); nm.text = host.Text?.ConvName(c.Who) ?? c.Who; nm.style.marginBottom = 1;
-            foreach (var l in c.Learned) { var t = Words(col, CardType); t.text = l; t.style.marginTop = 2; }
-            if (c.Opens.Count > 0)
+            string key = c.Id + "|" + c.Who + "|" + string.Join(" ", c.Learned) + "|" + string.Join(" ", c.Opens); if (key == personCardKey) return; personCardKey = key; slipCol.Clear();
+            string nw = host.Text?.ConvNew ?? "New";
+            personCardWords = (c.Learned.Count > 0 ? string.Join(" / ", c.Learned) + " " : "") + (c.Opens.Count > 0 ? nw + " " + string.Join(" / ", c.Opens) : "");
+            FaceArt(slipFace, -1, c.Who);
+            var nm = KLabel(slipCol, "k-semi", "k-soft", 13.5f); nm.text = host.Text?.ConvName(c.Who) ?? c.Who; nm.style.height = 17;
+            VisualElement Row() { var r = E(slipCol, null, h: SlipRow); r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.overflow = Overflow.Visible; return r; }
+            foreach (var l in c.Learned)
             {
-                if (c.Learned.Count > 0) { var hr = E(personCard, h: 1); hr.style.backgroundColor = LookHair; hr.style.marginTop = 8; hr.style.marginBottom = 7; }
-                else top.style.marginBottom = 8;
-                var row = E(personCard); row.style.flexDirection = FlexDirection.Row;
-                var nw = Words(row, CardType, LookLive); nw.text = host.Text?.ConvNew ?? "New"; nw.style.width = CardFace + 12f; nw.style.flexShrink = 0; nw.style.unityTextAlign = TextAnchor.UpperLeft;
-                var rows = E(row);
-                foreach (var l in c.Opens)
-                {
-                    var r = E(rows); r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.marginBottom = 2;
-                    var ch = E(r, null, w: 12, h: 12); ch.style.flexShrink = 0; ch.style.marginRight = 7; Icon(ch, "chev_down", LookLive); ch.style.rotate = new Rotate(new Angle(-90, AngleUnit.Degree));
-                    var t = Words(r, CardType); t.text = l;
-                }
+                var (label, rest) = CardSplit(l, false); string icon = CardIcon(label); var r = Row();
+                var ic = E(r, null, w: 16, h: 16); ic.style.flexShrink = 0; if (icon.Length > 0) Icon(ic, icon, BkInk); else ic.style.visibility = Visibility.Hidden;
+                var t = KLabel(r, "k-medium", "k-ink", SlipType); t.style.marginLeft = 6; t.text = icon.Length > 0 ? rest : l;
             }
-            personCardTail = E(personCard, null, 0, 0, 12, 12); personCardTail.style.position = Position.Absolute; personCardTail.style.rotate = new Rotate(45); personCardTail.style.backgroundColor = new Color(0.047f, 0.204f, 0.204f); personCardTail.style.top = Length.Percent(100); personCardTail.style.marginTop = -7;
+            if (c.Opens.Count == 0) return;
+            if (c.Learned.Count > 0) { var hr = E(slipCol, null, h: 1.2f); hr.style.backgroundColor = BkRule; hr.style.marginTop = 4.5f; }
+            bool first = true; string who = c.Who;
+            foreach (var l in c.Opens)
+            {
+                var (label, rest) = CardSplit(l, true); string icon = CardIcon(label); var r = Row();
+                if (first) { var n = KLabel(r, "k-bold", "k-deep", 12.5f); n.text = nw; n.style.position = Position.Absolute; n.style.left = 10f - SlipText; n.style.top = 0; n.style.height = SlipRow; first = false; }
+                if (label.Length > 0)
+                {
+                    string ic = icon, wd = label; var cap = NewCapsule(r, 22f, false, () => host.WayClick(who, ic, wd)); SetCapsule(cap, icon, label);
+                    var t = KLabel(r, "k-medium", "k-ink", SlipType); t.style.marginLeft = 8; t.text = rest; Show(t, rest.Length > 0);
+                }
+                else { var t = KLabel(r, "k-medium", "k-ink", SlipType); t.text = l; }
+            }
         }
     }
 }

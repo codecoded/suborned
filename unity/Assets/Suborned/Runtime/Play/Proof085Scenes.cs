@@ -70,21 +70,40 @@ namespace Suborned.Play
             if (!rt) return 0f; var keep = RenderTexture.active; RenderTexture.active = rt; var t = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false); t.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0); t.Apply(); RenderTexture.active = keep;
             var px = t.GetPixels32(); var g = px[px.Length - 1]; int n = 0; foreach (var p in px) if (Mathf.Abs(p.r - g.r) + Mathf.Abs(p.g - g.g) + Mathf.Abs(p.b - g.b) > 30) n++; Object.Destroy(t); return n / (float)px.Length;
         }
-        /// <summary>Every inset line for `seconds`, the clock running: two frames apart differ and each has a face. A callout pushed in over a line, gone before its frames, takes the speech inset's slot and gives it back: what blanked the guard's second line on route A.</summary>
-        static IEnumerator EveryInsetLine(HandoverHost h, float seconds, List<string> seen, bool[] ok, int[] hits, bool push)
+        /// <summary>Every line said in the docked inset while the mission clock runs `ticks` on from now, each sampled as it shows: two frames apart differ and each has a face.
+        /// The window is mission time, and it stays open while a line said in it is still up or due unsampled, never a span of real seconds: in a busy player the clock stalls
+        /// and catches up, and on route A that put the guard's second line (15 ticks after his first) at the edge of an 8 s real-time window, so the row passed or failed by the
+        /// wall clock (brief 101, Splice: on 0.2.283 two of three runs failed, and the picture after the window shows that line still docked in passing and failing runs). A clock that will not
+        /// run stops the wait after a real-time guard, and fails it; a line the host said in the window that never showed docked is logged. A callout pushed in over a line, gone
+        /// before its frames, takes the speech inset's slot and gives it back: what blanked the guard's second line on route A. `shot`: the picture of the first line, taken in the
+        /// window once that line is sampled (taken before the window, the shot's own time can outlast a line due in real time, as Inez's pressed line is).</summary>
+        static IEnumerator EveryInsetLine(HandoverHost h, int ticks, List<string> seen, bool[] ok, int[] hits, bool push, List<string> log, string dir = null, string shot = null)
         {
-            string last = ""; float t0 = Time.unscaledTime; int line = 0;
-            while (Time.unscaledTime - t0 < seconds)
+            var g = h.Game; int t0 = g.Tick, tEnd = t0 + ticks; float r0 = Time.unscaledTime, guard = 30f + ticks / (float)Suborned.Sim.Game.Hz;
+            var said = new List<HandoverHost.Bubble>(); var sampled = new HashSet<string>(); string last = ""; int line = 0;
+            // Splice's open question (brief 101 round 3): what holds the clock at the window's start. The longest frame, when, and the ticks either side; each real second's
+            // tick; frames the host was paused or frozen: one long frame (a first render, a save) and a held clock read apart in the log
+            float longest = 0f, longAt = 0f; int longT0 = 0, longT1 = 0, held = 0, frozen = 0, prevTick = g.Tick; var perSecond = new List<int>();
+            bool Mine(HandoverHost.Bubble x) => x != null && x.Inset && x.Tick >= t0 - 1 && x.Tick <= tEnd && x.Born + x.Life > r0; // said in the window, or up as it opens
+            void Note() { foreach (var x in h.Bubbles) if (Mine(x) && !said.Contains(x)) said.Add(x); }
+            bool Waiting() => g.Tick < tEnd || h.StreetLinesDue || h.Callouts.Exists(x => Mine(x.Speech) && x.Speech.Text != last);
+            while (!g.Over && Waiting() && Time.unscaledTime - r0 < guard)
             {
-                hits[0] = Mathf.Max(hits[0], HudToolkit.SpeechPlateHits);
+                Note(); hits[0] = Mathf.Max(hits[0], HudToolkit.SpeechPlateHits);
                 var co = h.Callouts.Find(x => x.Speech != null); yield return null;
-                if (co == null || co.Speech.Text == last || !HudToolkit.DockedSpeech) continue;
-                last = co.Speech.Text; line++;
+                { float dt = Time.unscaledDeltaTime, rt0 = Time.unscaledTime - r0; if (dt > longest) { longest = dt; longAt = rt0; longT0 = prevTick - t0; longT1 = g.Tick - t0; } if (h.Paused) held++; if (h.Frozen) frozen++; while (perSecond.Count < Mathf.FloorToInt(rt0)) perSecond.Add(g.Tick - t0); prevTick = g.Tick; }
+                if (co == null || !Mine(co.Speech) || co.Speech.Text == last || !HudToolkit.DockedSpeech) continue;
+                last = co.Speech.Text; line++; int at = co.Speech.Tick - t0; float rs = Time.unscaledTime - r0;
                 if (push) h.Callouts.Add(new HandoverHost.Callout { Watcher = "proof", View = line % 2 == 1 ? co.View : "patrol", Op = "scout", Stage = 3, Seq = 900 + line, Born = Time.unscaledTime, Until = Time.unscaledTime + 0.5f });
                 for (float w = Time.unscaledTime; Time.unscaledTime - w < 0.75f;) { hits[0] = Mathf.Max(hits[0], HudToolkit.SpeechPlateHits); yield return null; }
                 var rt = HudToolkit.SpeechPicture; var a = PictureHash(rt); float f0 = PictureFill(rt); yield return new WaitForSecondsRealtime(0.35f); rt = HudToolkit.SpeechPicture; var b = PictureHash(rt); float f1 = PictureFill(rt);
-                bool good = a != "none" && a != b && f0 > 0.05f && f1 > 0.05f; ok[0] &= good; seen.Add($"{co.View} '{last}': frames differ {a != b}, face {f0:0.00}/{f1:0.00}");
+                bool good = a != "none" && a != b && f0 > 0.05f && f1 > 0.05f; ok[0] &= good; sampled.Add(last); seen.Add($"{co.View} '{last}' (+{at} ticks, docked {rs:0.0} s in): frames differ {a != b}, face {f0:0.00}/{f1:0.00}");
+                if (line == 1 && shot != null) yield return Shoot(dir, shot, log);
             }
+            Note();
+            if (!g.Over && Waiting()) { ok[0] = false; seen.Add($"the clock ran {g.Tick - t0} of {ticks} ticks in {guard:0} s"); }
+            foreach (var x in said) if (!sampled.Contains(x.Text)) log.Add($"r085 inset: said at +{x.Tick - t0} ticks, never seen docked: {x.Speaker} '{x.Text}'");
+            log.Add($"r085 inset clock ({ticks} ticks): longest frame {longest * 1000f:0} ms at {longAt:0.00} s (ticks +{longT0} to +{longT1}); ticks at each real second [{string.Join(", ", perSecond)}]; paused frames {held}, frozen frames {frozen}");
         }
         static float GroundOff(HandoverHost h, Vector3 at) { var c = h.View; if (!c) return 999f; var f = c.transform.forward; float k = (at.y - c.transform.position.y) / f.y; var hit = c.transform.position + f * k; hit.y = at.y; return Vector3.Distance(hit, at); }
 
@@ -193,7 +212,7 @@ namespace Suborned.Play
             Step(h, rp, 1300); yield return ToScene(h, rp, 1600, got); string wc = Words(h, "call-inez-pressure"); row("r085pressedCall", got[0] && wc.Length == 0 && g.GuardCallPressed, $"{h.ConvoLast}; {wc}; pressed {g.GuardCallPressed}"); yield return EndScene(h);
             // the arrival, the camera far from both: each speaks from a docked inset that moves
             var far = h.Views.Find("guard").position + new Vector3(70f, 0f, 70f); h.LookAt(far); yield return Frames(2); bool atCafe = false; int nLog = g.Log.Count; for (int i = 0; i < 1200 && !atCafe && !g.Over; i++) { h.RunTo(g.Tick + 1); for (int j = nLog; j < g.Log.Count; j++) if (g.Log[j].Code == "guard.at-cafe") atCafe = true; nLog = g.Log.Count; }
-            h.LookAt(far); h.SetPaused(false); var seenP = new List<string>(); var okP = new[] { true }; var hitsP = new int[1]; yield return Shoot(dir, "r085-inset-inez", log); yield return EveryInsetLine(h, 7f, seenP, okP, hitsP, false); yield return Shoot(dir, "r085-docked-inset", log);
+            h.LookAt(far); h.SetPaused(false); var seenP = new List<string>(); var okP = new[] { true }; var hitsP = new int[1]; yield return EveryInsetLine(h, 70, seenP, okP, hitsP, false, log, dir, "r085-inset-inez"); yield return Shoot(dir, "r085-docked-inset", log); // 7 s of mission time; her line pictured once sampled
             row("r085insetEveryLine", atCafe && seenP.Count == 2 && okP[0] && hitsP[0] == 0, $"pressed: {string.Join("; ", seenP)}; plate on a callout {hitsP[0]}");
             yield return new WaitForSecondsRealtime(3f); bool noBreak = !h.Talk.Exists(x => x.Speaker == "guard" && x.Tick >= g.LureTick && (x.Text.Contains("Break") || x.Text.Contains("Back to my post")));
             bool scoutQuiet = !h.Talk.Exists(x => x.Speaker == "scout" && x.Tick >= g.LureTick); int keptQuiet = h.CellLines.FindAll(x => x.Speaker == "scout" && x.Tick >= g.LureTick && !x.Said).Count; // brief 102: the cell is quiet in play; the Scout's street lines are kept, not said
@@ -212,7 +231,7 @@ namespace Suborned.Play
 
             // ---- route A's guard, every inset line, with callouts pushed over them; the Scout by Inez so his arrival is spoken (engine 0.49.0: the Listen leaves her in her chair at a terrace table, 15 m off, so at the call she walks back beside Inez: a walk, no run for the guard to see)
             yield return Fresh(h, ConversationScenes.Never); g = h.Game; var rg = new RouteRun { Orders = Route("route-a").ConvertAll(o => o.Tick == callAt && o.Op == "scout" ? new Order { Tick = o.Tick, Op = "scout", Do = "move", To = "beside-inez" } : o) }; Step(h, rg, callAt + 4); int nl = g.Log.Count; bool arr = false; for (int i = 0; i < 900 && !arr && !g.Over; i++) { Step(h, rg, g.Tick + 1); for (int j = nl; j < g.Log.Count; j++) if (g.Log[j].Code == "guard.at-cafe") arr = true; nl = g.Log.Count; }
-            h.LookAt(h.Views.Find("op/enforcer").position); h.SetPaused(false); { var seenA = new List<string>(); var okA = new[] { true }; var hitsA = new int[1]; yield return EveryInsetLine(h, 8f, seenA, okA, hitsA, true); row("r085insetRouteA", arr && seenA.Count >= 2 && okA[0], $"at café {arr}: {string.Join("; ", seenA)}"); row("r085plateClear", hitsA[0] == 0, $"most callouts under a speech plate in a frame: {hitsA[0]}"); yield return Shoot(dir, "r085-inset-route-a", log); } h.SetPaused(true); yield return Frames(2);
+            h.LookAt(h.Views.Find("op/enforcer").position); h.SetPaused(false); { var seenA = new List<string>(); var okA = new[] { true }; var hitsA = new int[1]; yield return EveryInsetLine(h, 80, seenA, okA, hitsA, true, log); /* 8 s of mission time */ row("r085insetRouteA", arr && seenA.Count >= 2 && okA[0], $"at café {arr}: {string.Join("; ", seenA)}"); row("r085plateClear", hitsA[0] == 0, $"most callouts under a speech plate in a frame: {hitsA[0]}"); yield return Shoot(dir, "r085-inset-route-a", log); } h.SetPaused(true); yield return Frames(2);
             // ---- Listen with Never: the agreed words as bubbles, the cards beside the feed, no old lines anywhere
             yield return Fresh(h, ConversationScenes.Never); g = h.Game; var rn = new RouteRun { Orders = Route("route-a") }; var inezN = h.Views.Find("waitress"); h.LookAt(inezN.position); for (int i = 0; i < 700 && !h.ConvoPicks.Contains("listen-inez") && !g.Over; i++) Step(h, rn, g.Tick + 1);
             h.SetPaused(false); var saidN = new List<string>(); bool cardsN = false, shotN = false, chipN = false; for (float wn = Time.unscaledTime; Time.unscaledTime - wn < 18f;) { yield return null; if (h.Bubbles.FindLast(b => b.Speaker is "milena" or "waitress") is HandoverHost.Bubble bn && !saidN.Contains(bn.Text)) { saidN.Add(bn.Text); if (saidN.Count == 2 && !shotN) { shotN = true; yield return new WaitForSecondsRealtime(0.4f); yield return Shoot(dir, "r085-never-bubble", log); } } chipN |= HudToolkit.ChipsShown > 0 && h.LastChip?.Do == "listen"; if (HudToolkit.PersonCardUp && !cardsN) { cardsN = true; yield return new WaitForSecondsRealtime(0.4f); yield return Shoot(dir, "r085-never-cards", log); } }

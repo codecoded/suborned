@@ -20,7 +20,7 @@ namespace Suborned.Play
     {
         sealed class LockMark
         {
-            public string Id = ""; public VisualElement Root, Disc, Cross, Faces, Edge, EdgePtr, WhyPlate; public Label Why; public KeyText WhyK; public Paint Ring; public readonly List<int> Shooters = new();
+            public string Id = ""; public VisualElement Root, Disc, Cross, Faces, Edge, WhyPlate; public EdgeTabEl EdgeTab; public Label Why; public KeyText WhyK; public Paint Ring; public readonly List<int> Shooters = new();
             /// <summary>Glyph 067 D3: when each shooter joined the lock (a later one's cameo slides into the row in 0.15 s; the set's own don't).</summary>
             public readonly Dictionary<int, float> Joined = new();
             public float Born = -9f, Gone = -1f, Given = -9f, PulseAt = -9f; public bool Locked, Seen; public Vector2 At; public bool OnScreen;
@@ -41,9 +41,7 @@ namespace Suborned.Play
             r.Disc = E(r.Root, null, 0, 0, ReticleD, ReticleD); r.Disc.pickingMode = PickingMode.Ignore; r.Disc.style.overflow = Overflow.Visible;
             r.Cross = P(r.Disc, 0, 0, ReticleD, ReticleD, (p, rc) => KeyedCross(p, rc.center, 8.5f)); // brief 101 step 6: the crosshair on the street, no disc
             r.Faces = E(r.Root, null, 0, ReticleD + 1f, float.NaN, 16); r.Faces.style.flexDirection = FlexDirection.Row; r.Faces.pickingMode = PickingMode.Ignore;
-            r.Edge = PlateDark(marks, 22f, 0.3f); r.Edge.style.position = Position.Absolute; r.Edge.style.width = 52; r.Edge.style.flexDirection = FlexDirection.Row; r.Edge.style.alignItems = Align.Center; r.Edge.style.paddingLeft = 7;
-            var ed = E(r.Edge, "s-disc_dark_24", w: 16, h: 16); ed.style.flexShrink = 0; Bg(E(ed, null, 3, 3, 10, 10), "overlays/crosshair", Cream);
-            r.EdgePtr = E(r.Edge, null, w: 14, h: 14); r.EdgePtr.style.marginLeft = 6; r.EdgePtr.style.flexShrink = 0; Icon(r.EdgePtr, "pointer", Cream);
+            r.EdgeTab = NewEdgeTab("lock"); r.Edge = r.EdgeTab.Root; // brief 101 round 3 (Glyph's rule 2): a round tab with the ink chevron
             manifest.Add((r.Root, "image", () => "lock reticle")); manifest.Add((r.Edge, "image", () => "lock edge chip"));
             // engine 0.35 (the sticky focus): why it waits, one or two words on a plate_dark under the disc (GDD §10: "aiming, walking in, no line")
             r.WhyPlate = E(r.Root); r.WhyPlate.style.position = Position.Absolute; r.WhyPlate.style.top = ReticleD + 4f; r.WhyPlate.pickingMode = PickingMode.Ignore; // brief 101 step 6: a street label, no plate
@@ -105,14 +103,14 @@ namespace Suborned.Play
                     string why = one && !r.Locked && r.Gone < 0f ? h.FocusWhy(r.Id, r.Shooters) : ""; Show(r.WhyPlate, why.Length > 0);
                     if (why.Length > 0) { bool pips = false; foreach (var f in m.Fighters) if (f.Id == r.Id) pips = true; r.WhyPlate.style.top = ReticleD + RingPast + 4f + (pips ? PipsH + 4f : 0f); r.WhyK.Set(why); float ww = float.IsNaN(r.WhyPlate.resolvedStyle.width) ? 80f : r.WhyPlate.resolvedStyle.width; r.WhyPlate.style.left = ReticleD / 2f - ww / 2f; }
                     // the shooters' faces under the disc
-                    while (r.Faces.childCount < r.Shooters.Count && r.Faces.childCount < 4) { var f = Cameo(r.Faces, 12f, 2f); f.style.marginLeft = r.Faces.childCount == 1 ? 0 : -4; }
+                    while (r.Faces.childCount < r.Shooters.Count && r.Faces.childCount < 4) { var f = SFace(r.Faces, 16f, 1.6f); f.style.marginLeft = r.Faces.childCount == 1 ? 0 : -3; } // brief 101 round 3: the shooters' faces in the cream ring
                     for (int i = 0; i < r.Faces.childCount; i++)
                     {
                         bool has = i < r.Shooters.Count; Show(r.Faces[i], has); if (!has) continue; CameoOf(r.Faces[i], r.Shooters[i]);
                         float js = r.Joined.TryGetValue(r.Shooters[i], out var ja) && ja > 0f ? Mathf.Clamp01((now - ja) / 0.15f) : 1f, je = 1f - (1f - js) * (1f - js); // Glyph 067 D3: one more shooter's cameo slides into the row in 0.15 s
                         r.Faces[i].style.translate = new Translate(Mathf.Lerp(10f, 0f, je), 0f); r.Faces[i].style.opacity = je;
                     }
-                    float fw = Mathf.Min(4, r.Shooters.Count) * 12f + 4f; r.Faces.style.left = ReticleD / 2f - fw / 2f;
+                    float fw = Mathf.Min(4, r.Shooters.Count) * 13f + 3f; r.Faces.style.left = ReticleD / 2f - fw / 2f;
                     r.Ring.MarkDirtyRepaint(); r.Root.BringToFront();
                 }
                 else if (r.Edge.resolvedStyle.display != DisplayStyle.None && w.HasValue && h.View is UnityEngine.Camera cam)
@@ -120,7 +118,7 @@ namespace Suborned.Play
                     var sp = cam.WorldToScreenPoint(w.Value); var size = root.panel.visualTree.layout.size; var c = new Vector2(size.x / 2f, size.y / 2f);
                     var d = new Vector2(sp.x - Screen.width / 2f, Screen.height / 2f - sp.y); if (sp.z < 0f) d = -d; if (d.sqrMagnitude < 1f) d = Vector2.up;
                     float k = Mathf.Min((size.x / 2f - 40f) / Mathf.Max(1e-3f, Mathf.Abs(d.x)), (size.y / 2f - 24f) / Mathf.Max(1e-3f, Mathf.Abs(d.y)));
-                    var at = c + d * k; r.Edge.style.left = at.x - 26f; r.Edge.style.top = at.y - 11f; r.EdgePtr.style.rotate = new Rotate(new Angle(Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg, AngleUnit.Degree));
+                    var at = c + d * k; EdgeTabAt(r.EdgeTab, at, Mathf.Atan2(d.y, d.x));
                 }
                 bits.Add($"{r.Id}:{(r.Gone >= 0f ? "released" : now - r.Born < 0.18f ? "set" : r.Locked ? "locked" : "held")}:{string.Join(",", r.Shooters)}{(r.OnScreen ? "" : ":edge")}{(r.WhyPlate != null && r.WhyPlate.resolvedStyle.display != DisplayStyle.None && r.Why.text.Length > 0 ? ":why=" + r.Why.text : "")}");
             }

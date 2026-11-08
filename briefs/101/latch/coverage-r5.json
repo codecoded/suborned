@@ -1,0 +1,48 @@
+{
+ "method": "the HUD layer alone (the capture's .hud.png), alpha >= 24, at 1920 x 1080 (tools/hud-budget's reading): keylines and shadows count, ground marks do not",
+ "build": "0.2.290",
+ "today": "Glyph's 'today' (0.2.286 / 0.2.287), briefs/101/glyph/r3/make/coverage.json",
+ "mock": "Glyph's r3 frames, the same file",
+ "rows": {
+  "quiet": {
+   "today": 3.86,
+   "mock": 3.68,
+   "mockLayer": 3.68,
+   "now": 3.71,
+   "picture": "out/scratch/latch/101r3/shots-290/t101-quiet.png",
+   "what": "Quiet: route G, 3:28.6 (a guard radios in the knocked-out guard; the square camera on the Tech)"
+  },
+  "window": {
+   "today": 4.2,
+   "mock": 3.74,
+   "mockLayer": 3.74,
+   "now": 3.76,
+   "picture": "out/build/play/proof/done-call-window.png",
+   "what": "The call lands: the guard's away window and the Fixer's chip (the proof's done-call-window)"
+  },
+  "card": {
+   "today": 7.33,
+   "mock": 3.41,
+   "mockLayer": 3.41,
+   "now": 4.51,
+   "picture": "out/build/play/proof/r123-body-safe.png",
+   "what": "r123's moment: Inez's card waits (no dock beside the news)"
+  },
+  "conv": {
+   "today": 6.24,
+   "mock": 4.98,
+   "mockLayer": 4.98,
+   "now": 4.97,
+   "picture": "out/build/play/proof/r085-conv-cards.png",
+   "what": "Inez's card after the conversation, on her (r085's proof)"
+  },
+  "ring": {
+   "today": 4.05,
+   "mock": 3.84,
+   "mockLayer": 3.84,
+   "now": 3.86,
+   "picture": "out/build/play/proof/r101-ring-plates.png",
+   "what": "The act ring on Inez (r101 proof)"
+  }
+ }
+}

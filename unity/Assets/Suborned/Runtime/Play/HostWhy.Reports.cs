@@ -136,7 +136,8 @@ namespace Suborned.Play
         {
             if (Text == null || !OnWay.Exists(x => x.Id == id) || Text.OnWayStoppedPlate.Length == 0) return;
             var line = PlayText.FillWhy(Text.OnWayStoppedLine, new Dictionary<string, string> { ["who"] = WhyWho(by) });
-            popCode = "report-stopped"; Pop(Text.OnWayStoppedPlate, null, WhyWorld(WhyPos(by)), Feedback.Ok, 2.5f, "icons/singles/check", PlayText.Unfilled(line) ? "" : line);
+            string way = OnWay.Find(x => x.Id == id)?.Way ?? ""; // brief 101 round 3 (Glyph): the report's own disc, its way's pictogram, struck through
+            popCode = "report-stopped"; Pop(Text.OnWayStoppedPlate, null, WhyWorld(WhyPos(by)), Feedback.Ok, 2.5f, "icons/singles/" + OnWayIcon(way) + "#struck", PlayText.Unfilled(line) ? "" : line);
             StoppedReports++;
         }
         /// <summary>The host check reads it: marked reports that never landed this run.</summary>

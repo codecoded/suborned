@@ -1,0 +1,51 @@
+{
+ "build": "0.2.290",
+ "date": "2026-11-09",
+ "path": "out/build/play/The Suborned.app",
+ "drawCheck": "draw check ok",
+ "crops": [
+  ["r5/crops-quiet.png", "Quiet at 2x (a 3840 capture) beside Glyph's mock: the door's round tabs and the next step's capsule, the attention clock, the callout with its stem and the Tech's tick. The 2x shot came after the Camera on pop had gone; the 1x frame above has it."],
+  ["r5/crops-window.png", "The window at 2x: the done chip and the window's timed tab."],
+  ["r5/crops-conv.png", "Inez's slip at 2x."],
+  ["r5/crops-ring.png", "The act ring at 2x. This build opened it at the pointer (lower right of the frame); Glyph's mock has it on Inez. After Watch, this build shows the Watch's learns mark (a small round tab); the mock read that disc as the Scout's face."],
+  ["r5/crops-card.png", "The key faces: Inez's dot while her card waits off screen."],
+  ["r5/pieces-street.png", "Each piece on its own at 2x from the 3840 captures (parts named by the capture)."],
+  ["r5/pieces-proof.png", "Each piece on its own at 2x from the proof's pictures: the key dot, Click again to stop (the pointer), the who-can pop, a shut way (mark_no), the reroute and lock edge tabs, the stash names, the loop's chip and timed tab, the lozenge's hover."],
+  ["r5/pieces-more.png", "The walk-in chip (Glyph's Uneasy > Listen, Pay), the plan ghosts, a window's last second (orange on ink)."],
+  ["r5/slip-under.png", "With no room over her head (scenes off, Inez at the top of the view) the slip hangs under her feet on its stem."]
+ ],
+ "also": [
+  "The \"Take control: T\" pop is gone (HostDrive.cs): no click takes control, and it said nothing as control ended. Fable can remove its word and the unused \"Map view: T\". Note: the follow view's own way back still reads \"Back to map · T\" (HudToolkit.Hold.cs, BackToMapWord with the key's label), seen in r123-fight-ground.",
+  "Splice's r083 patch (briefs/101/splice/r083-inset.patch) applied to Proof085Scenes.cs, with a frame-time trace. r083 passes on 0.2.290, every inset row included.",
+  "Splice's question, answered by the trace: nothing in play holds the clock. Route A's window opens on one 6.9 s frame: the frame in which the proof's own synchronous Step loop ran the guard to the cafe. The host's accumulator then steps 68 ticks in one frame, under its 80-tick cap. No frame was paused or frozen. The pressed run opens on a 1.8 s frame the same way. A play hitch would catch up the same way, by design. A yield while still paused after the synchronous steps would keep that frame out of the window; the mission-time window makes it pass either way.",
+  "text.json exported from HEAD (Fable's 3c90428c6 and Aster's 34ee939f3) by the batch's words step; the lozenge reads the new shorts.",
+  "Every remaining face wears the cream ring: the shared Cameo helper's ring is now the page cream (the aim row's shooters, the cue faces, the drag and clip cameos).",
+  "Stash names are manifest markers (one or two words); the r067 Alt frame's stacked names no longer read as a text block (r067 32/32).",
+  "Fixed on the way: the old stash plate's label was still toggled in StreetLess; with stashes on screen it threw every frame (92 times in 0.2.289's r059 run), so the HUD's later passes went stale and r059's spring read failed. Fixed in 0.2.290: r059 passes, and no exception appears in its proof log."
+ ],
+ "budget": [
+  "This round's shots on 0.2.290: 8/8 within budget (rest 3.0 %, quiet 3.7 %, window 4.5 %, loud 3.6 %, busy 4.2 %, the 2x rows alike).",
+  "The batch's shots: 11/11 within budget, layout audit 11/11 clean.",
+  "Proof sets on 0.2.290: r059 14/14, r067 32/32, r083 2/2, r123 6/7. r123-body-safe passes: the \"2 card panels\" fault is gone; Inez's card no longer docks.",
+  "r123-fight-ground fails on two scenes-off Listen street lines (Milena's 15 words, Inez's 17) shown one above the other. The budget's stack() merges them, because the second bubble's face makes a 30 px run, under 1.3 x height, and its speech rule sums them into one 32-word conversation line (cap 25). They are two manifest bubbles, each within the bubble cap. The street lines run in real time, so this picture had one line up on 0.2.288 and passed; the bubbles are step 6's, unchanged this round. For Splice: count speech per manifest element."
+ ],
+ "frames": [
+  "Full proof, 0.2.289 (the same HUD as 0.2.290 bar the stash fix): play zoom 228.3 fps mean, p99 6.4 ms at 2880 x 1864 (the Air-sized proxy on the Studio); by yaw 30/120/210/300: p99 6.4/5.6/6.0/6.4 ms. Slowest of 7 spots: fire-commander 62.9 fps, p99 10 ms.",
+  "Delta proof, 0.2.290: 257 fps mean, p99 5.9 ms at 1920 x 1080; fire-commander 88.6 fps, p99 9.6 ms.",
+  "Late fight, 0.2.290: loud-fight p99 8.5 ms, mean 6 ms over 9,967 frames, worst 29.9 ms at the tail; loud-left-downed p99 10.2 ms, worst 29.6 ms. No frame over 50 ms.",
+  "Round 4 (0.2.287) read 250 fps, p99 5.7 ms at 2880 x 1864. This round's runs shared the Studio with other agents: load 6.5 to 6.8 at the proof's start. No Air run (it needs Sky's OK)."
+ ],
+ "batch": [
+  "0.2.289: sim 472/472 headless with identical replay; words ok (text.json into StreamingAssets); compile ok; host logic 186/186; the full proof (every section, Splice's map); game-check stopped on r059 (the stash bug above).",
+  "0.2.290 (the fix): compile ok, host logic 186/186; a delta proof of 11 sections (base, levels, r118, r059, r067, r123, r083, rings, fire, hudClick) all ok, scenarios 472/472; shots 13/13; budget stopped on r123-fight-ground (above); late fight run on its own: ok.",
+  "Skipped on purpose: unity-match and tp-long. No engine source or world changed; the DLL's bytes changed only from another agent's sim rebuild, and the sim step's 472 scenarios replay identically. kit, world and unity-world were skipped by the delta. The next batch's budget step will stop on r123-fight-ground until the budget counts speech per bubble."
+ ],
+ "open": [
+  "Glyph: check the lozenge's hover line (a street label over the news, right-aligned, 460 px wrap), the slip hanging under her feet, and the Watch's learns mark after Watch.",
+  "Splice: the speech rule should count a stacked pair of bubbles as two (per manifest element), else r123-fight-ground fails whenever two street lines overlap in time.",
+  "Splice and Glyph: the budget counts the news lozenge as a card, so a frame with Inez's slip on her and a news card up would read as 2 card panels (one allowed). No proof frame shows both today.",
+  "Fable: the \"Take control: T\" pop is gone; its word and \"Map view: T\" can go. \"Back to map · T\" in the follow view is a key legend too.",
+  "Splice: optional, a yield while still paused after r083's synchronous steps, so the window's first frame isn't the proof's own fast-forward.",
+  "An Air run needs Sky's OK; none started."
+ ]
+}

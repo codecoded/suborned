@@ -13,7 +13,7 @@ namespace Suborned.Play
     {
         // ---------------------------------------------------------------- the end steps (Sky 2026-10-18: "it's really unclear on how to take Vale")
 
-        VisualElement doorMark, carMark, heldMark, doorNext, doorTurn; KeyText heldK; Paint knobRing; bool doorHover;
+        VisualElement doorMark, carMark, heldMark, doorNext, doorTurn; Capsule doorNextCap; KeyText heldK; Paint knobRing; bool doorHover;
         readonly Dictionary<string, (Vector3 at, float lost)> holderSeen = new(); readonly HashSet<string> holderIds = new();
         /// <summary>The door marker while Enter is open to the Enforcer (a dashed ring with the Enter glyph, the hint ring's grammar, quiet: no
         /// pulse), with his progress round it while he is inside; the car marker once he is out with Vale. A click gives the order (HostValeSteps).
@@ -66,7 +66,8 @@ namespace Suborned.Play
             holderUsed = 0; seatPill = default;
             VisualElement Mk(string which)
             {
-                var e = E(marks, "s-disc_dark_24", 0, 0, 26, 26, pick: true); var flat = E(e, null, 3.5f, 3.5f, 19, 19); flat.name = "flat"; Round(flat, 9.5f); flat.style.backgroundColor = Ink; E(e, null, 5, 5, 16, 16).name = "g"; P(e, 0, 0, 26, 26, UnknownEye).name = "unk";
+                // brief 101 round 3 (Glyph's rule 2): a round tab (the book's body, the cream ring, a soft shadow); the unknown eye drawn as strokes on it
+                var e = RoundTab(marks, 26f, "", true); e.style.position = Position.Absolute; E(e, null, 0, 0, 0, 0).name = "flat"; P(e, 0, 0, 26, 26, UnknownEye).name = "unk";
                 e.RegisterCallback<PointerDownEvent>(ev => { if (ev.button != 0) return; ev.StopPropagation(); host.StepMarkClick(which); });
                 if (which == "door") { e.RegisterCallback<PointerEnterEvent>(_ => doorHover = true); e.RegisterCallback<PointerLeaveEvent>(_ => doorHover = false); }
                 manifest.Add((e, "image", () => which + " marker")); return e;
@@ -94,7 +95,6 @@ namespace Suborned.Play
                 // Glyph techwatch fix 4: the marker reads whole on a ghosted tower's dither: an ink halo under the disc, the dashes on an ink
                 // underlay (the 018 tethers' grammar), and the unknown eye 2 px smaller, so its "?" sits inside the bezel, not on it
                 var gl = e.Q("g"); bool small = icon == "eye_unk"; Show(gl, !small); Show(e.Q("flat"), small); if (e.Q("unk") is VisualElement uk) Show(uk, small); // flat ink under the unknown eye (the disc art's gloss ate the "?"); the eye and its "?" drawn as strokes (UnknownEye)
-                { var hq = q; paints.Add(pp => { pp.fillColor = Ink; pp.BeginPath(); pp.Arc(hq, 18f, Deg(0), Deg(360)); pp.Fill(); }); } // Glyph r2-3: the marker on an opaque ink halo (the dither and the crossing's brass rail showed through)
                 if (ringIt) GroundRing(w, 46f * px / 2f * GroundPxM, col, 2f, true, 0.6f); // the dashed ring on the ground round the marker's foot (Glyph's leftover: depth-tested, behind legs; brief 046)
                 if (progress >= 0) { var c = q; float f = progress / 1000f; paints.Add(pp => { RingArc(pp, c, 16, 1f, new Color(1, 1, 1, 0.22f), 2.6f); RingArc(pp, c, 16, f, TurqLight, 2.6f); }); }
             }
@@ -111,7 +111,7 @@ namespace Suborned.Play
                 // quarter steps to the nearest yaw where the door is clear (HostDoorView.TurnToDoor)
                 if (doorTurn == null)
                 {
-                    doorTurn = E(marks, "s-disc_dark_24", 0, 0, 22, 22, pick: true); Icon(E(doorTurn, null, 3, 3, 16, 16), "turn_view", TurqLight);
+                    doorTurn = RoundTab(marks, 23f, "turn_view", true); doorTurn.style.position = Position.Absolute; // brief 101 round 3: a round tab
                     doorTurn.RegisterCallback<PointerDownEvent>(ev => { if (ev.button != 0) return; ev.StopPropagation(); host.TurnToDoor(); });
                     manifest.Add((doorTurn, "image", () => "door turn")); Show(doorTurn, false);
                 }
@@ -120,18 +120,16 @@ namespace Suborned.Play
                     Show(doorTurn, turnOn);
                     if (turnOn)
                     {
-                        doorTurn.style.left = doorMark.style.left.value.value - 25; doorTurn.style.top = doorMark.style.top.value.value - 12; // the upper left shoulder (the next-step chip takes the right)
+                        doorTurn.style.left = doorMark.style.left.value.value - 26; doorTurn.style.top = doorMark.style.top.value.value - 13; // the upper left shoulder (the next-step capsule takes the right)
                         float k = 1f + 0.09f * Mathf.Sin(now * 2.6f); doorTurn.style.scale = new Scale(new Vector3(k, k, 1f)); // a slow pulse
-                        var tq = new Vector2(doorTurn.style.left.value.value + 11, doorTurn.style.top.value.value + 11); paints.Add(pp => { pp.fillColor = Ink; pp.BeginPath(); pp.Arc(tq, 14f, Deg(0), Deg(360)); pp.Fill(); }); // the ink halo the markers stand on
                     }
                 }
                 // "unk": who learns it next (Sky 2026-10-18, the Tech watches machines): the Intel chip's grammar beside the marker, the agent's
                 // cameo and the Watch glyph, its rim turquoise when that agent is the one selected; a click selects, a second gives the Watch
                 if (doorNext == null)
                 {
-                    doorNext = E(marks, null, 0, 0, 52, 26, pick: true); Round(doorNext, 13); doorNext.style.backgroundColor = new Color(0.039f, 0.149f, 0.141f);
-                    var dc0 = E(doorNext, null, 7, 4, 18, 18); dc0.name = "cameo"; Round(dc0, 9); Border(dc0, 1f, Cream); var dg = E(doorNext, null, 29.5f, 4.2f, 15, 15); dg.name = "g";
-                    doorNext.RegisterCallback<PointerDownEvent>(ev => { if (ev.button != 0) return; ev.StopPropagation(); host.DoorNextClick(); });
+                    // brief 101 round 3 (Glyph's rule 2): a capsule, the agent's face and the Watch's pictogram, its inline turquoise while that agent is selected
+                    doorNextCap = NewCapsule(marks, 24f, true, () => host.DoorNextClick()); doorNext = doorNextCap.Root; doorNext.style.position = Position.Absolute;
                     manifest.Add((doorNext, "image", () => "door next step")); Show(doorNext, false);
                 }
                 {
@@ -140,8 +138,8 @@ namespace Suborned.Play
                     if (nx is { } dn)
                     {
                         bool sel = host.Selected[(int)dn.by] && host.Agent == dn.by;
-                        doorNext.style.left = doorMark.style.left.value.value + 26 + 6; doorNext.style.top = doorMark.style.top.value.value;
-                        Bg(doorNext.Q("cameo"), $"portraits/cameo_{Op.Name(dn.by)}_normal", Color.white); Border(doorNext, 1.3f, sel ? TurqLight : Chrome); /* art bible: a face in a chrome ring; the live accent when selected */ Icon(doorNext.Q("g"), "watch", sel ? TurqLight : Cream);
+                        doorNext.style.left = doorMark.style.left.value.value + 26 + 6; doorNext.style.top = doorMark.style.top.value.value + 1;
+                        SetCapsule(doorNextCap, "watch", "", (int)dn.by, live: sel); // the live accent when selected
                     }
                 }
                 // brief 018 grammar (Glyph fight r1 A-C): one car marker whose shape is its state. In the final fight the hold reach is a ring on

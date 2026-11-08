@@ -84,12 +84,12 @@ namespace Suborned.Play
             return Tok.hold.ease switch { "easeOut" or "ease-out" => 1f - (1f - p) * (1f - p), "easeIn" or "ease-in" => p * p, "easeInOut" or "ease-in-out" => p < 0.5f ? 2f * p * p : 1f - 2f * (1f - p) * (1f - p), _ => p };
         }
 
-        /// <summary>A face cameo in the chrome ring (2 px chrome, 1 px ink-deep outside it): `inner` px of face, `inner + 6` across. The face is
-        /// the child named "face".</summary>
+        /// <summary>A face cameo: `inner` px of face, `inner + 2 ring + 2` across, the face the child named "face". Brief 101 round 3 (Glyph's rule 4: every face wears the built
+        /// cream ring): the ring is the book's page cream (it was 2 px chrome), its outer line a faint ink edge in place of the ink-deep one, so it holds on pale paving.</summary>
         static VisualElement Cameo(VisualElement parent, float inner, float ring = 2f)
         {
             float d = inner + 2f * ring + 2f;
-            var w = E(parent, null, w: d, h: d); Round(w, d / 2f); w.style.flexShrink = 0; w.style.backgroundColor = Chrome; Border(w, 1f, InkDeep);
+            var w = E(parent, null, w: d, h: d); Round(w, d / 2f); w.style.flexShrink = 0; w.style.backgroundColor = StPage; Border(w, 1f, new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.35f));
             var f = E(w, null, ring, ring, inner, inner); Round(f, inner / 2f); f.name = "face"; f.style.backgroundColor = DiscBody;
             return w;
         }

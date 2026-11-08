@@ -108,7 +108,7 @@ namespace Suborned.Play
             yield return Press(Key.Space);
         }
 
-        /// <summary>After the cut: the card on her, the plain chip stood aside, no old line beside it, New with what's opened; then docked with the view elsewhere.</summary>
+        /// <summary>After the cut: the card on her, the plain chip stood aside, no old line beside it, New with what's opened; then, the view elsewhere, waiting (brief 101 round 3: it never docks).</summary>
         static IEnumerator CardOnPerson(HandoverHost h, string dir, List<string> log, System.Action<string, bool, string> row)
         {
             var inez = h.Views.Find("waitress"); h.LookAt(inez.position); yield return new WaitForSecondsRealtime(0.9f); yield return Frames(3);
@@ -116,9 +116,12 @@ namespace Suborned.Play
             bool bubbles = h.Bubbles.Exists(b => b.Speaker is "scout" or "waitress" or "milena" && Time.unscaledTime - b.Born < b.Life);
             bool all = cv != null && cv.Learned.TrueForAll(words.Contains) && cv.Opens.TrueForAll(words.Contains) && words.Contains(h.Text.ConvNew + " ");
             yield return Shoot(dir, "r085-conv-cards", log);
-            row("r085cards", HudToolkit.PersonCardUp && !HudToolkit.PersonCardDocked && all && HudToolkit.ChipsShown == 0 && !bubbles && pc.Until - pc.At >= HandoverHost.CardReadS(pc) - 0.01f, $"up {HudToolkit.PersonCardUp}, docked {HudToolkit.PersonCardDocked}, chips {HudToolkit.ChipsShown}, old bubbles {bubbles}, holds {pc?.Until - pc?.At:0.0} s: {words}");
+            row("r085cards", HudToolkit.PersonCardUp && !HudToolkit.PersonCardWaiting && all && HudToolkit.ChipsShown == 0 && !bubbles && pc.Until - pc.At >= HandoverHost.CardReadS(pc) - 0.01f, $"up {HudToolkit.PersonCardUp}, waiting {HudToolkit.PersonCardWaiting}, chips {HudToolkit.ChipsShown}, old bubbles {bubbles}, holds {pc?.Until - pc?.At:0.0} s: {words}");
+            // brief 101 round 3 (Glyph's slip): with the view elsewhere the card never docks: it waits, its read time held, and her key face carries the Book's new dot
+            float left0 = pc != null ? pc.Until - Time.unscaledTime : 0f;
             h.LookAt(inez.position + new Vector3(70f, 0f, 70f)); yield return new WaitForSecondsRealtime(0.9f); yield return Frames(3); yield return Shoot(dir, "r085-card-dock", log);
-            row("r085cardDock", HudToolkit.PersonCardUp && HudToolkit.PersonCardDocked, $"view elsewhere: up {HudToolkit.PersonCardUp}, docked {HudToolkit.PersonCardDocked}");
+            float left1 = pc != null ? pc.Until - Time.unscaledTime : 0f;
+            row("r085cardDock", !HudToolkit.PersonCardUp && HudToolkit.PersonCardWaiting && HudToolkit.KeyDotFor == "waitress" && left1 >= left0 - 0.2f, $"view elsewhere: up {HudToolkit.PersonCardUp}, waiting {HudToolkit.PersonCardWaiting}, key dot '{HudToolkit.KeyDotFor}', read time left {left0:0.0} s then {left1:0.0} s");
         }
 
         /// <summary>call-inez: the held moments by clicks and by time; three speakers, each framed alone.</summary>

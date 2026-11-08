@@ -41,7 +41,7 @@ namespace Suborned.Play
             vpillLockK = KText(vpill, 15f, "k-semi", "k-soft"); Show(vpillLockK.Root, false);
             BuildPillPred(); // engine 0.28: the likely / worse plate after the price, before the faces (hud29 predictionMarks)
             vpillFaces = E(vpill); vpillFaces.style.flexDirection = FlexDirection.Row; vpillFaces.style.marginLeft = 10; vpillFaces.style.flexShrink = 0; vpillFaces.style.overflow = Overflow.Visible;
-            for (int i = 0; i < 4; i++) { var f = Cameo(vpillFaces, FaceSize); f.style.marginLeft = i == 0 ? 0 : -7; faceEls.Add(f); }
+            for (int i = 0; i < 4; i++) { var f = Cameo(vpillFaces, FaceSize); f.style.marginLeft = i == 0 ? 0 : 2; faceEls.Add(f); } // brief 101 round 3 (Glyph): the shooters' faces side by side in the cream ring
             // "Watched spot" (Fable row 8): the stand spot is in a known cone: the eye and the words in urgent orange on an ink keyline
             vpillSeen = E(vpill); vpillSeen.style.flexDirection = FlexDirection.Row; vpillSeen.style.alignItems = Align.Center; vpillSeen.style.flexShrink = 0; vpillSeen.style.marginLeft = 10;
             KIcon(vpillSeen, "sawyou", 16f, "ki-hot", "ki-key-ink", 1.7f); var sw = KText(vpillSeen, 14f, "k-semi", "k-hot", "k-key-ink", KeyHotW); sw.Set("Watched spot"); sw.Root.style.marginLeft = 5;

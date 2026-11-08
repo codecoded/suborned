@@ -12,7 +12,7 @@ namespace Suborned.Play
     public sealed partial class HudToolkit
     {
         const float RrLine = 0.04f, RrUnder = 0.09f, RrUnderA = 0.6f, RrDot = 0.35f, RrChevron = 3f;
-        VisualElement rrWaitCameo, rrPatrolCameo, rrEdge; Paint rrEdgeArrow; float rrEdgeAngle;
+        VisualElement rrWaitCameo, rrPatrolCameo, rrEdge; EdgeTabEl rrEdgeTab;
         /// <summary>The proof reads it: "hover" / "live" / "" and the route's point count.</summary>
         public static string RerouteShown { get; private set; } = "";
         /// <summary>The proof reads it: the edge chip is up (the wait spot off screen).</summary>
@@ -48,14 +48,7 @@ namespace Suborned.Play
             if (rrEdge == null)
             {   // Glyph's 0.2.104 review #3: cameo, 4 px, the pointer (cream, 12 px, painted turned toward the wait spot so its box stays 12 px for the
                 // layout audit), the plate shrinking to fit; 9 px each side keeps both 4 px clear of the rim
-                rrEdge = PlateDark(marks, 30f, 0.37f); rrEdge.style.position = Position.Absolute; rrEdge.style.paddingLeft = 10; rrEdge.style.paddingRight = 10;
-                var cm = Cameo(rrEdge, 12f, 2f); Bg(cm.Q("face"), "badges/npc_patrol_face", Color.white);
-                rrEdgeArrow = P(rrEdge, 0, 0, 12, 12, (pt, r) =>
-                {
-                    var c = r.center; float a = rrEdgeAngle; Vector2 R(Vector2 v) => new(v.x * Mathf.Cos(a) - v.y * Mathf.Sin(a), v.x * Mathf.Sin(a) + v.y * Mathf.Cos(a));
-                    pt.fillColor = Cream; pt.BeginPath(); pt.MoveTo(c + R(new Vector2(5.5f, 0f))); pt.LineTo(c + R(new Vector2(-4f, 4.5f))); pt.LineTo(c + R(new Vector2(-1.5f, 0f))); pt.LineTo(c + R(new Vector2(-4f, -4.5f))); pt.ClosePath(); pt.Fill();
-                });
-                rrEdgeArrow.style.position = Position.Relative; rrEdgeArrow.style.marginLeft = 4; rrEdgeArrow.style.flexShrink = 0;
+                rrEdgeTab = NewEdgeTab("reroute"); rrEdge = rrEdgeTab.Root; // brief 101 round 3 (Glyph's rule 2): a round tab with the ink chevron
                 Show(rrEdge, false); manifest.Add((rrEdge, "image", () => "reroute edge chip")); /* the 2x check and the layout audit find it */
             }
             bool on = rr.On && !m.Ended && host.View != null && (!FightCues.Blind || rr.Hover && !host.Game.FightOn); /* brief 084: route lines on hover only, never in a fight */
@@ -95,9 +88,8 @@ namespace Suborned.Play
                 var at = c + dir * k;
                 // 0.2.109 own check: the Tech stands by the wait spot, so his off-screen cameo (24 px and its tail) sits on the same edge point:
                 // step the chip inward, clear of every edge cameo up, so both read
-                for (int step = 0; step < 4 && EdgeCamHits(new Rect(at.x - 26f, at.y - 14f, 56f, 30f), 6f); step++) at -= dir * 34f;
-                Show(rrEdge, true); rrEdge.style.left = at.x - 26f; rrEdge.style.top = at.y - 14f;
-                float ang = Mathf.Atan2(dir.y, dir.x); if (Mathf.Abs(ang - rrEdgeAngle) > 0.01f) { rrEdgeAngle = ang; rrEdgeArrow.MarkDirtyRepaint(); } // the arrow points at the wait spot (screen space, y down)
+                for (int step = 0; step < 4 && EdgeCamHits(new Rect(at.x - 13f, at.y - 13f, 26f, 26f), 16f); step++) at -= dir * 34f;
+                Show(rrEdge, true); EdgeTabAt(rrEdgeTab, at, Mathf.Atan2(dir.y, dir.x)); // the chevron points at the wait spot (screen space, y down)
             }
             if (rr.Hover && Proj(rr.Patrol + Vector3.up * 1.9f, out var pq)) { Show(rrPatrolCameo, true); rrPatrolCameo.style.left = pq.x - 9f; rrPatrolCameo.style.top = pq.y - 9f; }
         }

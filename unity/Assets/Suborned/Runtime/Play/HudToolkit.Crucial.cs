@@ -13,7 +13,12 @@ namespace Suborned.Play
     public sealed partial class HudToolkit
     {
         VisualElement crCard, crLoz, crLozInline, crDiscInline, crIcon, crFace, crBadge, crLamps, crFixes, crTicket, crCountTag; Label crTitle, crLine, crCount, crTicketWords;
-        int crShownId = -1;
+        int crShownId = -1; KeyText crTipK; bool crHover;
+        /// <summary>Brief 101 round 3 (Fable's lozenge round): the proof reads the hover's line ("" hidden) and where the lozenge is (pixels, origin bottom left).</summary>
+        /// <summary>The proof's picture holds the hover while the window changes size round it (CaptureSize), as the seal's SealHoverForce; the check reads the real pointer first.</summary>
+        public static bool CrucialHoverForce;
+        public static string CrucialTip => live?.crTipK != null && live.crTipK.Root.style.display != DisplayStyle.None ? live.crTipK.Words : "";
+        public static Vector2? CrucialScreen { get { var b = live?.crLoz; if (b == null || b.resolvedStyle.display == DisplayStyle.None || b.worldBound.width <= 0) return null; var c = b.worldBound.center; var sz = b.panel.visualTree.layout.size; return new Vector2(c.x / sz.x * Screen.width, Screen.height - c.y / sz.y * Screen.height); } }
         /// <summary>The proof reads it: the card shown ("kind|title|line|1 of n"), "" when none.</summary>
         public static string CrucialShown { get; private set; } = "";
         /// <summary>The lozenge's place: its right end 90 px in from the screen's (the Book roundel's 56 px and 14 px of air), its foot 27 px up.</summary>
@@ -26,7 +31,9 @@ namespace Suborned.Play
             crFixes = E(crCard); crFixes.style.flexDirection = FlexDirection.Row; crFixes.style.marginBottom = 8; crFixes.style.alignSelf = Align.FlexStart; crFixes.style.marginLeft = 40;
             (crLoz, crLozInline) = Lozenge(crCard, CrH, "e-deep", pick: true); crLoz.style.paddingLeft = 40; crLoz.style.paddingRight = 24;
             crLoz.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.CrucialDismiss(); e.StopPropagation(); } });
-            crLoz.RegisterCallback<PointerEnterEvent>(_ => RingColour(crLozInline, TurqLight)); crLoz.RegisterCallback<PointerLeaveEvent>(_ => RingColour(crLozInline, null));
+            crLoz.RegisterCallback<PointerEnterEvent>(_ => { RingColour(crLozInline, TurqLight); crHover = true; }); crLoz.RegisterCallback<PointerLeaveEvent>(_ => { RingColour(crLozInline, null); crHover = false; });
+            // brief 101 round 3 (Fable's lozenge round): hovering an Alert or Police card shows its cause's full line, filled, as a street label over the news; leaving hides it
+            crTipK = KText(root, 14.5f, "k-semi"); crTipK.Root.style.position = Position.Absolute; KeyWrap(crTipK, 460f); crTipK.Face.style.unityTextAlign = TextAnchor.UpperRight; foreach (var tc in crTipK.Copies) tc.style.unityTextAlign = TextAnchor.UpperRight; Show(crTipK.Root, false);
             // the roundel over the lozenge's left end
             VisualElement disc; (disc, crDiscInline) = Roundel(crLoz, CrDisc, "e-orange"); Pin(disc, new Vector2(-26f, -4f));
             crIcon = E(disc, null, w: CrDisc * 0.56f, h: CrDisc * 0.56f); crIcon.style.flexShrink = 0;
@@ -61,7 +68,7 @@ namespace Suborned.Play
         {
             WhyFrame(on); OnWayFrame(on); // brief 100
             var c = on ? host.CrucialNow : null; Show(crCard, c != null);
-            if (c == null) { CrucialShown = ""; crShownId = -1; return; }
+            if (c == null) { CrucialShown = ""; crShownId = -1; Show(crTipK.Root, false); return; }
             int n = host.CrucialQueue.Count; var words = BookWordsFile.Get();
             int keyS = host.CrucialKeyS(c); bool ticket = keyS >= 0;
             Text(crTitle, c.Title); Text(crLine, host.CrucialLineApart(c)); Text(crCount, words.FeedOf.Replace("{i}", "1").Replace("{n}", n.ToString()) + " ›");
@@ -85,6 +92,8 @@ namespace Suborned.Play
                 }
             }
             CrucialShown = $"{c.Kind}|{c.Title}|{crLine.text}{(ticket ? " · " + crTicketWords.text : "")}|1 of {n}";
+            string tip = (crHover || CrucialHoverForce) && c.Kind is "alert" or "police" && c.Why != null ? c.Why.Line : ""; Show(crTipK.Root, tip.Length > 0);
+            if (tip.Length > 0) { crTipK.Set(tip); crTipK.Root.BringToFront(); var lb = crLoz.worldBound; var cb = crCard.worldBound; var rb = root.worldBound; float tw = crTipK.Root.resolvedStyle.width, th = crTipK.Root.resolvedStyle.height; if (float.IsNaN(tw) || tw < 1f) tw = 400f; if (float.IsNaN(th) || th < 1f) th = 22f; crTipK.Root.style.left = lb.xMax - rb.x - tw; crTipK.Root.style.top = cb.yMin - rb.y - th - 10f; }
         }
     }
 }

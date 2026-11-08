@@ -76,7 +76,7 @@ namespace Suborned.Play
         float CameraMarkTop(string camKey)
         {
             var h = host; float top = float.PositiveInfinity;
-            foreach (var w in h.WindowMarks) if (w.Key == camKey && h.AnchorWorld(camKey) is Vector3 at && Proj(at + Vector3.up * 0.75f, out var mq)) top = Mathf.Min(top, mq.y - 12f - WinH);
+            foreach (var w in h.WindowMarks) if (w.Key == camKey && h.AnchorWorld(camKey) is Vector3 at && Proj(at + Vector3.up * 0.75f, out var mq)) top = Mathf.Min(top, mq.y - 18f - WinD);
             string id = camKey.Substring(7), dead = ""; try { dead = h.Game?.CameraDeadAs(id) ?? ""; } catch (System.Exception) { }
             if (dead.Length > 0 && h.Views?.Find(camKey) is Transform ct && ct.gameObject.activeInHierarchy && Proj(ct.position + Vector3.up * (h.Views.CamHeadUp - 1.6f), out var hq)) top = Mathf.Min(top, hq.y - 20f - 12f);
             return top;
@@ -159,10 +159,10 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the street marks
 
-        const float GhostH = 38f, ClockH = 28f;
+        const float GhostH = 24f;
         /// <summary>The proof reads it: where the Squad / Back to map button is on screen (pixels, origin bottom left), null when hidden.</summary>
         public static Vector2? SquadBtnScreen { get { var b = live?.squadBtn; if (b == null || b.resolvedStyle.display == DisplayStyle.None) return null; var c = b.worldBound.center; var sz = b.panel.visualTree.layout.size; return new Vector2(c.x / sz.x * Screen.width, Screen.height - c.y / sz.y * Screen.height); } }
-        KeyText squadK; VisualElement squadBtn; readonly List<(VisualElement root, VisualElement face, Label text)> ghostEls = new(); readonly List<(VisualElement root, Label text)> clockEls = new(); readonly List<Vector2[]> clockArcAt = new();
+        KeyText squadK; VisualElement squadBtn; readonly List<(VisualElement root, VisualElement face, KeyText text)> ghostEls = new(); 
         VisualElement dragGhost; readonly List<VisualElement> dragFaces = new();
 
         /// <summary>A ring on the ground (brief 046: drawn in the world, depth-tested, so legs and props in front hide it; HudToolkit.Ground).</summary>
@@ -205,39 +205,15 @@ namespace Suborned.Play
                     if (!Proj(end + Vector3.up * 1.2f, out var gq)) continue;
                     while (ghostEls.Count <= gu)
                     {
-                        // the ghost plate: plate_dark (38 px at slice 0.43, the verb pill's height), the doer's face in the chrome ring, the words (glyphs 4 px clear of the rim)
-                        var r = PlateDark(marks, GhostH, 0.43f); r.style.position = Position.Absolute; r.style.paddingLeft = 10; r.style.paddingRight = 12; // opaque (Glyph 0.2.65 review 7: the world showed through at 0.92)
-                        var f = Cameo(r, 16f, 1.5f); var l = Words(r, 13f); l.style.marginLeft = 6;
+                        // brief 101 round 3 (Glyph's rule 1): the ghost is a street label: the doer's face in the cream ring, then the word (Jost Bold 15.5, ink on the cream keyline)
+                        var r = StackRow(marks, GhostH); r.style.position = Position.Absolute; r.style.justifyContent = Justify.FlexStart;
+                        var f = SFace(r, 16f, 2f); var l = KText(r, 15.5f); l.Root.style.marginLeft = 6;
                         ghostEls.Add((r, f, l)); // one or two words: no manifest line (the budget's line is the objective)
                     }
-                    var (gr, gf, gl) = ghostEls[gu++]; Show(gr, true); Text(gl, it.Label); CameoOf(gf, it.K);
-                    float gw = float.IsNaN(gr.resolvedStyle.width) ? 160 : gr.resolvedStyle.width; gr.style.left = gq.x - gw / 2; gr.style.top = gq.y - GhostH - 6;
+                    var (gr, gf, gl) = ghostEls[gu++]; Show(gr, true); gl.Set(it.Label); CameoOf(gf, it.K);
+                    float gw = float.IsNaN(gr.resolvedStyle.width) ? 160 : gr.resolvedStyle.width; gr.style.left = gq.x - gw / 2; gr.style.top = gq.y - GhostH - 8;
                 }
-                // the attention clock over an agent standing in a watcher's sight (the engine's Attention)
-                var (notice, wary, report) = g.AttentionMarks;
-                // Glyph N3 (0.2.137): in a fight under one input the attention clock (its "noticed" plate and the ring arc beside it, which stood on the
-                // getaway car's roof in fight-loud-body) is a cut kind: the live portrait and the attention callout say it (GDD §10)
-                for (int k = 0; k < 4 && !(h.OneInput && g.FightOn); k++)
-                {
-                    var op = g.Ops[k]; if (op.Inside || op.Down || op.InCar || op.Walk != null) continue; string nm = Op.Name((OpId)k); int ticks = 0;
-                    foreach (var w in g.WatcherIds()) { var (st, who) = g.Attention(w); if (who == nm) ticks = Mathf.Max(ticks, g.AttentionTicks(w, nm)); }
-                    if (ticks < Game.Hz / 2 || h.Views?.Find("op/" + nm) is not Transform tr || !tr.gameObject.activeSelf || !Proj(tr.position + Vector3.up * 2.7f, out var aq)) continue;
-                    float s = ticks / (float)Game.Hz; string word = s >= report ? "reported" : s >= wary ? "wary" : s >= notice ? "noticed" : "seen";
-                    while (clockEls.Count <= cu)
-                    {
-                        // the attention clock (brief 044 §6): plate_dark, cream words, a draining underline in cream, amber (the HUD's "running out") once wary
-                        var r = PlateDark(marks, ClockH, 0.43f); r.style.position = Position.Absolute; r.style.width = 74; r.style.justifyContent = Justify.Center;
-                        var l = Words(r, 12.5f); l.style.unityTextAlign = TextAnchor.MiddleCenter; l.style.marginBottom = 1;
-                        var u = E(r, null, 11, ClockH - 8.5f, 0, 2.5f); u.name = "under"; Round(u, 1.25f);
-                        clockEls.Add((r, l)); manifest.Add((r, "marker", () => l.text)); // Glyph N3 (0.2.137): a world marker, one word ("noticed"), in the manifest (G2: every street mark)
-                    }
-                    var (cr, cl) = clockEls[cu++]; Show(cr, true); Text(cl, word);
-                    bool soon = word is "wary" or "reported"; float frac = report > 0 ? Mathf.Clamp01(s / report) : 0f;
-                    var under = cr.Q("under"); under.style.backgroundColor = soon ? LookSoon : Cream; under.style.width = (74f - 22f) * frac;
-                    cr.style.left = aq.x - 37; cr.style.top = aq.y - ClockH / 2f; var arc = soon ? LookSoon : Cream;
-                    while (clockArcAt.Count < cu) clockArcAt.Add(new Vector2[1]); var cbox = clockArcAt[cu - 1]; cbox[0] = aq + new Vector2(-48, 0); // Glyph r123 F2: StepAside may move the plate; its arc goes with it (NaN: hidden)
-                    paints.Add(pp => { var cq = cbox[0]; if (float.IsNaN(cq.x)) return; RingArc(pp, cq, 8f, 1f, new Color(Ink.r, Ink.g, Ink.b, 0.6f), 4f); RingArc(pp, cq, 8f, frac, arc, 2.6f); });
-                }
+                AttentionClocks(g, ref cu); // the attention clock over an agent standing in a watcher's sight (brief 101 round 3: a timed tab, HudToolkit.Timed)
                 // the portrait drag: a band from the portrait to the cursor, the faces it carries
                 if (h.PortraitDragging && PortraitScreen(h.PortraitDragFrom) is Vector2 ps)
                 {
@@ -256,7 +232,7 @@ namespace Suborned.Play
             KnownFaceMarks(on); LockReticles(on); // brief 067 D: the lock reticles over the fire orders' targets
             CoverSnapMarks(on); // engine 0.35: the snapped move ring's shield, and the struck shield over a flanked focus's cover
             for (int i = gu; i < ghostEls.Count; i++) Show(ghostEls[i].root, false);
-            for (int i = cu; i < clockEls.Count; i++) Show(clockEls[i].root, false);
+            for (int i = cu; i < clockEls.Count; i++) Show(clockEls[i].Root, false);
         }
 
         // ---------------------------------------------------------------- brief 041 / engine 0.19: weapons free, under fire, known faces

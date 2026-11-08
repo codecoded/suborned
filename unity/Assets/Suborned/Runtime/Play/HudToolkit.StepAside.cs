@@ -99,11 +99,11 @@ namespace Suborned.Play
             if (lockAlt != null && Shown(lockAlt)) popAvoid.Add(BoxOf(lockAlt, 300f, 26f));
             string lockSaid = PillState == "lock" && vpillLockK != null && vpillLockK.Root.style.display != DisplayStyle.None ? vpillLockK.Words : "";
             var pops = new List<Rect>();
-            foreach (var (pr, _, pt) in popEls)
+            foreach (var pe in popEls)
             {
-                if (!Shown(pr)) continue;
-                if (lockSaid.Length > 0 && pt.style.display != DisplayStyle.None && pt.text == lockSaid) Show(pt, false);
-                var pb = BoxOf(pr, 120f, ChipH); var av = new List<Rect>(popAvoid); av.AddRange(pops);
+                var pr = pe.Root; if (!Shown(pr)) continue;
+                if (lockSaid.Length > 0 && pe.Word.Root.style.display != DisplayStyle.None && pe.Word.Words == lockSaid) Show(pe.Word.Root, false);
+                var pb = BoxOf(pr, 120f, PopH); var av = new List<Rect>(popAvoid); av.AddRange(pops);
                 var mv = ClearOf(pb, av, PopSpeechGap, 8f, H - 60f);
                 if (mv is Rect m2 && Mathf.Abs(m2.y - pb.y) <= PopReach) { if (Mathf.Abs(m2.y - pb.y) > 0.01f) pr.style.top = m2.y; pops.Add(m2); over.Add(pr); }
                 else { Show(pr, false); PopsHid++; }
@@ -131,15 +131,14 @@ namespace Suborned.Play
             hard.AddRange(fireDiscs); // the gun discs over the firing agents (FireMarks)
             if (seatPill.width > 0f) hard.Add(seatPill); // the car's seat pips (StepMarks)
             foreach (var md in medals) if (md != null && md.Root.style.display != DisplayStyle.None) hard.Add(Grow(BoxOf(md.Root, 72f, 72f), 4f)); // the attention callouts (their ring 8 px round the disc, half of it clear)
-            for (int i = 0; i < clockEls.Count; i++)
+            foreach (var ck in clockEls)
             {
-                var (cr, _) = clockEls[i]; if (cr.style.display == DisplayStyle.None) continue;
-                var cb = BoxOf(cr, 74f, ClockH); var arcAt = i < clockArcAt.Count ? clockArcAt[i] : null;
-                var withArc = Rect.MinMaxRect(cb.xMin - 22f, cb.yMin, cb.xMax, cb.yMax); // the arc 11 px left of the plate, 8 px round
-                var moved = ClearOf(withArc, hard, AsideGap, 112f, H - 120f);
-                if (moved is Rect mv && Mathf.Abs(mv.y - withArc.y) > ClockReach) moved = null; // too far from its agent to read as his: the callout says it
-                if (moved is Rect m2) { float dy = m2.y - withArc.y; if (Mathf.Abs(dy) > 0.01f) { cr.style.top = cb.y + dy; if (arcAt != null) arcAt[0].y += dy; } hard.Add(Rect.MinMaxRect(m2.xMin, m2.yMin, m2.xMax, m2.yMax)); }
-                else { Show(cr, false); if (arcAt != null) arcAt[0] = new Vector2(float.NaN, float.NaN); }
+                var cr = ck.Root; if (cr.style.display == DisplayStyle.None) continue;
+                var cb = BoxOf(cr, 90f, AttnD); // brief 101 round 3: the timed tab and its word are one row (the old plate's arc stood apart)
+                var moved = ClearOf(cb, hard, AsideGap, 112f, H - 120f);
+                if (moved is Rect mv && Mathf.Abs(mv.y - cb.y) > ClockReach) moved = null; // too far from its agent to read as his: the callout says it
+                if (moved is Rect m2) { if (Mathf.Abs(m2.y - cb.y) > 0.01f) cr.style.top = m2.y; hard.Add(m2); }
+                else Show(cr, false);
             }
             // bubbles and pops above the fire layer's discs (the gun disc sat on the bubble's first word); the fire layer above every other mark
             if (fireLayer != null && fireLayer.parent == marks)

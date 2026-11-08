@@ -22,7 +22,7 @@ namespace Suborned.Play
     public sealed partial class HudToolkit
     {
         static readonly Color RivalViolet = Hex(0x8a4fd0);
-        VisualElement rvStop, rvEdge, rvPlate; Paint rvEdgeArrow; float rvEdgeAngle;
+        VisualElement rvStop, rvEdge, rvPlate; EdgeTabEl rvEdgeTab;
         readonly List<(VisualElement root, VisualElement disc)> standDiscs = new(); readonly List<VisualElement> standPlates = new();
         VisualElement valePlate, valeTake; Label valeFrom, valeTo;
         /// <summary>The proof reads them: what the rival marks drew this frame, and the stands'.</summary>
@@ -99,15 +99,8 @@ namespace Suborned.Play
             var h = host; var rv = h.Rivals; RivalsShown = ""; if (marks == null) return;
             if (rvStop == null)
             {
-                rvStop = E(marks, "s-disc_dark_24", 0, 0, 22, 22); rvStop.pickingMode = PickingMode.Ignore; var sg = E(rvStop, null, 4.5f, 4.5f, 13, 13); sg.name = "g"; Show(rvStop, false); manifest.Add((rvStop, "image", () => "rival stop"));
-                rvEdge = PlateDark(marks, 22f, 0.3f); rvEdge.style.position = Position.Absolute; rvEdge.style.width = 52; rvEdge.style.paddingLeft = 6; rvEdge.style.paddingRight = 6; rvEdge.style.justifyContent = Justify.SpaceBetween;
-                var cm = Cameo(rvEdge, 12f, 2f); Bg(cm.Q("face"), "badges/signal_rival", Color.white);
-                rvEdgeArrow = P(rvEdge, 0, 0, 14, 14, (pt, r) =>
-                {
-                    var c = r.center; float a = rvEdgeAngle; Vector2 R(Vector2 v) => new(v.x * Mathf.Cos(a) - v.y * Mathf.Sin(a), v.x * Mathf.Sin(a) + v.y * Mathf.Cos(a));
-                    pt.fillColor = Cream; pt.BeginPath(); pt.MoveTo(c + R(new Vector2(6f, 0f))); pt.LineTo(c + R(new Vector2(-4.5f, 5f))); pt.LineTo(c + R(new Vector2(-1.5f, 0f))); pt.LineTo(c + R(new Vector2(-4.5f, -5f))); pt.ClosePath(); pt.Fill();
-                });
-                rvEdgeArrow.style.position = Position.Relative; rvEdgeArrow.style.flexShrink = 0;
+                rvStop = E(marks, "e-body e-inline", 0, 0, 22, 22); Round(rvStop, 11f); BorderW(rvStop, 2f); rvStop.pickingMode = PickingMode.Ignore; var sg = E(rvStop, null, 5.3f, 5.3f, 11.4f, 11.4f); sg.name = "g"; /* brief 101 round 3: a round tab */ Show(rvStop, false); manifest.Add((rvStop, "image", () => "rival stop"));
+                rvEdgeTab = NewEdgeTab(null, "badges/signal_rival"); rvEdge = rvEdgeTab.Root; // brief 101 round 3 (Glyph's rule 2): a round tab with the rivals' badge and the ink chevron
                 Show(rvEdge, false); manifest.Add((rvEdge, "image", () => "rival car edge chip"));
             }
             Show(rvStop, false); Show(rvEdge, false);
@@ -127,9 +120,8 @@ namespace Suborned.Play
                     var cam = h.View; var sp = cam.WorldToScreenPoint(rv.Car); var raw = RuntimePanelUtils.ScreenToPanel(root.panel, new Vector2(sp.x, Screen.height - sp.y)); if (sp.z < 0) raw = c - (raw - c);
                     var dir = raw - c; if (dir.sqrMagnitude < 1f) dir = Vector2.right; dir.Normalize();
                     float k = Mathf.Min((W / 2f - 50f) / Mathf.Max(1e-3f, Mathf.Abs(dir.x)), (H / 2f - 30f) / Mathf.Max(1e-3f, Mathf.Abs(dir.y))); var at = c + dir * k;
-                    for (int step = 0; step < 4 && EdgeCamHits(new Rect(at.x - 26f, at.y - 11f, 52f, 22f), 6f); step++) at -= dir * 30f;
-                    Show(rvEdge, true); rvEdge.style.left = at.x - 26f; rvEdge.style.top = at.y - 11f;
-                    float ang = Mathf.Atan2(dir.y, dir.x); if (Mathf.Abs(ang - rvEdgeAngle) > 0.01f) { rvEdgeAngle = ang; rvEdgeArrow.MarkDirtyRepaint(); }
+                    for (int step = 0; step < 4 && EdgeCamHits(new Rect(at.x - 13f, at.y - 13f, 26f, 26f), 16f); step++) at -= dir * 30f;
+                    Show(rvEdge, true); EdgeTabAt(rvEdgeTab, at, Mathf.Atan2(dir.y, dir.x));
                     bits.Add("edge");
                 }
             }
@@ -185,7 +177,7 @@ namespace Suborned.Play
                     // the disc at the centre (none under the car), the shut plate above the far edge
                     if (!gh.Here && !gh.Struck && liveK > 0.01f && Proj(gh.At, out var q) && InView(q))
                     {
-                        while (standDiscs.Count <= used) { var r = E(marks, "s-disc_dark_24", 0, 0, 24, 24); r.pickingMode = PickingMode.Ignore; var gl = E(r, null, 5, 5, 14, 14); gl.name = "g"; standDiscs.Add((r, gl)); manifest.Add((r, "image", () => "stand disc")); }
+                        while (standDiscs.Count <= used) { var r = E(marks, "e-body e-inline", 0, 0, 24, 24); Round(r, 12f); BorderW(r, 2f); r.pickingMode = PickingMode.Ignore; var gl = E(r, null, 5.76f, 5.76f, 12.5f, 12.5f); gl.name = "g"; /* brief 101 round 3: the stand a round tab */ standDiscs.Add((r, gl)); manifest.Add((r, "image", () => "stand disc")); }
                         var (dr, dg) = standDiscs[used++]; Show(dr, true); dr.style.left = q.x - 12; dr.style.top = q.y - 12; dr.style.opacity = (gh.Shut ? 0.5f : 1f) * liveK; Icon(dg, "car", Cream);
                     }
                     if (gh.Shut || opening && gh.OpenedAt > 0f)
@@ -219,7 +211,7 @@ namespace Suborned.Play
                 var ci = E(valePlate, null, w: 14, h: 14); ci.name = "car"; ci.style.flexShrink = 0; valeFrom = Words(valePlate, 13.5f); valeFrom.style.marginLeft = 5;
                 var pi = E(valePlate, null, w: 12, h: 12); pi.name = "pointer"; pi.style.marginLeft = 5; pi.style.flexShrink = 0; valeTo = Words(valePlate, 13.5f); valeTo.style.marginLeft = 5;
                 Show(valePlate, false); manifest.Add((valePlate, "image", () => "vale car times"));
-                valeTake = E(marks, "s-disc_dark_24", 0, 0, 22, 22); valeTake.pickingMode = PickingMode.Ignore; var tg = E(valeTake, null, 4.5f, 4.5f, 13, 13); tg.name = "g"; Show(valeTake, false); manifest.Add((valeTake, "image", () => "hand-off take"));
+                valeTake = E(marks, "e-body e-inline", 0, 0, 22, 22); Round(valeTake, 11f); BorderW(valeTake, 2f); valeTake.pickingMode = PickingMode.Ignore; var tg = E(valeTake, null, 5.3f, 5.3f, 11.4f, 11.4f); tg.name = "g"; /* brief 101 round 3: a round tab */ Show(valeTake, false); manifest.Add((valeTake, "image", () => "hand-off take"));
             }
             Show(valePlate, false); Show(valeTake, false);
             if (m.Ended || host.View == null || !(v.On || v.HandOff)) return;

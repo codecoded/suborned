@@ -138,6 +138,24 @@ namespace Suborned.Play
             OpenRing(plan, screen, false); if (Ring != null) { Ring.Sticky = true; Ring.Always = false; Ring.FromHold = false; }
         }
 
+        /// <summary>Brief 101 round 3 (Glyph: "what you click is a round tab, or a capsule if it has a word"): a new way's capsule clicked, on a conversation's slip or a
+        /// done chip: the view on the thing, and its ring opened for the selection as it is, that way lit when the ring offers it (by its pictogram or its word). No order
+        /// is given, as the Book's ways (BookTakeWay): the ring is the one place an order is taken.</summary>
+        public void WayClick(string anchor, string icon, string word)
+        {
+            if (Game == null || views == null || string.IsNullOrEmpty(anchor) || !ModalGate.AllowsClicks(Modal)) return;
+            var tr = views.Find(anchor); if (!tr || !tr.gameObject.activeInHierarchy) return;
+            var t = TargetOf(tr); if (t == null) return;
+            var world = TargetWorld(t) ?? tr.position; if (!Following) LookAt(world);
+            Vector2 screen = new(Screen.width / 2f, Screen.height / 2f);
+            if (cam) { var sp = cam.WorldToScreenPoint(world + Vector3.up * 1f); if (sp.z > 0f) screen = sp; }
+            ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(t, screen)) || plan == null) return;
+            OpenRing(plan, screen, false); if (Ring == null) return;
+            Ring.Sticky = true; Ring.Always = false; Ring.FromHold = false;
+            int i = Ring.Segs.FindIndex(s => !s.More && !s.Shut && !s.Harmful && (s.Icon == icon || string.Equals(s.Word, word, System.StringComparison.OrdinalIgnoreCase)));
+            if (i >= 0) Ring.Lit = i;
+        }
+
         /// <summary>The proof: the same checks as a frame of the shut book, N times, with what they cost (ms a call, bytes in all).</summary>
         public (double msEach, long bytes) BookShutProbe(int n)
         {

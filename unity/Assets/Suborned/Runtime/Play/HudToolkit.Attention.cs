@@ -73,50 +73,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the callouts
 
-        sealed class Medal { public VisualElement Root, Disc, Img, Kit, KitIcon, Badge, Plus, Say, SayTail; public bool Speech; public Label PlusText, SayText; public Paint Ring; public HandoverHost.Callout For; public Vector2 At; public bool Placed, Docked; public int Spot = -1; public Vector2 Toward; public int Stage; }
-        readonly Medal[] medals = new Medal[4];
-        const float MedalD = 72f, DockD = 56f, MedalLift = 70f, ScreenPad = 12f;
-
-        Medal NewMedal(int k)
-        {
-            var md = new Medal();
-            md.Root = E(marks, null, 0, 0, MedalD, MedalD, pick: true); md.Root.name = "callout" + k;
-            md.Root.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0 && md.For != null) { host.CalloutClick(md.For); e.StopPropagation(); } });
-            md.Disc = E(md.Root, null, 0, 0, MedalD, MedalD); Round(md.Disc, MedalD / 2); md.Disc.style.overflow = Overflow.Hidden; md.Disc.style.backgroundColor = Cream;
-            md.Img = E(md.Disc, null, 0, 0, MedalD, MedalD);
-            // Glyph's 0.2.97 review #2: a camera's close-up is an empty pole on the sky (a milky ghost disc), so a camera's medallion is the kit's
-            // opaque disc_dark_24 (it draws 48 of its 64 px: 96 px across gives the 72 px disc) with the eye the door marker gives a camera
-            md.Kit = E(md.Root, "s-disc_dark_24", -MedalD / 6f, -MedalD / 6f, MedalD * 4f / 3f, MedalD * 4f / 3f); md.KitIcon = E(md.Kit, null, MedalD * 4f / 6f - 22f, MedalD * 4f / 6f - 22f, 44f, 44f); Show(md.Kit, false);
-            md.Ring = P(md.Root, -8, -8, MedalD + 16, MedalD + 16, (p, r) => MedalRing(p, md));
-            md.Badge = E(md.Root, null, MedalD - 24, MedalD - 22, 24, 24); Round(md.Badge, 12); Border(md.Badge, 1.4f, Cream);
-            md.Plus = E(md.Root, "s-plate_dark", MedalD - 14, -8, 26, 16); md.PlusText = L(md.Plus, "chip-value", 0, 0, 26, 16); md.PlusText.style.fontSize = 10; md.PlusText.style.unityTextAlign = TextAnchor.MiddleCenter; md.PlusText.style.color = Cream;
-            manifest.Add((md.Root, "image", () => "attention callout"));
-            Show(md.Root, false); return md;
-        }
-
-        /// <summary>The medallion's ring (board §9: thin ring noticed, double ring that breathes wary, dashed ring flashing reporting), the
-        /// badge's 1-3 ticks, and the dock's chevron toward the watcher.</summary>
-        void MedalRing(Painter2D p, Medal md)
-        {
-            float d = md.Docked ? DockD : MedalD, R = d / 2f; var c = new Vector2(8 + MedalD / 2f, 8 + MedalD / 2f); float t = Time.unscaledTime;
-            p.strokeColor = new Color(Ink.r, Ink.g, Ink.b, 0.7f); p.lineWidth = 4f; p.BeginPath(); p.Arc(c, R, Deg(0), Deg(360)); p.Stroke();
-            switch (md.Stage)
-            {
-                case 1: p.strokeColor = Cream; p.lineWidth = 2f; p.BeginPath(); p.Arc(c, R, Deg(0), Deg(360)); p.Stroke(); break;
-                case 2:
-                    p.strokeColor = Cream; p.lineWidth = 2f; p.BeginPath(); p.Arc(c, R, Deg(0), Deg(360)); p.Stroke();
-                    p.strokeColor = new Color(Cream.r, Cream.g, Cream.b, 0.35f + 0.65f * (0.5f + 0.5f * Mathf.Sin(t * Mathf.PI * 2f / 1.6f))); p.BeginPath(); p.Arc(c, R + 4f, Deg(0), Deg(360)); p.Stroke(); break;
-                case 3: if (Mathf.Repeat(t * 4f, 1f) < 0.6f) Dashed(p, c, R + 1f, Red, 3f, 16); break;
-            }
-            // the ticks over the badge: 1 noticed, 2 wary, 3 reporting
-            var b = new Vector2(8 + MedalD - 12, 8 + MedalD - 10);
-            for (int i = 0; i < md.Stage && !md.Speech; i++) { p.fillColor = md.Stage == 3 ? Red : Cream; p.BeginPath(); p.Arc(b + new Vector2(-14 + i * 6, -16), 2.2f, Deg(0), Deg(360)); p.Fill(); }
-            if (md.Docked && md.Toward.sqrMagnitude > 0.01f)
-            {   // the chevron on the edge side, pointing at the watcher
-                var dir = md.Toward.normalized; var tip = c + dir * (R + 12f); var side = new Vector2(-dir.y, dir.x) * 6f; var bk = c + dir * (R + 5f);
-                p.strokeColor = Cream; p.lineWidth = 2.6f; p.lineCap = LineCap.Round; p.BeginPath(); p.MoveTo(bk + side); p.LineTo(tip); p.LineTo(bk - side); p.Stroke();
-            }
-        }
+        // the medallion's look: HudToolkit.Callout (brief 101 round 3)
 
         /// <summary>The keep-outs for a callout: HUD pieces on show (their panel rects), inflated by the screen margin.</summary>
         List<Rect> HudRects()
@@ -231,22 +188,16 @@ namespace Suborned.Play
                 md.Root.style.left = md.At.x - MedalD / 2f; md.Root.style.top = md.At.y - MedalD / 2f;
                 md.Root.style.opacity = Mathf.Clamp01((now - c.Born) / 0.15f);
                 bool cam = c.View.StartsWith("camera/"); Show(md.Disc, !cam); Show(md.Kit, cam);
-                if (cam) Icon(md.KitIcon, "eye_open", Red);
+                if (cam) Icon(md.KitIcon, "eye_open", Red); // the cones' red: a camera's eye
                 else if (md.Img.style.backgroundImage.value.renderTexture != rt) md.Img.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(rt));
-                Show(md.Badge, ak >= 0); if (ak >= 0) Bg(md.Badge, $"portraits/cameo_{c.Op}_normal", Color.white);
-                Border(md.Badge, 2f, Chrome); // art bible: a face in the chrome cameo ring, never a stage or role colour (the stage reads by the ring and the ticks)
-                int plus = ak >= 0 ? host.QueuedBehind(c) : 0; Show(md.Plus, plus > 0); if (plus > 0) Text(md.PlusText, $"+{plus}");
+                Show(md.Badge, ak >= 0); if (ak >= 0) CameoOf(md.Badge, ak); // brief 101 round 3: the agent's face in the cream ring, the stage in its ticks
+                int plus = ak >= 0 ? host.QueuedBehind(c) : 0; Show(md.PlusK.Root, plus > 0); if (plus > 0) md.PlusK.Set($"+{plus}");
                 md.Ring.MarkDirtyRepaint();
-                // the stem: a 14 px notch on the rim, aimed at the head, never longer than 48 px
+                // the stem: brief 101 round 3 (Glyph): the fine cream stem from the rim to the watcher's head, its foot a dot (60 px at most)
                 if (!dock)
                 {
                     var at0 = md.At; var hv = head - at0; float dist = hv.magnitude;
-                    if (dist > MedalD / 2f + 4f)
-                    {
-                        var dn = hv / dist; float len = Mathf.Min(48f, Mathf.Max(14f, dist - MedalD / 2f - 6f));
-                        var b0 = at0 + dn * (MedalD / 2f - 1f); var tip = at0 + dn * (MedalD / 2f + len); var sd = new Vector2(-dn.y, dn.x) * 6f; var col = c.Stage == 3 ? Red : Cream;
-                        paints.Add(pp => { pp.fillColor = new Color(Ink.r, Ink.g, Ink.b, 0.6f); pp.BeginPath(); pp.MoveTo(b0 + sd * 1.3f); pp.LineTo(tip + (tip - b0).normalized * 1.5f); pp.LineTo(b0 - sd * 1.3f); pp.ClosePath(); pp.Fill(); pp.fillColor = col; pp.BeginPath(); pp.MoveTo(b0 + sd); pp.LineTo(tip); pp.LineTo(b0 - sd); pp.ClosePath(); pp.Fill(); });
-                    }
+                    if (dist > MedalD / 2f + 6f) { var dn = hv / dist; Stem(at0 + dn * (MedalD / 2f - 1f), at0 + dn * Mathf.Min(dist - 2f, MedalD / 2f + 60f), md.Root.style.opacity.value); }
                 }
             }
             // brief 085: the speech plates last, once every callout has its place, so a plate keeps clear of all of them

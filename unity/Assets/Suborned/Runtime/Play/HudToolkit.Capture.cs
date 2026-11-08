@@ -118,7 +118,7 @@ namespace Suborned.Play
             for (int i = 0; i < busy.Count; i++) list.Add(($"timer-{i + 1}", busy[i].root));
             list.Add(("crucial", crCard)); // brief 096: the slim feed's one card
             for (int i = 0; i < bubbleEls.Count; i++) list.Add(($"bubble-{i + 1}", bubbleEls[i].root));
-            for (int i = 0; i < popEls.Count; i++) list.Add(($"pop-{i + 1}", popEls[i].root));
+            for (int i = 0; i < popEls.Count; i++) list.Add(($"pop-{i + 1}", popEls[i].Root));
             for (int i = 0; i < pipEls.Count; i++) list.Add(($"pip-{Cast[i]}", pipEls[i].root));
             for (int i = 0; i < edgeEls.Count; i++) list.Add(($"edge-{i + 1}", edgeEls[i]));
             for (int i = 0; i < edgeCams.Count; i++) list.Add(($"edge-cameo-{i + 1}", edgeCams[i].Root));
@@ -126,9 +126,9 @@ namespace Suborned.Play
             // brief 044: the overlays of the done moment and the hold controls (the 2x crops of Glyph's review)
             list.Add(("verb-pill", vpill)); list.Add(("verb-pill-tail", vpillTail)); list.Add(("cancel-tag", cancelTag)); list.Add(("drag-faces", dragGhost));
             for (int i = 0; i < chipEls.Count; i++) list.Add(($"gain-chip-{i + 1}", chipEls[i].Root));
-            for (int i = 0; i < winEls.Count; i++) list.Add(($"window-mark-{i + 1}", winEls[i].root));
+            for (int i = 0; i < winEls.Count; i++) list.Add(($"window-mark-{i + 1}", winEls[i].Root));
             for (int i = 0; i < ghostEls.Count; i++) list.Add(($"plan-ghost-{i + 1}", ghostEls[i].root));
-            for (int i = 0; i < clockEls.Count; i++) list.Add(($"attention-clock-{i + 1}", clockEls[i].root));
+            for (int i = 0; i < clockEls.Count; i++) list.Add(($"attention-clock-{i + 1}", clockEls[i].Root));
             for (int i = 0; i < stashMarks.Count; i++) list.Add(($"stash-{i + 1}", stashMarks[i].Plate));
             var sb = new StringBuilder("{\n"); bool first = true;
             foreach (var (n, e) in list)

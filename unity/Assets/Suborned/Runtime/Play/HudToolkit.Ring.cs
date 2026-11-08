@@ -13,7 +13,7 @@ namespace Suborned.Play
     /// cursor's mark (a crosshair where a press fires, three dots where a hold opens a ring) and the chip's ⋯.</summary>
     public sealed partial class HudToolkit
     {
-        sealed class Wedge { public VisualElement Icon, Pill, Key, Cameos, Draw, Loud, Obj, Held, Strike; public Label Word, KeyText; public string ShutLine = ""; public VisualElement Fields; public string FieldsKey = "", HeldKey = null; public readonly System.Collections.Generic.List<string> HeldIds = new(); public Label HeldBy; }
+        sealed class Wedge { public VisualElement Icon, Pill, Cameos, Draw, Obj, Held, ShutMark; public Label Word; public KeyText WordK, HeldByK; public KeyIcon LoudK; public string ShutLine = ""; public VisualElement Fields; public string FieldsKey = "", HeldKey = null; public readonly System.Collections.Generic.List<string> HeldIds = new(); }
         VisualElement ringRoot; Paint ringPaint; readonly List<Wedge> wedges = new(); HandoverHost.RingState ringFor; VisualElement cursorMark; Paint cursorDots;
 
         void BuildRing()
@@ -36,18 +36,9 @@ namespace Suborned.Play
         {
             var w = new Wedge();
             w.Icon = E(ringRoot, null, 0, 0, 22, 22);
-            w.Cameos = E(ringRoot, null, 0, 0, float.NaN, 14); w.Cameos.style.flexDirection = FlexDirection.Row;
-            w.Pill = E(ringRoot, "s-plate_dark", 0, 0, float.NaN, 30); w.Pill.style.flexDirection = FlexDirection.Row; w.Pill.style.alignItems = Align.Center; w.Pill.style.paddingLeft = 10; w.Pill.style.paddingRight = 12;
-            w.Draw = E(w.Pill, null, w: 18, h: 18); Round(w.Draw, 9); Border(w.Draw, 1.4f, Cream); w.Draw.style.marginRight = 5; Icon(E(w.Draw, null, 2.5f, 2.5f, 11, 11), "fire", Cream);
-            w.Word = L(w.Pill, "verb-name"); w.Word.style.fontSize = 13.5f; w.Word.style.color = Cream;
-            w.Obj = Cameo(w.Pill, 12f, 2f); w.Obj.style.marginLeft = 6; w.Obj.style.marginRight = 2; // brief 057 §2: the thing the way moves, 18 px in the chrome ring
-            w.Held = E(w.Pill); w.Held.style.flexDirection = FlexDirection.Row; w.Held.style.alignItems = Align.Center; w.Held.style.marginLeft = 8; // brief 057 §4.2: a shut Go's lock and holders
-            var lk = E(w.Held, null, w: 14, h: 14); lk.style.marginRight = 2; w.HeldBy = Words(w.Held, 13.5f, Dim); w.HeldBy.style.marginLeft = 4; w.HeldBy.style.marginRight = 4; // brief 096: "held by" before the badges
-            w.Fields = E(w.Pill); w.Fields.style.flexDirection = FlexDirection.Row; w.Fields.style.alignItems = Align.Center;
-            w.Loud = E(w.Pill, null, w: 14, h: 14); w.Loud.style.marginLeft = 8;
-            w.Key = E(w.Pill, "s-plate_light", w: float.NaN, h: 18); w.Key.style.marginLeft = 8; w.Key.style.minWidth = 22; w.KeyText = L(w.Key, "keycap"); w.KeyText.style.paddingLeft = 4; w.KeyText.style.paddingRight = 4; w.KeyText.style.unityTextAlign = TextAnchor.MiddleCenter;
-            w.Strike = E(w.Pill, null, 0, 0, 0, 1.5f); w.Strike.style.position = Position.Absolute; w.Strike.style.backgroundColor = Dim; w.Strike.pickingMode = PickingMode.Ignore; Show(w.Strike, false); // Glyph N3: the shut way's word struck (a sibling over the word: a child of the Label broke its measured width and the lock sat on the word, 0.2.127)
-            manifest.Add((w.Pill, "lock", () => w.ShutLine)); // a shut wedge's plate ("Listen · Already heard") is the lock pill's twin (Glyph budget §2); "" when the wedge is open: not listed
+            w.Cameos = E(ringRoot, null, 0, 0, float.NaN, 16); w.Cameos.style.flexDirection = FlexDirection.Row;
+            NewWedgeLabel(w); // brief 101 round 3: the way and its price as street labels (HudToolkit.RingLabels)
+            manifest.Add((w.Pill, "lock", () => w.ShutLine)); // a shut wedge's label ("Listen · Already heard") is the lock pill's twin (Glyph budget §2); "" when the wedge is open: not listed
             wedges.Add(w); return w;
         }
 
@@ -82,9 +73,9 @@ namespace Suborned.Play
                 else if (s.Row?.I?.Order is Order so && rs.Plan?.T != null && host.Fresh(rs.Plan.T, so)) Sparkle(p, c + Dir(i * w + w * 0.28f) * (ro - 9f), 6f, Cream); // brief 043: the act that just opened
             }
             p.fillColor = new Color(Plate.r, Plate.g, Plate.b, 0.6f); p.BeginPath(); p.Arc(c, ri - 5f, Deg(0), Deg(360)); p.Fill(); // the middle: release here to keep it open
-            // Glyph's 0.2.94 review #12: the wheel's chrome rim (the cameo's ring: 2 px chrome on a 1 px ink-deep line), a notch outside the wedges
-            p.lineCap = LineCap.Butt; p.strokeColor = InkDeep; p.lineWidth = 4f; p.BeginPath(); p.Arc(c, ro + 3f, Deg(0), Deg(360)); p.Stroke();
-            p.strokeColor = Chrome; p.lineWidth = 2f; p.BeginPath(); p.Arc(c, ro + 3f, Deg(0), Deg(360)); p.Stroke();
+            // brief 101 round 3 (Glyph's ring): the wheel's rim is the book's cream on an ink keyline (the chrome rim retired), a notch outside the wedges
+            p.lineCap = LineCap.Butt; p.strokeColor = new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.59f); p.lineWidth = 4.4f; p.BeginPath(); p.Arc(c, ro + 4.6f, Deg(0), Deg(360)); p.Stroke();
+            p.strokeColor = StPage; p.lineWidth = 2.2f; p.BeginPath(); p.Arc(c, ro + 4.6f, Deg(0), Deg(360)); p.Stroke();
         }
 
         static Vector2 Dir(float deg) { float a = deg * Mathf.Deg2Rad; return new Vector2(Mathf.Sin(a), -Mathf.Cos(a)); } // 0 at 12 o'clock, clockwise, y down
@@ -110,42 +101,23 @@ namespace Suborned.Play
                 Show(w.Cameos, cam);
                 if (cam)
                 {
-                    while (w.Cameos.childCount < s.By.Count) { var cm = E(w.Cameos, null, w: 14, h: 14); Round(cm, 7); cm.style.marginLeft = 1; cm.style.marginRight = 1; }
-                    for (int k = 0; k < w.Cameos.childCount; k++) { var cm = w.Cameos[k]; Show(cm, k < s.By.Count); if (k < s.By.Count) Bg(cm, $"portraits/cameo_{Op.Name(s.By[k])}_normal", Color.white); }
+                    while (w.Cameos.childCount < s.By.Count) { var cm = SFace(w.Cameos, 16f, 1.4f); cm.style.marginLeft = 1; cm.style.marginRight = 1; } // brief 101 round 3: every face wears the cream ring
+                    for (int k = 0; k < w.Cameos.childCount; k++) { var cm = w.Cameos[k]; Show(cm, k < s.By.Count); if (k < s.By.Count) CameoOf(cm, (int)s.By[k]); }
                     w.Cameos.style.left = mid.x - 8 * s.By.Count; w.Cameos.style.top = mid.y + 7;
                 }
-                // the pill: one word, then the price (the panel's order), outside the wedge on its side
-                Text(w.Word, s.Word); Show(w.Draw, s.Draws);
-                Show(w.Obj, s.Obj.Length > 0);
-                if (s.Obj.Length > 0) { var fc = w.Obj.Q("face"); if (s.Obj.StartsWith("icon:")) { fc.style.backgroundImage = StyleKeyword.None; if (fc.childCount == 0) E(fc, null, 1.5f, 1.5f, 9, 9); Icon(fc[0], s.Obj[5..], Cream); } else { if (fc.childCount > 0) Show(fc[0], false); Bg(fc, s.Obj, Color.white); } }
-                { var sk = w.Obj.Q("strike"); if (sk == null && s.ObjStruck) { sk = E(w.Obj, null, -2f, 6f, 20f, 2f); sk.name = "strike"; sk.style.backgroundColor = Cream; sk.style.rotate = new Rotate(-45f); sk.pickingMode = PickingMode.Ignore; } if (sk != null) Show(sk, s.ObjStruck && s.Obj.Length > 0); } // brief 067 C5b (Glyph): Go before Vale: Vale's cameo struck (a 2 px cream diagonal)
-                Show(w.Held, s.Shut); Show(w.Fields, !s.Shut || s.ShutText.Length > 0); // a shut Loop (one loop at a time) keeps one field: when the running loop ends
-                w.Pill.style.opacity = 1f; w.Icon.style.opacity = s.Shut && !held ? 0.45f : 1f; // Glyph N3 (0.2.125): a shut wedge's plate is solid plate_dark like the others (it was 75 %: the reason read at about half contrast over the chip)
-                w.Word.style.color = s.Shut && !held ? Dim : Cream; // brief 096: a held Go says what happened and who: its word stays cream, unstruck // N3: the way word struck in dim #b0cdc7; the reason stays cream
-                Show(w.Strike, s.Shut && !held); if (s.Shut && !held) { var wl = w.Word.layout; if (!float.IsNaN(wl.width) && wl.width > 0) { w.Strike.style.left = wl.x; w.Strike.style.width = wl.width; w.Strike.style.top = wl.y + wl.height * 0.54f; } }
-                w.ShutLine = s.Shut ? s.Word + (s.ShutText.Length > 0 ? " · " + s.ShutText : "") : "";
-                if (s.Shut)
-                {   // the lock, then one police badge a holder (brief 057 §4.2): the same holders the world marks
-                    if (w.HeldKey != s.Holders) { w.HeldKey = s.Holders; w.HeldIds.Clear(); foreach (var hx in s.Holders.Split(",")) if (hx.Trim().Length > 0) w.HeldIds.Add(hx.Trim()); } var ids = w.HeldIds; /* Redline 064 #6: split once a ring, not a frame */
-                    while (w.Held.childCount < 2 + Mathf.Max(1, ids.Count)) { var c0 = Cameo(w.Held, 12f, 2f); c0.style.marginRight = 2; }
-                    Icon(w.Held[0], "lock", Cream); Show(w.HeldBy, held); if (held) Text(w.HeldBy, BookWordsFile.Get().HeldBy);
-                    for (int k = 2; k < w.Held.childCount; k++) { bool has = k - 2 < ids.Count; Show(w.Held[k], has); if (!has) continue; bool rv = PlayText.RoleOfId(ids[k - 2]) == "rival" || ids[k - 2] == "car:rivals"; Bg(w.Held[k].Q("face"), "badges/" + (rv ? "signal_rival" : "signal_police"), Color.white); w.Held[k].style.backgroundColor = rv && held ? RivalViolet : Chrome; } // brief 096: a rival holder's badge in the rivals' violet ring // engine 0.33.0: the rival car holds while its riders are still to come
-                }
+                // the label: one word, then the price (the panel's order), outside the wedge on its side (brief 101 round 3: street labels, HudToolkit.RingLabels)
                 var fs = s.Shut ? new List<HudModel.PField>() : HudModel.PriceLine(host, s.Row.I);
-                if (s.Shut && s.ShutText.Length > 0) fs.Add(new HudModel.PField { Kind = "time", Icon = s.ShutIcon, Text = s.ShutText }); // brief 067 E: a shut way's short lock (no icon: the lock leads the pill)
+                if (s.Shut && s.ShutText.Length > 0) fs.Add(new HudModel.PField { Kind = "time", Icon = s.ShutIcon, Text = s.ShutText }); // brief 067 E: a shut way's short lock
                 else if (s.Shut && host.RivalsComingS() is int rcs && rcs >= 0 && s.Holders.Contains("car:rivals")) fs.Add(new HudModel.PField { Kind = "time", Icon = "p_time", Text = $"{rcs} s" }); // engine 0.33.0 (Motive M059-S1.7): the countdown to the first rider's step-out
-                // brief 101: no "draws 0.6 s" (an act's length); the plate's draw mark (w.Draw) says it draws first
-                Fields(w.Fields, fs, Cream, ref w.FieldsKey, false, small: false); // Glyph N3 (0.2.125): the reason in cream (the struck way word is the dim one)
-                Show(w.Loud, s.Violent); if (s.Violent) Icon(w.Loud, "bang", Cream);
-                Show(w.Key, false); // Sky: no key legends (Aster 2026-10-22: the ⇧1 / ⇧2 caps on the plates); the wedge is the click
-                w.Pill.style.unityBackgroundImageTintColor = lit ? new Color(0.75f, 1f, 1f) : Color.white;
+                w.Icon.style.opacity = s.Shut && !held ? 0.45f : 1f;
+                WedgeLabel(w, s, lit, held, fs); // brief 101: no "draws 0.6 s" (an act's length); the draw mark says it draws first
                 float pw = w.Pill.resolvedStyle.width; if (float.IsNaN(pw) || pw <= 0) pw = 180;
-                var at = dir * (ro + 10f);
+                var at = dir * (ro + 12f);
                 bool right = dir.x > 0.2f, left = dir.x < -0.2f;
-                float x = right ? at.x : left ? at.x - pw : at.x - pw / 2f, y = at.y - 15f + (Mathf.Abs(dir.x) <= 0.2f ? (dir.y < 0 ? -14f : 14f) : 0f);
+                float x = right ? at.x : left ? at.x - pw : at.x - pw / 2f, y = at.y - 13f + (Mathf.Abs(dir.x) <= 0.2f ? (dir.y < 0 ? -14f : 14f) : 0f);
                 w.Pill.style.left = x; w.Pill.style.top = y;
-                if (held) { heldShown = true; HeldGoFix(true, x, y + 30f + 6f); }
-                if (s.ObjStruck && s.Row?.I?.Order?.Do == "go") { altAt = new Vector2(x + pw / 2f, y + 30f + 4f); altTop = y - 4f; altLine = s.Row.I.Does; } // Fable 067 less.go.noVale: Go before Vale's Alt line
+                if (held) { heldShown = true; HeldGoFix(true, x, y + 26f + 6f); }
+                if (s.ObjStruck && s.Row?.I?.Order?.Do == "go") { altAt = new Vector2(x + pw / 2f, y + 26f + 4f); altTop = y - 4f; altLine = s.Row.I.Does; } // Fable 067 less.go.noVale: Go before Vale's Alt line
             }
             if (!heldShown) HeldGoFix(false, 0f, 0f);
             RingAltFrame(host.Peeking ? altLine : "", altAt); altLine = "";

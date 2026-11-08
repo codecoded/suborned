@@ -6,64 +6,22 @@ using UnityEngine.UIElements;
 namespace Suborned.Play
 {
     /// <summary>Brief 043, the done moment in the kit HUD (testbed/controls/gains.js, the playground's Settings → Done moment "Gains"):
-    ///  · the gain chip over the thing that changed, without hover, 4.2 s: the doer's face with the outcome's mark (✓ done, ½ not yet, ✗ refused),
-    ///    one icon-and-word line per fact (at most three), and the unlock row (an arrow, then the verbs that just opened as small dark pills, a
-    ///    way shut by a refusal struck through); it rises 10 px as it appears and lifts clear of the pill when they share a thing;
-    ///  · the window marker on what a window switched off: an icon and the seconds left, or the Tech's face while he holds a loop; it blinks in
-    ///    its last 10 s (the closing pop is the host's Pop);
+    ///  · the gain chip over the thing that changed, without hover, 4.2 s (its look: HudToolkit.Gains since brief 101 round 3); it rises 10 px as it appears and lifts
+    ///    clear of the pill when they share a thing;
+    ///  · the window marker on what a window switched off (HudToolkit.Timed since brief 101 round 3; the closing pop is the host's Pop);
     ///  · the cancel tag over the pill ("Cancels Listen · 12 s lost") and beside the cursor resting on open ground;
     ///  · the lit pip on the pill and the ring wedge of an act that just opened.
     /// It reads the host only: replays are untouched.</summary>
     public sealed partial class HudToolkit
     {
-        sealed class ChipEl { public VisualElement Root, Face, Mark, Lines, Unl; public readonly List<(VisualElement row, VisualElement icon, Label word)> Rows = new(); public readonly List<(VisualElement pill, VisualElement icon, Label word, VisualElement strike)> Pills = new(); public int Id = -1; public readonly List<string> Facts = new(), Verbs = new(); }
-        readonly List<ChipEl> chipEls = new();
-        readonly List<(VisualElement root, VisualElement icon, Label num, VisualElement face, VisualElement under)> winEls = new();
         VisualElement cancelTag; Label cancelTagText; Vector2 restAt; float restSince;
         /// <summary>The proof reads it: the cancel tag's words now ("" hidden), and where it is (over the pill, or on the ground by the cursor).</summary>
         public static string CancelTagState { get; private set; } = "";
         public static bool PipShown { get; private set; }
         public static int ChipsShown { get; private set; }
-        public static int WindowMarksShown { get; private set; }
         public static string ChipWords { get; private set; } = "";
-        public static string WindowWords { get; private set; } = "";
-
-        /// <summary>Brief 044 A: the window marker is plate_dark at 38 px (slice 0.43, the verb pill's height), the unlock pills plate_dark at 30 px (slice 0.3): the
-        /// heights that keep their glyphs 4 px clear of the chrome rim at that scale (the layout audit's rule), with a pixel to spare for the
-        /// layout's rounding.</summary>
-        const float WinH = 38f, WinScale = 0.43f, UnlH = 30f, UnlScale = 0.3f, ChipFace = 32f;
-
-        ChipEl NewChip()
-        {
-            // brief 044 A: the Intel card's panel_dark (slice 0.5), the doer's face in the chrome ring with the kit's outcome badge, the lines in
-            // cream, a brass hairline, then the turquoise-light arrow and the verbs that opened as small plate_dark pills (a shut way struck through)
-            var c = new ChipEl();
-            c.Root = E(marks, "s-panel_dark", 0, 0, float.NaN, float.NaN); c.Root.style.flexDirection = FlexDirection.Row; c.Root.style.alignItems = Align.FlexStart; c.Root.pickingMode = PickingMode.Ignore;
-            c.Root.style.paddingLeft = 17; c.Root.style.paddingRight = 17; c.Root.style.paddingTop = 13; c.Root.style.paddingBottom = 12;
-            c.Face = Cameo(c.Root, ChipFace); c.Face.style.overflow = Overflow.Visible; c.Face.style.marginTop = -2;
-            c.Mark = E(c.Face, null, float.NaN, float.NaN, 19, 19); c.Mark.style.position = Position.Absolute; c.Mark.style.right = -6; c.Mark.style.bottom = -5;
-            c.Lines = E(c.Root); c.Lines.style.marginLeft = 11; c.Lines.style.flexShrink = 0; c.Lines.style.paddingRight = 2;
-            for (int i = 0; i < 3; i++)
-            {
-                var row = E(c.Lines); row.style.flexDirection = FlexDirection.Row; row.style.alignItems = Align.Center; row.style.height = 22;
-                var ic = E(row, null, w: 16, h: 16); ic.style.flexShrink = 0; var w = Words(row, 15f); w.style.marginLeft = 8;
-                c.Rows.Add((row, ic, w));
-            }
-            c.Unl = E(c.Lines); c.Unl.style.flexDirection = FlexDirection.Row; c.Unl.style.alignItems = Align.Center; c.Unl.style.marginTop = 4; c.Unl.style.paddingTop = 6; c.Unl.style.borderTopWidth = 1; c.Unl.style.borderTopColor = LookHair;
-            var arrow = E(c.Unl, null, w: 12, h: 12); arrow.style.flexShrink = 0; arrow.style.rotate = new Rotate(90f); arrow.name = "arrow";
-            for (int i = 0; i < 3; i++)
-            {
-                var p = PlateDark(c.Unl, UnlH, UnlScale); p.style.marginLeft = 5; p.style.paddingLeft = 9; p.style.paddingRight = 10;
-                var ic = E(p, null, w: 12, h: 12); ic.style.flexShrink = 0; var w = Words(p, 12.5f); w.style.marginLeft = 5;
-                var st = E(p, null, 6, UnlH / 2f - 0.75f, float.NaN, 1.5f); st.style.right = 6; st.style.backgroundColor = Cream; // the struck way
-                c.Pills.Add((p, ic, w, st));
-            }
-            chipEls.Add(c); return c;
-        }
-
-        /// <summary>Glyph 058 §3, the window marker's count: m:ss when the window runs a minute or more (the loop's 2:00, 1:12, 0:09), plain
-        /// seconds under that (the guard's, the patrol's, the desk's clock: 14, 3).</summary>
-        public static string WindowCount(int left, int total) => left < 0 ? "" : total >= 60 ? $"{left / 60}:{left % 60:00}" : left.ToString();
+        /// <summary>The old unlock pill's plate_dark at 30 px (slice 0.3): the fail camera's replay chip keeps it (HudToolkit, Glyph 0.2.117 #1).</summary>
+        const float UnlH = 30f, UnlScale = 0.3f;
 
         /// <summary>Per frame after the pill (the commander view and third person alike; none while the end card or the briefing is up).</summary>
         void DoneMarks()
@@ -72,37 +30,7 @@ namespace Suborned.Play
             var h = host; var g = h.Game; float now = Time.unscaledTime; bool on = g != null && !m.Ended && !m.BriefingOpen && h.View != null && h.Modal == ModalGate.Modal.None;
             int used = 0; var words = new List<string>(); var stackTop = new Dictionary<string, float>();
             Rect pill = PillRect(); var bubbles = SpeechRects(); var markTop = new Dictionary<string, float>();
-            // the window markers
-            int wu = 0; var wwords = new List<string>();
-            if (on)
-                foreach (var w in h.WindowMarks)
-                {
-                    if (CueNoPlate(w.Kind)) continue; /* brief 084: no plate over anything that moves */
-                    var at = h.AnchorWorld(w.Key); if (!at.HasValue) continue;
-                    bool person = w.Key is "guard" or "patrol"; if (!Proj(at.Value + Vector3.up * (person ? 2.45f : w.Key.StartsWith("camera/") ? 0.75f : 1.7f), out var q)) continue;
-                    while (winEls.Count <= wu)
-                    {
-                        // brief 044 A: plate_dark, the eye and the seconds (tabular), or the Tech's face while he holds a loop; a 2.5 px underline drains
-                        // with the time, turquoise-light, amber (the HUD's "running out") in the last 10 s, when the plate blinks as built
-                        var r = PlateDark(marks, WinH, WinScale); r.style.position = Position.Absolute; r.style.paddingLeft = 11; r.style.paddingRight = 12;
-                        var ic = E(r, null, w: 15, h: 15); ic.style.flexShrink = 0; var nl = Words(r, 14.5f); nl.style.marginLeft = 6; nl.style.marginBottom = 1;
-                        var f = Cameo(r, 16f, 1.5f); f.style.marginLeft = 6;
-                        var track = E(r, null, 11, WinH - 9f, float.NaN, 2.5f); track.style.right = 11; Round(track, 1.25f); track.style.backgroundColor = new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.6f); track.style.overflow = Overflow.Hidden;
-                        var u = E(track, null, 0, 0, 0, 2.5f); Round(u, 1.25f);
-                        winEls.Add((r, ic, nl, f, u));
-                    }
-                    var (wr, wi, wn, wf, wu2) = winEls[wu++]; Show(wr, true);
-                    Icon(wi, w.Kind == "disable" ? "p_alert" : w.Kind == "rivals-next" ? "nextevent" : w.Kind == "vale-car" ? "car" : "eye_shut", Cream); bool face = w.Face >= 0; Show(wf, face); Show(wn, !face); // Glyph 058 §3: the desk's clock wears the siren; Glyph 059: the rivals' next move (nextevent), Vale's car (car)
-                    if (face) CameoOf(wf, w.Face); else Text(wn, w.Label.Length > 0 ? w.Label : WindowCount(w.Left, w.Total));
-                    bool low = !face && w.Left >= 0 && w.Left <= 10; wr.style.opacity = low ? 0.55f + 0.45f * (0.5f + 0.5f * Mathf.Sin(now * Mathf.PI * 4f)) : 1f;
-                    bool timed = w.Left >= 0 && w.Total > 0; Show(wu2.parent, timed);
-                    if (timed) { wu2.style.width = Length.Percent(Mathf.Clamp01(w.Left / (float)w.Total) * 100f); wu2.style.backgroundColor = low ? LookSoon : LookLive; }
-                    float ww = float.IsNaN(wr.resolvedStyle.width) ? 60f : wr.resolvedStyle.width, wx = q.x - ww / 2f, wb = ClearOfSpeech(bubbles, wx, ww, q.y - 12f, WinH); // above the thing's speech, never on it
-                    wr.style.left = wx; wr.style.top = wb - WinH; markTop[w.Key] = wb - WinH;
-                    wwords.Add($"{w.Kind}:{w.Thing}:{(face ? "face" : WindowCount(w.Left, w.Total))}");
-                }
-            for (int i = wu; i < winEls.Count; i++) Show(winEls[i].root, false);
-            WindowMarksShown = wu; WindowWords = string.Join(" ", wwords);
+            WindowMarkers(on, bubbles, markTop); // brief 101 round 3: the timed tabs (HudToolkit.Timed)
             if (on)
             {
                 // brief 085 (the budget's two chips on screen; r067-drive-parked drew three): only the newest two that can be drawn; DoneChips itself keeps them all
@@ -120,22 +48,7 @@ namespace Suborned.Play
                     if (!ChipPlace(ch, out var q) || placeable-- > ChipsOnScreen) continue;
                     float age = now - ch.Born;
                     var c = used < chipEls.Count ? chipEls[used] : NewChip(); used++; Show(c.Root, true);
-                    if (c.Id != ch.Id)
-                    {
-                        c.Id = ch.Id; CameoOf(c.Face, ch.Agent); c.Facts.Clear(); c.Verbs.Clear(); foreach (var l in ch.Lines) if (c.Facts.Count < 3) c.Facts.Add(l.Word); foreach (var u in ch.Unlocks) if (c.Verbs.Count < 3) c.Verbs.Add(u.Word); // Glyph budget §3: the manifest spells the chip's rows
-                        Bg(c.Mark, ch.Tone == "ok" ? "badges/mark_ok" : ch.Tone == "soft" ? "badges/mark_half" : "badges/mark_no", Color.white); // the tone only picks the kit's badge
-                        for (int i = 0; i < 3; i++)
-                        {
-                            bool has = i < ch.Lines.Count; Show(c.Rows[i].row, has); if (!has) continue;
-                            Icon(c.Rows[i].icon, ch.Lines[i].Icon, Cream); Text(c.Rows[i].word, ch.Lines[i].Word);
-                        }
-                        Show(c.Unl, ch.Unlocks.Count > 0); Icon(c.Unl.Q("arrow"), "chev_up", LookLive);
-                        for (int i = 0; i < 3; i++)
-                        {
-                            bool has = i < ch.Unlocks.Count; Show(c.Pills[i].pill, has); if (!has) continue; var u = ch.Unlocks[i];
-                            Icon(c.Pills[i].icon, u.Icon, Cream); Text(c.Pills[i].word, u.Word); Show(c.Pills[i].strike, u.Shut); c.Pills[i].pill.style.opacity = u.Shut ? 0.65f : 1f;
-                        }
-                    }
+                    if (c.Id != ch.Id) ChipFill(c, ch); // brief 101 round 3: the face, its badge, the facts as labels, the ways as capsules (HudToolkit.Gains)
                     float cw = float.IsNaN(c.Root.resolvedStyle.width) ? 180f : c.Root.resolvedStyle.width, chh = float.IsNaN(c.Root.resolvedStyle.height) ? 60f : c.Root.resolvedStyle.height;
                     float rise = (1f - Ease(Mathf.Min(1f, age / 0.25f))) * 10f;
                     // a second chip on the same thing stacks above the first by the first's own height (0.2.66 at 2x: a short turn chip sat inside the tall listen chip)

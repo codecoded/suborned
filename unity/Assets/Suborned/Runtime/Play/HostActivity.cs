@@ -181,7 +181,7 @@ namespace Suborned.Play
             }
             busyAskAt = now; busyAskMask = mask; BusyAsks++;
             BusyWords = BusyLine(busy[0], DW("cancel.again", "Click again to stop"));
-            Pop(BusyWords, null, (AgentWorld(busy[0]) ?? Vector3.zero) + Vector3.up * 1.1f, Feedback.Info, BusyConfirmS, "icons/singles/p_time"); // over the act mark, never on it
+            Pop(BusyWords, null, (AgentWorld(busy[0]) ?? Vector3.zero) + Vector3.up * 1.1f, Feedback.Info, BusyConfirmS, "icons/singles/pointer"); // over the act mark, never on it; brief 101 round 3 (Glyph): the pointer, a click, not a stopwatch
             return true;
         }
 

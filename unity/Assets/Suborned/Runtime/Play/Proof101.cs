@@ -155,6 +155,15 @@ namespace Suborned.Play
                 string seal = HudToolkit.SealWords, card = HudToolkit.CrucialShown;
                 yield return Shoot(h, dir, "r101-seal-police", log, "active"); HudToolkit.SealHoverForce = false;
                 Check("sealPolice", Clock.IsMatch(seal) && Bare(Plates()), $"seal '{seal}'; card '{card}'; plates '{Plates()}' at tick {g.Tick}");
+                // brief 101 round 3 (Fable's lozenge round): the card's full line on hover, gone on leave
+                if (h.CrucialNow is HandoverHost.CrucialCard cc && cc.Kind is "alert" or "police" && cc.Why != null && HudToolkit.CrucialScreen is Vector2 ls)
+                {
+                    Btn(ls); yield return Frames(4); yield return new WaitForSecondsRealtime(0.2f); string over = HudToolkit.CrucialTip; // the real pointer path
+                    HudToolkit.CrucialHoverForce = true; yield return Frames(2); yield return Shoot(h, dir, "r101-lozenge-hover", log, "active"); HudToolkit.CrucialHoverForce = false; // the picture at 1080 (CaptureSize moves the panel under a still pointer)
+                    Btn(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f)); yield return Frames(4); string left = HudToolkit.CrucialTip;
+                    Check("lozengeHover", over.Length > 0 && over == cc.Why.Line && left.Length == 0, $"{cc.Kind} card: hover '{over}' (its line '{cc.Why.Line}'); after leaving '{left}'");
+                }
+                else Check("lozengeHover", false, $"no Alert or Police card with a why on the lozenge at the seal (tick {g.Tick}): '{card}'");
             }
             else Check("sealPolice", false, $"no seal by tick {g.Tick}");
 
