@@ -137,7 +137,7 @@ namespace Suborned.Sim
             var snap = o.Point.HasValue && !onCar ? SnapPoint(op, to) : null; // brief 027 B5 (EXPERIMENTAL fight.lab.coverSnap): a click on the ground (never a named place: a mission point or a person's) ending by a free cover point ends on it; null with the lab off; engine 0.33.1: a click on a car goes to the car, never to a cover point by it
             if (snap != null) { var rs = Walk.Route(op.Pos, snap.At); if (rs != null) route = rs; else snap = null; }
             if (CoverSnapOn) { if (snap != null) HoldCover(op, snap); else DropCover(op); }
-            op.Walk = new Path(route); op.WalkMm = 0; op.CloseWalk = false; // brief 027: a click move is the player's walk, not a walk into range
+            op.Walk = new Path(route); op.WalkMm = 0; op.CloseWalk = false; op.PlacedAt = to; // brief 027: a click move is the player's walk, not a walk into range; engine 0.49.0: the place the player put him
             if (op.Walk.Length == 0) op.Walk = null;
             op.Running = o.Run; op.WalkSpeed = PaceOf(op, o.Run);
             if (o.Run) { op.RunAlerted = false; op.RunSeen.Clear(); }

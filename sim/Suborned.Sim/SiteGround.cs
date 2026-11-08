@@ -69,6 +69,7 @@ namespace Suborned.Sim
         {
             var g = new Ground { Half = R.BoxHalfCm, BlockCm = R.Num("v:fight-block-m") * 100 };
             if (IsRange) return g; // the range: no stands that leave, no drive, no private ground
+            if (Grid.HasFine && Grid.Body != R.WalkClearCm) throw new FormatException($"site grid.body is {Grid.Body} cm but the rulebook's walk clearance is {R.WalkClearCm} (bodies.radius + bodies.margin): rebuild the site (bun run sim:site; unknown = reject)"); // engine 0.49.0
             foreach (var st in Stands)
             {
                 var start = Drive.NearestFree(st.Exit[0]) ?? throw new FormatException($"getaway.stands {st.Id}: its exit lane's first point has no drivable cell (car.box)");

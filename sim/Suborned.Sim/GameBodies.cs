@@ -69,7 +69,7 @@ namespace Suborned.Sim
         /// <summary>One body this tick. At: where it stands now (laid this tick, or where it stood last tick while waiting its turn: Prev).</summary>
         struct Bd
         {
-            public string Id; public byte Kind, Cls, Form; public int Ix, Reach, Pace; public bool Moving, Fresh, Jumped, Placed, Armed, Held, Mate, WalksFirm, Urgent, Laden; // Laden: an operative carrying someone (never asked to make room: GameBodyGive.cs) // Mate: a guard at a post point another holds (BodyPosts); Pace: its own top pace (cm a tick); Jumped: its own place jumped while it stood on the street; Urgent: one laid before it this tick stands inside two radii of where it stood (a probe read, never stored)
+            public string Id; public byte Kind, Cls, Form; public int Ix, Reach, Pace; public bool Moving, Fresh, Jumped, Placed, Armed, Held, Mate, WalksFirm, Urgent, Laden, Idle; // Idle (engine 0.49.0): an operative with no order, off the place the player put him: he makes room as anyone does (GameBodyGive.cs) // Laden: an operative carrying someone (never asked to make room: GameBodyGive.cs) // Mate: a guard at a post point another holds (BodyPosts); Pace: its own top pace (cm a tick); Jumped: its own place jumped while it stood on the street; Urgent: one laid before it this tick stands inside two radii of where it stood (a probe read, never stored)
             public Pt Raw, Own, Lay, At, Prev, Head, Face, LayFace, Aim; public long Key, PathMm; public int StuckN, HeldN, DetEnd, DetTries, Slot, Blk, GiveEnd; public Path? Det; public bool Catch; public Pt HeldAt, GiveAt; public string? BlkId; public byte Why, Fix; public object? BRef; public int BN; public Pt BAt; public Path? Path; public bool PathBack; public string? Stop; // Path, PathMm: the walk its own place is on, how far along, and walked end to start (a kite's way back); Own: where it makes for (its own place, or its change of plans)
             public string? RoomFor, SqzId, AltStop, RoomDone; public Pt RoomAt, RoomFrom, RoomDir, RoomRaw, SqzDir, Alt, SlideV; public int RoomEnd, SqzEnd, AltUntil, RoomDoneUntil, SlideUntil, PickUntil; public bool AltOn, PickComfort; public byte PickWhy; public Pt PickOff; // GameBodyGive.cs; SlideV, SlideUntil: its last slide and how long it keeps to that side; PickWhy, PickOff, PickUntil: the law's kept pick (GameBodySides.cs)
         }
@@ -150,11 +150,12 @@ namespace Suborned.Sim
             for (int i = 0; i < 4; i++)
             {
                 var op = Ops[i]; if (op.Inside || op.InCar || op.CarriedBy.HasValue || op.Down || op.LeftMap) continue;
-                bool walkSame = op.Walk != null && ReferenceEquals(op.BodyWalk, op.Walk), fixedOp = op.Busy != null || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer);
+                var seat = SeatOf(op); if (seat != null) { seatHeld[seat] = Sim.Op.Name(op.Id); seatSeen.Add(seat); } // engine 0.49.0: an operative in a café chair holds it, as a customer does
+                bool walkSame = op.Walk != null && ReferenceEquals(op.BodyWalk, op.Walk), fixedOp = op.Busy != null || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) || seat != null;
                 var raw = fixedOp ? op.Pos : op.Walk != null ? op.Walk.At(op.WalkMm) : op.Body.Live(Tick) && op.Pos == op.Body.Raw + op.Body.Lay ? op.Body.Raw : op.Pos; // at work or leading Vale he stands where he stands
                 bool anew = fixedOp || (op.Walk != null ? !walkSame : raw == op.Pos); // a new walk or a set place starts where he stands
                 AddBd(Sim.Op.Name(op.Id), BkOp, fixedOp ? BcFixed : BcFirm, i, raw, op.Body, FmNone, default, (null, 0, default), false, anew); // his plan is his walk and his place (above)
-                if (bdN > 0 && bds[bdN - 1].Id == Sim.Op.Name(op.Id)) { if (op.Walk != null) { bds[bdN - 1].Path = op.Walk; bds[bdN - 1].PathMm = op.WalkMm; } bds[bdN - 1].Laden = op.Carrying.HasValue || op.CarryBody.Length > 0; }
+                if (bdN > 0 && bds[bdN - 1].Id == Sim.Op.Name(op.Id)) { if (op.Walk != null) { bds[bdN - 1].Path = op.Walk; bds[bdN - 1].PathMm = op.WalkMm; } bds[bdN - 1].Laden = op.Carrying.HasValue || op.CarryBody.Length > 0; bds[bdN - 1].Idle = !fixedOp && OpIdle(op, raw); }
             }
             // the armed: fight bodies, the rival crew on foot, the response unit's officers, police units and robots
             for (int i = 0; i < Hostiles.Count; i++) { var h = Hostiles[i]; if (!h.Present || h.Down || h.Gun.St == "gone") continue; AddBd(h.Id, BkHostile, BcFirm, i, h.RawPos(Tick), h.Body, FmNone, default, h.Plan); if (h.Run != null) OnPath(h.Id, h.Run, (long)Math.Max(0, Tick - h.RunStart) * h.Speed); }

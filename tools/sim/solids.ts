@@ -5,9 +5,10 @@
 //
 //   floor   a height per walk cell: the ground layer drawn there (carriageway, kerb, bay, drive, plot slab, as Layers.Ground lays them), or the floor the civic block
 //           declares (civic-block.json floors: the Office's public landing and its six steps). Never found in the kit (standards.levels.datum.rule).
-//   walk    a cell is blocked when its centre is within the plan's body clearance (standards.walking.body.r) of a volume that blocks a walker at the cell's floor f:
-//           z0 < f + HEAD and z1 > f + STEP (kit.collide.json `rule`). A `stand` volume whose top is the floor declared under it (the landing, a tread) is that floor,
-//           not an obstacle. This is added to the grid tools/plan/walk-grid.ts makes (buildings, plots, the block's own ground solids), never instead of it.
+//   walk    engine 0.49.0 (brief 098: what is walkable is what you see): a volume that blocks a walker at a cell's floor f (z0 < f + HEAD and z1 > f + STEP,
+//           kit.collide.json `rule`) is a solid of the walk raster (tools/sim/walkfine.ts), kept the walk clearance (the rulebook's bodies.radius + margin) from a
+//           free cell's centre, as the plan's walk blockers and the block's own ground solids are. A `stand` volume whose top is the floor declared under it (the
+//           landing, a tread) is that floor, not an obstacle. Was (0.30.0 to 0.48.0): the plan's design r round each, a face 0.3 m, on 50 cm cells.
 //   sight   an occluder is a drawn volume that spans the engine's eye height (rulebook eye-cm) on a piece that stops sight: a street item the world marks `sight:
 //           "blocks"` (glazed and open items do not), every civic kit piece, shopfront and facade. Lower volumes are not blockers: they lower a hit chance through
 //           the cover file (contracts/world/civic-block.cover.json, Pulse), as the fight rules already say.
@@ -23,8 +24,10 @@ import type { World } from '../../contracts/world/world.schema';
 import { floorAt, toPlanFn, type Civic } from '../plan/civic';
 import { inPoly, segDist, type V } from '../plan/geom';
 import type { Derived, Plan } from '../plan/plan';
-import { bodyOf } from '../plan/walk-solids';
-import { toBlockFn, walkGrid, type Window, type WalkGrid, CELL, WINDOW } from '../plan/walk-grid';
+import { Solids } from '../plan/walk-solids';
+import { blockersOf } from '../plan/walk';
+import { toBlockFn, type Window, type WalkGrid, CELL, WINDOW } from '../plan/walk-grid';
+import { fineRaster, walkClear, type FineRaster, type WalkShape } from './walkfine';
 import { generated } from '../plan/world-ctx';
 import { returnFills } from '../geometry/returns';
 import { cameraPoles } from '../missions/handover/legs';
@@ -41,9 +44,8 @@ const COMPACT = 3;
 const THIN = 0.6;
 /** Engine 0.30.0: how far above the eye line a volume must reach to stop sight (m). */
 const GRAZE = 0.1;
-/** Engine 0.30.0 (brief 055; Vantage 2026-10-24: Inez's centre passed 10 cm from the café front, her shoulder sank into the wall): a cell whose centre is within
- *  this of a building's face is blocked, so a walker's body keeps off walls (half a drawn body's shoulder width, 0.25 m, and a few cm). Was 0: the centre only. */
-const FACE = 0.3;
+/** Engine 0.30.0 to 0.48.0 (brief 055; Vantage 2026-10-24: Inez's centre passed 10 cm from the café front, her shoulder sank into the wall): a face
+ *  kept 0.3 m off a cell centre, every other solid the plan's r. Retired by engine 0.49.0: one clearance for every solid (walkfine.ts). */
 
 type Box = { shape: 'box'; min: [number, number, number]; max: [number, number, number]; stand?: boolean };
 type Cyl = { shape: 'cylinder'; c: [number, number]; r: number; y0: number; y1: number; stand?: boolean };
@@ -54,7 +56,7 @@ export type Collide = { schema: string; frame?: string; rule?: string; pieces: R
 /** A placed volume, block frame. `poly` is the footprint (a rectangle, or a 16-gon round a cylinder) for sight; `circle` keeps a cylinder exact for the walk. */
 export type Solid = {
   id: string; piece?: string; poly: V[]; circle?: { c: V; r: number }; z0: number; z1: number; stand: boolean; sight: 'blocks' | 'glazed' | 'open';
-  /** A building's face (a civic building and its ground storey, a facade piece, a shopfront box): blocked within FACE (0.3 m) of the cell centre (engine 0.30.0; was the centre only); every other solid keeps the body clearance. */
+  /** A building's face (a civic building and its ground storey, a facade piece, a shopfront box). Engine 0.49.0: it keeps the walk clearance as every solid does (0.30.0 to 0.48.0: 0.3 m). */
   face: boolean;
   x0: number; x1: number; y0: number; y1: number;
 };
@@ -227,6 +229,10 @@ export function floorGrid(plan: Plan, civ: Civic, w: World, win: Window, cell: n
 
 export type SimGrid = WalkGrid & {
   floor: Float64Array; drawn: Drawn;
+  /** Engine 0.49.0: the walk raster (site grid.fine) and the clearance every solid keeps from a free cell's centre (m). */
+  fine: FineRaster; clear: number;
+  /** The solids the raster was cut from (walk false: without the drawn ones), for the zone-wide gap check (tools/sim/gaps.ts). */
+  shapes: WalkShape[];
   /** Cells the drawn solids block that the block-only grid left free, and why (the first volume found per cell). */
   added: Map<number, string>;
   /** The drawn occluders: eye-spanning volumes on pieces that stop sight, block frame m, de-duplicated within each piece. */
@@ -244,48 +250,56 @@ export function missionPoles(floorAt: (q: V) => number): Solid[] {
     return { id, piece: 'CCTVPole', circle: { c, r }, poly: [[c[0] - r, c[1] - r], [c[0] + r, c[1] - r], [c[0] + r, c[1] + r], [c[0] - r, c[1] + r]] as V[], z0: f, z1: f + 5.5, stand: false, sight: 'open' as const, face: false, x0: c[0] - r, x1: c[0] + r, y0: c[1] - r, y1: c[1] + r };
   });
 }
-/** The engine's walk grid: the block-only grid (tools/plan/walk-grid.ts) with the drawn solids added, a floor per cell, and the drawn occluders. */
-/** `walk` false: the rows are the block-only grid's (the drawn solids measured, counted in `added`, but not blocking), so the site can carry the floor and the
- *  measurement while the drawn walk waits for its adoption (site option drawnWalk). */
-export function simGrid(plan: Plan, d: Derived, civ: Civic, eyeM: number, win: Window = WINDOW, cell = CELL, walk = true): SimGrid {
-  const base = walkGrid(plan, d, civ, win, cell), w = generated(plan, d, civ).w, drawn = drawnSolids(plan, civ, w, win);
-  const floor = floorGrid(plan, civ, w, win, cell), r = bodyOf(plan), { nx, ny } = base;
+/** The engine's walk grid (engine 0.49.0, brief 098: what is walkable is what you see): the fine walk raster (tools/sim/walkfine.ts) over every solid a
+ *  walker meets, each kept `clear` from a free cell's centre (the rulebook's bodies.radius + bodies.margin), and the 50 cm rows read from it at each
+ *  cell's centre, a floor per cell, and the drawn occluders. `free(q)` reads the raster (as the engine's Grid.Free does); `cellFree` and `nearestFree`
+ *  the 50 cm rows (the engine's FreeCell and NearestFree). */
+/** `walk` false: the drawn solids are measured (counted in `added`) but block nothing (site option drawnWalk off). */
+export function simGrid(plan: Plan, d: Derived, civ: Civic, eyeM: number, win: Window = WINDOW, cell = CELL, walk = true, clear = walkClear()): SimGrid {
+  const toBlock = toBlockFn(plan.civic), w = generated(plan, d, civ).w, drawn = drawnSolids(plan, civ, w, win);
+  const floor = floorGrid(plan, civ, w, win, cell), nx = Math.round((win.x1 - win.x0) / cell), ny = Math.round((win.y1 - win.y0) / cell);
   const floorAt = (q: V) => { const i = Math.floor((q[0] - win.x0) / cell), j = Math.floor((q[1] - win.y0) / cell); return i >= 0 && j >= 0 && i < nx && j < ny ? floor[i * ny + j]! : 0; };
-  const rows = base.rows.map((s) => s.split('')), added = new Map<number, string>();
-  const distTo = (s: Solid, q: V) => {
-    if (s.circle) return Math.max(0, Math.hypot(q[0] - s.circle.c[0], q[1] - s.circle.c[1]) - s.circle.r);
-    if (inPoly(q, s.poly)) return 0;
-    let dd = Infinity; for (let k = 0; k < s.poly.length; k++) dd = Math.min(dd, segDist(q, s.poly[k]!, s.poly[(k + 1) % s.poly.length]!)); return dd;
-  };
-  // engine 0.30.0 (Keel; Pulse's legs.ts): the mission cameras' poles, which the host stands and the world does not place, block the walk as drawn solids do
-  // (body clearance from their footprint circle), so the guard's and the cell's routes keep clear of them
+  // the plan's walk blockers and the civic block's ground solids, then the drawn solids where they block a walker at the cell's floor, and the mission
+  // cameras' poles the host stands (engine 0.30.0): one clearance for all (engine 0.49.0; was the plan's r for ground solids, FACE for a building's face)
+  const { polys, rounds } = blockersOf(plan, d, civ);
+  const shapes: WalkShape[] = [...polys.map((p, k) => ({ id: `blocker-${k}`, poly: p.map(toBlock), drawn: false })), ...rounds.map((l) => ({ id: `landmark/${l.id}`, circle: { c: toBlock(l.c), r: l.r }, drawn: false })), ...(civ.solids ?? []).map((p, k) => ({ id: `civic/${civ.solidIds?.[k] ?? k}`, poly: p.map(toBlock), drawn: false }))];
+  const drawnShapes: { s: Solid; shape: WalkShape }[] = [];
   for (const s of [...drawn.solids, ...missionPoles(floorAt)]) {
-    const mid: V = [(s.x0 + s.x1) / 2, (s.y0 + s.y1) / 2];
-    if (s.stand && Math.abs(s.z1 - floorAt(mid)) <= FLUSH) continue; // a stand top that is the floor declared under it: that floor
-    const rr = s.face ? FACE : r;
-    const i0 = Math.max(0, Math.floor((s.x0 - rr - win.x0) / cell)), i1 = Math.min(nx - 1, Math.floor((s.x1 + rr - win.x0) / cell));
-    const j0 = Math.max(0, Math.floor((s.y0 - rr - win.y0) / cell)), j1 = Math.min(ny - 1, Math.floor((s.y1 + rr - win.y0) / cell));
-    for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
-      if (rows[i]![j] === '#') continue;
-      const f = floor[i * ny + j]!;
-      if (!(s.z0 < f + HEAD && s.z1 > f + STEP)) continue;
-      const dc = distTo(s, base.centre(i, j)); if (s.face ? dc >= FACE : dc >= r) continue; // engine 0.30.0: a face keeps a walker's shoulder off it (FACE), every other solid the whole body (r)
-      rows[i]![j] = '#'; added.set(i * ny + j, s.id);
-    }
+    if (s.stand && Math.abs(s.z1 - floorAt([(s.x0 + s.x1) / 2, (s.y0 + s.y1) / 2])) <= FLUSH) continue; // a stand top that is the floor declared under it: that floor
+    const shape: WalkShape = { id: s.id, ...(s.circle ? { circle: s.circle } : { poly: s.poly }), drawn: true, blocks: (k: number) => s.z0 < floor[k]! + HEAD && s.z1 > floor[k]! + STEP };
+    drawnShapes.push({ s, shape }); shapes.push(shape);
   }
-  const R = walk ? rows.map((x) => x.join('')) : base.rows;
-  const free = (q: V) => { const i = Math.floor((q[0] - win.x0) / cell), j = Math.floor((q[1] - win.y0) / cell); return i >= 0 && j >= 0 && i < nx && j < ny && R[i]![j] === '.'; };
+  const fine = fineRaster(win, nx, ny, cell, clear, shapes), per = Math.round(cell / fine.cell);
+  const at = (i: number, j: number) => fine.data[(i * per + (per >> 1)) * fine.ny + j * per + (per >> 1)]!; // the fine cell holding the 50 cm cell's centre
+  const rows: string[] = [], added = new Map<number, string>();
+  const centre = (i: number, j: number): V => [win.x0 + (i + 0.5) * cell, win.y0 + (j + 0.5) * cell];
+  for (let i = 0; i < nx; i++) {
+    let r = '';
+    for (let j = 0; j < ny; j++) {
+      const v = at(i, j);
+      if (v === 2) { // the drawn solids alone block it: named by the first that does
+        const q = centre(i, j), k = i * ny + j, hit = drawnShapes.find(({ shape }) => shape.blocks!(k) && (shape.circle ? Math.hypot(q[0] - shape.circle.c[0], q[1] - shape.circle.c[1]) < shape.circle.r + clear + fine.cell : distPoly(q, shape.poly!) < clear + fine.cell));
+        added.set(k, hit?.s.id ?? 'drawn');
+      }
+      r += v === 0 || (v === 2 && !walk) ? '.' : '#';
+    }
+    rows.push(r);
+  }
+  const R = rows;
+  const free = walk ? fine.free : (q: V) => { const i = Math.floor((q[0] - win.x0) / fine.cell + 1e-9), j = Math.floor((q[1] - win.y0) / fine.cell + 1e-9); return i >= 0 && j >= 0 && i < fine.nx && j < fine.ny && fine.data[i * fine.ny + j] !== 1; };
   const cellFree = (i: number, j: number) => i >= 0 && j >= 0 && i < nx && j < ny && R[i]![j] === '.';
+  const cellOf = (q: V): [number, number] => [Math.floor((q[0] - win.x0) / cell), Math.floor((q[1] - win.y0) / cell)];
   const tryNearestFree = (q: V): V | undefined => {
+    if (free(q)) return q;
     const ci = Math.floor((q[0] - win.x0) / cell), cj = Math.floor((q[1] - win.y0) / cell);
     let best: V | undefined, bd = Infinity;
-    for (let k = 0; k <= 12; k++) {
+    for (let k = 1; k <= 12; k++) {
       for (let i = ci - k; i <= ci + k; i++) for (let j = cj - k; j <= cj + k; j++) {
         if (!cellFree(i, j)) continue;
-        const c = base.centre(i, j), dd = Math.hypot(c[0] - q[0], c[1] - q[1]);
+        const c = centre(i, j), dd = Math.hypot(c[0] - q[0], c[1] - q[1]);
         if (dd < bd) { bd = dd; best = c; }
       }
-      if (best && bd <= (k + 0.5) * cell) break;
+      if (best) break; // the engine's NearestFree: the first ring holding a free cell, its centre nearest q
     }
     return best;
   };
@@ -308,7 +322,7 @@ export function simGrid(plan: Plan, d: Derived, civ: Civic, eyeM: number, win: W
     const keep = list.filter((s, k) => !list.some((o, m) => m !== k && holds(o, s) && (m < k || !holds(s, o))));
     keep.forEach((s, k) => occ.push({ id: keep.length > 1 ? `${id}#${k}` : id, z: s.z0, h: s.z1 - s.z0, poly: s.poly }));
   }
-  return { ...base, rows: R, free, cellFree, tryNearestFree, nearestFree, floor, drawn, added, occluders: occ };
+  return { win, cell, nx, ny, rows: R, solids: new Solids(civ.solids ?? [], clear), centre, free, cellOf, cellFree, tryNearestFree, nearestFree, floor, drawn, added, occluders: occ, fine, clear, shapes: walk ? shapes : shapes.filter((x) => !x.drawn) };
 }
 
 /** A grid's floor as the site writes it: per row, run-length pairs [cm, count] (a row is mostly one height). */
@@ -320,6 +334,12 @@ export function floorRows(floor: Float64Array, nx: number, ny: number): number[]
     row.push(v, n); out.push(row);
   }
   return out;
+}
+
+/** The distance (m) from q to a polygon's edge, 0 inside it. */
+export function distPoly(q: V, poly: V[]): number {
+  if (inPoly(q, poly)) return 0;
+  let d = Infinity; for (let k = 0; k < poly.length; k++) d = Math.min(d, segDist(q, poly[k]!, poly[(k + 1) % poly.length]!)); return d;
 }
 
 /** Convex hull (Andrew's monotone chain), counter-clockwise, no repeated points. */

@@ -1,12 +1,13 @@
 // The walk grid (sim/data/handover.site.json grid): A* over free cells, 8 neighbours, no corner cutting, integer costs, ties broken
 // by cell index so every run finds the same path; then string-pulled to an any-angle polyline (the walk.ts way). A Path moves along
-// its polyline by millimetres, so a speed in cm/s advances exactly that many mm a tick at 10 Hz.
+// its polyline by millimetres, so a speed in cm/s advances exactly that many mm a tick at 10 Hz. Engine 0.49.0: a grid that carries a
+// walk raster (grid.fine) walks and stands on it, and routes over the free ground of each cell (GridFine.cs).
 using System;
 using System.Collections.Generic;
 
 namespace Suborned.Sim
 {
-    public sealed class Grid
+    public sealed partial class Grid
     {
         public readonly int X0, Y0, Cell, Nx, Ny;
         readonly bool[] free;
@@ -16,7 +17,8 @@ namespace Suborned.Sim
         public readonly bool Surfaces;
         public Grid(JNode g)
         {
-            X0 = g["x0"].Int(); Y0 = g["y0"].Int(); Cell = g["cell"].Int(); Nx = g["nx"].Int(); Ny = g["ny"].Int();
+            X0 = g["x0"].Int(); Y0 = g["y0"].Int(); Cell = g["cell"].Int(); Nx = g["nx"].Int(); Ny = g["ny"].Int(); Body = g.Opt("body")?.Int() ?? 0;
+            if (g.Opt("fine") is JNode fn) ffree = ReadFine(fn, Nx, Ny, Cell, out FCell, out FNx, out FNy, out per); // engine 0.49.0 (GridFine.cs)
             var rows = g["rows"].Items;
             if (rows.Count != Nx) throw new FormatException("grid rows != nx");
             free = new bool[Nx * Ny]; surface = new char[Nx * Ny];
@@ -170,8 +172,8 @@ namespace Suborned.Sim
         public int CI(int x) => FloorDiv(x - X0, Cell);
         public int CJ(int y) => FloorDiv(y - Y0, Cell);
         static int FloorDiv(int a, int b) => a >= 0 ? a / b : -((-a + b - 1) / b);
-        public bool Free(Pt p) => FreeCell(CI(p.X), CJ(p.Y));
-        public bool Free(Pt p, bool[]? m) => Open(CI(p.X), CJ(p.Y), m);
+        public bool Free(Pt p) => ffree != null ? FineFree(p) : FreeCell(CI(p.X), CJ(p.Y));
+        public bool Free(Pt p, bool[]? m) => ffree != null ? FineFree(p) && (m == null || !Masked(p, m)) : Open(CI(p.X), CJ(p.Y), m);
         public Pt Centre(int i, int j) => new Pt(X0 + i * Cell + Cell / 2, Y0 + j * Cell + Cell / 2);
 
         /// <summary>The nearest free cell centre to p (ties: lowest i, then j), within 6 m. `m`: the cells standing cars block (Open).</summary>
@@ -249,11 +251,12 @@ namespace Suborned.Sim
         }
         int[]? pieces, pieceSize; readonly object piecesLock = new object();
         /// <summary>The piece a free point's cell lies in (-1 off free ground) and its size in cells.</summary>
-        public int PieceOf(Pt p) { int i = CI(p.X), j = CJ(p.Y); return FreeCell(i, j) ? Pieces()[i * Ny + j] : -1; }
-        public int PieceSize(int piece) { Pieces(); return piece >= 0 ? pieceSize![piece] : 0; }
+        public int PieceOf(Pt p) { if (ffree != null) return PieceOfFine(p); int i = CI(p.X), j = CJ(p.Y); return FreeCell(i, j) ? Pieces()[i * Ny + j] : -1; }
+        public int PieceSize(int piece) { if (ffree != null) return PieceSizeFine(piece); Pieces(); return piece >= 0 ? pieceSize![piece] : 0; }
         /// <summary>The free cell of `piece` nearest p (no cap; ties: the lower cell index), or null when the piece is empty.</summary>
         public Pt? NearestFreeIn(Pt p, int piece)
         {
+            if (ffree != null) return NearestFreeInFine(p, piece);
             var lab = Pieces(); Pt? best = null; long bd = long.MaxValue;
             for (int k = 0; k < lab.Length; k++) { if (lab[k] != piece) continue; var c = Centre(k / Ny, k % Ny); long d = G.D2(c, p); if (d < bd) { bd = d; best = c; } }
             return best;
@@ -262,6 +265,7 @@ namespace Suborned.Sim
         /// <summary>True if the straight segment a→b stays on free cells (sampled every 10 cm).</summary>
         public bool LineFree(Pt a, Pt b, bool[]? m = null)
         {
+            if (ffree != null) return LineFreeFine(a, b, m);
             int n = Math.Max(1, G.Dist(a, b) / 10);
             for (int k = 0; k <= n; k++) if (!Free(G.Lerp(a, b, k, n), m)) return false;
             return true;
@@ -277,7 +281,7 @@ namespace Suborned.Sim
         sealed class Pool
         {
             public int[] GScore = Array.Empty<int>(), Prev = Array.Empty<int>(), Stamp = Array.Empty<int>(); public bool[] Closed = Array.Empty<bool>(); public int Gen; public readonly Heap Heap = new Heap();
-            public void Fit(int n) { if (GScore.Length != n) { GScore = new int[n]; Prev = new int[n]; Stamp = new int[n]; Closed = new bool[n]; Gen = 0; } if (++Gen == int.MaxValue) { Array.Clear(Stamp, 0, n); Gen = 1; } Heap.Clear(); }
+            public void Fit(int n) { if (GScore.Length < n) { GScore = new int[n]; Prev = new int[n]; Stamp = new int[n]; Closed = new bool[n]; Gen = 0; } if (++Gen == int.MaxValue) { Array.Clear(Stamp, 0, Stamp.Length); Gen = 1; } Heap.Clear(); } // engine 0.49.0: grown, never cut (a walk's nodes and a drive grid's cells differ in number)
             public int G(int k) => Stamp[k] == Gen ? GScore[k] : int.MaxValue;
             public void Set(int k, int g, int p) { if (Stamp[k] != Gen) { Stamp[k] = Gen; Closed[k] = false; } GScore[k] = g; Prev[k] = p; }
             public bool IsClosed(int k) => Stamp[k] == Gen && Closed[k];
@@ -286,6 +290,7 @@ namespace Suborned.Sim
 
         public Pt[]? Route(Pt a, Pt b, bool[]? m = null)
         {
+            if (ffree != null) return RouteFine(a, b, m);
             Pt? s0 = NearestFree(a, m); if (!s0.HasValue || !Free(b, m)) return null;
             int si = CI(s0.Value.X), sj = CJ(s0.Value.Y), ti = CI(b.X), tj = CJ(b.Y);
             int n = Nx * Ny, s = si * Ny + sj, t = ti * Ny + tj;
@@ -316,16 +321,7 @@ namespace Suborned.Sim
             if (s0.Value != a) raw.Add(s0.Value);
             raw.AddRange(cells);
             if (raw[raw.Count - 1] != b) { if (cells.Count > 0) raw[raw.Count - 1] = b; else raw.Add(b); }
-            // string-pull: from each kept point, jump to the furthest raw point in a straight free line
-            var path = new List<Pt> { raw[0] };
-            int at = 0;
-            while (at < raw.Count - 1)
-            {
-                int to = raw.Count - 1;
-                while (to > at + 1 && !LineFree(raw[at], raw[to], m)) to--;
-                path.Add(raw[to]); at = to;
-            }
-            return path.ToArray();
+            return Pull(raw, m); // string-pull (GridFine.cs)
         }
 
         /// <summary>Brief 027 (fight.close, EXPERIMENTAL): the nearest free cell centre by walk from `from` (Dijkstra over the walk grid, 8 neighbours,
@@ -333,6 +329,7 @@ namespace Suborned.Sim
         /// counts (its centre is tried first).</summary>
         public Pt? Nearest(Pt from, Func<Pt, bool> ok, int maxCm, bool[]? m = null)
         {
+            if (ffree != null) return NearestFine(from, ok, maxCm, m);
             Pt? s0 = NearestFree(from, m); if (!s0.HasValue) return null;
             int si = CI(s0.Value.X), sj = CJ(s0.Value.Y), n = Nx * Ny, s = si * Ny + sj;
             var P = pool ??= new Pool(); P.Fit(n); var heap = P.Heap;

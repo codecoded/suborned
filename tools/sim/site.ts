@@ -5,7 +5,8 @@
 // are Waymark's to adopt into mission.json (Suture O-6); until then they live here. Deterministic: the same inputs give the same
 // bytes. The file names its sources but holds no hash of them: an edit to the plan or the mission that leaves this ground as it
 // was leaves the file, and every replay's start hash, as they were; tools/sim/sim.test.ts fails on any edit that changes it.
-// Run: bun run sim:site (writes the file, the people extract, the takedown places (tools/sim/takedown.ts) and the provisional file with the security level (below)); bun test tools/sim (checks them).
+// Run: bun run sim:site (writes the file, the people extract, the takedown places (tools/sim/takedown.ts), the provisional file with the security level (below) and
+// the zone-wide gap check's list (tools/sim/gaps.ts, engine 0.49.0)); bun test tools/sim (checks them).
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { derive } from '../plan/plan';
@@ -13,6 +14,8 @@ import { civic, toPlanFn } from '../plan/civic';
 import { blockersOf } from '../plan/walk';
 import { CELL, WINDOW } from '../plan/walk-grid';
 import { COLLIDE_FILE, floorRows, simGrid } from './solids';
+import { fineRows, walkClear } from './walkfine';
+import { findGaps, gapsJson } from './gaps';
 import { inPoly, type V } from '../plan/geom';
 import { castRoles } from '../missions/handover/cast';
 import { castRules } from '../missions/handover/overlay';
@@ -69,7 +72,9 @@ export const readStands = (): { getaway: { stands: unknown[] }; rivals: { car: R
   if (site.getaway?.stands) return { getaway: { stands: site.getaway.stands }, rivals: { car: site.rivals.car, posts: site.rivals.posts } };
   return JSON.parse(readFileSync(join(root, STANDS_FILE), 'utf8'));
 };
-export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteOptions = {}): { json: string; site: unknown; stands: string } {
+/** Engine 0.49.0 (brief 098): the zone-wide gap check's list (tools/sim/gaps.ts), written beside the site from the same grid. */
+export const GAPS_FILE = 'sim/data/handover.gaps.json';
+export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteOptions = {}): { json: string; site: unknown; stands: string; gaps: string } {
   const read = (f: string) => readFileSync(join(root, f), 'utf8');
   const planText = read(PLAN), plan = JSON.parse(planText);
   const blockText = read(plan.civic.block), block = JSON.parse(blockText);
@@ -78,7 +83,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
   const { polys } = blockersOf(plan, d, civ);
   const rulebook = JSON.parse(read('contracts/rules/rulebook.json')), eyeCm: number = rulebook.values['eye-cm'].v;
   // brief 055: the walk grid with the drawn solids (tools/sim/solids.ts), a floor per cell and the drawn occluders
-  const G = simGrid(plan, d, civ, eyeCm / 100, WINDOW, CELL, !!opts.drawnWalk), { solids, nx, ny, rows, free, nearestFree } = G;
+  const G = simGrid(plan, d, civ, eyeCm / 100, WINDOW, CELL, !!opts.drawnWalk, walkClear(rulebook)), { nx, ny, rows, free, nearestFree } = G;
   // brief 077: a kit piece the window places with no kit.collide.json entry is unmeasured, never taken as render-only nor guessed: no site until it is declared
   if (G.drawn.unmeasured.length) throw new Error(`${COLLIDE_FILE} has no entry for ${G.drawn.unmeasured.join(', ')}, placed in the Handover window: measure it (bun run collide) or declare it render-only (volumes [])`);
 
@@ -225,13 +230,14 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
     schema: 'suborned.sim.site/1',
     mission: 'handover',
     frame: 'civic-block.json block frame in integer centimetres: x south, y east. Mission clock in seconds from 0:00 (the engine ticks at 10 Hz).',
-    from: [PLAN, plan.civic.block, MISSION, 'tools/plan/walk.ts blockersOf', 'tools/plan/walk-solids.ts', COLLIDE_FILE, 'tools/sim/solids.ts'],
+    from: [PLAN, plan.civic.block, MISSION, 'tools/plan/walk.ts blockersOf', 'contracts/rules/rulebook.json bodies', COLLIDE_FILE, 'tools/sim/solids.ts', 'tools/sim/walkfine.ts'],
     grid: {
-      x0: cm(WINDOW.x0), y0: cm(WINDOW.y0), cell: cm(CELL), nx, ny, body: cm(solids.r), rows,
+      x0: cm(WINDOW.x0), y0: cm(WINDOW.y0), cell: cm(CELL), nx, ny, body: cm(G.clear), rows,
+      fine: { cell: cm(G.fine.cell), nx: G.fine.nx, ny: G.fine.ny, rows: fineRows(G.fine) },
       floor: floorRows(G.floor, nx, ny),
       collide: opts.solidDigest ? G.drawn.solidSha : G.drawn.collideSha,
       drawn: { walk: !!opts.drawnWalk, sight: !!opts.drawnOccluders, walkCells: G.added.size, sightOccluders: G.occluders.length, ...(opts.solidDigest ? { digest: 'solid' } : {}) },
-      src: 'tools/plan/walk.ts blockersOf (built plots behind their building lines, civic footprints and towers, water, landmarks) and walk-solids.ts (the block\'s ground solids, BODY clearance), and, with drawn.walk, the drawn solids (tools/sim/solids.ts: every piece the world places, with its kit.collide.json volumes; a building\'s face by the cell centre, every other solid BODY clear, where it blocks a walker at the cell\'s floor; drawn.walkCells counts the cells they block, held or not), and the mission cameras\' poles the host stands (tools/missions/handover/legs.ts cameraPoles, kit.collide.json CCTVPole at the host\'s scale; engine 0.30.0): a cell is free when its centre is. floor: per row, run-length pairs [cm, cells], block z (the pavement 0, the carriageway -18): the ground drawn there or the floor civic-block.json declares (tools/plan/civic.ts floorAt)',
+      src: 'engine 0.49.0 (brief 098, Sky 2026-11-08: what is walkable is what you see): every solid a walker meets keeps `body` cm (the rulebook\'s bodies.radius + bodies.margin) from a free cell\'s centre, a building\'s face included: the plan\'s walk blockers (tools/plan/walk.ts blockersOf: built plots behind their building lines, civic footprints and towers, water, landmarks), the block\'s ground solids (tools/plan/civic.ts solids) and, with drawn.walk, the drawn solids (tools/sim/solids.ts: every piece the world places, with its kit.collide.json volumes, where it blocks a walker at the cell\'s floor; drawn.walkCells counts the 50 cm cells they alone block) and the mission cameras\' poles the host stands (tools/missions/handover/legs.ts cameraPoles). fine: the walk raster (tools/sim/walkfine.ts), cell cm, per row (fixed x) the run lengths of free and blocked cells starting with free: what the engine walks and stands on. rows: the raster at each 50 cm cell\'s centre (the engine\'s route topology). floor: per row, run-length pairs [cm, cells], block z (the pavement 0, the carriageway -18): the ground drawn there or the floor civic-block.json declares (tools/plan/civic.ts floorAt)',
     },
     occluders,
     places,
@@ -265,7 +271,8 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
     src: 'brief 059 §5 (Splice): getaway.stands[] and rivals.car / rivals.posts, derived from the mission points (Vantage), the mission routes getaway, getaway-service and rivals, and the plan, held by SX-2 and SX-3 (tools/sim/stands.ts). A second file so the site keeps the shape the engine reads (Site.cs rejects a key it does not know): `bun run sim:site --fold-stands` moves it into the site (getaway.stands, rivals.car, rivals.posts) when Keel\'s 059 round reads it there, and this file is then not written',
     getaway: { stands }, rivals: { car: rivalsNew.car, posts: rivalsNew.posts },
   }) + '\n';
-  return { json, site, stands: standsFile };
+  const gaps = gapsJson(findGaps(G)); // engine 0.49.0: the zone-wide gap check's list, from this grid
+  return { json, site, stands: standsFile, gaps };
 }
 
 /** The security level the engine runs at (GDD v0.23 §05, briefs/013/motive-takedowns.md §5.3), written into sim/data/handover.provisional.json from the data that owns it:
@@ -342,8 +349,9 @@ if (import.meta.main) {
   // the drawn solids stay as the committed site has them (grid.drawn: engine 0.30 adopted both); --drawn-walk / --drawn-occluders force one on, --no-drawn-walk / --no-drawn-occluders off. Without a site file both default to off.
   const had: SiteOptions = existsSync(join(root, SITE_FILE)) ? optionsOfSite() : {};
   const flag = (on: string, off: string, was?: boolean) => (a.includes(off) ? false : a.includes(on) || !!was);
-  const { json, stands } = buildSite(src, { drawnWalk: flag('--drawn-walk', '--no-drawn-walk', had.drawnWalk), drawnOccluders: flag('--drawn-occluders', '--no-drawn-occluders', had.drawnOccluders), foldStands: flag('--fold-stands', '--no-fold-stands', had.foldStands), solidDigest: flag('--solid-digest', '--no-solid-digest', had.solidDigest) });
+  const { json, stands, gaps } = buildSite(src, { drawnWalk: flag('--drawn-walk', '--no-drawn-walk', had.drawnWalk), drawnOccluders: flag('--drawn-occluders', '--no-drawn-occluders', had.drawnOccluders), foldStands: flag('--fold-stands', '--no-fold-stands', had.foldStands), solidDigest: flag('--solid-digest', '--no-solid-digest', had.solidDigest) });
   writeFileSync(join(root, SITE_FILE), json);
+  writeFileSync(join(root, GAPS_FILE), gaps);
   if (!JSON.parse(json).getaway.stands) writeFileSync(join(root, STANDS_FILE), stands); else rmSync(join(root, STANDS_FILE), { force: true }); // folded into the site: no second file
   const people = buildPeople(src);
   writeFileSync(join(root, PEOPLE_OUT), people);

@@ -152,6 +152,9 @@ namespace Suborned.Sim
         /// <summary>Brief 098 L9 (GameBodies.cs): where the law laid him relative to his own place, and the walk that lay was taken on (a new walk
         /// starts where he stands, so it carries none).</summary>
         public BodyLay Body; public Path? BodyWalk;
+        /// <summary>Engine 0.49.0 (brief 098): where the player's last move put him (null: none yet). An operative with no order away from it is idle, and
+        /// steps aside for one held behind him as anyone does (GameBodyGive.cs); at it, he holds the place he was put in. Hashed when set.</summary>
+        public Pt? PlacedAt;
         public bool Down => Gun.Down;
         public static string Name(OpId id) => id == OpId.Scout ? "scout" : id == OpId.Fixer ? "fixer" : id == OpId.Tech ? "tech" : "enforcer";
         public static OpId Parse(string s) => s == "scout" ? OpId.Scout : s == "fixer" ? OpId.Fixer : s == "tech" ? OpId.Tech : s == "enforcer" ? OpId.Enforcer : throw new FormatException($"operative '{s}' is unknown (scout, fixer, tech, enforcer)");

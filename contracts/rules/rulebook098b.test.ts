@@ -29,6 +29,12 @@ describe('brief 098: law L9, Bodies, in the rulebook', () => {
     expect(v(b.squeeze!)).toBeLessThan(v(b.radius)); expect(v(b.squeezePace!)).toBeLessThanOrEqual(v(b.shove));
     for (const k of ['body-squeeze-cm', 'body-squeeze-cm-s', 'body-replan-s']) expect(raw.values[k].proposed).toBe(true);
   });
+  test("engine 0.49.0's walk: a walker keeps its radius and a 5 cm margin from every solid (35 cm), under personal space's half", () => {
+    const b = rb.bodies!;
+    expect(b.margin).toBeTruthy(); expect(v(b.margin!)).toBe(5);
+    expect(v(b.radius) + v(b.margin!)).toBeLessThan(v(b.space)); // two walkers passing a solid on either side of a gap still keep their bodies
+    expect(raw.values['body-margin-cm'].proposed).toBe(true);
+  });
   test('the fight agrees with the law: fight.spacing.clear is two radii', () => {
     expect(v(rb.fight.spacing!.clear)).toBe(2 * v(rb.bodies!.radius));
   });

@@ -20,8 +20,16 @@ ITEM = {  # id: (along, across, height) of the street item it replaced, and the 
 AS = json.loads((Path(__file__).resolve().parent / "collide097.json").read_text())["pieces"]
 
 
+# Engine 0.49.0 (brief 098, Sky 2026-11-08: "the solids are the pieces as built"; Keel lifts Keel's own 097 rule): no piece declares the collision of what
+# it replaced any more: tools/decokit/collide.ts measures each from its mesh, as every other piece. The pinned volumes stay below as the record of what
+# 097 held; AS's `size` still sets the catalogue size (export_kit), so every piece is placed at the scale it is drawn at today.
+PINNED = False
+
+
 def volumes(name, height):
-    """The declared volumes for `name` (kit frame), or None if brief 097 does not pin it. height = the built piece's height (Blender z extent)."""
+    """The declared volumes for `name` (kit frame), or None: since engine 0.49.0 always None (PINNED off). height = the built piece's height (Blender z extent)."""
+    if not PINNED:
+        return None
     if name in AS:
         return AS[name]["volumes"]
     if name in ITEM:

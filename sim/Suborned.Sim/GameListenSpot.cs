@@ -4,14 +4,20 @@
 // moment the agent can already stand in place, then the free chair nearest the agent if one comes up within cell.listen.chairGrace, else free ground beside
 // something solid on a clear line, out of every watcher's cone. Someone who stays put: the same choice now, nearStill or farther off. Nothing found: the old
 // walk in. The agent waits at the spot (the attention clock holds, GameAttention.AttnInAct); the act starts when the person is within reach.
-// The choice is made only by the engine's walk (ListenWalk); the host's reads (ListenSpotNow, ListenSpotAhead) choose nothing and hash nothing.
+// Engine 0.49.0 (brief 098, Sky 2026-11-08: "Sit them down if they're listening, they're just regular people"): sitting is the strong default. A free
+// chair comes first whenever one comes up in the look-ahead (cell.listen.chairGrace is the whole of it), walking a little further or waiting for one;
+// the agent walks to the chair's free ground and sits in it, as a café customer does (its spot is the seat), and a seated agent is a body that keeps
+// its chair (GameBodies.cs). With no seat it stands by a wall (cell.listen.wall) and never across a passage (cell.listen.pass, Grid.Cuts).
+// The choice is made only by the engine's walk (ListenWalk); the host's reads (ListenSpotNow, ListenSpotAhead, SeatedAt) choose nothing and hash nothing.
 using System;
 using System.Collections.Generic;
 
 namespace Suborned.Sim
 {
-    /// <summary>The spot an agent's Listen walks to: for which order, where it stands, the chair (the people file's place name; "" on the ground), when it was chosen.</summary>
-    public sealed class ListenSpot { public Order For = null!; public Pt At; public string Chair = ""; public int Chose; }
+    /// <summary>The spot an agent's Listen walks to: for which order, where it stands (engine 0.49.0: a chair's seat), the chair (the people file's place
+    /// name; "" on the ground), when it was chosen, until when it stands (engine 0.49.0: the moment it was chosen for and cell.listen.hold), and the chair's
+    /// free ground its walk leaves the street at (At on the ground).</summary>
+    public sealed class ListenSpot { public Order For = null!; public Pt At, Stand; public string Chair = ""; public int Chose, Until; }
 
     public sealed partial class Game
     {
@@ -30,7 +36,8 @@ namespace Suborned.Sim
             if (!G.Within(op.Pos, at, reach)) return false;
             if (listenArriving) return true;
             if (op.Act != null && op.Act.Do == "listen") return SpotOf(op) is not ListenSpot sp || G.Within(op.Pos, sp.At, R.ListenAtSpotCm);
-            return !G.Within(op.Pos, at, R.ListenNearStillCm) && BesideSolid(op.Pos);
+            if (G.Within(op.Pos, at, R.ListenNearStillCm)) return false;
+            return SeatOf(op) != null || (BesideSolid(op.Pos) && !S.Grid.Cuts(op.Pos, R.BodyMinCm, R.ListenPassCm)); // engine 0.49.0: seated, or by a wall and out of the way
         }
 
         /// <summary>Is the agent waiting at a Listen's spot for the person to come: the attention clock holds on it.</summary>
@@ -43,74 +50,112 @@ namespace Suborned.Sim
             if (op.Spot != null && ReferenceEquals(op.Spot.For, o))
             {
                 var have = op.Spot;
-                if (!G.Within(op.Pos, have.At, R.ListenAtSpotCm)) { if (Walk.Route(op.Pos, have.At) is Pt[] r0) return new Path(r0); }
-                else if (Tick - have.Chose < T(R.ListenHoldS)) return new Path(new[] { op.Pos, op.Pos });
+                if (!G.Within(op.Pos, have.At, R.ListenAtSpotCm)) { if (SpotRoute(op.Pos, have.At, have.Stand) is Path r0) return r0; }
+                else if (Tick < have.Until) return new Path(new[] { op.Pos, op.Pos });
             }
             op.Spot = null;
             if (!PersonPos(p).HasValue) return Intercept(op, p, reach)?.path;
-            if (ListenPick(op, p, reach) is not (Pt at, string chair, Path path, int _)) return Intercept(op, p, reach)?.path;
-            op.Spot = new ListenSpot { For = o, At = at, Chair = chair, Chose = Tick };
+            if (ListenPick(op, p, reach) is not (Pt at, string chair, Path path, int startT, Pt stand)) return Intercept(op, p, reach)?.path;
+            int walkT = (int)((path.Length + Math.Max(1, PaceOf(op, false)) - 1) / Math.Max(1, PaceOf(op, false)));
+            op.Spot = new ListenSpot { For = o, At = at, Stand = stand, Chair = chair, Chose = Tick, Until = Tick + Math.Max(walkT, startT) + T(R.ListenHoldS) }; // engine 0.49.0: it stands until the moment it was chosen for and the hold (a chair may come up later in her walk)
             return path;
         }
+        /// <summary>The walk to a spot: to it on free ground; to a chair, to its free ground and the step into the seat across the last of the solid ground
+        /// (as a café customer's walk ends at the chair, Crowd.Leg); seated already, none.</summary>
+        Path? SpotRoute(Pt from, Pt at, Pt stand)
+        {
+            if (from == at) return new Path(new[] { from, from });
+            if (at == stand) return Walk.Route(from, at) is Pt[] r ? new Path(r) : null;
+            var w = from == stand ? new[] { from } : Walk.Route(from, stand); if (w == null) return null;
+            var l = new Pt[w.Length + 1]; Array.Copy(w, l, w.Length); l[w.Length] = at; return new Path(l);
+        }
 
-        /// <summary>The choice itself: read only. startT: when the act can start, from now.</summary>
-        (Pt at, string chair, Path path, int startT)? ListenPick(Op op, Person p, int reach)
+        /// <summary>The choice itself: read only. startT: when the act can start, from now; stand: where its walk leaves free ground (a chair's), else at.</summary>
+        (Pt at, string chair, Path path, int startT, Pt stand)? ListenPick(Op op, Person p, int reach)
         {
             int speed = Math.Max(1, PaceOf(op, false)), listen = T((int)R.Ev("scout.listen").Price[0].SV);
             if (ServerOf(p) == null)
             {
                 var her = PersonPos(p); if (!her.HasValue) return null;
-                var q = BestChair(op, her.Value, reach, R.ListenNearStillCm, Tick + listen + T(R.ListenChairMarginS), -1, speed) ?? BestGround(op, her.Value, reach, R.ListenNearStillCm, -1, speed);
-                if (!q.HasValue || Walk.Route(op.Pos, q.Value.at) is not Pt[] rt) return null;
-                var pa = new Path(rt); return (q.Value.at, q.Value.chair, pa, (int)((pa.Length + speed - 1) / speed));
+                var c0 = BestChair(op, her.Value, reach, R.ListenNearStillCm, Tick + listen + T(R.ListenChairMarginS), -1, speed);
+                if (c0.HasValue && SpotRoute(op.Pos, c0.Value.seat, c0.Value.stand) is Path p0) return (c0.Value.seat, c0.Value.chair, p0, (int)((p0.Length + speed - 1) / speed), c0.Value.stand);
+                var q = BestGround(op, her.Value, reach, R.ListenNearStillCm, -1, speed);
+                if (!q.HasValue || Walk.Route(op.Pos, q.Value) is not Pt[] rt) return null;
+                var pa = new Path(rt); return (q.Value, "", pa, (int)((pa.Length + speed - 1) / speed), q.Value);
             }
-            (Pt at, string chair, Path path, int startT)? ground = null; int groundS = -1;
+            (Pt at, string chair, Path path, int startT, Pt stand)? ground = null; int groundS = -1;
             for (int s = 0; s <= R.ListenLookS; s += R.ListenStepS)
             {
                 if (ground.HasValue && s > groundS + R.ListenChairGraceS) break;
                 var her = s == 0 ? PersonPos(p) : PoseAhead(p, T(s))?.pos; if (!her.HasValue) continue;
                 int t = T(s);
                 var c = BestChair(op, her.Value, reach, R.ListenNearWalkingCm, Tick + t + listen + T(R.ListenChairMarginS), t, speed);
-                if (c.HasValue && Walk.Route(op.Pos, c.Value.at) is Pt[] rc) { var pc = new Path(rc); if ((pc.Length + speed - 1) / speed <= t) return (c.Value.at, c.Value.chair, pc, t); }
+                if (c.HasValue && SpotRoute(op.Pos, c.Value.seat, c.Value.stand) is Path pc && (pc.Length + speed - 1) / speed <= t) return (c.Value.seat, c.Value.chair, pc, t, c.Value.stand);
                 if (ground.HasValue) continue;
                 var g = BestGround(op, her.Value, reach, R.ListenNearWalkingCm, t, speed);
-                if (g.HasValue && Walk.Route(op.Pos, g.Value.at) is Pt[] rg) { var pg = new Path(rg); if ((pg.Length + speed - 1) / speed <= t) { ground = (g.Value.at, "", pg, t); groundS = s; } }
+                if (g.HasValue && Walk.Route(op.Pos, g.Value) is Pt[] rg) { var pg = new Path(rg); if ((pg.Length + speed - 1) / speed <= t) { ground = (g.Value, "", pg, t, g.Value); groundS = s; } }
             }
             return ground;
         }
 
-        /// <summary>The free chair nearest the agent whose walkable point is in the ring round the person, out of every cone; within `t` ticks' straight walk unless t is -1.</summary>
-        (Pt at, string chair)? BestChair(Op op, Pt her, int reach, int nearest, int until, int t, int speed)
+        /// <summary>The free chair nearest the agent whose seat is in the ring round the person, its free ground within chairGround of it, out of every cone,
+        /// free through the act (no walker's stop holds it, nobody else of the cell has it, nobody else sits in it); within `t` ticks' straight walk unless t is -1.</summary>
+        (Pt seat, Pt stand, string chair)? BestChair(Op op, Pt her, int reach, int nearest, int until, int t, int speed)
         {
             if (People2 == null) return null;
-            (Pt, string)? best = null; long bd = long.MaxValue;
+            (Pt, Pt, string)? best = null; long bd = long.MaxValue; string me = Sim.Op.Name(op.Id);
             foreach (var name in People2.Chairs)
             {
-                var chair = People2.Places[name]; var st = Walk.NearestFree(chair);
-                if (!st.HasValue || G.Dist(st.Value, chair) > R.ListenChairGroundCm || !G.Within(st.Value, her, reach) || G.Within(st.Value, her, nearest)) continue;
-                if (t >= 0 && G.Dist(op.Pos, st.Value) * 10L > speed * (long)t) continue;
-                if (!ChairFree(name, Tick, until) || WatchedAt(st.Value)) continue;
-                long d = G.D2(op.Pos, st.Value); if (d < bd) { bd = d; best = (st.Value, name); }
+                var seat = People2.Places[name]; var st = Walk.Free(seat) ? seat : Walk.NearestFree(seat);
+                if (!st.HasValue || G.Dist(st.Value, seat) > R.ListenChairGroundCm || !G.Within(seat, her, reach) || G.Within(seat, her, nearest)) continue;
+                if (t >= 0 && G.Dist(op.Pos, seat) * 10L > speed * (long)t) continue;
+                if (!ChairFree(name, Tick, until) || (seatHeld.TryGetValue(name, out var who) && who != me) || ChairOfCell(name, op) || WatchedAt(seat)) continue;
+                long d = G.D2(op.Pos, seat); if (d < bd) { bd = d; best = (seat, st.Value, name); }
             }
             return best;
         }
+        /// <summary>Another operative's Listen has this chair, or another sits in it.</summary>
+        bool ChairOfCell(string chair, Op me) { foreach (var o in Ops) if (o != me && ((SpotOf(o) is ListenSpot sp && sp.Chair == chair) || SeatOf(o) == chair)) return true; return false; }
 
-        /// <summary>The free ground beside something solid nearest the agent, in the ring round the person, on a clear line to them, out of every cone.</summary>
-        (Pt at, string chair)? BestGround(Op op, Pt her, int reach, int nearest, int t, int speed)
+        /// <summary>The free ground by a wall nearest the agent, in the ring round the person, on a clear line to them, out of every cone, and never across a
+        /// passage (engine 0.49.0: with its body there, the ground round it stays as joined as it was: Grid.Cuts). Tried every GroundStepCm, nearest first.</summary>
+        Pt? BestGround(Op op, Pt her, int reach, int nearest, int t, int speed)
         {
-            (Pt, string)? best = null; long bd = long.MaxValue; int cell = S.Grid.Cell;
-            for (int dx = -reach; dx <= reach; dx += cell) for (int dy = -reach; dy <= reach; dy += cell)
+            groundTry.Clear();
+            for (int dx = -reach; dx <= reach; dx += GroundStepCm) for (int dy = -reach; dy <= reach; dy += GroundStepCm)
                 {
                     var q = new Pt(her.X + dx, her.Y + dy);
                     if (!S.Grid.Free(q) || !G.Within(q, her, reach) || G.Within(q, her, nearest) || !BesideSolid(q)) continue;
                     if (t >= 0 && G.Dist(op.Pos, q) * 10L > speed * (long)t) continue;
-                    long d = G.D2(op.Pos, q); if (d >= bd || !Sees(q, her) || WatchedAt(q)) continue;
-                    bd = d; best = (q, "");
+                    groundTry.Add((G.D2(op.Pos, q), q));
                 }
-            return best;
+            groundTry.Sort((a, b) => a.d != b.d ? a.d.CompareTo(b.d) : a.q.X != b.q.X ? a.q.X.CompareTo(b.q.X) : a.q.Y.CompareTo(b.q.Y));
+            foreach (var (_, q) in groundTry) if (Sees(q, her) && !WatchedAt(q) && !S.Grid.Cuts(q, R.BodyMinCm, R.ListenPassCm)) return q;
+            return null;
+        }
+        readonly List<(long d, Pt q)> groundTry = new List<(long, Pt)>();
+        /// <summary>The ground a Listen tries, on a lattice round the person this fine (cm): finer than cell.listen.wall, so a wall's edge is never stepped over.</summary>
+        const int GroundStepCm = 20;
+
+        /// <summary>By a wall (engine 0.49.0, cell.listen.wall): a solid within `wall` of where its body keeps clear of one, any of eight ways. Was (0.39.0 to
+        /// 0.48.0): a blocked 50 cm cell next to it.</summary>
+        internal bool BesideSolid(Pt q)
+        {
+            int c = R.ListenWallCm, k = c * 707 / 1000;
+            return !S.Grid.Free(q + new Pt(c, 0)) || !S.Grid.Free(q - new Pt(c, 0)) || !S.Grid.Free(q + new Pt(0, c)) || !S.Grid.Free(q - new Pt(0, c))
+                || !S.Grid.Free(q + new Pt(k, k)) || !S.Grid.Free(q + new Pt(k, -k)) || !S.Grid.Free(q + new Pt(-k, k)) || !S.Grid.Free(q + new Pt(-k, -k));
         }
 
-        internal bool BesideSolid(Pt q) { int c = S.Grid.Cell; return !S.Grid.Free(q + new Pt(c, 0)) || !S.Grid.Free(q - new Pt(c, 0)) || !S.Grid.Free(q + new Pt(0, c)) || !S.Grid.Free(q - new Pt(0, c)); }
+        /// <summary>The chair an operative sits in (engine 0.49.0): it stands at a chair's seat with no walk (its walk took it in there), on the street.</summary>
+        internal string? SeatOf(Op op)
+        {
+            if (People2 == null || op.Walk != null || op.Inside || op.InCar || op.Down || op.CarriedBy.HasValue || op.LeftMap) return null;
+            if (seatAt == null) { var d = new Dictionary<Pt, string>(); foreach (var c in People2.Chairs) d.TryAdd(People2.Places[c], c); seatAt = d; }
+            return seatAt.TryGetValue(op.Pos, out var name) ? name : null;
+        }
+        Dictionary<Pt, string>? seatAt;
+        /// <summary>Host read (never hashed): the chair an operative sits in now and the way it faces (the chair's own), or null. Latch draws it seated.</summary>
+        public (string chair, Pt face)? SeatedAt(string agent) { var op = OpOf(Sim.Op.Parse(agent)); return SeatOf(op) is string c ? (c, StopFace(c) ?? default) : ((string, Pt)?)null; }
         internal bool WatchedAt(Pt q)
         {
             if (GuardWatching(q, false) || PatrolWatching(q, false)) return true;
@@ -127,7 +172,7 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- the host's reads: read only, never hashed
 
-        /// <summary>The spot this agent's Listen holds now, walking in, waiting or at the act; null if it holds none. At: where it stands (a chair's walkable point, about 1 m off the chair).
+        /// <summary>The spot this agent's Listen holds now, walking in, waiting or at the act; null if it holds none. At: where it stands (engine 0.49.0: a chair's seat; was its walkable point, about 1 m off).
         /// Chair: the chair's place name, or "". Waiting: at the spot, the person not yet in reach.</summary>
         public (Pt at, string chair, string target, bool waiting)? ListenSpotNow(string agent)
         {
@@ -149,7 +194,7 @@ namespace Suborned.Sim
             string key = (int)op.Id + "/" + p.Role;
             if (aheadCache.TryGetValue(key, out var hit)) return hit;
             (Pt, string, int, int)? read = null;
-            if (ListenPick(op, p, ActReachOf(op, "listen")) is (Pt at, string chair, Path path, int startT))
+            if (ListenPick(op, p, ActReachOf(op, "listen")) is (Pt at, string chair, Path path, int startT, Pt _))
             { int speed = Math.Max(1, PaceOf(op, false)); int walk = (int)((path.Length + speed - 1) / speed); read = (at, chair, walk, Math.Max(walk, startT)); }
             aheadCache[key] = read; return read;
         }

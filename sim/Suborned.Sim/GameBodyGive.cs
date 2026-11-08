@@ -13,7 +13,8 @@
 //    next stop by another way, or the one after (it keeps to that until the step it replaced ends); running for shelter or at a packed door,
 //    another refuge it can get to, or its own another way; on its way back from shelter, another way. Counted: BodyReplans, by what it took.
 // The tenets (the cast, anyone seated, an operative at work), the armed (the cell, the rival crew, guards, officers, police, robots) are never
-// asked to move and never change plans: an operative steps round people or waits. Ties go by the law's fixed order; integer cm, fixed lists.
+// asked to move and never change plans: an operative steps round people or waits; engine 0.49.0, an idle operative off the place the player put him
+// makes room as anyone does (OpIdle). Ties go by the law's fixed order; integer cm, fixed lists.
 using System;
 using System.Collections.Generic;
 
@@ -92,7 +93,12 @@ namespace Suborned.Sim
         /// <summary>Who makes room for whom (engine 0.48.0; Aster, brief 098 after Vantage's probe: a police officer stood 81.6 s behind a response
         /// robot in the east gap, both armed): a person of the city for anyone; one armed for one armed of its own side (SideOf), as the city does,
         /// never for an enemy; a tenet (fixed, one of the cast walking, the patrol on its sweep) or one carrying someone never.</summary>
-        bool MakesRoomFor(in Bd o, in Bd b) => o.Cls != BcFixed && !o.WalksFirm && !o.Laden && o.Kind != BkPatrol && (o.Cls == BcSoft && !o.Armed || SideOf(in o) != 0 && SideOf(in o) == SideOf(in b)); // the patrol on its sweep is one of the rulebook's tenets
+        bool MakesRoomFor(in Bd o, in Bd b) => o.Cls != BcFixed && !o.WalksFirm && !o.Laden && o.Kind != BkPatrol && (o.Cls == BcSoft && !o.Armed || o.Idle || SideOf(in o) != 0 && SideOf(in o) == SideOf(in b)); // the patrol on its sweep is one of the rulebook's tenets; engine 0.49.0: an idle operative makes room for anyone, as the city does
+        /// <summary>Engine 0.49.0 (brief 098; Sky 2026-11-08, "they're just regular people", Aster's reading for Sky to confirm): an operative with no order
+        /// (not acting, watching, listening or walking, not driven, carrying nobody, his weapon away, not seated) who stands off the place the player's last
+        /// move put him (by more than two radii and a step: his walk's end) steps aside for one held behind him and back, at a walk, as a person of the city
+        /// does. At that place he holds it: the player put him there.</summary>
+        bool OpIdle(Op op, Pt own) => op.Busy == null && op.Act == null && op.Walk == null && !op.Driven && !op.Gun.Drawn && op.Gun.Order.Length == 0 && !op.Carrying.HasValue && op.CarryBody.Length == 0 && !(op.PlacedAt is Pt at && G.Within(own, at, R.BodyMinCm + R.BodySpaceCm));
         /// <summary>The side an armed body is on: 1 the cell; 2 security (the patrol, the city's and the dial's guards, the response's officers,
         /// police units and robots, the fight's police); 3 the rival crew (on foot or in the fight); 0 none (the city's people unarmed, the cast).</summary>
         static int SideOf(in Bd b) => b.Kind switch { BkOp => 1, BkPatrol or BkOfficer or BkUnit => 2, BkCrew => 3, BkHostile => IsRivalId(b.Id) ? 3 : 2, BkWalker => b.Armed ? 2 : 0, _ => 0 };
