@@ -274,10 +274,20 @@ describe('the §09 conditions, each with a failing example', () => {
   });
 });
 
+// Engine 0.50.0 (brief 098, Aster's ruling on 0.49.0: fighters hold cover, a doorway is a way), mission record c062: HOLDS with these 15 red,
+// each with its owner and cause (briefs/098/keel/hold-and-doors.html). Off the list since c060: L96 veteran (43 % out on 0.50.0, in its 40-70 %).
 const KNOWN_RED = [
-  'R-7' /* Waymark and Pulse: quiet-a's call and enter, quiet-g's beside-guard windows under 30 s at a person's pace (briefs/096/motive/misses.json) */,
-  'B-2 thin-quiet', 'B-8 quiet-g', 'B-11 drive-early', 'B-11 drive-round', 'B-11 quiet-b-lookout-ignored', 'B-11 quiet-b-taped', /* 'B-11 quiet-b': green on engine 0.46.0 (brief 098 L9 Bodies, c056: the middle half of quiet-b's fights spans 21-31 s) */ 'B-14', 'B-16 drive-early' /* engine 0.43.0 (brief 096): Motive's bands, reports */,
-  'L96 A', 'L96 B-all', 'L96 veteran' /* engine 0.45.0 (brief 096): B-8 quiet-a and prepared-loud back in (route A's wait filled); quiet-a 99 % over its 97 % ceiling, quiet-b 0.69 captured per win, the veteran 39.5 %: for Motive, briefs/096/keel/report-lukac-help.md */,
+  'R-7' /* Waymark and Pulse: quiet-g's beside-guard window is under 30 s at a person's pace: 97 % → 82 % a step 30 s late (briefs/096/motive/misses.json); quiet-a's call and enter hold now */,
+  'B-2 thin-quiet' /* Motive: thin quiet wins 91.5 %, over its 60-90 % (92 % on c060): the band, not tuned toward */,
+  'B-8 quiet-g' /* Waymark: quiet-g's plan waits for the beside-guard window with the whole cell idle (median 57 s, p95 82 s): the plan's logic */,
+  'B-9 quiet-b' /* Motive and Waymark: on the lend the three left at the square wait in the open, and the rival crew's advances on them are no longer turned back by a step out of a line (fight.cover): they close and trade at short range, 1.09 down per win (c061 0.88, c060 0.46) */,
+  'B-11 drive-early', 'B-11 quiet-b-lookout-ignored', 'B-11 quiet-b-taped' /* Motive: no final fight on these plans (0-0 s): the variety band reads a fight that never comes */,
+  'B-11 drive-round' /* Motive: the drive round's fights span 9-17 s, under 10 s: the band */,
+  'B-11 quiet-a', 'B-11 quiet-g', 'B-11 thin-quiet' /* Motive and Pulse: fighters hold cover (engine 0.50.0): no advance, hide and advance again, so the safe fight is decided quickly and alike (middle halves 10-16 s, 15-22 s, 12-16 s; B-7's medians 12-17 s, all in band); whether a decided fight needs 10 s of spread is Motive's band */,
+  'B-14' /* Motive: 20 of 1,871 falls under 5 s (fastest 1.8 s), the Enforcer 1 of 167 under 7 s: the hit rolls' streak cap, his band */,
+  'B-16 drive-early' /* Motive: the early drive is never seen (Alert ≥ 1 on 0 of 200): what makes the mistake seen is his rule's to set */,
+  'L96 A' /* Motive: quiet-a wins 99 %, over its 97 % ceiling (briefs/096/keel/report-lukac-help.md) */,
+  'L96 B-all' /* Motive and Waymark: quiet-b's all four out on 32.5 % of wins, 1.5 captured per win: the same short-range trade at the square as B-9 quiet-b */,
 ]; // engine 0.43.0 (Keel for Waymark): MC-0 and MC-13 green (fight-loud-wait-yard and careless-scout-idles-pickup recomposed on the lend, the lookout misled), MC-11 and MC-14 read car.unboxed under the block (blocker.ts); the lend bands (L96) and B-7 quiet-a in band
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on the working tree)', () => {
   // What's still red has an owner, named in KNOWN_RED; when an owner fixes one, this test fails until it comes off the list.

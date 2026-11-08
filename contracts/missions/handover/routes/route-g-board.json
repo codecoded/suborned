@@ -28,10 +28,10 @@
   {"tick":2343,"op":"scout","do":"move","to":"d:Getaway bay"},
   {"tick":2343,"op":"fixer","do":"move","to":"d:Getaway bay"},
   {"tick":2343,"op":"tech","do":"move","to":"d:Getaway bay"},
-  {"tick":3050,"op":"tech","do":"board","target":"car"},
-  {"tick":3364,"op":"scout","do":"board","target":"car"},
-  {"tick":3364,"op":"fixer","do":"board","target":"car"},
-  {"tick":3374,"op":"cell","do":"go"}
+  {"tick":2526,"op":"scout","do":"board","target":"car"},
+  {"tick":2526,"op":"fixer","do":"board","target":"car"},
+  {"tick":2529,"op":"tech","do":"board","target":"car"},
+  {"tick":2539,"op":"cell","do":"go"}
  ],
  "until": 4900
 }

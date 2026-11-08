@@ -1,0 +1,24 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§06 rivals reach Vale at an unguarded car (engine 0.35.2, Motive rulings-0.35.1 §2: only a drawn operative guards a held car), in the safe fight: route-g-fast-board to the spring (no contact touched), but the cell never draws (one input, engine 0.35.1, brief 039: the cell that will not fight is the cell that never presses F). The Enforcer walks Vale in, boards him and steps out again to stand by the car. Undrawn, nobody of the cell guards the held car, so the rivals leave cover and walk to it (rivals.for-car, 2:54.7), and the first there takes Vale with the Enforcer standing beside it: rivals-reach-vale at 3:09.7 (Keel, 0.35.2). Renamed from fight-safe-cell-down (Aster, 2026-10-27): the cell-down fail is covered by Keel's K3-CELL-DOWN scenario, not a route (Sky: \"Sure\").",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":0,"op":"scout","do":"move","to":[3800,-5000]},
+  {"tick":0,"op":"fixer","do":"move","to":[1025,-4625]},
+  {"tick":125,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":310,"op":"scout","do":"watch","target":"guard"},
+  {"tick":510,"op":"scout","do":"move","to":[725,-4625]},
+  {"tick":770,"op":"enforcer","do":"move","to":[6520,-4110]},
+  {"tick":860,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
+  {"tick":920,"op":"enforcer","do":"enter"},
+  {"tick":920,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":1300,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":1593,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":1693,"op":"enforcer","do":"board","target":"car"},
+  {"tick":1734,"op":"enforcer","do":"move","to":[850,-4520]}
+ ],
+ "until": 4900
+}

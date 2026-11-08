@@ -24,7 +24,7 @@ namespace Suborned.Sim
         public readonly string Text; public readonly ulong TextHash;
         public readonly SortedDictionary<string, DialKind> Kinds = new SortedDictionary<string, DialKind>(StringComparer.Ordinal);
         public readonly string LeaveSalt;
-        public readonly string[] BeatPoints; public readonly int BeatSize, PauseMinS, PauseMaxS, DoorOutCm, ShiftBeforeS, ShiftAfterS;
+        public readonly string[] BeatPoints; public readonly int BeatSize, PauseMinS, PauseMaxS, ShiftBeforeS, ShiftAfterS; // engine 0.50.0: a door's beat point stands beside it (bodies.door), doorOutCm retired
         public readonly int EnterMinS, EnterMaxS, LingerSeatMinS, LingerSeatMaxS, LingerDoorMinS, LingerDoorMaxS, EdgeMinCells, EdgeSpanCells;
         public readonly int DestSeat, DestDoor, DestEdge;
         /// <summary>people.rules temperamentsBy.mix.rowMaxShare, per mille: no temperament holds more of an added kind's draw.</summary>
@@ -60,10 +60,10 @@ namespace Suborned.Sim
             int rests = 0; var named = new HashSet<string>(StringComparer.Ordinal); foreach (var d in Kinds.Values) { if (d.Rest) rests++; foreach (var j in d.Of) if (!named.Add(j)) throw new FormatException($"population.kinds: job '{j}' is named by two kinds"); }
             if (rests != 1) throw new FormatException("population.kinds: exactly one kind is \"rest\"");
             var f = n["fewer"]; f.Only("salt", "src", "proposed", "reason"); LeaveSalt = f["salt"].Str();
-            var b = n["beat"]; b.Only("points", "size", "pauseS", "doorOutCm", "shiftBeforeS", "shiftAfterS", "src", "proposed", "reason");
+            var b = n["beat"]; b.Only("points", "size", "pauseS", "shiftBeforeS", "shiftAfterS", "src", "proposed", "reason");
             BeatPoints = b["points"].Strs().ToArray(); foreach (var p in BeatPoints) if (p != "door" && p != "post" && p != "call-box") throw new FormatException($"{b["points"].Path}: '{p}' (door, post, call-box)");
-            BeatSize = b["size"].Int(); (PauseMinS, PauseMaxS) = Band(b["pauseS"]); DoorOutCm = b["doorOutCm"].Int(); ShiftBeforeS = b["shiftBeforeS"].Int(); ShiftAfterS = b["shiftAfterS"].Int();
-            if (BeatSize < 1 || BeatSize > 8 || PauseMinS < 1 || DoorOutCm < 0 || DoorOutCm > 1000 || ShiftBeforeS < 0 || ShiftAfterS < 0) throw new FormatException("population.beat: size 1..8, pauses of a second or more, doorOutCm 0..1000, shifts 0 or more");
+            BeatSize = b["size"].Int(); (PauseMinS, PauseMaxS) = Band(b["pauseS"]); ShiftBeforeS = b["shiftBeforeS"].Int(); ShiftAfterS = b["shiftAfterS"].Int();
+            if (BeatSize < 1 || BeatSize > 8 || PauseMinS < 1 || ShiftBeforeS < 0 || ShiftAfterS < 0) throw new FormatException("population.beat: size 1..8, pauses of a second or more, shifts 0 or more");
             var ps = n["passers"]; ps.Only("enterS", "dest", "lingerS", "edgeMinCells", "edgeSpanCells", "src", "proposed", "reason");
             (EnterMinS, EnterMaxS) = Band(ps["enterS"]);
             var dw = ps["dest"]; dw.Only("seat", "door", "edge"); DestSeat = dw["seat"].Int(); DestDoor = dw["door"].Int(); DestEdge = dw["edge"].Int();
@@ -163,51 +163,31 @@ namespace Suborned.Sim
         /// <summary>The cast are played by role, not as the crowd: the door guard is a guard; the waitress, the driver and the councillor are the rest.</summary>
         public static string CastJob(string role) => role == "guard" ? "guard" : role;
 
-        static readonly ConditionalWeakTable<Site, Dictionary<int, SitePoints>> points = new ConditionalWeakTable<Site, Dictionary<int, SitePoints>>();
-        /// <summary>The site's post points and edges (computed once per site and clearance, shared by every game on it: read-only after).
-        /// `clearCm`: brief 098 L9, no post point within it of a cast stand (bodies.space with L9 on; 0: as the site has them).</summary>
-        public static SitePoints PointsOf(Site s, PopulationRules pop, int clearCm = 0) { lock (points) { if (!points.TryGetValue(s, out var byClear)) { byClear = new Dictionary<int, SitePoints>(); points.Add(s, byClear); } if (!byClear.TryGetValue(clearCm, out var p)) { p = new SitePoints(s, pop, clearCm); byClear[clearCm] = p; } return p; } }
+        static readonly ConditionalWeakTable<Site, ConditionalWeakTable<Rules, SitePoints>> points = new ConditionalWeakTable<Site, ConditionalWeakTable<Rules, SitePoints>>();
+        /// <summary>The site's post points and edges (computed once per site and rulebook, shared by every game on them: read-only after). Brief
+        /// 098 L9: no post point within personal space of a cast stand (bodies.space with L9 on); engine 0.50.0 (bodies.door): none in a door's
+        /// way, and a door's own beside it, clear of the door's people in `crowd` (its waiting points and going-in point; the crowd the inputs carry).</summary>
+        public static SitePoints PointsOf(Site s, PopulationRules pop, Rules r, Crowd? crowd) { lock (points) { var byRules = points.GetOrCreateValue(s); if (!byRules.TryGetValue(r, out var p)) { p = new SitePoints(s, pop, r, crowd); byRules.Add(r, p); } return p; } }
     }
 
-    /// <summary>What the engine finds in a site for the people it adds. Post points: each staffed door (a point doorOutCm out of it, so the door's
-    /// own post stays its holder's), each police post on the street, each call box (they stand at the corners, R-REPORT), on the walk grid's main
-    /// ground. Edges: the runs of free cells on the walk grid's border (a street leaving the window), at least edgeMinCells wide, each entered
+    /// <summary>What the engine finds in a site for the people it adds. Post points: each staffed door (a post beside it, off its way: DoorWays,
+    /// engine 0.50.0; the door's own post stays its holder's), each police post on the street, each call box (they stand at the corners, R-REPORT),
+    /// on the walk grid's main ground, none in a door's way. Edges: the runs of free cells on the walk grid's border (a street leaving the window), at least edgeMinCells wide, each entered
     /// at its middle (a run longer than edgeSpanCells split evenly). Sorted by id; ids "beat:&lt;the point's id&gt;" and "edge:&lt;side&gt;:&lt;k&gt;".</summary>
     public sealed class SitePoints
     {
         public readonly List<(string id, Pt at, Pt face)> Posts = new List<(string, Pt, Pt)>(), Edges = new List<(string, Pt, Pt)>();
         public readonly int MainPiece;
-        public SitePoints(Site s, PopulationRules pop, int clearCm = 0)
+        public SitePoints(Site s, PopulationRules pop, Rules r, Crowd? crowd)
         {
+            int clearCm = r.BodiesOn ? r.BodySpaceCm : 0; var ways = DoorWays.Of(s); int depth = r.BodyDoorDepthCm, half = r.BodyDoorHalfCm, rad = r.BodyRadiusCm;
             var g = s.Grid;
             // the main ground: the largest piece of free cells (the street network), so nobody is put on a pocket walled off from it
             int best = -1, bestSize = -1;
             for (int i = 0; i < g.Nx; i += 4) for (int j = 0; j < g.Ny; j += 4) { if (!g.FreeCell(i, j)) continue; int k = g.PieceOf(g.Centre(i, j)), sz = g.PieceSize(k); if (sz > bestSize) { bestSize = sz; best = k; } }
             MainPiece = best;
             bool main(Pt p) => g.Free(p) && g.PieceOf(p) == MainPiece;
-            // engine 0.49.0: the way out of a door: the sum of the offsets of the free ground within OpenCm of it, sampled every OpenStepCm (null: none free)
-            const int OpenCm = 200, OpenStepCm = 10; // engine 0.49.0: a door's way out, read from the foot ground within OpenCm of it, every OpenStepCm
-            static bool Foot(Site s, Pt p) => s.Grid.Free(p) && !s.Drive.Free(p); // walkable and no car's (a carriageway, a drive, a bay: a car may stand there)
-            static Pt? OpenSide(Site s, Pt at)
-            {
-                long sx = 0, sy = 0;
-                for (int dx = -OpenCm; dx <= OpenCm; dx += OpenStepCm) for (int dy = -OpenCm; dy <= OpenCm; dy += OpenStepCm)
-                        if ((long)dx * dx + (long)dy * dy <= (long)OpenCm * OpenCm && Foot(s, new Pt(at.X + dx, at.Y + dy))) { sx += dx; sy += dy; }
-                long n = G.Isqrt(sx * sx + sy * sy); return n == 0 ? null : new Pt((int)(sx * 100 / n), (int)(sy * 100 / n));
-            }
-            // the foot ground nearest p on the main piece (p itself, else the nearest free cell centre that is no car's, ring by ring within 6 m)
-            static Pt? OnFoot(Site s, Pt p, Func<Pt, bool> main)
-            {
-                if (Foot(s, p) && main(p)) return p;
-                var g = s.Grid; int ci = g.CI(p.X), cj = g.CJ(p.Y);
-                for (int r = 1; r <= 12; r++)
-                {
-                    Pt? best = null; long bd = long.MaxValue;
-                    for (int i = ci - r; i <= ci + r; i++) for (int j = cj - r; j <= cj + r; j++) { if (!g.FreeCell(i, j)) continue; var c = g.Centre(i, j); if (!Foot(s, c) || !main(c)) continue; long d = G.D2(c, p); if (d < bd) { bd = d; best = c; } }
-                    if (best.HasValue) return best;
-                }
-                return null;
-            }
+            bool off(Pt p) => !DoorWays.In(ways, p, depth, half, rad); // engine 0.50.0 (bodies.door): out of every door's way, by a body's radius
             var raw = new List<(string id, Pt at, Pt face)>();
             if (Array.IndexOf(pop.BeatPoints, "door") >= 0)
                 foreach (var (id, at, kind) in s.Refuges)
@@ -215,15 +195,24 @@ namespace Suborned.Sim
                     if (kind != "door") continue;
                     var place = id.StartsWith("door:", StringComparison.Ordinal) ? id.Substring(5) : id;
                     Pt? stand = null; foreach (var e in s.Entrances) if (e.id == place && e.stand != e.at) stand = e.stand;
-                    if (!stand.HasValue) continue;
-                    var face = OpenSide(s, at) ?? stand.Value - at; long len = Math.Max(1, G.Isqrt(G.D2(face, default))); // engine 0.49.0: out is the open side of the foot ground round the door (the Office's stand is 25 cm along its facade, so stand − door ran along the wall into its pilasters)
-                    var p = new Pt(stand.Value.X + (int)(face.X * pop.DoorOutCm / len), stand.Value.Y + (int)(face.Y * pop.DoorOutCm / len));
-                    var q = OnFoot(s, p, main); if (q.HasValue) raw.Add(("beat:" + id, q.Value, face));
+                    var way = ways.Find(w => w.Id == place); if (!stand.HasValue || way == null) continue;
+                    // engine 0.50.0 (bodies.door): a guard at a door takes a post beside it, never in front of the doorway, with a passage from the door's
+                    // own people (the cast stands, its waiting points, its going-in point). 0.49.0 stood it 2 m straight out, on the Office's public steps.
+                    var held = CastStands.Of(s);
+                    if (crowd != null) { foreach (var kv in crowd.Beside) if (kv.Value == place && crowd.Places.TryGetValue(kv.Key, out var bp)) held.Add(bp); if (crowd.DoorIn.TryGetValue(place, out var din)) held.Add(din); }
+                    var q = DoorWays.Beside(way, ways, held, depth, half, rad, 2 * r.BodySpaceCm, p => DoorWays.Foot(s, p) && main(p)); // a passage from them: a person walks between at personal space from both (two personal spaces, centre to centre)
+                    if (q.HasValue) raw.Add(("beat:" + id, q.Value, way.Out));
                 }
             if (Array.IndexOf(pop.BeatPoints, "post") >= 0) foreach (var (id, at) in s.Posts) if (!id.StartsWith("door:", StringComparison.Ordinal) && main(at)) raw.Add(("beat:" + id, at, default));
             if (Array.IndexOf(pop.BeatPoints, "call-box") >= 0) foreach (var (id, at) in s.CallBoxes) if (main(at)) raw.Add(("beat:" + id, at, default));
             raw.Sort((a, b) => string.CompareOrdinal(a.id, b.id));
-            foreach (var x in raw) if (!Posts.Exists(y => y.id == x.id) && CastStands.Clear(s, x.at, clearCm, main) is Pt cp) Posts.Add((x.id, cp, x.face)); // brief 098 L9: none on a cast member's place (CastStands.cs)
+            bool ground(Pt p) => main(p) && off(p);
+            foreach (var x in raw)
+            {
+                if (Posts.Exists(y => y.id == x.id)) continue;
+                var at = off(x.at) ? x.at : g.Nearest(x.at, ground, 2 * depth) is Pt o ? o : (Pt?)null; if (!at.HasValue) continue; // engine 0.50.0: a post or call box in a door's way stands just off it
+                if (CastStands.Clear(s, at.Value, clearCm, ground) is Pt cp) Posts.Add((x.id, cp, x.face)); // brief 098 L9: none on a cast member's place (CastStands.cs)
+            }
             // the edges: four sides of the window, each run of free main cells along it
             void side(string name, int n, Func<int, (int i, int j)> cell, Pt inward)
             {

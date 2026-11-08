@@ -1,4 +1,4 @@
-// Brief 098, law L9 Bodies (engine 0.46.0, Keel): the live rulebook carries `bodies` and the schema holds it. The engine's behaviour is the law's
+// Brief 098, law L9 Bodies (engine 0.46.0, Keel): the live rulebook carries `bodies` and the schema holds it (engine 0.50.0: its doorway, and fight.cover). The engine's behaviour is the law's
 // tests (sim/Suborned.Sim.Tests/Bodies.cs): no two bodies on their feet overlap at any tick, across seeds and the dial's settings.
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
@@ -34,6 +34,20 @@ describe('brief 098: law L9, Bodies, in the rulebook', () => {
     expect(b.margin).toBeTruthy(); expect(v(b.margin!)).toBe(5);
     expect(v(b.radius) + v(b.margin!)).toBeLessThan(v(b.space)); // two walkers passing a solid on either side of a gap still keep their bodies
     expect(raw.values['body-margin-cm'].proposed).toBe(true);
+  });
+  test("engine 0.50.0's doorway: a way 3 m out from a door and 80 cm either side of its line (two abreast at personal space), proposed", () => {
+    const d = rb.bodies!.door;
+    expect(d).toBeTruthy(); expect([v(d!.depth), v(d!.half)]).toEqual([300, 80]);
+    expect(v(d!.half)).toBe(v(rb.bodies!.space)); // a door's way is two people abreast at personal space
+    for (const k of ['body-door-depth-cm', 'body-door-half-cm']) expect(raw.values[k].proposed).toBe(true);
+  });
+  test("engine 0.50.0's fight.cover: fighters hold cover; cover is somewhere to fight from (the whole effective ring), leave and lapse are ai's own", () => {
+    const c = rb.fight.cover;
+    expect(c).toBeTruthy(); expect(v(c!.reach)).toBe(1000);
+    expect(c!.leave).toBe(rb.ai.cover.leave); expect(c!.lapse).toBe(rb.ai.engageLapse); // one value each
+    expect(raw.values['cover-hold-reach-pct'].proposed).toBe(true);
+    const bad = structuredClone(raw); bad.fight.cover.extra = 'v:cover-leave-s';
+    expect(Rulebook.safeParse(bad).success).toBe(false);
   });
   test('the fight agrees with the law: fight.spacing.clear is two radii', () => {
     expect(v(rb.fight.spacing!.clear)).toBe(2 * v(rb.bodies!.radius));

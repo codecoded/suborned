@@ -69,7 +69,7 @@ namespace Suborned.Sim
             var from = h.Pos(Tick); var a = Walk.NearestFree(from) ?? from;
             var route = Walk.RouteBeside(a, Car);
             if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; }
-            h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; h.Why = "press"; h.Closing = false;
+            h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; h.Why = "press"; h.Closing = false; CommitEnd(h.Gun); // engine 0.50.0 (fight.cover): the press is his crew's plan, a reason to leave
             if (h.Run.Length == 0) h.Run = null;
         }
 

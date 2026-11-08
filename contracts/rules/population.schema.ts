@@ -43,7 +43,7 @@ export const PopulationRules = z.strictObject({
   fewer: z.strictObject({ salt: text, ...why }).refine(proposed),
   beat: z.strictObject({
     points: z.array(z.enum(['door', 'post', 'call-box'])).min(1), size: z.number().int().min(1).max(8), pauseS: band,
-    doorOutCm: z.number().int().min(0).max(1000), shiftBeforeS: z.number().int().min(0), shiftAfterS: z.number().int().min(0), ...why,
+    shiftBeforeS: z.number().int().min(0), shiftAfterS: z.number().int().min(0), ...why, // engine 0.50.0: doorOutCm retired (a door's post stands beside it, rulebook bodies.door)
   }).refine(proposed),
   passers: z.strictObject({
     enterS: band, dest: z.strictObject({ seat: z.number().int().min(0), door: z.number().int().min(0), edge: z.number().int().min(1) }),

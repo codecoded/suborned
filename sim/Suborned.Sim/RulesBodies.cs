@@ -2,7 +2,7 @@
 // 0.46.0, Keel): every person on the street has a body, and no two bodies on their feet overlap; engine 0.47.0, give and take (Sky 2026-11-07:
 // "Do all but the jumping back to spot should be better to dealt with"): nobody jumps; people make room, squeeze past (squeeze, squeezePace) and
 // change plans (replan); engine 0.49.0, the walk (Sky 2026-11-08, "Gap between planter and fountain should be walkable"): a walker keeps its radius
-// and `margin` from every solid (WalkClearCm, the site's walk raster). Read here, apart from Rules.cs (over the 500-line mark). Every key is required:
+// and `margin` from every solid (WalkClearCm, the site's walk raster); engine 0.50.0, a doorway is a way (`door`: nobody posts in it). Read here, apart from Rules.cs (over the 500-line mark). Every key is required:
 // a rulebook without them is pinned before 0.46.0, 0.47.0 or 0.49.0 (unknown = reject). The law's behaviour is GameBodies.cs and its partners.
 using System;
 
@@ -36,6 +36,10 @@ namespace Suborned.Sim
         /// <summary>bodies.margin (engine 0.49.0, brief 098: what is walkable is what you see): how much more than its radius a walker keeps from every
         /// solid (cm).</summary>
         public int BodyMarginCm { get; private set; }
+        /// <summary>bodies.door (engine 0.50.0, brief 098: a doorway is a way): how far out in front of a door its way runs, and how wide it is either
+        /// side of the door's line (cm). Nobody posts there (DoorWays.cs).</summary>
+        public int BodyDoorDepthCm { get; private set; }
+        public int BodyDoorHalfCm { get; private set; }
         /// <summary>Two radii: the closest two bodies on their feet ever stand, centre to centre.</summary>
         public int BodyMinCm => 2 * BodyRadiusCm;
         /// <summary>The walk clearance: a walker's centre stays this far from every solid (the site's walk raster is cut to it: grid.body).</summary>
@@ -44,7 +48,7 @@ namespace Suborned.Sim
         void ReadBodies(JNode b)
         {
             var n = b.Opt("bodies") ?? throw new FormatException("bodies is missing: engine 0.46.0 runs law L9, Bodies (brief 098)");
-            n.Only("on", "radius", "space", "queue", "crew", "back", "shove", "search", "squeeze", "squeezePace", "replan", "margin", "rule", "tag", "src", "proposed", "reason");
+            n.Only("on", "radius", "space", "queue", "crew", "back", "shove", "search", "squeeze", "squeezePace", "replan", "margin", "door", "rule", "tag", "src", "proposed", "reason");
             if (n["rule"].Str().Length == 0) throw new FormatException("bodies.rule is empty");
             int on = RI(n["on"]); if (on != 0 && on != 1) throw new FormatException("bodies.on is 0 or 1 (the law's switch)");
             BodiesOn = on == 1; BodyRadiusCm = RI(n["radius"]); BodySpaceCm = RI(n["space"]); BodyQueueCm = RI(n["queue"]); BodyCrewCm = RI(n["crew"]);
@@ -52,6 +56,9 @@ namespace Suborned.Sim
             BodySqueezeCm = RI(n["squeeze"]); BodySqueezeCmT = Math.Max(1, RI(n["squeezePace"]) / Game.Hz); BodyReplanT = RI(n["replan"]) * Game.Hz; // engine 0.47.0 (give and take): every key required, unknown = reject
             BodyMarginCm = RI(n["margin"]); // engine 0.49.0: required
             if (BodyMarginCm < 0 || BodyMarginCm > 20) throw new FormatException("bodies.margin is 0 to 20 cm: a walker keeps its body and a little more from a solid, never a layout standard's width");
+            var dw = n.Opt("door") ?? throw new FormatException("bodies.door is missing: engine 0.50.0 keeps a doorway's way clear of posts (brief 098)"); dw.Only("depth", "half", "rule");
+            BodyDoorDepthCm = RI(dw["depth"]); BodyDoorHalfCm = RI(dw["half"]); if (dw["rule"].Str().Length == 0) throw new FormatException("bodies.door.rule is empty");
+            if (BodyDoorDepthCm < 100 || BodyDoorDepthCm > 1000 || BodyDoorHalfCm < 30 || BodyDoorHalfCm > 300) throw new FormatException("bodies.door: a way 1 to 10 m deep and 30 cm to 3 m either side of its door's line");
             if (BodySqueezeCm < 10 || BodySqueezeCm >= BodyRadiusCm) throw new FormatException("bodies.squeeze is 10 cm to under a radius: a body turned sideways is narrower, never nothing");
             if (BodySqueezeCmT < 1 || BodySqueezeCmT * Game.Hz > BodyShoveCmT * Game.Hz) throw new FormatException("bodies.squeezePace is at least 10 cm/s and no more than bodies.shove");
             if (BodyReplanT < Game.Hz) throw new FormatException("bodies.replan is at least 1 s");

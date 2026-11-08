@@ -15,4 +15,11 @@ const ground = <T extends z.ZodRawShape>(shape: T) =>
  * to squeeze past, how fast it squeezes, and how long a person of the city is held before changing plans (optional only for runs pinned to 0.46.0;
  * the engine requires them and rulebook098b.test.ts holds the live rulebook to having them); engine 0.49.0's walk: the margin a walker keeps from every
  * solid beyond its radius (Sky 2026-11-08, what is walkable is what you see; optional only for runs pinned before 0.49.0). */
-export const Bodies = ground({ on: Ref, radius: Ref, space: Ref, queue: Ref, crew: Ref, back: Ref, shove: Ref, search: Ref, squeeze: Ref.optional(), squeezePace: Ref.optional(), replan: Ref.optional(), margin: Ref.optional(), rule: text });
+/** Engine 0.50.0 (Aster's ruling on the 0.49.0 report): a doorway is a way. Its depth out from the door and its half-width either side of the
+ * door's line; a guard at a door posts beside it, never in it. Optional only for runs pinned before 0.50.0. */
+const Door = z.strictObject({ depth: Ref, half: Ref, rule: text });
+export const Bodies = ground({ on: Ref, radius: Ref, space: Ref, queue: Ref, crew: Ref, back: Ref, shove: Ref, search: Ref, squeeze: Ref.optional(), squeezePace: Ref.optional(), replan: Ref.optional(), margin: Ref.optional(), door: Door.optional(), rule: text });
+/** Engine 0.50.0, fight.cover (Aster's ruling on the 0.49.0 report): fighters hold cover. `reach`: a fighter with his target in reach steps only
+ * to cover within that share of his effective reach of it; `leave` and `lapse` are ai.cover.leave and ai.engageLapse, the law's other two
+ * settings, named here so the law reads whole. Placed by rulebook.schema.ts (over the 500-line mark); optional only for runs pinned before it. */
+export const FightCover = ground({ reach: Ref, leave: Ref, lapse: Ref, rule: text });

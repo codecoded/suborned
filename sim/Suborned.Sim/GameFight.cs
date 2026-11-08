@@ -21,6 +21,7 @@ namespace Suborned.Sim
         /// <summary>Engine 0.34.1 (Aster's ruling within M067-SQ2: an advance closes on its operative): walking an advance on an operative
         /// (AdvanceOnOp). While he walks it (St advance) he takes no kite step out of a line, as on K3's walk to the car: the step would turn
         /// the advance back to cover that does not close. A foe in reach still stops him (advance → engage). Every new walk or stop clears it.
+        /// Engine 0.50.0 (fight.cover): every advance (a rival's on the car too, Advance) and a police body's close (§7.10 rule 2) is walked so.
         /// Hashed only when set.</summary>
         public bool Closing;
         public bool Down => Gun.Down; public int Health => Gun.Health;

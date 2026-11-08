@@ -97,7 +97,7 @@ static class DialCli
 
     static int Arg(string[] args, string name, int dflt) { int k = Array.IndexOf(args, name); return k > 0 && k + 1 < args.Length ? int.Parse(args[k + 1], CultureInfo.InvariantCulture) : dflt; }
 
-    sealed class Row { public int Runs, Wins, Errors, ReplayBad, EndSum, AlertSum, TrailSum, Street, StreetN; public long CarSum, CarN, MissionWait; public readonly SortedDictionary<string, int> Fails = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanWins = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanRuns = new SortedDictionary<string, int>(StringComparer.Ordinal); public string Counts = ""; public readonly Jams J = new Jams(); }
+    sealed class Row { public int Runs, Wins, Errors, ReplayBad, EndSum, AlertSum, TrailSum, Street, StreetN; public long CarSum, CarN, MissionWait; public readonly SortedDictionary<string, int> Fails = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanWins = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanRuns = new SortedDictionary<string, int>(StringComparer.Ordinal); public string Counts = ""; public readonly Jams J = new Jams(); public readonly CoverCycles.Tally Cover = new CoverCycles.Tally(); } // engine 0.50.0: the cover cycles (CoverCycles.cs)
     /// <summary>Brief 098 step 1b: what traffic did to the mission's cars across a setting's runs: the spells a mission car was held (by car and by
     /// what held it), the longest, the spells still held when the game ended; the spells a passing car boxed a mission car in, and those ticks with
     /// someone aboard; Go refused car-boxed by a passing car; closed-in with a passing car in the way.</summary>
@@ -165,13 +165,13 @@ static class DialCli
             for (int t = 0; t < Game.T(inputs.SiteData.Over); t += Game.Hz) { foreach (var w in g.Walkers) if (Population.KindOf(pop, w.P.Job) == "people" && g.CrowdPos(w, t) is Pt wp && g.S.Grid.InGrid(wp)) street++; n++; } // brief 098 step 1b: the people on the street by routine every second (the crowd in the window), and the cast's share below
             street += pc.CastStreet10 * n / 10;
             return (ok: p.Same, res: g.Result, fail: g.FailCode, tick: g.Tick, alert: g.Alert, trail: g.Trail, street, n, census: g.DialOn ? string.Join(",", g.Census.Select(x => x.Kind + ":" + x.Count.ToString(CultureInfo.InvariantCulture))) : "", downs: g.Log.Count(l => l.Code == "rivals.down"),
-                cars: g.TrafficZoneSum, carN: g.TrafficZoneTicks, wait: g.MissionWaits.Values.Sum(), jams: Jams.Of(g, p.Extra, System.IO.Path.GetFileName(it).Replace(".adaptive.json", ""))); // brief 098 step 1: the cars on the zone's roads (summed per tick) and the ticks the mission's cars waited for them; step 1b: its jams
+                cars: g.TrafficZoneSum, carN: g.TrafficZoneTicks, wait: g.MissionWaits.Values.Sum(), jams: Jams.Of(g, p.Extra, System.IO.Path.GetFileName(it).Replace(".adaptive.json", "")), cover: CoverCycles.Of(g)); // brief 098 step 1: the cars on the zone's roads (summed per tick) and the ticks the mission's cars waited for them; step 1b: its jams
         });
         var rows = new Row[settings.Count]; for (int s = 0; s < rows.Length; s++) rows[s] = new Row();
         int bad = 0;
-        if (Environment.GetEnvironmentVariable("SUBORNED_SWEEP_RUNS") is string rlog) // engine 0.47.1: one line a run (setting, plan, seed, outcome, end tick, rival crew members down on the street), to compare two engines run by run
+        if (Environment.GetEnvironmentVariable("SUBORNED_SWEEP_RUNS") is string rlog) // engine 0.47.1: one line a run (setting, plan, seed, outcome, end tick, rival crew members down on the street; engine 0.50.0: returns to cover left before, the most covers one fighter took), to compare two engines run by run
             File.WriteAllLines(rlog, Enumerable.Range(0, jobs.Count).Select(j => string.Join("\t", settings[jobs[j].set].name, System.IO.Path.GetFileName(jobs[j].item).Replace(".adaptive.json", "").Replace(".json", ""), jobs[j].seed.ToString(CultureInfo.InvariantCulture),
-                res[j].error != null ? "error" : res[j].value.res == Outcome.Success ? "success" : res[j].value.fail.Length > 0 ? res[j].value.fail : res[j].value.res.ToString().ToLowerInvariant(), res[j].error != null ? "-" : res[j].value.tick.ToString(CultureInfo.InvariantCulture), res[j].error != null ? "-" : res[j].value.downs.ToString(CultureInfo.InvariantCulture))));
+                res[j].error != null ? "error" : res[j].value.res == Outcome.Success ? "success" : res[j].value.fail.Length > 0 ? res[j].value.fail : res[j].value.res.ToString().ToLowerInvariant(), res[j].error != null ? "-" : res[j].value.tick.ToString(CultureInfo.InvariantCulture), res[j].error != null ? "-" : res[j].value.downs.ToString(CultureInfo.InvariantCulture), res[j].error != null ? "-" : res[j].value.cover.Returns.ToString(CultureInfo.InvariantCulture), res[j].error != null ? "-" : res[j].value.cover.MaxTakes.ToString(CultureInfo.InvariantCulture))));
         for (int j = 0; j < jobs.Count; j++)
         {
             var r = rows[jobs[j].set]; var plan = System.IO.Path.GetFileName(jobs[j].item).Replace(".adaptive.json", "").Replace(".json", ""); r.Runs++;
@@ -181,7 +181,7 @@ static class DialCli
             if (!x.ok) { r.ReplayBad++; bad++; }
             if (x.res == Outcome.Success) { r.Wins++; r.PlanWins[plan] = r.PlanWins.GetValueOrDefault(plan) + 1; } else { var key = x.fail.Length > 0 ? x.fail : x.res.ToString().ToLowerInvariant(); r.Fails[key] = r.Fails.GetValueOrDefault(key) + 1; }
             r.EndSum += x.tick; r.AlertSum += x.alert; r.TrailSum += x.trail; r.Street += x.street; r.StreetN += x.n; if (x.census.Length > 0) r.Counts = x.census; r.CarSum += x.cars; r.CarN += x.carN; r.MissionWait += x.wait;
-            r.J.Merge(x.jams);
+            r.J.Merge(x.jams); r.Cover.Add(x.cover, $"{plan} #{jobs[j].seed}");
         }
         var w = new JWriter().Obj().Prop("engine", Engine.Version).Prop("seeds", seeds).Prop("seedFrom", from).Prop("replay", replay).Prop("items", items.Count).Prop("wallS", (long)sw.Elapsed.TotalSeconds).OpenArr("settings");
         Console.Error.WriteLine($"dial sweep: {jobs.Count} runs ({settings.Count} settings x {items.Count} items x {seeds} seeds) in {sw.Elapsed.TotalSeconds:0.0} s; {bad} errors or replay differences");
@@ -192,10 +192,11 @@ static class DialCli
             w.Obj().Prop("setting", settings[s].name).Prop("counts", r.Counts).Prop("runs", r.Runs).Prop("wins", r.Wins).Prop("errors", r.Errors).Prop("replayDiffers", r.ReplayBad)
                 .Prop("streetMean10", r.StreetN > 0 ? r.Street * 10L / r.StreetN : 0).Prop("carsMean10", r.CarN > 0 ? r.CarSum * 10L / r.CarN : 0).Prop("missionWaitMeanS10", r.MissionWait * 10L / ok / Game.Hz).Prop("endMeanS", r.EndSum / ok / Game.Hz).Prop("alertMean10", r.AlertSum * 10L / ok).Prop("trailMean10", r.TrailSum * 10L / ok);
             w.Open("fails"); foreach (var kv in r.Fails.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal)) w.Prop(kv.Key, kv.Value); w.EndObj();
-            w.Open("planWins"); foreach (var kv in r.PlanRuns) w.Prop(kv.Key, r.PlanWins.GetValueOrDefault(kv.Key)); w.EndObj(); r.J.Write(w, r.Runs); w.EndObj();
+            w.Open("planWins"); foreach (var kv in r.PlanRuns) w.Prop(kv.Key, r.PlanWins.GetValueOrDefault(kv.Key)); w.EndObj(); r.J.Write(w, r.Runs); r.Cover.Write(w); w.EndObj();
             var fails = string.Join(", ", r.Fails.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal).Take(4).Select(kv => kv.Key + " " + kv.Value));
             Console.Error.WriteLine(string.Create(CultureInfo.InvariantCulture, $"{settings[s].name,-12} {(r.Counts.Length > 0 ? r.Counts : "(the people file)"),-30} {r.Runs,4} {r.Wins,5} {100.0 * r.Wins / Math.Max(1, r.Runs),6:0.0} {(r.StreetN > 0 ? (double)r.Street / r.StreetN : 0),6:0.0} {(r.CarN > 0 ? (double)r.CarSum / r.CarN : 0),5:0.0} {r.EndSum / ok / Game.Hz,5} {(double)r.AlertSum / ok,5:0.0} {(double)r.TrailSum / ok,5:0.0}  {fails}"));
             var jl = r.J.Line(ok); if (jl.Length > 0) Console.Error.WriteLine(jl);
+            Console.Error.WriteLine(r.Cover.Line());
         }
         var json = w.EndArr().EndObj().ToString();
         int oi = Array.IndexOf(args, "--out"); if (oi > 0) File.WriteAllText(args[oi + 1], json + "\n"); else Console.WriteLine(json);

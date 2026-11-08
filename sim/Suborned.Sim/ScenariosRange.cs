@@ -289,6 +289,7 @@ namespace Suborned.Sim
             FireMoveRange(); // engine 0.15.0 (tuning.md §8): fire on the move
             TriggerRange(); // engine 0.17.0 (tuning.md §11): the trigger, locks and follow fire
             RangeKindsSet(); // cars, bystanders, the lane, the lines in words (ScenariosRangeKinds.cs)
+            CoverHoldRange(); // engine 0.50.0 (fight.cover): cover is somewhere to fight from (ScenariosCoverHold.cs)
             // engine 0.19.0 (Motive tuning.md §14.5): the follow, lock and trigger cases, the lines and §12.2's rotation run with weapons free off
             // (under it follow is inert in a fight and the officer drops in 3.3 s: F12-ROT-WF holds the target check)
             foreach (var sc in range!) if (sc.Id.StartsWith("F11-", StringComparison.Ordinal) || sc.Id.StartsWith("F13-", StringComparison.Ordinal) || sc.Id == "F12-ROT" || sc.Id.StartsWith("RK-LINES", StringComparison.Ordinal)) sc.Start.WeaponsFree = false;

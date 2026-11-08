@@ -33,7 +33,7 @@ namespace Suborned.Sim
             ref var b = ref bds[i]; goal = default;
             if (b.PickWhy == 0 || Tick >= b.PickUntil || b.Fresh || b.AltOn || b.Kind == BkOp) return false; // an operative's walk waits for his body (BodyStore), so a spot kept from his own place would swing with it
             if ((b.PickWhy == WhySide && !b.Moving) || (b.PickWhy == WhyForm && (b.Form != FmQueue || b.Moving))) return false;
-            var c = b.Aim + b.PickOff; if (!Fits(i, c, b.PickComfort)) return false; // taken now, by the standard it was picked by: it picks again
+            var c = b.Aim + b.PickOff; if (!Fits(i, c, b.PickComfort) || !OffDoorWay(i, c)) return false; // taken now, by the standard it was picked by: it picks again; engine 0.50.0, nor a doorway for a guard at a post
             goal = c; return true;
         }
         /// <summary>After the goal is chosen: a new pick of the law's (a sidestep, a ring, a queue's spot) is kept for SlideKeepTicks; a kept one runs

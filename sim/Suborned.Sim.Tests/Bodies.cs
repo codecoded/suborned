@@ -117,7 +117,7 @@ public class BodiesTests
         });
         var added = g.Walkers.Where(w => w.Added && w.P.Job == "guard").ToList();
         var points = added.Select(w => g.StopsNow(w.P.Id)!.First(s => s.outside).place).ToList();
-        int distinctFirst = points.Distinct().Count(), sitePoints = Population.PointsOf(g.S, Repo.Inputs.Population!).Posts.Count;
+        int distinctFirst = points.Distinct().Count(), sitePoints = Population.PointsOf(g.S, Repo.Inputs.Population!, g.R, Repo.Inputs.Crowd).Posts.Count;
         Assert.Equal(Math.Min(added.Count, sitePoints), distinctFirst); } // one guard to a point before any shares (step 0's rule, kept), on every seed
         Assert.True(bad.Count == 0, $"{bad.Count} times two guards stood inside personal space at one post: {string.Join("; ", bad.Take(3))}");
         Assert.True(still * 4 >= pairs * 3, $"guards sharing a post settle: {still} of {pairs} looks at a pair found both at rest"); // a band: neither jostles for the post. Engine 0.49.0: 78.8 % over the three seeds (0.48.0: 81.7 %, the band 80 %): on the walk raster a crew spot beside a wall or a planter is open ground (35 cm from it, not 65), so guards walk to spots round obstacles and are held on the way more often; personal space and no jumping hold as before

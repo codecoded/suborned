@@ -20,7 +20,7 @@ namespace Suborned.Sim
         /// <summary>The k-th person of kind d as the dial would add them (their draws are their own), not yet in the zone (Register puts them there).</summary>
         Walker MakePerson(DialKind d, int k, Crowd crowd, out List<(string place, int from, int to, bool outside)> stops)
         {
-            dialPoints ??= Population.PointsOf(S, dial!, R.BodiesOn ? R.BodySpaceCm : 0); // brief 098 L9: no beat point on a cast member's place
+            dialPoints ??= Population.PointsOf(S, dial!, R, crowd); // brief 098 L9: no beat point on a cast member's place; engine 0.50.0, none in a doorway and a door's beside it (DoorWays.cs)
             string id = d.IdPrefix + k.ToString(d.Max >= 1000 || d.Street ? "0000" : "000", System.Globalization.CultureInfo.InvariantCulture); // brief 098 step 1b: a street count can take thousands of passers-by
             var p = new Person { Id = id, Name = d.Name + " " + k.ToString(System.Globalization.CultureInfo.InvariantCulture), Job = d.Job, Temperament = DialTemperament(d, id, crowd) };
             var t = R.Temp(p.Temperament); for (int q = 0; q < 4; q++) p.Sc[q] = t.Start[q];

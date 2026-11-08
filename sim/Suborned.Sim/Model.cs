@@ -96,6 +96,9 @@ namespace Suborned.Sim
         public int KiteCapTick = -1, KiteHoldAt = -1;
         /// <summary>Tuning.md §7.10 rule 2: when this police body, shielded and shot from beyond its max ring, began holding (or last closed); -1 none.</summary>
         public int KiteCoverAt = -1;
+        /// <summary>Engine 0.50.0 (rulebook fight.cover, GameCoverHold.cs): a move out of a shooter's line commits a fighter to where he moved: the
+        /// shooter ("" none), where the walk ends and the cover point it holds ("" a blind point). Hashed only when set.</summary>
+        public string Commit = "", CommitCover = ""; public Pt CommitAt;
         /// <summary>Tuning.md §11 (engine 0.17.0; Sky on firing, brief 024): the driven agent's trigger, from the logged trigger input. Down
         /// (Trig); its target (TrigT), kept on release with the aim and the count, so a press on the same target fires on cadence with no
         /// aim-new and no reset; a press waiting for its one shot (TrigTap: a buffer of one, never a queue); forced (the host's hold or the ring's Fire). Hashed

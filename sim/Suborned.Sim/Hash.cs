@@ -40,6 +40,7 @@ namespace Suborned.Sim
             if (g.Trig || g.TrigTap || g.TrigForce || g.TrigT.Length > 0) h.S("trig").Z(g.Trig).Z(g.TrigTap).Z(g.TrigForce).S(g.TrigT); // tuning.md §11 (engine 0.17.0): only a trigger used adds bytes
             if (g.FollowBy.Length > 0) h.S("follow").S(g.FollowBy); // likewise a follower
             if (g.StandDown >= 0) h.S("standdown").I(g.StandDown); // tuning.md §14 (engine 0.19.0): only a stand-down adds bytes
+            if (g.Commit.Length > 0) h.S("commit").S(g.Commit).P(g.CommitAt).S(g.CommitCover); // engine 0.50.0 (fight.cover): only a fighter committed to a move out of a line adds bytes
             if (g.LockAsk.Length > 0) h.S("lockask").S(g.LockAskBy).S(g.LockAsk).Z(g.LockAskForce); // engine 0.18.0: a press waiting on a lock whose target may fall this tick
             for (int k = 0; k < 4; k++) // tuning.md §12.2: an operative's last shot on this one, only while live (within lineLapse) and not already ShotBy/ShotByTick
             {

@@ -29,7 +29,7 @@
   {"tick":2263,"op":"fixer","do":"fire","target":"rival-1"},
   {"tick":2263,"op":"tech","do":"fire","target":"rival-1"},
   {"tick":2346,"op":"enforcer","do":"board","target":"car"},
-  {"tick":2972,"op":"cell","do":"go"}
+  {"tick":2981,"op":"cell","do":"go"}
  ],
  "until": 4900
 }

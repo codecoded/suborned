@@ -69,8 +69,11 @@ public class BodiesGiveTests
     public void ThePersonOfTheCityInTheWayMakesRoomAndStepsBack()
     {
         int orders = 0; var bad = new List<string>(); var since = new Dictionary<string, int>(StringComparer.Ordinal);
+        // engine 0.50.0: with fighters holding cover, loud-fight's street clears differently and fewer stand aside on seed 1 (15), so the law is
+        // looked for on a second seed of the same three runs; the bar is the same: more than twenty asks, each holding every promise
         foreach (var (route, counts) in new[] { ("careless-takedown-seen-crowd", "people=64"), ("route-a", "people=64"), ("loud-fight", "people=32") })
-            Play(route, 1, counts, g =>
+            foreach (var seed in new[] { 1, 2 })
+            Play(route, seed, counts, g =>
             {
                 var up = BodyCheck.Of(g); var now = new HashSet<string>(StringComparer.Ordinal);
                 foreach (var u in up)
@@ -92,10 +95,11 @@ public class BodiesGiveTests
     {
         // engine 0.49.0: on the walk law (every visible gap open) and with nobody waiting inside a table's clearance, two face to face with no room
         // come up less often (2 pairs on the six runs this test played before), so the law is looked for on more runs (the same six, a third seed, route A at people=128)
-        // and the bar is the same: more than five pairs, each holding every promise
+        // and the bar is the same: more than five pairs, each holding every promise. Engine 0.50.0: with a doorway kept clear of posted guards and the
+        // fights changed, those twelve runs show 3 pairs, so the law is looked for on six seeds of the same four runs; the bar is the same
         int squeezes = 0, ticks = 0; var bad = new List<string>(); var seen = new HashSet<string>(StringComparer.Ordinal);
         foreach (var (route, counts) in new[] { ("careless-takedown-seen-crowd", "people=64"), ("route-a", "people=64"), ("route-b", "guards=64,people=64"), ("route-a", "people=128") })
-            foreach (var seed in new[] { 1, 2, 3 })
+            foreach (var seed in new[] { 1, 2, 3, 4, 5, 6 })
                 Play(route, seed, counts, g =>
                 {
                     var up = BodyCheck.Of(g);
@@ -118,7 +122,10 @@ public class BodiesGiveTests
     public void APersonOfTheCityStillStuckChangesPlans()
     {
         int replans = 0; var bad = new List<string>(); var by = new SortedDictionary<string, int>(StringComparer.Ordinal);
-        foreach (var (route, counts) in new[] { ("loud-fight", "guards=64,people=64"), ("route-b", "guards=64,people=64"), ("careless-takedown-seen-crowd", "people=64") })
+        // engine 0.50.0: with posted guards out of the doorways fewer are stuck at the doors, and the three runs this test played show none, so the
+        // law is looked for where it still comes up on the route scripts (route B at people=64, the body found at guards=64 and people=64: 2 and 7 changes
+        // of plans on 0.50.0); the bar is the same: somebody changes plans, each holding every promise
+        foreach (var (route, counts) in new[] { ("loud-fight", "guards=64,people=64"), ("route-b", "guards=64,people=64"), ("careless-takedown-seen-crowd", "people=64"), ("route-b", "people=64"), ("careless-body-found", "guards=64,people=64") })
             foreach (var seed in new[] { 1, 2, 3 })
             {
                 var was = new HashSet<string>(StringComparer.Ordinal);

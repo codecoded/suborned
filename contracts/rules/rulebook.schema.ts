@@ -6,7 +6,7 @@
 // is restated here, and checkRulebook() rejects any id that file does not know (GDD §01: unknown = reject).
 import { z } from 'zod';
 import type { PeopleRules } from '../people/people.rules.schema.ts';
-import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; import { BlastStanding, RivalsBlock, RivalsLookout, RivalsTurn, Unclaimed } from './rulebook.schema096r.ts'; import { CarLend } from './rulebook.schema096l.ts'; import { Bodies } from './rulebook.schema098b.ts'; import { CarGo } from './rulebook.schema096m.ts'; // brief 096 (engine 0.40.0, 0.41.0, 0.42.0, 0.43.0)
+import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; import { BlastStanding, RivalsBlock, RivalsLookout, RivalsTurn, Unclaimed } from './rulebook.schema096r.ts'; import { CarLend } from './rulebook.schema096l.ts'; import { Bodies, FightCover } from './rulebook.schema098b.ts'; import { CarGo } from './rulebook.schema096m.ts'; // brief 096 (engine 0.40.0, 0.41.0, 0.42.0, 0.43.0)
 
 const id = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const eventId = z.string().regex(/^[a-z][a-z0-9-]*\.[a-z][a-z0-9-]*$/);
@@ -471,7 +471,7 @@ export const Rulebook = z.strictObject({
     openRule: text.optional(), // brief 059: Sky's open questions S1–S3, each a value
     alwaysRule: text.optional(), // engine 0.33.0: the final fight always comes (Sky's S1 = no; Motive M059-S1.2 to S1.5)
     close: z.strictObject({ warn: Ref, rule: text }).optional(), // engine 0.37.0 (Motive on Redline E8)
-    spacing: z.strictObject({ clear: Ref, file: Ref, cell: z.boolean().optional(), rule: text }).optional(), // engine 0.36.0 (brief 079): optional only for runs pinned before it
+    spacing: z.strictObject({ clear: Ref, file: Ref, cell: z.boolean().optional(), rule: text }).optional(), cover: FightCover.optional(), // engine 0.36.0 (brief 079): optional only for runs pinned before it; fight.cover, engine 0.50.0 (rulebook.schema098b.ts)
     unguarded: text.optional(), // engine 0.34.0 (Motive M067-K3): hiding in a held car loses, the cell down fails, Go needs a driver; optional only for runs pinned before it
     holdRule: text.optional(), // engine 0.34.0 (Motive M067-SQ1): the hold is entered only on purpose; optional only for runs pinned before it
     hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,

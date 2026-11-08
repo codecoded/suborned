@@ -55,6 +55,7 @@ namespace Suborned.Sim
             if (b.Cls == BcFixed)
             {
                 b.At = b.Own; b.LayFace = default; b.Placed = true; b.HeldN = 0; b.StuckN = 0; // engine 0.48.0: a tenet at its place (a person seated) is never held (0.47 kept the count it sat down with)
+                if (b.SqzId != null) { if (bdIx.TryGetValue(b.SqzId, out var sq) && bds[sq].SqzId == b.Id) bds[sq].SqzId = null; b.SqzId = null; } // engine 0.50.0: one who sits keeps his place: a squeeze he was in ends (route-a #6 at people=128: x-person-0173 stepped into cafe-table-7's seat squeezing past x-person-0157)
                 if (tenetTick != Tick && Blocker(i, b.At, false) is int t && t >= 0 && bds[t].Cls == BcFixed) { tenetTick = Tick; BodyTenetTicks++; } // two tenets inside two radii: the tenet wins
                 HashAdd(i, b.At); if (b.Head != default) ClearAhead(i); return; // a tenet walking (the Enforcer leading Vale): the city ahead of it makes room before it comes (GameBodyGive.cs)
             }
@@ -69,11 +70,12 @@ namespace Suborned.Sim
             if (!onCar && BodyGround(in b, b.Aim) && Blocker(i, b.Aim, true) < 0) { goal = b.Aim; gface = default; why = b.AltOn ? WhyAlt : behind ? WhyFollow : WhyOwn; }
             else if (KeptPick(i, out goal)) { kept = true; why = b.PickWhy; form = why == WhyForm; gface = default; } // engine 0.48.0: the spot the law picked last tick, while it stays clear (GameBodySides.cs)
             else if (!b.AltOn && FormGoal(i, out goal, out var ff)) { gface = ff; form = true; why = WhyForm; }
-            else if (b.Lay != default && !b.AltOn && Fits(i, cur, true)) { goal = cur; why = WhyHold; }
+            else if (b.Lay != default && !b.AltOn && Fits(i, cur, true) && OffDoorWay(i, cur)) { goal = cur; why = WhyHold; } // engine 0.50.0: a guard at a post holds no lay in a doorway
             else if (b.Moving && SideGoal(i, cur, out goal)) why = WhySide;
             else if (RingGoal(i, true, out goal)) why = WhyRing;
             else if (RingGoal(i, false, out goal)) why = WhyRing2;
             else if ((b.Fresh || onCar) && bodyWalk.Nearest(onCar ? from : b.Raw, c => Fits(i, c, false), 2 * R.BodySearchCm) is Pt wide) { goal = wide; why = WhyWide; } // new on the street in a press (a crowd back out of one door), or standing where no body stands (a car came to stand on it): the nearest room by walk
+            else if (!OffDoorWay(i, cur) && !b.Moving && bodyWalk.Nearest(cur, c => Fits(i, c, false) && OffDoorWay(i, c), 2 * R.BodySearchCm) is Pt off) { goal = off; why = WhyWide; } // engine 0.50.0: a guard at a post with no room round it never waits in a doorway: the nearest room off it
             else { goal = cur; why = WhyNone; }
             if (form && b.Det != null && !b.Catch && G.Within(b.Det.End, b.Own, R.BodyMinCm) && !G.Within(goal, b.Own, R.BodyMinCm)) { b.Det = null; } // a spot of its stop's form to stand at (a queue's, a crew spot): a way round onto the stop itself, which another holds, is spent
             if (b.RoomFor != null) { goal = b.RoomAt; why = WhyRoom; form = false; } // making room for one it held (GameBodyGive.cs)
@@ -214,7 +216,7 @@ namespace Suborned.Sim
             bool crew = b.Form == FmCrew && b.Mate; // a guard at a post another holds: a crew spot (BodyPosts)
             if (!crew) // anyone else at its place: a step aside (a queue behind a stop, else beside it), at a queue's step
             {
-                bool queueFits(Pt c) => S.Grid.Free(c) && OffCars(c) && Fits(i, c, true);
+                bool queueFits(Pt c) => S.Grid.Free(c) && OffCars(c) && Fits(i, c, true) && OffDoorWay(i, c); // engine 0.50.0: a guard put off his post by someone else steps aside off a doorway
                 var back = Scale(new Pt(-f.X, -f.Y), R.BodyQueueCm + RoundCm);
                 for (int k = 1; k <= 5; k++) { var c = b.Raw + new Pt(back.X * k, back.Y * k); if (queueFits(c)) { goal = c; return true; } }
                 foreach (var a in QueueArc) { var c = b.Raw + Scale(Rot(f, a), R.BodyQueueCm + RoundCm); if (queueFits(c)) { goal = c; return true; } }
@@ -241,8 +243,13 @@ namespace Suborned.Sim
             }
             return false; // none: he keeps personal space where there is room (the rings)
         }
-        /// <summary>A crew spot is ground he can stand on in sight of the post (no wall between: a spot round a corner or behind a facade is none).</summary>
-        bool SlotOk(int i, Pt c) => BodyGround(in bds[i], c) && S.Grid.LineFree(bds[i].Raw, c);
+        /// <summary>A crew spot is ground he can stand on in sight of the post (no wall between: a spot round a corner or behind a facade is none);
+        /// engine 0.50.0 (bodies.door): never in a door's way, nor is a ring round his post (RingGoal).</summary>
+        bool SlotOk(int i, Pt c) => BodyGround(in bds[i], c) && S.Grid.LineFree(bds[i].Raw, c) && !InDoorWay(c);
+        List<DoorWay>? doorWays;
+        bool InDoorWay(Pt c) => DoorWays.In(doorWays ??= DoorWays.Of(S), c, R.BodyDoorDepthCm, R.BodyDoorHalfCm, R.BodyRadiusCm);
+        /// <summary>A guard at a post (a crew's form) takes no place in a door's way: no crew spot, ring, lay held or spot kept (engine 0.50.0).</summary>
+        bool OffDoorWay(int i, Pt c) => bds[i].Form != FmCrew || !InDoorWay(c);
         /// <summary>Someone standing (not walking past) within two radii of a crew spot: it is theirs now.</summary>
         bool SlotTaken(int i, Pt c)
         {
@@ -271,7 +278,7 @@ namespace Suborned.Sim
             foreach (var r in RingCm)
             {
                 if (r > R.BodySearchCm) break;
-                for (int k = 0; k < 16; k++) { int d = (d0 + ((k & 1) == 1 ? (k + 1) / 2 : 16 - k / 2)) & 15; var c = b.Aim + new Pt(DirX[d] * r / 1000, DirY[d] * r / 1000); if (Fits(i, c, comfort)) { goal = c; return true; } }
+                for (int k = 0; k < 16; k++) { int d = (d0 + ((k & 1) == 1 ? (k + 1) / 2 : 16 - k / 2)) & 15; var c = b.Aim + new Pt(DirX[d] * r / 1000, DirY[d] * r / 1000); if (Fits(i, c, comfort) && OffDoorWay(i, c)) { goal = c; return true; } } // engine 0.50.0: a guard at a post keeps out of a doorway
             }
             goal = default; return false;
         }

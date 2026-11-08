@@ -26,13 +26,13 @@
   {"tick":2247,"op":"enforcer","do":"draw"},
   {"tick":2247,"op":"enforcer","do":"move","to":"d:Getaway bay"},
   {"tick":2347,"op":"enforcer","do":"board","target":"car"},
-  {"tick":3191,"op":"scout","do":"move","to":"d:Getaway bay"},
-  {"tick":3191,"op":"scout","do":"board","target":"car"},
-  {"tick":3191,"op":"fixer","do":"move","to":"d:Getaway bay"},
-  {"tick":3191,"op":"tech","do":"move","to":"d:Getaway bay"},
-  {"tick":3192,"op":"fixer","do":"board","target":"car"},
-  {"tick":3192,"op":"tech","do":"board","target":"car"},
-  {"tick":3202,"op":"cell","do":"go"}
+  {"tick":2523,"op":"scout","do":"move","to":"d:Getaway bay"},
+  {"tick":2523,"op":"scout","do":"board","target":"car"},
+  {"tick":2523,"op":"fixer","do":"move","to":"d:Getaway bay"},
+  {"tick":2523,"op":"tech","do":"move","to":"d:Getaway bay"},
+  {"tick":2524,"op":"fixer","do":"board","target":"car"},
+  {"tick":2524,"op":"tech","do":"board","target":"car"},
+  {"tick":2534,"op":"cell","do":"go"}
  ],
  "until": 4900
 }
