@@ -96,3 +96,14 @@ Then stop for Sky to see a real capture. After that come:
 6. The street layer.
 
 Fable writes the new labels ("Goes loud") and retires the keys brief 101's removal left unused. The GDD's HUD kit (§15) changes once Sky has seen the real capture.
+
+## Sky changes the pick (2026-11-08)
+"Actually I think I prefer street labels": round 2's direction 1 (`briefs/101/glyph/r2/S-*.png`), not Corner tokens.
+- **The look:** almost nothing in the corners. Labels are drawn where things happen, in outlined ink that reads over any ground, with faces on stems and rings at people's feet. Screen share is 2.5 % at rest and 4.1 % at the busiest moment.
+- **Same build order:**
+  1. The kit (keyline text, ink styles, icons).
+  2. The clock and the seal in the street style.
+  3. The news and the Book.
+
+  Then a real capture for Sky, then the roster, the scope and the street layer. Latch and Fable were redirected mid-round.
+
