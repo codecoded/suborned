@@ -85,6 +85,7 @@ const SCALE: Record<string, [number, number]> = {
   Streetlamp: [0.7, 1.6], PlazaSphereLamp: [0.7, 1.6], Bollard: [0.8, 1.4], Bench: [0.9, 1.25], Hydrant: [0.9, 1.3], RecyclingBins: [0.8, 1.3], RecyclingBins_Play: [0.8, 1.3], Hydrant_Play: [0.9, 1.3], Bench_Play: [0.9, 1.25], BikeRack_Play: [1, 1], UtilityCabinet_Play: [0.6, 1.4], PhoneBooth_Play: [0.9, 1.1], PhoneBooth: [0.9, 1.1], TicketMachine: [0.9, 1.15],
   CCTVPole: [0.8, 1.8], DomeCamera: [0.6, 1.2], CoconutPalm: [0.5, 2.2], FanPalm: [0.5, 2.2], Cypress: [0.6, 2.2], AdColumn: [0.9, 1.2],
   BladeSign_Cafe: [0.5, 1], BladeSign_Hotel: [0.5, 1], BladeSign_Cinema: [0.5, 1], NeonStar_Wall: [0.4, 1.2],
+  MastCamera_Lamp: [1, 1], // brief 101: built to its place (the lamp's globe and banner at their heights, the lenses at the engine's 7.68 m): never scaled
   SignalLens: [1, 1], HaloRing: [1, 1], LightBar_4: [1, 1], LightDotRow_2: [1, 1], LightDotRow_1: [1, 1], // crossing parts: pinned to the plan's numbers, scale 1 (the retired SignalEye, KerbStud, CrossEdgeLine, CrossInlayArc and LightField keep the category default: nothing places them)
   SphereStation: [0.4, 1.5], Skyport_Tower: [0.4, 1.5], CircusMonument: [0.4, 1.5],
   // brief 020: built to their places, scale 1 (the café, the cars, the roof pieces: regenerate rather than stretch)
@@ -125,6 +126,7 @@ const PLAIN_USE: Record<string, string[]> = { 'LinerDock@liner-berth': ['landmar
   Hydrant_Play: ['hydrant'], Bench_Play: ['bench'], BikeRack_Play: ['bike-rack'], UtilityCabinet_Play: ['street'],
   Lockers_Play: ['lockers'], RecyclingBins_Play: ['bin'], VendingMachine_Cola_Play: ['vending'], VendingMachine_Snack_Play: ['vending'],
   PolicePost: ['police-post'], MastCamera: ['mast-camera'], CivicRobotDock: ['civic-robot-dock'], Dumpster_Civic: ['dumpster'],
+  MastCamera_Lamp: ['mast-camera:lamp'], // brief 101 (Vela, civic_mast101.py): the square's lamp mast (Sky's B), a candidate; its own tag, so no circus or square mast takes it until the world names the variant
   SignalLens: ['signal:lens'], HaloRing: ['signal:halo'], LightBar_4: ['crossing:bar'], LightDotRow_2: ['crossing:dots'], LightDotRow_1: ['crossing:dots'] };
 
 /** Brief 072-C (Sky 2026-10-27, "every" face; side walls "a)"): the every-face pieces (tools/world/gen/faces.ts places them by these names, never by a use tag the

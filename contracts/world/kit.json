@@ -83721,6 +83721,320 @@
    "source": "generated"
   },
   {
+   "id": "MastCamera_Lamp",
+   "category": "Signals",
+   "size": [
+    1.7653,
+    8.2,
+    1.2503
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0.177,
+    0.331
+   ],
+   "front": "+Z",
+   "tris": 10760,
+   "materials": [
+    "DK_Limestone",
+    "DK_Brass_Civic",
+    "DK_Chrome",
+    "DK_Enamel_Teal",
+    "DK_Lamp",
+    "DK_Banner_Comet",
+    "DK_Enamel_Seafoam",
+    "DK_Enamel_Ivory",
+    "DK_Enamel_Charcoal",
+    "DK_Eye_Lens"
+   ],
+   "parts": [
+    "DK_MastCamera_Lamp_Lens0",
+    "DK_MastCamera_Lamp_Lens1",
+    "DK_MastCamera_Lamp_Lens2"
+   ],
+   "lods": [
+    {
+     "file": "Models/Signals/DK_MastCamera_Lamp_L1.fbx",
+     "tris": 2687,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Signals/DK_MastCamera_Lamp_L2.fbx",
+     "tris": 641,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Signals/DK_MastCamera_Lamp.fbx",
+     "sha256": "074728ce20345345f5d75d7042f5c7d28272cf25ef46454424a938c629428785",
+     "bytes": 322604
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone.mat",
+     "sha256": "69c15802976b0194879f4ccc4c4192f04f5c92acfcd82bd465bced1897669e2b",
+     "bytes": 4066
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone.mat.meta",
+     "sha256": "2ece29d5bdcf2d9b9e809027be59b34eb121a6161d03128032e61ec246c2660a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Brass_Civic.mat",
+     "sha256": "b156b8c4533f44f780616cbcf6ee76239f4f61d81d1e089b322f01203dc3dbdc",
+     "bytes": 4042
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Brass_Civic.mat.meta",
+     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "fd4f3e7f59113515d131ba8312662e349d9e21d2527ee2173cb57b2290d921c6",
+     "bytes": 4001
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Lamp.mat",
+     "sha256": "f35da018b5d56f91e64049c4ce70c3d48a7b76cc78bd3ebefab87c41661f016e",
+     "bytes": 3939
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Lamp.mat.meta",
+     "sha256": "58fc02cb67741a67edfc68661fe4d37c611506e5ea562b4ec40ca0cb422bf945",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Banner_Comet.mat",
+     "sha256": "51cfe78666c4d1d6d89e5a46385066b994561cf77dfcb0dca7e6e9019f46d233",
+     "bytes": 3991
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Banner_Comet.mat.meta",
+     "sha256": "0a9b2178e863a26a267598bc788838c6ae4b0a2c95993c706708a885f6587834",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Seafoam.mat",
+     "sha256": "693d320e5bf86ff129cdf6ea45e266a918771c223ef2e03885edeaf76ddff5c5",
+     "bytes": 4001
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
+     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "48bde31de20cde1b1de10c7dd56d55ae30d7a22ed2dca86b9b8179bb880f7bec",
+     "bytes": 3999
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Charcoal.mat",
+     "sha256": "48080ad28e70876488a917f7b09a7afdb20403b9a93db706fce4e37c95aa835f",
+     "bytes": 3998
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Charcoal.mat.meta",
+     "sha256": "ce702950c476b32bd295b298169282db67ad3c1dbfe1a6f85b698a657d1a906b",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Eye_Lens.mat",
+     "sha256": "5a37832e921992d5c4b61e941751c01ee3e11ab84a430e12d96d6e2c0f20cf0d",
+     "bytes": 3925
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Eye_Lens.mat.meta",
+     "sha256": "8e41e56e83f26410b5be5ff81ca2a931c63b1f499f37cee797fa417de88c72fd",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/banner_comet_teal_v1.png",
+     "sha256": "b71bde989def3b9bb3ddc4010b6a69d4db864190fbb79511e835c5650341ad0b",
+     "bytes": 1569772
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/banner_comet_teal_v1.png.meta",
+     "sha256": "88c5a8e2663f9d81c8a31da86c867b70e986cc06d2b151bcee7999771d768941",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1.png",
+     "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+     "bytes": 886792
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1.png.meta",
+     "sha256": "f2a2621861633f71259aa27ec765333390c198302ff40887d8a13894580ce3c3",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1_normal.png",
+     "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+     "bytes": 2674711
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1_normal.png.meta",
+     "sha256": "82938cc6e790f442a64f634fb847462a50ef174b137374a34a03f1461ac6e686",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signals/DK_MastCamera_Lamp_L1.fbx",
+     "sha256": "3378339838de95ab3144becc034817f83132667347fa3c62de9c1420dadcc44f",
+     "bytes": 139916
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signals/DK_MastCamera_Lamp_L2.fbx",
+     "sha256": "6214c0062c005e4da8885525d520d1a79bfe88695876d35a0f37e2e98b6d0d5f",
+     "bytes": 67868
+    }
+   ],
+   "tags": {
+    "use": [
+     "mast-camera:lamp"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "candidate",
+   "source": "generated"
+  },
+  {
    "id": "Newsstand",
    "category": "Structures",
    "size": [
