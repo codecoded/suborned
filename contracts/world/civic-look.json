@@ -1990,6 +1990,14 @@
     ]
    },
    {
+    "material": "DK_Nickel_Satin",
+    "unlit": "#C9C4BA",
+    "used_by": [
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
     "material": "DK_Opal_TB",
     "unlit": "#FFFEF8",
     "used_by": [
@@ -2304,17 +2312,18 @@
     "flowers": "variants A, B"
    },
    "RecordsEntrance": {
-    "stone": "piers, steps, cheeks, globe plinth",
+    "stone": "piers, steps, cheeks",
     "band": "marquee fascia and top, window surround, pier cap (seafoam), pier band and marquee rim (mint), banner cloth",
     "deep": "an 8 cm reveal round the window",
     "hairline": "door frames, window grid, marquee lines, banner rods (brass)",
-    "metal": "globe, stand, rails, blades, finials",
+    "metal": "rails and door pulls (chrome), blades (steel); the ball in the arch, its three columns and the four ball finials (satin nickel, brief 103)",
     "lamp": "marquee lanterns"
    },
    "RecordsEntrance_Official": {
     "stone": "pilasters, canopy soffit",
     "band": "canopy fascia and top, pilaster cap, banner cloth",
     "hairline": "door frames, canopy lines, banner rods (brass)",
+    "metal": "door pulls (chrome), the two canopy-corner ball finials (satin nickel, brief 103)",
     "lamp": "canopy lanterns"
    },
    "BoardingPavilion_Square_v2": {

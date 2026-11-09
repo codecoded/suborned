@@ -1,7 +1,9 @@
 """RecordsEntrance (brief 008 B1): the Records Office public front as in the 26 Sep paintings (records-office, gameplay-plan,
-inez-cutaway, mission-block): a tall arched window with a chrome globe on a stand over a seafoam marquee with two lanterns,
-brass double doors under it, three chrome-and-gold blades rising from the arch head, cream flank piers with chrome ball
+inez-cutaway, mission-block): a tall arched window with the painting's ball in its arch on three slim columns, over a seafoam marquee with two lanterns,
+brass double doors under it, three chrome-and-gold blades rising from the arch head, cream flank piers with ball
 finials and comet banners, and a flight of five treads with chrome rails and cheek walls.
+Brief 103 (Sky, 2026-11-10, from briefs/103/vela/globe/board.png): the ball (was a 2.4 m chrome relief globe on a stand) and the four ball finials (the piers' two and the
+marquee's two corner finials, so the official front's too) are satin nickel, DK_Nickel_Satin (civic_common.py).
 
 Frame: pivot = the centre of the tower face at the pavement (z = 0), front -Y (block -x, north), the tower on +Y. Built for
 tower-public (6 x 6 m, face at block x 52.5, centred y -30): the door is ON the face (Vantage moves the entrance point from
@@ -15,11 +17,11 @@ Extents are checked on the built mesh by verify008.py (block frame numbers in ou
 
 import math
 
-from geo import arc, fillet
+from geo import arc, fillet, rrect
 from kit import asset
 from mats import pal
 from plaza import canopy_plan
-from plaza_parts import land, lift, uvface
+from plaza_parts import lift, uvface
 from structures import arch, arch_band, ccw, sec, soft_extrude, tube, xz
 from civic_common import hair
 
@@ -33,7 +35,8 @@ ZG0, ZG1, DG = 4.5, 5.0, 1.8                          # the public marquee (brie
                                                       # shorter reach cost the arch window 0.45 m of straight side and the doors a taller transom, nothing else
 EDGE = 0.1375                                         # the fascia sections reach 0.11 and the gold bead 0.14 past the plan line: the plan is drawn that far inside the envelope
 PX, PW, PD0, PD1 = 3.5, 0.48, -1.03, 0.23             # public pier: centre, plinth half width, plinth front and back (y)
-GR = 1.2                                              # globe radius (centre 7.0 m up, 0.9 m out of the face)
+GC, GR = (0.0, -0.9, 8.0), 0.75                       # brief 103: the ball's centre and radius, 1.5 m across. The centre is 0.4 m over the arch spring PS (arch top 9.25), the foot 2.25 m
+                                                      # over the marquee top ZG1, and the back 0.15 m off the face, 1 cm clear of the window's brass grid
 
 
 def sphere(s, c, r, mat, seg=12, n=6):
@@ -62,50 +65,26 @@ def banner(s, x0, x1, y, zt, length, tip=0.5, kr=0.055):
         sphere(s, (x, y, zt + 0.05), kr, pal.Brass_Civic, seg=8, n=4)
 
 
-def globe(s, c, r, nlon=40, nlat=20, lon0=-15, zroof=ZC1):
-    """Relief globe at a third of plaza_parts.globe's triangles: chrome seas, satin-steel continents, no graticule sweeps
-    (an equator and a meridian ring instead), tilted 23.5 deg on a chrome stand with a base disc and two struts."""
-    h = 0.03
-
-    def pt(lon, lat, rr):
-        cl = math.cos(math.radians(lat))
-        lo = math.radians(lon)
-        return rr * cl * math.sin(lo), -rr * cl * math.cos(lo), rr * math.sin(math.radians(lat))
-
-    def rad(lon, lat):
-        return r + h * min(1.0, max(0.0, (land(lon + lon0, lat) + 0.08) / 0.16))
-    verts, faces, cells = [pt(0, -90, r)], [], []
-    for j in range(1, nlat):
-        lat = -90 + 180 * j / nlat
-        verts += [pt(360 * i / nlon, lat, rad(360 * i / nlon, lat)) for i in range(nlon)]
-    verts.append(pt(0, 90, r))
-    top = len(verts) - 1
-    for j in range(nlat):
-        for i in range(nlon):
-            i1 = (i + 1) % nlon
-            a, b = 1 + (j - 1) * nlon, 1 + j * nlon
-            faces.append([0, b + i1, b + i] if j == 0 else [a + i, a + i1, top] if j == nlat - 1 else [a + i, a + i1, b + i1, b + i])
-            cells.append(land(360 * (i + 0.5) / nlon + lon0, -90 + 180 * (j + 0.5) / nlat) > 0)
-    with s.at(c, (0, 23.5, 0)):
-        bv = s._add(verts, faces, pal.Chrome, True)
-        steel = s._mi(pal.Steel)
-        lookup = {frozenset(bv[k] for k in fc): cl for fc, cl in zip(faces, cells)}
-        for f in {f for v in bv for f in v.link_faces}:
-            if lookup.get(frozenset(f.verts)):
-                f.material_index = steel
-        for z0, z1 in ((r - 0.02, r + 0.16), (-r - 0.16, -r + 0.02)):
-            s.lathe([(0, z0), (0.05, z0), (0.05, z1), (0, z1)], pal.Chrome, seg=8)
-    with s.at(c, (90, 0, 0)):  # meridian ring in the plane of the face
-        s.lathe([(r + 0.14, -0.06), (r + 0.23, -0.06), (r + 0.23, 0.06), (r + 0.14, 0.06), (r + 0.14, -0.06)], pal.Chrome, seg=48, cap_bottom=False, cap_top=False)
-    # stand: base disc on the marquee roof, post to the globe, two struts
-    zb = zroof + 0.28
-    s.rbox((-0.95, max(c[1] - 1.15, -(DG - 0.2)), zroof - 0.03), (0.95, c[1] + 0.4, zb), 0.06, pal.Limestone, seg=1)  # plinth stays on the marquee roof (front y >= -(DG - 0.2))
-    with s.at((c[0], c[1], zb)):
-        s.lathe([(0, 0), (0.7, 0), (0.7, 0.06), (0.55, 0.13), (0.28, 0.2), (0.14, 0.28), (0, 0.3)], pal.Chrome, seg=24)
-    s.sweep([(c[0], c[1], zb + 0.2), (c[0], c[1], c[2] - r - 0.15)], 0.09, pal.Chrome, seg=10)
-    for ang, sx in ((236, -1), (304, 1)):
-        end = (c[0] + (r + 0.15) * math.cos(math.radians(ang)), c[1], c[2] + (r + 0.15) * math.sin(math.radians(ang)))
-        s.sweep([(c[0] + 0.45 * sx, c[1], zb + 0.08), end], 0.05, pal.Chrome, seg=6)
+def globe(s, c, r, zroof, mat, cup=0.22):
+    """Brief 103 (Sky, 2026-11-10: option A): the 26 Sep records-office painting's ball, smooth, at c in the window's arch, on the painting's three slim columns
+    from a low rounded plinth on the marquee roof (zroof). The middle column ends in a flared cradle under the ball. The two beside it stop 0.7 m short with
+    domed tops: the crown's three blades said again in metal. One material for all of it (satin nickel). It was a 2.4 m relief globe in mirror chrome
+    on a stand, hanging over the marquee and the door guard; in game light the chrome mirrored one probe and read as pale-blue glass."""
+    sphere(s, c, r, mat, seg=56, n=28)
+    x, y = c[0], c[1]
+    zr = c[2] - math.sqrt(r * r - cup * cup)              # where the cradle's rim meets the ball
+    with s.at((x, y, zroof - 0.03)):
+        s.extrude(rrect(0.9, 0.42, 0.2), 0.0, 0.1, mat)
+    z0 = zroof + 0.07
+    s.sweep([(x, y, z0), (x, y, zr - 0.16)], 0.075, mat, seg=16)
+    with s.at((x, y, zr - 0.17)):
+        s.lathe([(0, 0), (0.075, 0), (0.09, 0.05), (0.15, 0.12), (cup, 0.17), (cup, 0.18), (0, 0.18)], mat, seg=32)
+    zt = zr - 0.7
+    for sx in (-1, 1):
+        xx = x + sx * 0.235
+        s.sweep([(xx, y, z0), (xx, y, zt)], 0.065, mat, seg=14)
+        with s.at((xx, y, zt)):
+            s.lathe([(0, 0), (0.065, 0), (0.06, 0.03), (0.045, 0.055), (0.025, 0.07), (0, 0.075)], mat, seg=14)
 
 
 def window(s, grand, z0=ZC0, z1=ZC1):
@@ -166,10 +145,10 @@ def marquee(s, hw, d, z0=ZC0, z1=ZC1):
         with s.at((x, -d * 0.62, z0)):
             bulb = [(0.17 * math.cos(t), -0.03 - 0.12 * math.sin(t)) for t in (math.pi / 2 * k / 4 for k in range(1, 5))]
             s.lathe([(0.19, 0.0), (0.19, -0.03)] + bulb, pal.Lamp_Deco, seg=12)
-    for x in (-hw + 0.2, hw - 0.2):  # chrome ball finials on the marquee corners
+    for x in (-hw + 0.2, hw - 0.2):  # ball finials on the marquee corners, satin nickel as the ball (brief 103; both fronts)
         with s.at((x, -0.6, z1 - 0.03)):
-            s.lathe([(0, 0), (0.1, 0), (0.1, 0.05), (0.045, 0.1), (0.04, 0.55), (0.07, 0.6), (0, 0.62)], pal.Chrome, seg=10)
-        sphere(s, (x, -0.6, z1 + 0.84), 0.2, pal.Chrome, seg=14, n=7)
+            s.lathe([(0, 0), (0.1, 0), (0.1, 0.05), (0.045, 0.1), (0.04, 0.55), (0.07, 0.6), (0, 0.62)], pal.Nickel_Satin, seg=10)
+        sphere(s, (x, -0.6, z1 + 0.84), 0.2, pal.Nickel_Satin, seg=14, n=7)
 
 
 def stair_block(s, mat):
@@ -264,7 +243,7 @@ def stairs(s):
 
 
 def pier(s, x, h, ball):
-    """Cream flank pier inside its plinth footprint (x +-0.48, y -1.03..0.23): mint band, seafoam cap, chrome ball on a stand."""
+    """Cream flank pier inside its plinth footprint (x +-0.48, y -1.03..0.23): mint band, seafoam cap, a satin-nickel ball on a stand (brief 103)."""
     s.rbox((x - 0.41, -0.96, 0.0), (x + 0.41, 0.16, h), 0.04, pal.Limestone, seg=1)
     s.box((x - PW, PD0, 0.0), (x + PW, PD1, 0.35), pal.Limestone)
     s.solid((x - PW, PD0, 0.0), (x + PW, PD1, h + 0.28))  # brief 055: the plinth footprint, to the cap
@@ -273,8 +252,8 @@ def pier(s, x, h, ball):
     hair(s, [(x - 0.45, PD0 + 0.015), (x + 0.45, PD0 + 0.015)], 0.0, h + 0.03, 0.03, pal.Brass_Civic)
     if ball:
         with s.at((x, -0.4, h + 0.28)):
-            s.lathe([(0, 0), (0.3, 0), (0.3, 0.05), (0.15, 0.13), (0.1, 0.22), (0, 0.22)], pal.Chrome, seg=14)
-        sphere(s, (x, -0.4, h + 0.28 + 0.22 + 0.42), 0.42, pal.Chrome, seg=18, n=9)
+            s.lathe([(0, 0), (0.3, 0), (0.3, 0.05), (0.15, 0.13), (0.1, 0.22), (0, 0.22)], pal.Nickel_Satin, seg=14)
+        sphere(s, (x, -0.4, h + 0.28 + 0.22 + 0.42), 0.42, pal.Nickel_Satin, seg=18, n=9)
 
 
 def pilaster(s, x, h):
@@ -298,7 +277,7 @@ def build(s, grand):
             banner(s, x0, x1, -1.0, 7.2 - 0.7, 7.2 - 1.4)  # on the shaft, inside the plinth footprint
         window(s, True, ZG0, ZG1)
         blades(s)
-        globe(s, (0.0, -0.9, 7.0 + (ZG1 - ZC1)), GR, zroof=ZG1)  # the globe rides the marquee up with its stand
+        globe(s, GC, GR, ZG1, pal.Nickel_Satin)  # brief 103: the ball in the window's arch, its columns on the marquee roof
         return
     marquee(s, 3.0, 3.0)          # = office-boarding-pavilion (x 75.5..78.5, y -33..-27, soffit 4.05, top 4.62), carried on the face
     doors(s, 1.45, 0.0)           # flush: sill at the pavement

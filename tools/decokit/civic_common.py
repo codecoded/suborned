@@ -28,6 +28,9 @@ register("DK_Leaf_CivicDark", "stone", "#46794C")
 register("DK_Inlay_Seafoam", "ceramic", mats.LIB["DK_Enamel_Seafoam"][1])  # paving inlay: the kit seafoam, as glazed tile
 register("DK_Inlay_Teal", "ceramic", mats.LIB["DK_Enamel_Teal"][1])
 register("DK_Brass_Civic", "brass", BRASS)      # hairline gold: the brass of gp-entrance's door posts (shaded brass), 21.3 dE2000 from the guard colour; DK_Accent_Gold #D0C848 stays for the other families
+# Brief 103 (Sky, 2026-11-10: A, "nickel", finials "sure"): the Records Office's ball and the entrances' four ball finials. The kit's satin-brass shading (kind `brass`: metallic 0.6,
+# smoothness 0.6) on a warm silver. It keeps the sun's highlight (not in unity_mats.SUN_OFF), so it has a lit side and a shaded side. Mirror chrome mirrored the zone's one probe and read as pale-blue glass.
+register("DK_Nickel_Satin", "brass", "#C9C4BA")
 register("DK_Banner_Comet_Seafoam", "fabric", "#FFFFFF")  # banner_comet_seafoam_v1.png: derive008.py recolours the kit comet banner to the seafoam field
 mats.TEXTURES.setdefault("DK_Banner_Comet_Seafoam", ("banner_comet_seafoam_v1.png", 1.0))
 register("DK_Pool_Civic", "enamel", "#3A9AA6")      # fountain pool water, opaque: AtomFountain's DK_Water (alpha 0.3 glass, #6FB7C4) reads white under the sky

@@ -107,3 +107,31 @@ To rerun:
 bun run guard /Applications/Blender.app/Contents/MacOS/Blender -b -P briefs/103/vela/globe/make/render.py -- out/scratch/vela/globe/renders
 python3 briefs/103/vela/globe/make/board.py
 ```
+
+## Built, 10 Nov: Sky's picks
+
+Sky picked A, in satin nickel, and said "sure" to the finials. Open `real-piece.png` (before and after, and the official front's finials). The kit step hasn't run yet.
+
+- **The generator.**
+  - `civic_records.py`: `globe()` is now A's ball on its three columns, with the board's numbers: centre 8.0 m up and 0.9 m out, radius 0.75.
+  - `civic_common.py`: one new row, `DK_Nickel_Satin` (`brass` kind, #C9C4BA, the sun's highlight kept).
+  - The piers' ball finials and the marquee's two corner finials are satin nickel. The marquee is shared, so `RecordsEntrance_Official`'s two corner finials are too.
+  - Nothing else in the piece changed.
+- **The look.** `civic-look.json` has the palette row for the new material (unlit #C9C4BA), so rule CD-4 passes once `kit.json` lists it. The two entrances' material roles are updated.
+- **The export** (`bun run decokit --only RecordsEntrance,RecordsEntrance_Official`):
+  - RecordsEntrance goes from 8,450 to 10,188 triangles (L1 2,192, L2 516). The official front stays at 2,284.
+  - In `out/decokit` only these changed: the six FBXs, the new .mat and its .meta, and four tables.
+- **Checked on the export:**
+  - The ball is 1.5 m across, centred at (0, −0.9, 8.0). Its foot is 2.25 m over the marquee, and its back is 1 cm clear of the window's grid.
+  - Under the marquee soffit every vertex is where it was, and every material keeps its area. The door, landing, steps, piers, marquee, blades and banners are unchanged.
+  - The few new vertices are vertex-AO cut lines. The cut budget is 15 % of the piece's triangles, and the ball added triangles.
+  - On the official front every vertex is where it was. Only its two finials changed material.
+  - `verify008`'s extents agree, except the piece's back (0.30 → 0.23 m): the old globe poked into the tower.
+- **Checked in pictures:** the after renders match the board's A with the finials in nickel, to 3/255. The door shows 42.5 % at yaw 210 and 59.4 % at 300, the same as before.
+
+To rerun the pictures:
+
+```
+bun run guard /Applications/Blender.app/Contents/MacOS/Blender -b -P briefs/103/vela/globe/make/real.py -- out/scratch/vela/globe/real
+python3 briefs/103/vela/globe/make/real_sheet.py
+```
