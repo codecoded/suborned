@@ -26,3 +26,14 @@ Replace or remove the globe over the Records Office's public door so the front r
 
 ## Next owner
 Vela (options), then Sky (the pick), then Vela, Splice and Latch (the build, in one batch with whatever else is ready).
+
+## Vela's options (2026-11-10)
+Board: `briefs/103/vela/globe/` (f7c4b3ee9).
+
+**Vela's pick: A.** The painting's ball, 1.5 m across, sits in the window's arch 2.2 m above the marquee on three slim columns, in satin nickel. B is the fallback; C, an enamel armillary, is the most colour.
+- **The door:** the doorway shows equally in every option: 42.5 % at yaw 210 and 59.4 % at 300. The door and click points don't move.
+- **For Sky:**
+  - A, B or C;
+  - if A, nickel or gold;
+  - whether the four chrome finials get the satin finish too.
+- **Open, for Glint:** every chrome surface in the zone reflects the old town's single probe, so rails, bollards and lamp globes read as pale glass too. That's a lighting fix, separate from this piece.
