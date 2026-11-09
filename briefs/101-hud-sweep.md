@@ -217,3 +217,19 @@ Vantage's proposal is `briefs/101/vantage/square-camera.md`.
   - Pulse: the recorded-routes test should start agents at their marks;
   - Keel: review `Stance.cs` and Waymark's `taped:` plan condition;
   - route-g's and loud's scripts no longer compose (since 0.51.0).
+
+## The hover outline: Sky's idea (2026-11-09)
+
+Sky: "when you move mouse over an item that has an action ring, maybe outline it a little as well? can we do concept for that? helps with those items close together e.g. guard and door".
+
+**Today:**
+- A hover draws a cream ellipse on the ground and a one-word name chip (classic controls only).
+- Where things overlap, it adds a dot per thing, and the filled dot is what a click hits.
+- The thing itself never lights up. With the guard standing inside the door's marker box (brief 085), you can't see which one a click will open.
+- The door, the cabinet, the stashes and the stands are invisible marker boxes, not meshes of their own, so an outline needs a shape for them.
+
+**Glyph, mock only ($0, existing frames, no Unity while Latch's batch runs):**
+- 2 or 3 outline treatments and a pick, on four cases: the guard in the door, a person among others, a thing partly hidden, and a non-person (the mast's head, a car).
+- What the outline keeps or replaces among today's ellipse, name chip and stack dots.
+- A look spec for Latch.
+- Deliverables in `briefs/101/glyph/outline/`. Sky picks before anything is built.
