@@ -161,3 +161,17 @@ Sky: "yes" to Glyph's round 3 (`briefs/101/glyph/r3/`).
    - **Next:** Vantage proposes the camera's new place, seen from the opening view and near the cell's start, with pictures, and what it changes for the routes. Then Sky picks, and Keel and Waymark re-measure.
    - Fable makes the card name who was seen and by whom.
    - The sitting idea waits.
+
+## The square's camera: Sky picks B, the lamp mast (2026-11-09)
+Vantage's proposal is `briefs/101/vantage/square-camera.md`.
+- **The mast:** the terrace's west lamp, 3–8 m from the cell, becomes the square's mast. Three heads fan 60° apart over the café front, the terrace and the fountain plaza, with its back to the kerb. The cell's start and the car waits stay behind the lenses.
+- **The café front stays watched.** Sky's reading: the loiter rule is fair once the camera is plain to see.
+- **The ids stay:** `mast-camera-z0` and `civic-robot-dock-z1`. The dock keeps today's corner.
+
+**Order:** these steps change the world and the engine's inputs, so they run in their own checkouts and merge after Latch's current build is committed.
+1. **World (one checkout):** Datum's plan type and site rule, Vantage's block entry (`lamp-terrace-w` becomes the mast's place; table 7's parasol back), and Splice's generator (`transit.ts` places the mast from the block; `quiet.ts` exports the fanned facings).
+2. **Kit (Vela, its own checkout):** the lamp mast piece: the sphere lamp's globe and banner at 4.6 m, a chrome crown at 7.7 m and three lens pods fanned 60°, at the DecoKit finish.
+3. **Motive:** Pressure on Inez under the mast (+1 Trail and a report unless the mast is looped): the right price?
+4. **After the merge, Keel and Waymark:** the mast's facts in N67, N110 and 096; route A's waits behind the mast; the Scout watching Inez from her start; route B-thin's takedown; a rule that no clock-keeping watcher sees the cell's starting stance on any seed; the bands.
+5. **Fable:** the mast's words ("It turns between three views" is wrong today: all three heads see at once).
+6. **Latch:** a full batch, since it's a world and kit change. A fresh opening shot shows the mast and its "?".
