@@ -69,3 +69,14 @@ Vela, then Sky, then Latch.
   - two or three painted plates on the civic square;
   - one glossy lineup;
   - the play-size strip.
+
+**Passes 2 and 3 (Aster in the main thread, on Sky's word: "just you did it here, no need for vela"; Vela's task cancelled).** All $0 Codex, through `paid.py`; images in `paid/104-patrol-robot/codex/`, with references in `paid/104-patrol-robot/refs/`.
+- **Pass 2** (prompts start from `concept_prompt`; references: the Records Office and city hero paintings, plus the in-game robot family):
+  - `P2-plate-1`: a hovering enamel robot with jukebox chrome, a red tail-light and a paper-tape printer;
+  - `P2-plate-2`: a long 1950s car-body hover robot, too big for the dock;
+  - `P2-plate-3`: a tall doorman robot on a hover disc.
+- **Sky:** "think they would have more warning lights on them, and more primary colors to stand out".
+- **Pass 3** adds a security livery: signal red, cobalt blue and chrome yellow in big blocks over cream enamel and chrome, with a light bar or beacon, side markers and tail-lights.
+  - `P3-lineup-1`: six designs. 2 (light bar) and 5 (three beacons) read most as security.
+  - `P3-plate-1`: on the square, it hands a printed ticket and holds a stamp; close to lineup 2.
+- **Next, Sky's call:** refine a pick, push another sheet, or a turnaround of the pick for the 3D piece.
