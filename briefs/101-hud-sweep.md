@@ -149,3 +149,15 @@ Sky: "yes" to Glyph's round 3 (`briefs/101/glyph/r3/`).
 - **The "Take control: T" pop** is gone, and no click takes control. Glyph's mock is at `briefs/101/glyph/tc/` (a round tab beside the selected agent's face, "Back to map" in the same slot while in control, and the GDD's eye over the driven agent).
 - **Sky, on Esc as a way back to the map:** "esc is always pause menu". Esc never leaves the ground view; the button and T do.
 - **Sky picked "Button + eye"** over the button alone and lab-only. The ground view becomes part of the game; the GDD catch-up is in brief 098. Latch builds Glyph's pieces 1, 2, 4, 5 and 6 (Esc's piece 3 is dropped). Fable cuts the two dead pop words.
+
+## Round 4 approved, the wrap, and the square's camera (Sky, 2026-11-09)
+1. **Round 4** (`briefs/101/glyph/r4/`): "Sure".
+   - Latch builds Glyph's order: the pool counts the docked line, the docked line's new look, edge faces kept clear of bubbles, and the verb row.
+   - Splice lands round 4's budget rules in the same round.
+2. **Long lines:** "two rows". Option B: bubbles wrap at 460 px into at most two rows, breaking after a comma or full stop.
+3. **The loitering card** ("Robots coming: an agent stayed too long beside the café").
+   - In route A the Fixer waits about a minute near the café for the call, in view of the square's mast camera (`street/records-square/mast-camera-z0`), which reports her as a loiterer: Alert 1, robots.
+   - Aster proposed that waiting agents sit down and seated people don't count. Sky: "Maybe - I think the issue is that main square camera isn't obvious it's looking over the square, it's hidden from start view. I think it would be good to move it more obvious, would also make it a good starting point for any player to interact. Maybe have it next to where players start."
+   - **Next:** Vantage proposes the camera's new place, seen from the opening view and near the cell's start, with pictures, and what it changes for the routes. Then Sky picks, and Keel and Waymark re-measure.
+   - Fable makes the card name who was seen and by whom.
+   - The sitting idea waits.
