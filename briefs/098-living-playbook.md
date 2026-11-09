@@ -146,6 +146,13 @@ These are rules Sky already approved that the GDD text still lags, gathered as t
   - Watcher pips, edge markers and the goal beam wait until the Handover is solid.
   - T14 loses its [lab] mark when it runs.
 - **§10 controls:** Esc is always the pause menu (Sky 2026-11-09: "esc is always pause menu"). It never leaves a view.
+- **§04, §05 and §07, calls** (Sky 2026-11-09, brief 102):
+  - A call is offered only where it has a use under the rules.
+  - Nobody acts on a call while they hold a memory of the cell's violence.
+  - A call on a turned contact empties a post: their own if they keep one, otherwise their lover's.
+  - §07's capstone line "the call that pulls the guard off his door is Inez's" gains "or his own, once the cell has turned him".
+  - §07 route B: the driver's Help is $50,000.
+- **§05, a turned staff witness:** the witness line says a turned witness "makes no report", but the reports list puts staff first, and the engine follows the reports list (Motive, `briefs/102/motive/turned-guard.md` §2.4). Pick one with Pulse.
 - **§10 and §12, the agents' voices** (Sky 2026-11-08, brief 102):
   - The cell is quiet in play: no acks, arrivals, landings or warnings.
   - The agents speak only in scenes with people.

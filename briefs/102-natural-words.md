@@ -48,3 +48,30 @@ Owner: main session (as Aster), opened 2026-11-08 on `work/098-living-playbook`.
 - **Aster takes (b)**, which applies the GDD's own rule for a way that would do nothing ("absent, not greyed"): a Call is offered only where it has a use, read from the engine so the offer and the refusal can't drift.
 - **Order:** Motive confirms the law's wording first. Keel's engine change follows once Latch's build is out (one heavy agent at a time). Latch swaps the host's test in the next round.
 - **Open for Sky:** what turning the guard should buy. Today it buys almost nothing: no call, the door still shut to the cell, and he still radios what he sees. Motive drafts the options.
+
+## Sky's calls on the guard (2026-11-09)
+From Motive's options (`briefs/102/motive/turned-guard.md`):
+- **"Leaves when called"** (option 1).
+  - **The law:** "A call on a turned contact empties a post: their own if they keep one, otherwise their lover's. Whoever leaves walks to the other, stays a minute and walks back."
+  - **Shared with Inez's call:** he comes once a shift whichever of them is called, the visit is the short one if either was pressured, and the window is the same as hers (about 2:54, or 1:39).
+  - **Prices:** Inez stays the cheapest door ($40,000, 3 Trail). To use the guard instead: pay him $70,000 (4 Trail), help him for $50,000 after a Listen (3 Trail), or pressure him for $0 (5 or more Trail).
+- **"Yes, they refuse"** (step 4). Nobody acts on a call while they hold a memory of the cell's gunfire, violence or drawn weapon.
+  - Fear alone doesn't stop them, and neither does harm they didn't see or weren't told about.
+  - It shows as a shut Call with a plain fact; nothing rings at the click.
+  - Her state is checked before his.
+- **The offer law** (Aster took Keel's (b), with Motive's wording): what a call *is* decides whether it's offered. What has *happened* decides whether it's shut, with its reason.
+
+**Work, in order:**
+1. **Keel:** one engine round in its own worktree: the `GameCall.cs` split, `CallOffered`, `CanCall` as `CallQuery(role).ok`, the step 4 clause, option 1's two-ended visit, and the rulebook sentences, so the pinned hashes move once.
+2. **Waymark:** the guard's end as a new variant of route A, across seeds; the careless and loud bots by delta.
+3. **Latch:**
+   - the `CallOffered` swap;
+   - Intel's call line only where a Call is offered;
+   - no scene for the caller's own refusal;
+   - the call scene between the Fixer and the guard.
+4. **Fable:**
+   - the shut lock's facts;
+   - "he's not answering" when he's down and she didn't see it;
+   - the lock form that names nobody before a Listen;
+   - option 1's lines, about a dozen.
+5. **Glyph:** the shut lock's look, and the Call card's "?" for someone who would leave his own post.
