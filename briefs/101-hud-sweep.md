@@ -191,3 +191,4 @@ Vantage's proposal is `briefs/101/vantage/square-camera.md`.
   - N18 should expect Inez exposed if she's questioned or logged;
   - add a scenario in which the Pay card shows the tape for a crew member.
 - **For Sky:** under B the mast logs the Fixer beside Inez as she's turned, so between missions a helped Inez grows resentful and a pressured one turns informer, unless the mast is looped. Motive would keep the law.
+- **Sky (2026-11-09): "Keep it".** The mast's log exposes a turned Inez between missions unless the mast is looped across the turn: the same law as any recorded act. Keel's N18 changes to match.
