@@ -64,7 +64,7 @@ Glint's probe fix wasn't picked, so it's not started.
   4. then Latch re-imports, and the full batch runs.
 - **Left as is (Aster):** `collide097.json` pins the entrance's depth at 3.7 m, so the world's footprint ring sits 3.5 cm off the new mesh. Nothing drawn moves, so the pin stays.
 
-**The kit step (ce351a60a).** `bun run kit` copied the 8 files. `kit.collide.json` keeps only the two entrances' new measures, and `sim:site` changed only `grid.collide`'s hash.
+**The kit step (ce351a60a).** `bun run kit` copied the 8 files. `kit.collide.json` keeps only the two entrances' new measures, and `sim:site` changed only `grid.collide`'s hash. **Correction (Latch, 2026-11-10):** Aster's "nothing pins either" was wrong. The engine scenario DP1's fixture pins a hash over the engine's inputs, which covers the site file, so the batch stopped at DP1. Latch re-recorded it with `suborned-sim drive-session`: the same 142 orders, only the pinned hashes changed. Keel to confirm.
 - **A plain `bun run collide` regresses the walk law.** It also re-declared 43 other pieces from `collide097.json`, which undoes engine 0.49.0's solids-as-built (31 measured pieces went back to declared). That part was left out. Splice is fixing the tool and adding a test.
 - **Next:** Latch's full batch with the new ball, then one build for Sky.
 
