@@ -37,3 +37,16 @@ Board: `briefs/103/vela/globe/` (f7c4b3ee9).
   - if A, nickel or gold;
   - whether the four chrome finials get the satin finish too.
 - **Open, for Glint:** every chrome surface in the zone reflects the old town's single probe, so rails, bollards and lamp globes read as pale glass too. That's a lighting fix, separate from this piece.
+
+## Sky's picks (2026-11-10)
+"1. A · 2. Nickel · 3. sure":
+- the painting's ball, smaller, set in the window's arch;
+- satin nickel;
+- the four chrome finials in the same satin.
+
+Glint's probe fix wasn't picked, so it's not started.
+
+**Next:**
+1. Vela makes the piece in `civic_records.py` and runs DecoKit for it, without the kit step while Latch's outline round builds.
+2. Aster runs the kit step after that round lands.
+3. The full batch follows (a kit change), and Sky gets one build.
