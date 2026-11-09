@@ -58,3 +58,14 @@ Vela, then Sky, then Latch.
 - original, like no film or game robot.
 
 **Deliverables:** `briefs/104/vela/patrol-concepts/`, with images in `paid/104-patrol-robot/`.
+
+**Pass 1 rejected (Sky, 2026-11-10): "none of those really meet our retro future suborned vibe really".** The sheets were `paid/104-patrol-robot/codex/A-civic.png`, `B-stern.png` and `C-signal.png`.
+- **Aster's read:**
+  - flat illustration on beige paper, like a vintage toy catalogue, instead of the 26 Sep paintings' cinematic painted realism (glossy cream enamel, chrome, sun);
+  - legs, springs, horns and toy proportions instead of 1950s industrial design (Streamline Moderne, Googie, atomic-age appliance and car lines) carrying effortless, centuries-ahead technology (our city's tech floats);
+  - no city around them.
+- **Pass 2 (Vela):**
+  - references: the Records Office and city hero paintings, plus our in-game robot family (butler, waiter, nanny) as the family it joins;
+  - two or three painted plates on the civic square;
+  - one glossy lineup;
+  - the play-size strip.
