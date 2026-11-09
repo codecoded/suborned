@@ -84031,8 +84031,9 @@
     "squash": 1,
     "wave": 2
    },
-   "status": "candidate",
-   "source": "generated"
+   "status": "adopted",
+   "source": "generated",
+   "why": "Adopted (brief 101, Vela, 2026-11-09): Sky approved the square's lamp mast as built (\"looks good\"), deep teal hoods included. Tagged mast-camera:lamp, so no mast takes it until the world names it for the square's mast (Splice)."
   },
   {
    "id": "Newsstand",

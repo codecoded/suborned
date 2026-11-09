@@ -2,7 +2,11 @@
 
 Sky picked B (`briefs/101/vantage/square-camera.md`, decision in `briefs/101-hud-sweep.md`): the terrace's west sphere lamp, beside the cell's start, becomes the square's camera mast.
 
-The piece is `MastCamera_Lamp`, built by `tools/decokit/civic_mast101.py`. It is in `contracts/world/kit.json` as a **candidate**, so nothing draws it until it's adopted.
+The piece is `MastCamera_Lamp`, built by `tools/decokit/civic_mast101.py`.
+
+**Adopted** in `contracts/world/kit.json` on 2026-11-09: Sky approved it as built ("looks good"), deep teal hoods included. The reason is in the entry's `why`.
+
+Its tag is `mast-camera:lamp`, so no mast takes it until the world names it for the square's mast. A world export with it adopted is byte-identical to one with it as a candidate.
 
 Renders are in this folder (git-ignored pictures), with `board.png` for Sky's phone.
 
@@ -58,7 +62,7 @@ Placed at its item's yaw, camera k looks along `facings[k]` at any yaw. No extra
 
 ## What Latch needs to place it
 
-1. **Adoption first.** The world and the builder draw only adopted pieces. Once Sky has seen it, Vela sets it adopted in `kit.json`, and `bun run kit` copies it into `unity/Assets/Suborned/Kit/`.
+1. **Export, then copy (adopted 2026-11-09).** After the merge, in the main checkout, run `bun run decokit --only MastCamera_Lamp`, then `bun run kit`. The generated file isn't there until then, and the kit copy tests need it too. The export is byte-identical on a rerun (sha256 `074728ce…`).
 2. **The world names it** (Splice, step 3 of the order).
    - The square's mast `street/records-square/mast-camera-z0` stands at block (−3.85, −42.55) = plan (−172.55, −226.15), plan yaw −30°, facings (−30°, 30°, 90°).
    - It takes `{ id: 'MastCamera_Lamp', scale: [1, 1, 1] }` with no yaw of its own (it uses the item's), its pivot on the pavement top.
@@ -87,6 +91,27 @@ Placed at its item's yaw, camera k looks along `facings[k]` at any yaw. No extra
 - Kit and DecoKit tests: 63 pass, 3 skip, 0 fail (the same as before).
 - Every test that reads the catalogue (35 files): 395 pass, 18 skip, 0 fail.
 - `bun run typecheck`: clean.
+
+**After adoption:**
+- Only the status and its `why` changed in kit.json, and `bun run kit --catalogue` keeps it ("kit.json unchanged").
+- `bun run cover` and the digest were regenerated. The cover moves only its kit hash; the digest moves only the mast's status.
+- `bun run world` with the mast adopted, and again with it a candidate: `harbour-district.world.json`, `harbour-district.faces.json` and the generator's log are byte-identical.
+- Kit and DecoKit tests: 63 pass, 3 skip, 0 fail.
+- Every test that reads the catalogue or the adopted set (41 files): 494 pass, 8 skip, 0 fail. Fewer skip now that the world export is on disk.
+- `bun run typecheck`: clean.
+
+## For Splice (not changed: Splice's files)
+
+- **The fit table's exit 1 has a one-line fix.** `tools/decokit/run.ts:42` holds every manifest row that carries an order to that order. The manifest merges and never shrinks, so the eleven towers rejected on 2026-11-08 keep failing with "no such order in the plan".
+
+  Skip the rows kit.json rejects (the fit test already requires a piece the plan no longer orders to be rejected, with its reason):
+
+  ```ts
+  const rejected = new Set((JSON.parse(readFileSync(resolve(repo, 'contracts/world/kit.json'), 'utf8')).assets as { id: string; status: string }[]).filter(a => a.status === 'rejected').map(a => a.id)), orderSet = allOrders(), rows = manifest.filter(a => a.order && a.built && !rejected.has(a.name)).map(a => fitRow(orderSet, a.name, a.order!, a.built!));
+  ```
+
+  Run over today's manifests (the main checkout's and this worktree's): 12 rows with 11 failing (exit 1) become 1 row that fits, SpaceHQ_Portal (exit 0). Tested with a scratch copy of the line; run.ts is untouched.
+- **`MastCamera_Lamp` should join `BUILD`** (`tools/decokit/orders.ts`), as the brief 097 props did. Then a bare `bun run decokit` rebuilds it from an empty `out/`. Until then, only `--only MastCamera_Lamp` builds it.
 
 ## Renders
 
