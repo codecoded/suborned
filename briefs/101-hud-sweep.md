@@ -259,3 +259,16 @@ Sky: "when you move mouse over an item that has an action ring, maybe outline it
   - Both police officers share one target key, so the line always lands on the first. Each gets its own.
 - **Still open:** r083's `r085doorPrice` needs a focused player while the Studio is free.
 
+**0.2.303 (3f50cc45d).** The three fixes are in:
+- `bookAgentRows` samples the agent pages along the route;
+- `r085listenApart` asserts §10's shot rule;
+- each police officer is his own target.
+
+r083 runs on virtual Input System devices: all 106 parts pass without window focus, and players launch behind (Sky, 2026-11-10: they shouldn't have to step away from the Studio for a test).
+- **Play change:** "Fire at the police" now hits the officer under the pointer, not the nearest one in line.
+- **Open:**
+  - **UI event route:** HUD clicks in the checks go through an EventSystem with the Input System UI module, while the game uses UI Toolkit's default route. Aster leans to moving the game onto the same route, the standard engine route, so the checks prove what Sky plays. It's a small Latch round with the proofs as the net, after Sky's character models land.
+  - **Focus loss:** a run that loses focus mid-way hasn't been seen yet.
+  - **r123:** its "fight safe" row fails, as before (not gated).
+  - **DP1's re-record:** Keel is confirming it.
+

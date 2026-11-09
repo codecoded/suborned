@@ -78,3 +78,9 @@ Glint's probe fix wasn't picked, so it's not started.
   - done when `bun run kit` copies nothing, `collide --plan` shows nothing to do, and neither contract changes.
   - If a hash moves, it's a kit change.
 
+**Built (0.2.303, 3f50cc45d).** The ball is in the game through the kit, the world and a full batch (0.2.302). Latch's report: `briefs/101/latch/r303.md`; pictures in `briefs/103/latch/`.
+- **Seen at the opening heading (yaw 30):** `r085-outline-door.png` shows the door outlined beside the new ball in the arch. At yaw 210 the corner tower hides the ball, and only a satin finial shows.
+- **Open:**
+  - **Yaw labels:** Vela's render rig calls "yaw 210" what the game shows at yaw 30. Align the rig's labels on Vela's next round. The done-check is met at the heading where the front shows.
+  - **Highlight:** the ball still catches a cool sky highlight. That's Glint's probe fix, which Sky hasn't picked.
+
