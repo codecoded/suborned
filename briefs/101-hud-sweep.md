@@ -241,3 +241,10 @@ Sky: "when you move mouse over an item that has an action ring, maybe outline it
 - What the outline keeps or replaces among today's ellipse, name chip and stack dots.
 - A look spec for Latch.
 - Deliverables in `briefs/101/glyph/outline/`. Sky picks before anything is built.
+
+**Sky picks B (2026-11-09).** That's the ink line with a cream edge. Sky didn't pick a thickness, so it's Glyph's 1.5 px at 1080p, with 2 px the step up if it gets lost in play. Glyph's board: `briefs/101/glyph/outline/` (8099c4f51).
+- **Latch builds it** to Glyph's spec:
+  - SilhouettePass's route;
+  - a door stand-in the size of the Office's public doorway;
+  - captures `r085-outline-guard` and `r085-outline-door`, driven by the simulated pointer so they don't need window focus.
+- **Then:** Redline checks the frame cost on the Air (needs Sky's OK), and the §10 line goes into the GDD v0.40.0 catch-up (brief 098).
