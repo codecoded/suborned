@@ -186,7 +186,7 @@ namespace Suborned.Play
         /// <summary>A refusal's pop: the code's short form with {m} {usd} {tick} filled (as the long line), else the host's own short.</summary>
         string ShortOf(Order o, Answer a)
         {
-            var s = BoxedShort(a) ?? Text?.ShortLock(a.code, LockVariant(a, TargetKindOf(o.Target))) ?? HostShort(a.code); // brief 098 step 1b: "Boxed in · red car" (HostTrafficBoxed)
+            var s = BoxedShort(a) ?? Text?.ShortLock(a.code, LockVariantFor(o, a)) ?? HostShort(a.code); // brief 102: tie-unknown before the cell knows the pair (HostCall) // brief 098 step 1b: "Boxed in · red car" (HostTrafficBoxed)
             if (s == null) return null;
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";

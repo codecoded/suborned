@@ -118,8 +118,7 @@ namespace Suborned.Play
                 while (g.Tick < entry + 60 * Hz && !g.Over && g.CarSt != Suborned.Sim.CrewCar.Blocking) { h.RunTo(g.Tick + 1); foreach (var _ in h.Views.RivalsDrawn()) onFootBefore++; }
                 if (g.CarSt == Suborned.Sim.CrewCar.Blocking) { block = g.Tick; stopAt = g.RivalCarPose()?.pos ?? default; }
                 h.RunTo(g.Tick + Hz); yield return Settle(h); string carState = h.Views.RivalCarState; var bc = h.Views.Find("car/rivals"); if (bc) { h.TurnSnap(0); h.LookAt(bc.position); } yield return Frames(3); yield return Shoot(h, dir, "r059-253-box-in", log);
-                HandoverHost.PointerOverride = null;
-                // the step-out: each member's first drawn tick and where (within 5 m of the stopped car, never at a post)
+                // the step-out (the pointer stays parked off the street through its frame: Latch 0.2.295's open item, a delta that runs done first left a rival under it): each member's first drawn tick and where (within 5 m of the stopped car, never at a post)
                 while (block >= 0 && g.Tick < block + 30 * Hz && !g.Over)
                 {
                     h.RunTo(g.Tick + 1);
@@ -127,6 +126,7 @@ namespace Suborned.Play
                         if (!firstAt.ContainsKey(id)) { var e = g.PosOf(id) ?? h.frame.Engine(at); firstAt[id] = (g.Tick, Suborned.Sim.G.Dist(e, stopAt) / 100f, mode); }
                     if (g.Tick == block + 7 * Hz) { yield return Settle(h); var dc = h.Views.Find("car/rivals"); if (dc) { h.TurnSnap(2); h.LookAt(dc.position); } yield return Frames(3); yield return Shoot(h, dir, "r059-300-step-out", log); }
                 }
+                HandoverHost.PointerOverride = null;
                 // the lookout at his post (Motive RIV-1: by 4:20 on every seed)
                 while (block >= 0 && g.Tick < block + 150 * Hz && !(h.Views.RivalModes.TryGetValue("rival-4", out var lm) && lm == "posted") && !g.Over) h.RunTo(g.Tick + 5);
                 var lt = h.Views.Find("rival-4"); if (lt) h.LookAt(lt.position); yield return Settle(h); yield return Shoot(h, dir, "r059-lookout-posted", log);

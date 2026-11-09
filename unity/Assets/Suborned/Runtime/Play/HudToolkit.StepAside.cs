@@ -59,7 +59,7 @@ namespace Suborned.Play
                 var (tail, box, head) = bubbleLeads[i]; var r = tail.parent; if (r == null || r.style.display == DisplayStyle.None) continue;
                 bool hit = false; foreach (var c in calls) if (Grow(c, AsideGap).Overlaps(box)) hit = true; if (!hit) continue;
                 var avoid = new List<Rect>(calls); for (int j = 0; j < bubbleLeads.Count; j++) if (j != i) avoid.Add(bubbleLeads[j].box);
-                bool Free(Rect x) { if (x.yMin < 112f || x.yMax > H - 120f || x.xMin < 8f || x.xMax > W - 8f) return false; foreach (var o in avoid) if (Grow(o, AsideGap).Overlaps(x)) return false; return true; }
+                bool Free(Rect x) { if (x.yMin < 112f || x.yMax > H - 120f || x.xMin < BubbleEdge || x.xMax > W - BubbleEdge) return false; /* round 4: 14 px inside, as the clamp */ foreach (var o in avoid) if (Grow(o, AsideGap).Overlaps(x)) return false; return true; }
                 Rect? best = null; float bestD = BubbleReach;
                 foreach (var c in calls)
                     foreach (var cand in new[] { new Rect(box.x, c.yMin - AsideGap - box.height, box.width, box.height), new Rect(box.x, c.yMax + AsideGap, box.width, box.height), new Rect(c.xMin - AsideGap - box.width, box.y, box.width, box.height), new Rect(c.xMax + AsideGap, box.y, box.width, box.height) })

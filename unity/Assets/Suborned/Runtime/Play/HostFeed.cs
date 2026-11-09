@@ -269,22 +269,10 @@ namespace Suborned.Play
             var p = CastOf(role); if (p == null) return;
             var c = NewCard("call", Text.Action("call", role).label, "call", $"{Name(role)} · {PlaceWords(role)}", TargetWorld(new Target { Kind = "person", Key = role }), role);
             c.Agent = (int)OpId.Fixer; c.Verb = "call"; c.Target = role; c.Tone = Feedback.Refused;
-            foreach (var sp in new[] { role, p.Lover != null && TieHears(a.code, p, p.Lover) ? p.Lover.Role : null }) if (sp != null && Text.Pick(new PlayText.Query { Event = "summon-refused", Speaker = sp, Outcome = a.code }) is string line) Add(c, sp, Fill(line, Name(sp)));
+            string about = SummonAbout(role); // brief 102 (option 1): the guard's own call reads his rows `about` him (HostCall)
+            bool unanswered = Unanswered(role, a); // Fable: she tries him and nobody answers (summon-unanswered, in place of her summon-busy line)
+            foreach (var sp in new[] { role, p.Lover != null && TieHears(a.code, p, p.Lover) ? p.Lover.Role : null }) if (sp != null && Text.Pick(unanswered && sp == role ? new PlayText.Query { Event = "summon-unanswered", Speaker = sp } : new PlayText.Query { Event = "summon-refused", Speaker = sp, Outcome = a.code, About = about }) is string line) Add(c, sp, Fill(line, Name(sp)));
             c.Footer = LockLine(o, a) ?? a.why; c.Revealed = Math.Min(1, c.Lines.Count); c.NextBeatAt = Game.Tick + 15;
-        }
-
-        /// <summary>Brief 102 (Fable's findings; text.json events summon-refused: "Inez answers the Fixer; the guard, if he is within earshot"): whether
-        /// the contact's tie hears a refused call, and so answers. Never when he is down (knocked out, tied or dead: the engine's "he's down"). Her call
-        /// reaches him where the engine refused it for another reason (busy on his feet, an alarm, what he saw, his one visit), as the call scene has him
-        /// answer her from his door. Where it can't reach him (off the street, too far) or nobody sends for him (no-visit: the Fixer called the guard
-        /// himself, and his tie has no post to leave), the tie hears only standing within earshot of the contact: both out on the street, within the
-        /// people's reach (rulebook witness-range-m, Fable's "sight or earshot" since brief 012). So Inez's no-visit line is her reply to what she hears.</summary>
-        bool TieHears(string code, Person contact, Person tie)
-        {
-            if (tie.Down || tie == Game.GuardP && Game.GuardDown) return false;
-            if (code is not ("summon-off-street" or "summon-too-far" or "summon-no-visit")) return true;
-            var at = Game.PersonPos(contact); var by = Game.PersonPos(tie);
-            return at.HasValue && by.HasValue && Suborned.Sim.G.Within(at.Value, by.Value, Game.R.WitnessRangeCm);
         }
 
         // events that get a card of their own when no city scene covers them: kind, title, where it points. Titles and results in the player's
@@ -397,6 +385,7 @@ namespace Suborned.Play
             var r = Seen.None;
             // brief 013: a witness's scene is found by event, then outcome (the engine's verb); a missing person's by who is missing (Fable)
             var list = Text.ScenesFor("city", ev);
+            if (ev == "guard-at-cafe") { var cafe = Text.LookupScene(new PlayText.SceneQuery { Kind = "city", Event = ev, About = CafeAbout() }); list = cafe == null ? new List<PlayText.Scene>() : new List<PlayText.Scene> { cafe }; } // brief 102: his own call's scene (`about` guard); hers has none
             if (l.HasValue && ev is "witness-reacts" or "person-missed")
             {
                 var who = ev == "person-missed" ? MissingOf(l.Value) : null;

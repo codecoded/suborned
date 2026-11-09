@@ -181,7 +181,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the pieces (rects from layout.json, px at 1920 x 1080)
 
-        VisualElement pill, objective, column, ticker, feed, verbPlate, tooltip;
+        VisualElement pill, objective, column, ticker, feed, tooltip;
         VisualElement closeBar;
         /// <summary>Brief 080: Vale has been missed (Game.CloseWarnedAt): the kit's amber draining underline (the window marker's) under the clock, down to the close.</summary>
         void CloseUnderline()
@@ -222,7 +222,6 @@ namespace Suborned.Play
         static readonly Rect[] RowWin = { new(37, 15, 65, 64), new(123, 15, 65, 64), new(210, 15, 65, 64), new(296, 15, 65, 64) };
         VisualElement row;
         readonly Strip[] strips = new Strip[4];
-        readonly VisualElement[] knobs = new VisualElement[4], knobIcons = new VisualElement[4]; readonly Label[] knobNums = new Label[4]; VisualElement armedPlate; Label armedName;
         sealed class Card { public VisualElement Root, Header, KindIcon, VerbIcon, New, Dot, Prog, Fill, Lines, Footer, Check, Ack; public Label Title, Where, Clock, Remaining, Result, AckKey, Typing; public readonly List<(VisualElement row, VisualElement chip, Label name, Label text)> Rows = new(); public HandoverHost.FeedCard For; }
         readonly Card[] cards = new Card[3]; Label more; HandoverHost.FeedCard hoverCard;
         sealed class IntelUi { public VisualElement Row, Need, NeedGlyph, NeedMark, Temp, TempGlyph, Turned, NextIcon; public Label Name, Job, Next, Secret; }
@@ -305,18 +304,7 @@ namespace Suborned.Play
                 st.Queued = L(st.Root, "slot-queued", 47, 68, 150, 16, true);
                 st.Ready = L(st.Root, "slot-ready", 30, 29, 160, 20); st.Hint = L(st.Root, "slot-hint", 30, 50, 170, 16, true);
             }
-            // the verb plate (verb_plate): right of the selected strip +10; four knobs, glyph, numeral; the armed knob's name under it
-            verbPlate = E(root, "s-plate_verbs", ColX + 113 + 228 + 10, 0, PlateW, PlateH, pick: true); // brief 014 round 2: room for the end bolts and the key numbers
-            for (int i = 0; i < 4; i++)
-            {
-                int k = i; float cx = KnobX0 + 24 + i * 47.6f;
-                var kb = knobs[i] = E(verbPlate, "s-btn_verb_normal btn_verb", cx - 24, KnobY, 48, 48, pick: true);
-                kb.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.Pick(k); e.StopPropagation(); } });
-                knobIcons[i] = E(kb, null, 14, 14, 20, 20);
-                var badge = E(verbPlate, null, cx - 8, 56, 16, 9); badge.name = "badge" + i; // under its knob, on the field: top 56, cap height under 8, clear of the rim (69.5)
-                knobNums[i] = L(badge, "numplate", 0, 0, 16, 9); knobNums[i].style.color = Cream; knobNums[i].style.fontSize = 9.5f; knobNums[i].style.unityTextAlign = TextAnchor.MiddleCenter;
-            }
-            armedPlate = E(root, "s-plate_dark", 0, 0, float.NaN, 32); armedPlate.style.justifyContent = Justify.Center; armedName = L(armedPlate, "verb-name"); armedName.style.paddingLeft = 12; armedName.style.paddingRight = 12; armedName.style.paddingTop = 0; armedName.style.paddingBottom = 0; armedName.style.fontSize = 10.5f; armedName.style.unityTextAlign = TextAnchor.MiddleCenter; /* Glyph round 3: 30 px chip, 11 px type: about 5 px above and below */ // Glyph round 2: 8 px clear of the rim
+            // brief 101 round 4 (Glyph r4 §2): the verb plate, its knobs and the armed plate retire into the verb row (HudToolkit.VerbRow)
             // the ticker (ticker): below the column +8, 341 x 34; the cell's cameo and its last word, fading
             ticker = E(root, "s-panel_strip", ColX, ColY + ColH + 8, 341, 34);
             tickerChip = E(ticker, null, 14, 3, 28, 28); tickerText = L(ticker, "ticker", 48, 8, float.NaN, 18, true); tickerText.style.right = 16;
@@ -493,9 +481,6 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>The order plate (plate_verbs, 9-sliced): its end bolts span x 16 to 26 at 1x, so the first knob's bezel (inset 4 in its 48 px
-        /// element) starts at 31; the plate is as wide again on the right, and tall enough for a row of key numbers under the knobs.</summary>
-        public const float PlateW = 248, PlateH = 78, KnobX0 = 28.5f, KnobY = 9.5f; // Glyph round 2: the rebuilt plate is drawn 1:1 at 78 px tall (field y 8.5 to 69.5); both bolt gaps ~8 px
         /// <summary>The row's photo radius: the cream band's outer edge (38.2 to 38.6) plus half a pixel into the chrome, so no cream shows at any edge.</summary>
         const float BezelR = 39f;
 
@@ -1104,12 +1089,6 @@ namespace Suborned.Play
                 Show(st.Ready, !busy && !s.Compact); Text(st.Ready, s.Down ? "Down" : s.Hurt ? "Hurt, still fighting" : "Ready");
                 Show(st.Hint, (!busy || s.Pace.Length > 0 && s.Progress < 0) && !s.Compact && s.Queued.Length == 0 && (s.HintLine.Length > 0 || s.Pace.Length > 0)); Text(st.Hint, s.Pace.Length > 0 ? s.Pace : s.HintLine); // carrying: the pace on line 2 (Glyph §4)
             }
-            for (int i = 0; i < 4; i++)
-            {
-                Class(knobs[i], "selected", i == m.VerbLit && m.VerbHas[i]); Class(knobs[i], "disabled", !m.VerbHas[i]);
-                Icon(knobIcons[i], m.VerbIcon[i], m.VerbHas[i] ? Cream : Grey); Text(knobNums[i], m.VerbKey[i]); knobNums[i].style.opacity = host.PlateKeysDim ? 0.35f : 1f; // brief 030 §8: ⇧ caps dim while the driven agent moves
-            }
-            if (m.VerbLit >= 0 && m.VerbLit < 4) Text(armedName, m.VerbName[m.VerbLit]);
             // the cancel tooltip at the cursor
             Show(tooltip, tipFor >= 0);
             if (tipFor >= 0)
@@ -1165,19 +1144,18 @@ namespace Suborned.Play
         public static bool FollowChipShown => live?.followChip != null && live.followChip.resolvedStyle.display != DisplayStyle.None;
         bool followHid; VisualElement followChip; Label followLabel; readonly List<Vector2> followRing = new();
 
-        /// <summary>Where the roster, the strips, the verb plate and the ticker sit for the dock (Glyph's dock rules, layout.json `docks`).
-        ///  · left column: the column at (12, 84); a strip beside each shown agent's window; the verb plate right of the selected strip; the ticker under the column.
-        ///  · corner: the row at the bottom left; the busy, hurt, down or selected strips stacked above it, bottom up; the verb plate above them; the ticker right of the row.
-        ///  · bottom: the row centred at the bottom; no strips; the verb plate centred above the row; the ticker above the verb plate.</summary>
+        /// <summary>Where the roster, the strips and the ticker sit for the dock (Glyph's dock rules, layout.json `docks`; brief 101 round 4: the verb plate is the verb row,
+        /// beside the left dock's faces, HudToolkit.VerbRow).
+        ///  · left column: the column at (12, 84); a strip beside each shown agent's window; the ticker under the column.
+        ///  · corner: the row at the bottom left; the busy, hurt, down or selected strips stacked above it, bottom up; the ticker right of the row.
+        ///  · bottom: the row centred at the bottom; no strips; the ticker above where the verb plate stood.</summary>
         void Dock()
         {
             var d = m.Dock; var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) || size.x <= 0 ? 1920 : size.x, H = float.IsNaN(size.y) || size.y <= 0 ? 1080 : size.y;
             Show(column, d == RosterDock.Left); Show(row, d != RosterDock.Left);
-            int a = m.Agent; bool plateOn; float plateX, plateY;
             if (d == RosterDock.Left)
             {
                 for (int i = 0; i < 4; i++) { var st = strips[i]; Show(st.Root, m.Slots[i].Show); st.Root.style.left = ColX + 113; st.Root.style.top = ColY + Win[i].y + Win[i].height / 2 - (m.Slots[i].Compact ? 17 : 46); }
-                plateOn = m.Slots[a].Show; plateX = ColX + 113 + 228 + 10; plateY = ColY + Win[a].y + Win[a].height / 2 - 27;
                 ticker.style.left = ColX; ticker.style.top = ColY + ColH + 8; ticker.style.width = 341;
             }
             else if (d == RosterDock.Corner)
@@ -1189,20 +1167,14 @@ namespace Suborned.Play
                     var s = m.Slots[i]; bool on = s.Show; Show(strips[i].Root, on); if (!on) continue;
                     y -= s.Compact ? 34 : 92; strips[i].Root.style.left = 14; strips[i].Root.style.top = y; y -= 6;
                 }
-                plateOn = true; plateX = 18; plateY = y - 54;
                 ticker.style.left = 14 + 398 + 12; ticker.style.top = H - 14 - 34; ticker.style.width = 520;
             }
             else
             {
                 float rowTop = H - 14 - 92; row.style.left = (W - 398) / 2; row.style.top = rowTop;
                 for (int i = 0; i < 4; i++) Show(strips[i].Root, false);
-                plateOn = true; plateX = (W - 229) / 2; plateY = rowTop - 10 - 54;
-                ticker.style.left = (W - 341) / 2; ticker.style.top = plateY - 22 - 8 - 34; ticker.style.width = 341; // above the verb's name tag
+                ticker.style.left = (W - 341) / 2; ticker.style.top = rowTop - 10 - 54 - 22 - 8 - 34; ticker.style.width = 341; // above the verb's name tag
             }
-            Show(verbPlate, plateOn); verbPlate.style.left = plateX; verbPlate.style.top = plateY;
-            bool armed = plateOn && m.VerbLit >= 0 && m.VerbLit < 4 && m.VerbHas[m.VerbLit]; Show(armedPlate, armed);
-            // the verb's name under its knob; in the corner and bottom docks the strips or the row sit right under the plate, so it goes above
-            if (armed) { armedPlate.style.left = plateX + 42.3f + m.VerbLit * 47.6f - 40; armedPlate.style.top = d == RosterDock.Left ? plateY + 54 + 4 : plateY - 4 - 18; }
         }
 
         void Pips(Window st, int hp, int max)

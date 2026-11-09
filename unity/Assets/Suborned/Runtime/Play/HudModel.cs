@@ -114,7 +114,7 @@ namespace Suborned.Play
                 // the secret, and the lover tie it reveals, only once the cell knows it (Listen, or a Watch of the pair together)
                 r.Secret = p.Knows("secret") ? (p.Secret == "affair" && p.Lover != null ? $"Secret: seeing {h.Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name}" : p.Secret == "record" ? "Secret: a record" : $"Secret: {p.Secret}") : "";
                 (r.Next, r.NextIcon) = Roles[i] == "councillor" ? (g.Vale == ValeAt.WithEnforcer ? ("with the Enforcer", "take") : ("Take him at his car", "take"))
-                    : p.Turned ? ("Call them when it counts", "call") : !p.KRoutine && g.WatchOffered(Roles[i]) ? (Roles[i] == "guard" ? "Watch: his sight" : "Watch: their mood", "watch") : !p.KNeed ? ("Listen: learn the need", "listen") : ("Turn: Ask, Pay, Help or Pressure", "help");
+                    : p.Turned ? (g.CallOffered(Roles[i]) ? ("Call them when it counts", "call") : ("", "")) /* brief 102: only where a Call is offered (engine 0.51.0) */ :!p.KRoutine && g.WatchOffered(Roles[i]) ? (Roles[i] == "guard" ? "Watch: his sight" : "Watch: their mood", "watch") : !p.KNeed ? ("Listen: learn the need", "listen") : ("Turn: Ask, Pay, Help or Pressure", "help");
             }
             if (h.Ending.Length > 0) EndCard(h); else Ended = false;
         }
@@ -360,7 +360,7 @@ namespace Suborned.Play
                 // brief 096: the story runs to the end: after "Popovic reached the getaway car.", why Go was refused and that nobody guarded the car (debrief.story)
                 if (route.Count > 0) EndLines.Add(string.Join(" ", route));
                 if (d.FightBranch.Length > 0) EndLines.Add(FightLine(h, d));
-                var kept = d.Assets.ConvertAll(AssetWords).FindAll(x => x != null); if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));
+                var kept = d.Assets.ConvertAll(a => DebriefWords.Get().Debrief("assets", a) is { Length: > 0 } dk ? dk : AssetWords(a)).FindAll(x => x != null); /* brief 102: Fable's debrief.assets first (the turned guard's kept lines, engine 0.51.0) */ if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));
                 Getaway(h, d);
             }
             if (d != null) EndLines.Add($"Seed {g.Seed}"); // brief 080: the run's seed, small, last line of the debrief

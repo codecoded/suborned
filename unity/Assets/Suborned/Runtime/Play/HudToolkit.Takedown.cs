@@ -13,7 +13,7 @@ namespace Suborned.Play
     /// screen's edge, the response pill under the status pill, and the mast heads' number plates. Nothing new is red, amber or violet.</summary>
     public sealed partial class HudToolkit
     {
-        VisualElement wayRow, wayKnock, wayKill, before, marks, respPill, respList; Label respLine; readonly List<(VisualElement row, VisualElement icon, Label text)> beforeRows = new();
+        VisualElement before, marks, respPill, respList; Label respLine; readonly List<(VisualElement row, VisualElement icon, Label text)> beforeRows = new();
         readonly List<(VisualElement row, VisualElement icon, Label label, Label text)> respRows = new();
 
         sealed class Mark { public VisualElement Root, Plate, Glyph, Second, Tape, Leader; public Label Text; public KeyText Name; public bool Tight, Hot; public float Lead = -1f, Frac = -1f; public Paint Clock; public readonly List<VisualElement> Ring = new(), Outer = new(), Dots = new(), Pips = new(); }
@@ -46,15 +46,7 @@ namespace Suborned.Play
         {
             marks = E(root); marks.style.position = Position.Absolute; marks.style.left = 0; marks.style.top = 0; marks.style.right = 0; marks.style.bottom = 0; marks.SendToBack(); // under the panels, over the world
             marks.style.alignItems = Align.FlexStart; // marks size to their content (brief 014: bubbles, pops, name tags)
-            // the way pills under the armed Takedown knob (Glyph §1): Knock out (the default) and Kill; the knob again flips
-            wayRow = E(root); wayRow.style.position = Position.Absolute; wayRow.style.flexDirection = FlexDirection.Row;
-            VisualElement Way(string glyph, string label)
-            {
-                var p = E(wayRow, "s-plate_dark"); p.style.height = 20; p.style.flexDirection = FlexDirection.Row; p.style.alignItems = Align.Center; p.style.paddingLeft = 7; p.style.paddingRight = 9; p.style.marginRight = 6;
-                Icon(E(p, null, w: 13, h: 13), glyph, Cream); var l = L(p, "verb-name"); l.text = label; l.style.marginLeft = 5; return p;
-            }
-            wayKnock = Way("way_knock", "Knock out"); wayKill = Way("way_kill", "Kill");
-            Show(wayRow, false);
+            // the way pills under the armed Takedown knob retire (brief 101 round 4): the verb row names the way, and its tab again flips it (HudToolkit.VerbRow)
             // the response pill (Glyph §8): under the status pill, collapsed like Intel; R or a click opens the list
             respPill = E(root, "s-panel_strip", pick: true); respPill.style.position = Position.Absolute; respPill.style.right = 14; respPill.style.width = 318; respPill.style.height = 34;
             respPill.style.flexDirection = FlexDirection.Row; respPill.style.alignItems = Align.Center; respPill.style.paddingLeft = 22;
@@ -108,15 +100,6 @@ namespace Suborned.Play
 
         void TakedownFrame()
         {
-            // the way pills: under the armed knob's name
-            Show(wayRow, m.TakedownArmed && armedPlate.style.display != DisplayStyle.None);
-            if (m.TakedownArmed)
-            {
-                wayRow.style.left = armedPlate.style.left.value.value - 10; wayRow.style.top = armedPlate.style.top.value.value + 22;
-                bool kill = m.Way == "kill";
-                Border(wayKnock, kill ? 0f : 1.6f, TurqLight); Border(wayKill, kill ? 1.6f : 0f, TurqLight);
-                wayKnock.style.opacity = kill ? 0.7f : 1f; wayKill.style.opacity = kill ? 1f : 0.7f;
-            }
             // bodies: a round tab, its own ring the wake clock (knockout); a square plate (kill); tied: a small second disc; found: a dashed outer ring
             int bi = 0;
             foreach (var b in m.Bodies)

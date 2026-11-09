@@ -31,7 +31,7 @@ namespace Suborned.Play
             {
                 h.LookAt(gv.position); yield return null; HandoverHost.PointerWorld = gv.position + Vector3.up; for (int i = 0; i < 8; i++) yield return null; yield return new WaitForSecondsRealtime(0.3f);
                 pillState = HudToolkit.PillState; chip = HudToolkit.PillWords; while (HudToolkit.ShotBusy) yield return null; log.Add("seed-fire-chip: " + HudToolkit.Shoot(Path.Combine(dir, "seed-fire-chip"), "active")); yield return null; while (HudToolkit.ShotBusy) yield return null;
-                h.PeekLatch = true; yield return new WaitForSecondsRealtime(0.3f); altLine = HudToolkit.LockAltShown + " | " + HudToolkit.PillWords; log.Add("seed-fire-alt: " + HudToolkit.Shoot(Path.Combine(dir, "seed-fire-alt"), "alt")); yield return null; while (HudToolkit.ShotBusy) yield return null;
+                h.PeekLatch = true; yield return new WaitForSecondsRealtime(0.3f); altLine = HudToolkit.LockAltShown + " | " + HudToolkit.PillWords; log.Add("seed-fire-alt: " + HudToolkit.Shoot(Path.Combine(dir, "seed-fire-alt"), "active")); /* Glyph's budget §1 (briefs/067/glyph-budget.md): the state is the pill's, not the view's; Alt held over the guard keeps his pill (Glyph r4 item 6, settled 2026-11-09) */ yield return null; while (HudToolkit.ShotBusy) yield return null;
                 h.PeekLatch = false; HandoverHost.PointerWorld = null; yield return null;
             }
             log.Add($"seed chip: pill state [{pillState}] alt [{altLine.Replace("\n", " / ")}]");

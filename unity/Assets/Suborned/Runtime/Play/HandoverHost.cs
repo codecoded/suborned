@@ -810,7 +810,7 @@ namespace Suborned.Play
             Guard("price", () =>
             {
                 var slots = PlateOf(Agent);
-                if (Agent == OpId.Fixer && t.Kind == "person" && t.Key != "councillor" && CastOf(t.Key) is { Turned: true }) { got = Call(t); return; }
+                if (Agent == OpId.Fixer && TurnedContact(t)) { got = TurnedIntent(t); return; } // brief 102: the Call where the engine offers it, else the Already turned lock (HostCall)
                 if (Picked >= 0) got = Verb(Agent, Picked, t);
                 // the default never fires on a person who is not a hostile: shooting is picked on purpose (2 = Fire)
                 // and never takes anyone down unless Takedown is armed (brief 013: a kill is never a default)
@@ -953,13 +953,6 @@ namespace Suborned.Play
             i.Time = "until down"; i.Trail = PropertyId(target) ? $"T {FireTrail(by, target)}" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
         }
 
-        Intent Call(Target t)
-        {
-            var i = new Intent { Slot = -1, Label = $"Call {t.Label}", Order = new Order { Op = "fixer", Do = "call", Target = t.Key } };
-            i.Time = "now"; i.Trail = $"T +{Game.R.CallTrail}"; i.Outcome = Game.CanCall(t.Key) ? "ready" : "not now";
-            return i;
-        }
-
         /// <summary>Walk to a target: a place's stand point, or the free ground nearest a person or thing (one A* for the time, on change only).</summary>
         Intent Go(Target t)
         {
@@ -1066,7 +1059,7 @@ namespace Suborned.Play
                 if (r.code is "drive-held" or "car-held") HolderPulseAt = Time.unscaledTime; else PulseBoxers(r); // the holders pulse as for Go; brief 098 step 1b: a passing car boxing us in pulses where it stands
                 if (screen.HasValue && target.HasValue) Pulses.Add((target.Value, Feedback.Refused, Time.unscaledTime));
             }
-            if (!r.ok && o.Do == "call" && r.code.StartsWith("summon-")) FeedSummonRefused(o.Target, o, r); // the contact and their lover say why not
+            if (!r.ok && o.Do == "call" && r.code.StartsWith("summon-")) FeedSummonRefused(o.Target, o, r); // the contact and their lover say why not; brief 102 step 4: call-saw-violence rings nothing (no card, no line: the pop above is its lock)
             if (r.ok) { var keep = Status; Drain(); Status = keep; OrderTaken(); }
             Save();
             views.Tick(); views.Frame(1f); intentKey = ""; Track();
@@ -1149,8 +1142,7 @@ namespace Suborned.Play
                 foreach (var k in order)
                 {
                     var rows = new List<PanelRow>();
-                    if (k == (int)OpId.Fixer && t.Kind == "person" && t.Key != "councillor" && CastOf(t.Key) is { Turned: true })
-                    { var c = Call(t); Words(c, t); var cl = CallLock(t.Key); rows.Add(new PanelRow { By = OpId.Fixer, Slot = -1, I = c, Verb = c.Name, Lock = cl, Reason = cl.ok ? "" : cl.why }); }
+                    if (k == (int)OpId.Fixer && TurnedContact(t)) rows.Add(TurnedRow(t)); // brief 102: the Call where the engine offers it (CallOffered), else the one Already turned lock (HostCall)
                     else
                     {
                         var plate = PlateOf((OpId)k); var vs = new List<(int slot, Intent v)>();
@@ -1300,18 +1292,6 @@ namespace Suborned.Play
                     }
             }
             return yes;
-        }
-
-        /// <summary>Why the Fixer can't call a turned contact now, by the engine's codes: Inez only while the guard is on the door; the driver
-        /// not while his car is still moving, and not after his last chance.</summary>
-        Answer CallLock(string role)
-        {
-            // the engine's own answer before the click (Game.CallQuery: the same Answer Issue would give, read-only), so the card is locked with
-            // the right reason (Fable's lock line by code); a race between hover and click still gets the refusal card on the feed
-            Answer a = new Answer { ok = true, code = "", why = "" };
-            Guard("call query", () => a = Game.CallQuery(role));
-            a.why ??= ""; a.code ??= "";
-            return a;
         }
 
         /// <summary>Give an order for an agent; if the engine says they stand too far, they walk to the target first and the order follows on arrival

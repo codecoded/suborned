@@ -9,7 +9,7 @@ namespace Suborned.Play
     /// watcher's head (HudToolkit.Attention). Docked at the screen's edge, the ink chevron points at the watcher. It retires the chrome cameo, the stage rings and the notch.</summary>
     public sealed partial class HudToolkit
     {
-        sealed class Medal { public VisualElement Root, Disc, Img, Kit, KitIcon, Badge, Say, SayTail; public KeyText PlusK; public bool Speech; public Label SayText; public Paint Ring; public HandoverHost.Callout For; public Vector2 At; public bool Placed, Docked; public int Spot = -1; public Vector2 Toward; public int Stage; }
+        sealed class Medal { public VisualElement Root, Disc, Img, Kit, KitIcon, Badge; public KeyText PlusK; public bool Speech; public Paint Ring; public HandoverHost.Callout For; public Vector2 At; public bool Placed, Docked; public int Spot = -1; public Vector2 Toward; public int Stage; }
         readonly Medal[] medals = new Medal[4];
         const float MedalD = 72f, DockD = 56f, MedalLift = 70f, ScreenPad = 12f, MedalAgent = 29f;
 

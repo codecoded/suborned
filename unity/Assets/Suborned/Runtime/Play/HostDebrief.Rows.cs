@@ -101,7 +101,7 @@ namespace Suborned.Play
         /// <summary>The log codes that make a condition kind true, and the how key each gives (Fable's debrief.page.how; the takedown's kill is the stand-ins' "killed").</summary>
         static readonly (string kind, string code, string how)[] HowCodes =
         {
-            ("guard-away", "call.waitress", "called"), ("guard-away", "guard.down", "shot"), ("guard-away", "takedown.out", "knocked"), ("guard-away", "takedown.dead", "killed"),
+            ("guard-away", "call.waitress", "called"), ("guard-away", "call.guard", "answered"), ("guard-away", "guard.down", "shot"), ("guard-away", "takedown.out", "knocked"), ("guard-away", "takedown.dead", "killed"),
             ("camera-blind", "loop.on", "looped"), ("camera-blind", "camera.cut", "cut"), ("camera-blind", "fire.camera-dark", "shot-out"), ("inside", "enter.in", "in"),
         };
 

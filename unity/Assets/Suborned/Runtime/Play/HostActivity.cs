@@ -242,7 +242,7 @@ namespace Suborned.Play
         /// <summary>A world or end event (the text's `events`): up to `most` of its speakers who have a line say it.</summary>
         readonly Dictionary<string, int> beatAt = new();
 
-        void WorldBeat(PlayText.EventText e, string outcome, string who, Feedback kind, int most, string verb = null)
+        void WorldBeat(PlayText.EventText e, string outcome, string who, Feedback kind, int most, string verb = null, string about = null)
         {
             if (rangeMode && e.Id != "going-loud") return; // brief 029 (Sky on 0.2.34): the range has no mission, so none of the Handover's story lines (the start's "The square looks ordinary")
             // a city event that repeats (a drawn weapon seen each tick, gunfire) speaks at most once every 15 s
@@ -253,7 +253,7 @@ namespace Suborned.Play
             {
                 if (said >= most) break;
                 string temper = sp is "waitress" or "driver" or "guard" or "councillor" ? Game.PersonByRole(sp).Temperament : null;
-                if (Beat(e.Id, verb, sp, outcome, temper, null, who, kind)) said++;
+                if (Beat(e.Id, verb, sp, outcome, temper, about, who, kind)) said++;
             }
         }
 
@@ -294,7 +294,7 @@ namespace Suborned.Play
             var l = (a.code ?? "").Length > 0 ? Text.LockByCode(a.code) : null;
             l ??= Text.LockOf(a.why ?? "");
             if (l == null || l.Line.Length == 0) return null;
-            var line = LockVariant(a, TargetKindOf(o.Target)) is string tk && l.ByTarget.TryGetValue(tk, out var bv) ? bv.line : l.Line; // Fable 019: "Scout or Tech" on a machine; engine 0.33.0: car-held by the rival car (rival-car, rival-car-driving)
+            var line = LockVariantFor(o, a) is string tk && l.ByTarget.TryGetValue(tk, out var bv) ? bv.line : l.Line; /* brief 102: tie-unknown before the cell knows the pair (HostCall) */ // Fable 019: "Scout or Tech" on a machine; engine 0.33.0: car-held by the rival car (rival-car, rival-car-driving)
             string who = o.Target.Length > 0 ? Name(o.Target) : "them";
             string op = o.Op.Length > 0 && o.Op != "cell" ? AgentNames[(int)Op.Parse(o.Op)] : "The agent";
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
@@ -383,7 +383,7 @@ namespace Suborned.Play
             {
                 if (e.Kind is "order" or "reply" or "read" or "end") continue;
                 foreach (var lc in e.Log)
-                    if (code == lc || (lc.EndsWith(".") && code.StartsWith(lc))) { WorldBeat(e, null, role != null ? Name(role) : "", Feedback.Info, 2); spoke = true; break; }
+                    if (code == lc || (lc.EndsWith(".") && code.StartsWith(lc))) { WorldBeat(e, null, role != null ? Name(role) : "", Feedback.Info, 2, about: e.Id == "guard-at-cafe" ? CafeAbout() : null); spoke = true; break; } // brief 102: his own call's café rows (HostCall)
             }
             if (spoke) return;
             foreach (var sl in Text.Silent) if (code == sl || (sl.EndsWith(".") && code.StartsWith(sl))) return;

@@ -13,7 +13,7 @@ namespace Suborned.Play
     {
         // ---------------------------------------------------------------- the end steps (Sky 2026-10-18: "it's really unclear on how to take Vale")
 
-        VisualElement doorMark, carMark, heldMark, doorNext, doorTurn; Capsule doorNextCap; KeyText heldK; Paint knobRing; bool doorHover;
+        VisualElement doorMark, carMark, heldMark, doorNext, doorTurn; Capsule doorNextCap; KeyText heldK; bool doorHover;
         readonly Dictionary<string, (Vector3 at, float lost)> holderSeen = new(); readonly HashSet<string> holderIds = new();
         /// <summary>The door marker while Enter is open to the Enforcer (a dashed ring with the Enter glyph, the hint ring's grammar, quiet: no
         /// pulse), with his progress round it while he is inside; the car marker once he is out with Vale. A click gives the order (HostValeSteps).
@@ -81,7 +81,6 @@ namespace Suborned.Play
                 heldMark.RegisterCallback<PointerDownEvent>(ev => { if (ev.button != 0) return; ev.StopPropagation(); host.StepMarkClick("car"); });
                 manifest.Add((heldMark, "image", () => "car held marker")); Show(heldMark, false);
             }
-            if (knobRing == null && verbPlate != null) knobRing = P(verbPlate, 0, 0, PlateW, PlateH, DrawKnobRing);
             var g = host.Game; bool live = g != null && !m.Ended && !m.BriefingOpen;
             bool door = live && (host.DoorMarked || host.EnterProgress >= 0), car = live && (host.BoardAvailable || host.GoAvailable); // brief 018: Board for the Enforcer with Vale, then Go once anyone is in
             // Glyph's ruling: the door from what the cell learned: go (turquoise, the Enter glyph), unknown (cream, "?" eye), seen (the watcher's eye, no ring)
@@ -236,7 +235,7 @@ namespace Suborned.Play
                 for (int i = holderUsed; i < holderEls.Count; i++) Show(holderEls[i], false);
             }
             else { Show(doorMark, false); Show(carMark, false); }
-            knobOn = live && m.Agent == (int)OpId.Enforcer && (host.EnterAvailable || host.ExtractAvailable) && host.Picked != 0; knobRing?.MarkDirtyRepaint();
+            knobOn = live && m.Agent == (int)OpId.Enforcer && (host.EnterAvailable || host.ExtractAvailable) && host.Picked != 0; // the row's Enter tab wears the dashed ring (HudToolkit.VerbRow)
         }
     }
 }

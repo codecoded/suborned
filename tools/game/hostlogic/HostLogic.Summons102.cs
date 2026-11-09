@@ -1,7 +1,8 @@
 // Brief 102, Fable's findings on the refused call (briefs/102/fable/notes.md, "Still for the host"; text.json events summon-refused: "Inez answers the Fixer;
 // the guard, if he is within earshot"): the contact answers the Fixer, and her tie only when he hears it (HostFeed.cs TieHears). Down, he says nothing; on his
 // feet and busy (come round, in a fight, away on her last call) he still answers her, as at his door; off the street or too far, out of earshot, he says
-// nothing; and on the Fixer's call to the turned guard, Inez's line is her reply to what she hears, so it plays only when she stands within earshot of him.
+// nothing; and on the Fixer's call to the turned guard (engine 0.51.0, option 1: he leaves his own door), Inez isn't on that call, so her line is her reply
+// to what she hears and plays only when she stands within earshot of him; his rows `about` him are that call's (HostCall.SummonAbout).
 // Real engine states throughout, but two: the fight's flag and the off-street code, which the Handover never gives (the guard's pose is null only when he
 // is down, and Inez always has her post), so that case calls the card with the code.
 using System.IO;
@@ -29,10 +30,10 @@ public class Summons102
         Assert.That(c, Is.Not.Null, $"no card for the refused call ({q.code})"); return (q.code, c);
     }
     static string Who(HandoverHost.FeedCard c) => string.Join(",", c.Lines.Select(l => l.Speaker));
-    /// <summary>The line a speaker said on the card is one of Fable's for the row.</summary>
-    static void Said(HandoverHost h, HandoverHost.FeedCard c, string speaker, string code)
+    /// <summary>The line a speaker said on the card is one of Fable's for the row (`about` the one called on the leaver's own call: the guard's, option 1).</summary>
+    static void Said(HandoverHost h, HandoverHost.FeedCard c, string speaker, string code, string about = null)
     {
-        var rows = h.Text.Lookup(new PlayText.Query { Event = "summon-refused", Speaker = speaker, Outcome = code })?.Lines; Assert.That(rows, Is.Not.Null.And.Not.Empty, $"text.json has no {speaker} row for {code}");
+        var rows = h.Text.Lookup(new PlayText.Query { Event = "summon-refused", Speaker = speaker, Outcome = code, About = about })?.Lines; Assert.That(rows, Is.Not.Null.And.Not.Empty, $"text.json has no {speaker} row for {code}");
         Assert.That(rows, Does.Contain(c.Lines.First(l => l.Speaker == speaker).Text), $"the {speaker}'s line on the card");
     }
     static int Apart(Game g, Person a, Person b) => G.Dist(g.PersonPos(a).Value, g.PersonPos(b).Value);
@@ -49,7 +50,8 @@ public class Summons102
         h.Issue(new Order { Op = "enforcer", Do = "move", Point = new Pt(5650, -4750) }); // back where he waited, out of sight
 
         var (code, down) = Refused(h, "waitress");
-        Assert.That(code, Is.EqualTo("summon-busy")); Assert.That(Who(down), Is.EqualTo("waitress"), "a man who is down can't answer"); Said(h, down, "waitress", code);
+        Assert.That(code, Is.EqualTo("summon-busy")); Assert.That(Who(down), Is.EqualTo("waitress"), "a man who is down can't answer");
+        Assert.That(h.Text.Lookup(new PlayText.Query { Event = "summon-unanswered", Speaker = "waitress" })?.Lines, Does.Contain(down.Lines.First().Text), "she gets no answer (Fable's summon-unanswered)");
 
         Assert.That(Host.Until(h, () => !g.GuardDown && g.GuardHeld || g.Over, 2400), $"he never came round: {h.Status}"); Assert.That(g.Over, Is.False, $"{g.Result} {g.FailCode}");
         var (code2, up) = Refused(h, "waitress");
@@ -98,19 +100,22 @@ public class Summons102
         var c = h.Feed.Skip(n).Single(); Assert.That(Who(c), Is.EqualTo("waitress")); Said(h, c, "waitress", "summon-off-street");
     }
 
-    /// <summary>2. The Fixer calls the turned guard: he answers; his tie Inez isn't on that call, so her line is her reply to what she hears. At his door,
-    /// with her at the café, she can't hear him and says nothing; beside her at the café (on her own call), she replies.</summary>
+    /// <summary>2. The Fixer calls the turned guard (engine 0.51.0, option 1): his call is taken, and called again his refusals answer the Fixer. Inez isn't on
+    /// his call, so her line is her reply to what she hears: on his visit, beside her at the café (busy: off his door), she replies; back at his door after his one
+    /// visit (came once), with her at the café out of earshot, she says nothing.</summary>
     [Test] public void OnTheGuardsOwnCallInezRepliesOnlyWhenSheHearsHim()
     {
         var h = Turned(null, "waitress", "guard"); var g = h.Game;
-        var (code, door) = Refused(h, "guard");
-        Assert.That(code, Is.EqualTo("summon-no-visit")); Assert.That(Apart(g, g.Inez, g.GuardP), Is.GreaterThan(g.R.WitnessRangeCm));
-        Assert.That(Who(door), Is.EqualTo("guard"), "at his door, she is out of earshot"); Said(h, door, "guard", code);
-
-        h.GiveScripted(new Order { Op = "fixer", Do = "call", Target = "waitress" });
+        Assert.That(g.CallQuery("guard").ok, $"his Call is open at the start: {g.CallQuery("guard").code}");
+        h.GiveScripted(new Order { Op = "fixer", Do = "call", Target = "guard" }); Assert.That(g.LureCalled, Is.EqualTo("guard"), "his own call drew him");
         Assert.That(Host.Until(h, () => g.GuardPose()?.phase == "at café" || g.Over, 1200), $"he never reached her: {g.GuardPose()?.phase}"); Free(h);
         Assert.That(Apart(g, g.Inez, g.GuardP), Is.LessThanOrEqualTo(g.R.WitnessRangeCm), "beside her");
-        var (code2, cafe) = Refused(h, "guard");
-        Assert.That(code2, Is.EqualTo("summon-no-visit")); Assert.That(Who(cafe), Is.EqualTo("guard,waitress"), "her reply, after his line"); Said(h, cafe, "waitress", code2);
+        var (code, cafe) = Refused(h, "guard");
+        Assert.That(code, Is.EqualTo("summon-busy")); Assert.That(Who(cafe), Is.EqualTo("guard,waitress"), "her reply, after his line"); Said(h, cafe, "guard", code, "guard"); Said(h, cafe, "waitress", code, "guard");
+
+        Assert.That(Host.Until(h, () => g.GuardAtDoor || g.Over, 3000), "he never got back to his door"); Free(h);
+        Assert.That(Apart(g, g.Inez, g.GuardP), Is.GreaterThan(g.R.WitnessRangeCm));
+        var (code2, door) = Refused(h, "guard");
+        Assert.That(code2, Is.EqualTo("summon-came-once")); Assert.That(Who(door), Is.EqualTo("guard"), "at his door, she is out of earshot"); Said(h, door, "guard", code2, "guard");
     }
 }

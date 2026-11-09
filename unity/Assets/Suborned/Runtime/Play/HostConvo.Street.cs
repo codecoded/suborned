@@ -16,28 +16,33 @@ namespace Suborned.Play
         public bool StreetLinesDue => streetDue.Count > 0;
         void ResetStreet() { streetDue.Clear(); doorRead = (-1, "", null); PersonCards.Clear(); }
 
-        PlayText.ConvStreet StreetFor(string code)
+        /// <summary>The street lines a contact's call conversation gives a pressed visit on `code` (her warning: call-inez-pressure's street), null when none.</summary>
+        PlayText.ConvStreet StreetFor(string code, string role)
         {
-            if (Text == null) return null;
-            foreach (var role in new[] { "waitress" })
-            {
-                var conv = Text.LookupConversation(ConvoQuery("call", role)); if (conv == null) continue;
-                foreach (var u in conv.Street) if (u.On == code && u.Pressed) return u;
-            }
+            if (Text == null || !IsRole(role)) return null;
+            var conv = Text.LookupConversation(ConvoQuery("call", role)); if (conv == null) return null;
+            foreach (var u in conv.Street) if (u.On == code && u.Pressed) return u;
             return null;
         }
 
-        /// <summary>A log line of a pressed visit: true when its words are said here (the usual card and lines stay quiet).</summary>
+        /// <summary>A log line of a pressed visit: true when its words are said here (the usual card and lines stay quiet). Brief 102 (Fable): the warning is the one who
+        /// remembers the Pressure's (HostCall.PressedWarner, Inez first), never picked by who called: hers, her call conversation's street lines; his, the city scene
+        /// `he-warns` ("Somebody knows about us, Inez. I can't stop.").</summary>
         bool PressedStreet(LogLine l)
         {
             var g = Game; if (!g.GuardCallPressed) return false;
             if (l.Code == "guard.recalled") { streetDue.RemoveAll(d => d.speaker == "guard" && d.inset); return false; }
             if (l.Code == "guard.leaves-cafe") { Beat("guard-leaves-cafe", null, "scout", kind: Feedback.Info); return true; } // never "Break's over" on a run
-            if (l.Code != "guard.at-cafe" || StreetFor(l.Code) is not PlayText.ConvStreet u || u.Beats.Count == 0) return false;
-            var card = NewCard("city", SceneTitles.TryGetValue("guard-at-cafe", out var st) ? st : "The guard is at the café", "·", "café", WorldOf("guard"), "guard"); card.Event = "guard-at-cafe"; card.Footer = u.Beat; lastEvent = card;
-            foreach (var b in u.Beats) card.Lines.Add(new FeedLine { Speaker = b.Speaker, Name = Text.ConvName(b.Speaker), Text = b.Line }); card.Revealed = card.Bubbled = card.Lines.Count;
-            if (!(g.GuardPose() is { } gp && CellSees(gp.pos))) { var (badge, tinted) = BeatBadge("call"); PushBeat(u.Beat, badge, tinted, null); } // no agent near: the feed says it
-            float at = Time.unscaledTime; foreach (var b in u.Beats) { streetDue.Add((at, b.Speaker, b.Line, true)); at += ReadS(b.Line); }
+            if (l.Code != "guard.at-cafe" || Text == null) return false;
+            string w = PressedWarner(), beat = null, result = null; var lines = new List<(string sp, string tx)>();
+            if (w.Length > 0 && StreetFor(l.Code, w) is PlayText.ConvStreet u && u.Beats.Count > 0) { beat = u.Beat; foreach (var b in u.Beats) lines.Add((b.Speaker, b.Line)); }
+            else if (w == "guard" && Text.LookupScene(new PlayText.SceneQuery { Kind = "city", Event = "guard-at-cafe", Outcome = "he-warns" }) is PlayText.Scene sc) { beat = sc.Beat; result = sc.Result; foreach (var (sp, tx, _) in Text.PlayScene(sc, Text.SceneUse(sc))) lines.Add((sp, tx)); }
+            if (lines.Count == 0) return false;
+            var card = NewCard("city", SceneTitles.TryGetValue("guard-at-cafe", out var st) ? st : "The guard is at the café", "·", "café", WorldOf("guard"), "guard"); card.Event = "guard-at-cafe"; lastEvent = card;
+            card.Footer = result != null ? Result(result, card) : beat ?? "";
+            foreach (var (sp, tx) in lines) card.Lines.Add(new FeedLine { Speaker = sp, Name = Text.ConvName(sp), Text = tx }); card.Revealed = card.Bubbled = card.Lines.Count;
+            if (beat != null && !(g.GuardPose() is { } gp && CellSees(gp.pos))) { var (badge, tinted) = BeatBadge("call"); PushBeat(beat, badge, tinted, null); } // no agent near: the feed says it
+            float at = Time.unscaledTime; foreach (var (sp, tx) in lines) { streetDue.Add((at, sp, tx, true)); at += ReadS(tx); }
             StreetFrame(); return true;
         }
 
@@ -67,14 +72,15 @@ namespace Suborned.Play
         }
 
         (int tick, string role, string clock) doorRead = (-1, "", null);
-        /// <summary>The Door price field (Fable's handover, Glyph section 3): "1:40" for the Pressure way on Inez, and for the Call way once she's been pressured; null hides it. Read from the
-        /// route from where he stands now, so never cached past the tick. The engine's read covers a role with no lover, the guard down or busy, a call already made, Alert over the call's limit.</summary>
+        /// <summary>The Door price field (Fable's handover, Glyph section 3): "1:40" for the Pressure way on either of the pair (Inez, and the guard since engine 0.51.0), and for the Call way
+        /// once the visit would be the short one (CallWouldBePressed: either of them remembers a Pressure); null hides it. Read from the route from where he stands now, so never cached past
+        /// the tick. The engine's read covers a role with no lover, the guard down or busy, a call already made, Alert over the call's limit, a memory of the cell's violence.</summary>
         public string DoorClock(Order o)
         {
             if (Game == null || !IsRole(o.Target)) return null;
             if (doorRead.tick == Game.Tick && doorRead.role == o.Target + o.Do) return doorRead.clock;
             string clock = null; var w = Game.GuardCallWindows(o.Target);
-            if (w != null && !(o.Do == "call" && !Game.PersonByRole(o.Target).Has(Game.R.SummonPressedAct))) clock = DoorWords(w.Value.pressed);
+            if (w != null && !(o.Do == "call" && !Game.CallWouldBePressed(o.Target))) clock = DoorWords(w.Value.pressed);
             doorRead = (Game.Tick, o.Target + o.Do, clock); return clock;
         }
         /// <summary>Ticks at 10 a second, to the nearest 10 s: 989 reads 1:40.</summary>

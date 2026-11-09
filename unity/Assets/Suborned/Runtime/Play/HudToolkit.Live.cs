@@ -195,25 +195,15 @@ namespace Suborned.Play
             }
         }
 
-        // ---------------------------------------------------------------- brief 030: the strip, the cursor badge, the stance fan, the target pill
+        // ---------------------------------------------------------------- brief 030: the stance fan, the target pill (brief 101 round 4: the strip and the cursor's disc are the verb row's, HudToolkit.VerbRow)
 
-        VisualElement strip, fan, cursorArmed, targetPill; Paint cursorCross, targetPips; readonly List<(VisualElement slot, VisualElement icon, VisualElement cap, Label key)> stripSlots = new();
+        VisualElement fan, targetPill; Paint cursorCross, targetPips;
         readonly List<VisualElement> fanDiscs = new(); int fanAgent = -1; bool fanArm, fanOver; float fanLeft = -10f; int targetShots;
-        const float StripSlot = 40f, StripGap = 6f, StripPad = 11f, StripW = StripPad * 2 + StripSlot * 4 + StripGap * 3, StripH = StripPad * 2 + StripSlot;
         static readonly string[] StanceOrder = { "hold", "return", "free" };
 
         void LiveBuild()
         {
-            if (strip != null) return;
-            strip = E(root, "s-plate_dark", 0, 0, StripW, StripH); strip.pickingMode = PickingMode.Ignore;
-            for (int i = 0; i < 4; i++)
-            {
-                var sl = E(strip, null, StripPad + i * (StripSlot + StripGap), StripPad, StripSlot, StripSlot); Round(sl, 7);
-                var ic = E(sl, null, 10, 10, 20, 20);
-                var cap = E(sl, "s-plate_light", -2, -3, float.NaN, 14); cap.style.minWidth = 18; var k = L(cap, "keycap"); k.style.fontSize = 9; k.style.paddingLeft = 3; k.style.paddingRight = 3; k.style.unityTextAlign = TextAnchor.MiddleCenter;
-                stripSlots.Add((sl, ic, cap, k));
-            }
-            manifest.Add((strip, "image", () => "verb strip")); Show(strip, false);
+            if (fan != null) return;
             // the stance fan: three glyph discs right of the drawn sidearm mark
             fan = E(root, "s-plate_dark", 0, 0, 12 + 3 * 30 + 2 * 6 + 12, 46, pick: true); fan.style.flexDirection = FlexDirection.Row; fan.style.alignItems = Align.Center; fan.style.paddingLeft = 12; fan.style.paddingRight = 12;
             fan.RegisterCallback<PointerEnterEvent>(_ => fanOver = true); fan.RegisterCallback<PointerLeaveEvent>(_ => { fanOver = false; fanLeft = Time.unscaledTime; });
@@ -225,9 +215,7 @@ namespace Suborned.Play
                 fanDiscs.Add(d);
             }
             manifest.Add((fan, "image", () => "stance fan")); Show(fan, false);
-            // the armed verb at the cursor (24 px), and target mode's crosshair
-            cursorArmed = E(root, null, 0, 0, 24, 24); Round(cursorArmed, 12); Border(cursorArmed, 2f, TurqLight); cursorArmed.style.backgroundColor = DiscTeal; E(cursorArmed, null, 4.5f, 4.5f, 15, 15).name = "g";
-            manifest.Add((cursorArmed, "image", () => "armed verb at the cursor")); Show(cursorArmed, false);
+            // target mode's crosshair (the armed verb at the cursor is the verb row's keyed pictogram)
             cursorCross = P(root, 0, 0, 40, 40, (p, r) => { var c = new Vector2(20, 20); for (int pass = 0; pass < 2; pass++) { p.strokeColor = pass == 0 ? Ink : Color.white; p.lineWidth = pass == 0 ? 3.2f : 1.5f; p.BeginPath(); p.Arc(c, 13f, Deg(0), Deg(360)); p.Stroke(); p.lineWidth = pass == 0 ? 3f : 1.5f; p.BeginPath(); p.MoveTo(c + new Vector2(0, -19)); p.LineTo(c + new Vector2(0, -8)); p.MoveTo(c + new Vector2(0, 8)); p.LineTo(c + new Vector2(0, 19)); p.MoveTo(c + new Vector2(-19, 0)); p.LineTo(c + new Vector2(-8, 0)); p.MoveTo(c + new Vector2(8, 0)); p.LineTo(c + new Vector2(19, 0)); p.Stroke(); } });
             manifest.Add((cursorCross, "image", () => "target crosshair")); Show(cursorCross, false);
             // target mode's pill by the clock: the crosshair glyph and a pip per queued shot
@@ -238,44 +226,15 @@ namespace Suborned.Play
             manifest.Add((targetPill, "image", () => "target pill")); Show(targetPill, false);
         }
 
-        /// <summary>The strip shows now (Tab or Shift within 2.5 s), beside the selected portrait.</summary>
-        bool StripOn => !PlateOn && strip != null && host.Game != null && m.Dock == RosterDock.Left && !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None && !host.ConvoOn && Time.unscaledTime - host.VerbStripAt < HandoverHost.VerbStripS && m.Slots[m.Agent].Show;
-
-        /// <summary>After the less-reading frame: the strip, the cursor's badge or crosshair, the fan, the target pill; the plate hidden.</summary>
+        /// <summary>After the less-reading frame: the verb row and the armed verb at the cursor (HudToolkit.VerbRow), target mode's crosshair and pill, the fan.</summary>
         void LiveFrame(float W)
         {
-            LiveBuild();
-            if (!PlateOn) { Show(verbPlate, false); Show(armedPlate, false); Show(wayRow, false); if (plateStub != null) Show(plateStub, false); }
+            LiveBuild(); VerbRowFrame();
             float now = Time.unscaledTime;
-            // the strip: four glyphs, the armed one lit, the ⇧ caps (dim while a driven agent moves); fades in its last 0.3 s
-            bool so = StripOn; Show(strip, so);
-            if (so)
-            {
-                int a = m.Agent; float colW = 109 * RosterScale, mid = ColY + BezelAt(a).y * RosterScale;
-                strip.style.left = ColX + colW + 4; strip.style.top = mid - StripH / 2; strip.BringToFront();
-                strip.style.opacity = Mathf.Clamp01((HandoverHost.VerbStripS - (now - host.VerbStripAt)) / 0.3f);
-                // Glyph 0.2.65 review 10 and Sky's no-legend rule: no keycaps on the slots (their "⇧1" read "1.1", clipped); a slot with no verb is
-                // left out, the rest close up and the plate fits them
-                int n = 0;
-                for (int k = 0; k < 4; k++)
-                {
-                    var (sl, ic, cap, key) = stripSlots[k]; bool has = m.VerbHas[k], refused = m.VerbRefused[k], lit = has && host.Picked == k;
-                    Show(sl, has || refused); Show(cap, KeyLegends); if (!has && !refused) continue;
-                    sl.style.left = StripPad + n * (StripSlot + StripGap); n++;
-                    Icon(ic, m.VerbIcon[k], has ? Cream : Grey);
-                    sl.style.backgroundColor = lit ? DiscTeal : new Color(0.03f, 0.11f, 0.11f, 0.55f); Border(sl, lit ? 2.2f : 1f, lit ? TurqLight : new Color(0.51f, 0.627f, 0.612f, 0.7f));
-                    sl.style.opacity = has ? 1f : 0.55f;
-                    Text(key, m.VerbKey[k]); cap.style.opacity = host.PlateKeysDim ? 0.35f : 1f;
-                }
-                strip.style.width = StripPad * 2 + Mathf.Max(1, n) * StripSlot + Mathf.Max(0, n - 1) * StripGap;
-            }
-            // the cursor: the armed verb rides it (Fire's crosshair mark wins where a press fires); target mode: a crosshair
             var mp = RuntimePanelUtils.ScreenToPanel(root.panel, m.Mouse);
             bool live = host.Game != null && !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None && host.Ring == null && !host.ConvoOn && host.Panel == null && !host.PointerHeld; // Glyph's N4
             bool cross = !PlateOn && live && host.Frozen && host.TargetFreeze;
-            bool badge = !PlateOn && live && !cross && host.Picked >= 0 && host.Picked < 5 && m.VerbHas[host.Picked] && host.CursorKind != "aim";
-            Show(cursorArmed, badge); Show(cursorCross, cross);
-            if (badge) { cursorArmed.style.left = mp.x + 14; cursorArmed.style.top = mp.y + 16; Icon(cursorArmed.Q("g"), ArmedIcon(), Cream); cursorArmed.style.opacity = host.PlateKeysDim ? 0.45f : 1f; cursorArmed.BringToFront(); Show(cursorMark, false); }
+            Show(cursorCross, cross);
             if (cross) { cursorCross.style.left = mp.x - 20; cursorCross.style.top = mp.y - 20; cursorCross.BringToFront(); Show(cursorMark, false); }
             // target mode's pill by the clock (the top centre pill steps aside), pulsing while the mode is on
             bool tp = !PlateOn && host.Game != null && host.Game.Lab && host.Frozen && host.TargetFreeze && !m.Ended; Show(targetPill, tp);
@@ -298,7 +257,5 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>The busy chip of the selected agent stands after the strip while the strip shows (brief 030), else beside its portrait.</summary>
-        float SelectedChipX(float plateX, bool folded) => PlateOn ? plateX + (folded ? StubW + 4 : PlateW + 16 + 6) : plateX + (StripOn ? StripW + 6 : 0f);
     }
 }

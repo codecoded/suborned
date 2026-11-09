@@ -49,7 +49,7 @@ namespace Suborned.Play
                     {
                         case "loop.on": Add(x.Tick, "loop", "loop", OrderOf("loop", x.Tick).op); break;
                         case "patrol.rerouted": Add(x.Tick, "reroute", "reroute", OrderOf("reroute", x.Tick).op); break;
-                        case "call.waitress": Add(x.Tick, "call", "s_calling", city: true); break;
+                        case "call.waitress" or "call.guard": Add(x.Tick, "call", "s_calling", city: true); break; // brief 102 (option 1): the guard's own call
                         case "enter.in": Add(x.Tick, "in", "enter", OrderOf("enter", x.Tick).op is { Length: > 0 } eo ? eo : "enforcer"); break;
                         case "enter.out": Add(x.Tick, "out", "s_carrying"); break;
                         case "rivals.coming": Add(x.Tick, "rivals", "car"); break;

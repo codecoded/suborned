@@ -170,7 +170,7 @@ namespace Suborned.Play
             // what is cut at rest (Glyph §6 "cut at rest"): strips, ticker, the feed stack, the objective bar, the NEXT STEP plate, toasts, the old
             // chip, the old card panel, the arrival chips with words
             for (int i = 0; i < 4; i++) Show(strips[i].Root, false);
-            foreach (var e in new[] { ticker, feed, objective, hint, hintChip, toast, chip, panel, intelStrip, respLine, wayRow }) Show(e, false);
+            foreach (var e in new[] { ticker, feed, objective, hint, hintChip, toast, chip, panel, intelStrip, respLine }) Show(e, false);
             Show(tooltip, false);
             foreach (var u in edgeMarks) Show(u.Root, false);
             foreach (var u in unknownMarks) Show(u, false);
@@ -180,29 +180,7 @@ namespace Suborned.Play
             {
                 int a = m.Agent; float colW = 109 * RosterScale;
                 float WinMid(int i) => ColY + BezelAt(i).y * RosterScale; // the bezel's measured centre
-                float plateX = ColX + colW + 4, plateY = WinMid(a) - PlateH / 2; // brief 014: chips and the plate share one line, 4 off the column
-                verbPlate.style.left = plateX; verbPlate.style.top = plateY;
-                PlateFold(plateX, WinMid(a)); bool folded = PlateFolded && PlateOn; // brief 030 (no plate): LiveFrame hides the plate and its stub
-                for (int k = 0; k < 4; k++)
-                {
-                    bool has = m.VerbHas[k], refused = m.VerbRefused[k]; knobs[k].style.opacity = has ? 1f : refused ? 0.55f : 0.28f; Show(knobIcons[k], has || refused); Show(verbPlate.Q("badge" + k), has || refused); // an empty knob: a quiet socket; a refused one (Fire while carrying Vale) keeps its glyph, greyed
-                    Class(knobs[k], "selected", has && host.Picked == k); // the turquoise ring means "armed: a right click gives this"; nothing else
-                }
-                KnobPredFrame(); // engine 0.28: the dashed likely / worse marks on the knobs
-                if (host.Picked < 0) Show(armedPlate, false); // the name plate only while a verb is armed (Glyph §1)
-                else if (m.TakedownArmed) Text(armedName, host.Text != null && host.Text.Actions.TryGetValue("takedown", out var tda) && tda.Ways.TryGetValue(m.Way, out var wy) ? wy.label : m.Way == "kill" ? "Kill" : "Knock out"); // the way, not the verb
-                if (armedPlate.style.display != DisplayStyle.None)
-                {
-                    float ax = folded ? plateX : plateX + KnobX0 + 24 + m.VerbLit * 47.6f - 40, ay = folded ? WinMid(a) + StubH / 2 + 4 : plateY + PlateH + 6; // techwatch fix 2: 6 px clear of the plate's bottom rim
-                    float aw = float.IsNaN(armedPlate.resolvedStyle.width) ? 120 : armedPlate.resolvedStyle.width, ah = 32;
-                    for (int j = 0; j < 4; j++) // Glyph 016 r3: 6 px clear of a timer pill under it (it rises; the plate's lower rim may go under it)
-                    {
-                        var br = busy[j].root; if (br.resolvedStyle.display == DisplayStyle.None) continue;
-                        float bx2 = br.style.left.value.value, by2 = br.style.top.value.value, bw2 = br.resolvedStyle.width, bh2 = br.resolvedStyle.height; if (float.IsNaN(bw2) || float.IsNaN(bh2)) continue;
-                        if (ax < bx2 + bw2 && ax + aw > bx2 && ay < by2 + bh2 && ay + ah + 6 > by2) ay = by2 - 6 - ah;
-                    }
-                    armedPlate.style.left = ax; armedPlate.style.top = ay;
-                }
+                float plateX = ColX + colW + 4; // brief 014: the chips 4 off the column (brief 101 round 4: the verb row stands beside the selected face, HudToolkit.VerbRow)
                 for (int i = 0; i < 4; i++)
                 {
                     var s = m.Slots[i]; var (r, ic, tx, bar, fill, x) = busy[i];
@@ -210,7 +188,7 @@ namespace Suborned.Play
                     var (whyIcon, whyWords, whyAlpha) = host.controls.HoldActs && !ended ? host.WhyChipOf(i) : ("", "", 0f); bool why = whyWords.Length > 0; // brief 067 C4 (Glyph): a refused squad order says why on the portrait's chip
                     if (!why && !ended && !s.Down && !s.InCar && hw.Length == 0 && !s.Busy && host.UnderFireNow[i].Count > 0) { var (uc, uw) = host.UnderFireWords(i, alt); if (uw.Length > 0) { whyIcon = WhyIcon(uc) is { Length: > 0 } wi0 ? wi0 : "bang"; whyWords = uw; whyAlpha = 1f; why = true; } } // engine 0.33.0 (Fable's less.why): beside the under-fire cue, its main cause in words (Alt: every cause), in the chip slot when the agent has no other chip
                     bool on = !colWins[i].Street && ((s.Busy || s.Pace.Length > 0 || hw.Length > 0) && !s.Down && !ended && !s.InCar || why); Show(r, on); if (!on) continue; /* brief 101 step 4: the street faces carry the act, its why and its × (HudToolkit.Faces) */ /* Glyph's 0.2.104 review #7: a downed agent's portrait carries the downed mark; no second disc beside it */ // brief 018 (Glyph r1): aboard, the in-car badge says it; no chip
-                    float bx = i == a ? SelectedChipX(plateX, folded) : ColX + colW + 4; /* Glyph fight r1 #6: 6 px clear of the fold tab (it stands 16 px out of the plate) */ r.style.left = bx; r.style.top = WinMid(i) - ChipH / 2; // anchored to its portrait's row (or after the plate)
+                    float bx = i == a ? SelectedChipX(plateX) : ColX + colW + 4; /* Glyph fight r1 #6: 6 px clear of the fold tab (it stands 16 px out of the plate) */ r.style.left = bx; r.style.top = WinMid(i) - ChipH / 2; // anchored to its portrait's row (or after the plate)
                     r.style.opacity = why ? whyAlpha : 1f; tx.style.fontSize = why ? 12.5f : StyleKeyword.Null; tx.style.color = StyleKeyword.Null;
                     if (why)
                     {   // the why chip (Glyph 067 C4): the busy chip's frame, the cause's own icon (14 px cream), 6 px, two words (Jost 12.5 cream); no bar, no seconds, no ×
@@ -371,7 +349,7 @@ namespace Suborned.Play
         /// <summary>The eye's one-line hover tip, above the glyph.</summary>
         void EyeTipShow(VisualElement over, string text)
         {
-            if (eyeTip == null) { eyeTip = E(root, "s-plate_dark"); eyeTip.style.position = Position.Absolute; eyeTip.style.height = 26; eyeTip.style.paddingLeft = 12; eyeTip.style.paddingRight = 12; eyeTip.style.justifyContent = Justify.Center; eyeTipText = L(eyeTip, "verb-name"); }
+            if (eyeTip == null) { eyeTip = E(root, "s-plate_dark"); eyeTip.style.position = Position.Absolute; eyeTip.style.height = 26; eyeTip.style.paddingLeft = 12; eyeTip.style.paddingRight = 12; eyeTip.style.justifyContent = Justify.Center; eyeTipText = L(eyeTip, "verb-name"); manifest.Add((eyeTip, "hover", () => eyeTipText.text)); /* round 4: a hover line */ }
             Show(eyeTip, over != null); if (over == null) return;
             Text(eyeTipText, text); var b = over.worldBound; var rb = root.worldBound; eyeTip.style.left = b.center.x - rb.x - 40; eyeTip.style.top = b.y - rb.y - 32; eyeTip.BringToFront();
         }
@@ -939,36 +917,6 @@ namespace Suborned.Play
         /// <summary>The cell has learned something of this person (Intel's "known": routine, need, temperament, turned, or a suspicion).</summary>
         bool KnownPerson(string role) { int i = Array.IndexOf(new[] { "waitress", "driver", "guard", "councillor" }, role); return i >= 0 && m.Intel[i].Known; }
 
-        // ---------------------------------------------------------------- the plate folds (Sky 2026-10-18: "I am finding the control panel not much";
-        // a small arrow to collapse and show it). Remembered per profile; open for a first-time player. Folded, keys 1-4 still pick, and the stub
-        // shows the knob that fired (the armed verb while armed, else 1.2 s).
-
-        const float StubW = 38, StubH = 62; const string PlateFoldPref = "Suborned.Hud.PlateFolded"; // the stub's glyphs 4 px clear of the dark plate's rim (the audit)
-        bool? plateFolded; VisualElement plateTab, plateStub, stubIcon; int stubPicked = -1; float stubAt = -10f;
-        bool PlateFolded { get => plateFolded ??= PlayerPrefs.GetInt(PlateFoldPref, 0) == 1; set { plateFolded = value; PlayerPrefs.SetInt(PlateFoldPref, value ? 1 : 0); PlayerPrefs.Save(); } }
-        /// <summary>Fold or open the order plate (the tab or the stub; also for scripted shots).</summary>
-        public void FoldPlate(bool fold) => PlateFolded = fold;
-
-        void PlateFold(float x, float midY)
-        {
-            if (plateTab == null)
-            {
-                plateTab = E(verbPlate, "s-disc_dark_24", PlateW - 6, PlateH / 2 - 11, 22, 22, pick: true); var ch = E(plateTab, null, 5, 5, 12, 12); ch.name = "c"; Icon(ch, "chev_down", Cream); ch.style.rotate = new Rotate(new Angle(90, AngleUnit.Degree)); // points left: fold
-                plateTab.RegisterCallback<PointerDownEvent>(e => { if (e.button != 0) return; e.StopPropagation(); PlateFolded = true; });
-                plateStub = E(root, "s-plate_dark", 0, 0, StubW, StubH, pick: true); var so = E(plateStub, null, 13, 11, 12, 12); so.name = "c"; Icon(so, "chev_down", Cream); so.style.rotate = new Rotate(new Angle(-90, AngleUnit.Degree)); // points right: open
-                stubIcon = E(plateStub, null, 11, 30, 16, 16);
-                plateStub.RegisterCallback<PointerDownEvent>(e => { if (e.button != 0) return; e.StopPropagation(); PlateFolded = false; });
-                manifest.Add((plateTab, "image", () => "plate fold tab")); manifest.Add((verbPlate, "image", () => "order plate")); manifest.Add((plateStub, "image", () => "plate stub")); // knobs and their key digits: art, no running text
-            }
-            bool folded = PlateFolded; Show(verbPlate, !folded); Show(plateStub, folded);
-            if (armedPlate.resolvedStyle.display != DisplayStyle.None && armedPlate.parent != null && armedPlate.parent.IndexOf(armedPlate) != armedPlate.parent.childCount - 1) armedPlate.BringToFront(); // Glyph 016 r2 F: the armed verb's chip above the timer pills
-            if (host.Picked != stubPicked) { stubPicked = host.Picked; if (host.Picked >= 0) stubAt = Time.unscaledTime; }
-            if (!folded) return;
-            plateStub.style.left = x; plateStub.style.top = midY - StubH / 2;
-            int k = host.Picked >= 0 ? host.Picked : m.VerbLit; bool show = host.Picked >= 0 || Time.unscaledTime - stubAt < 1.2f;
-            Show(stubIcon, show && k >= 0 && k < 4 && m.VerbHas[k]); if (show && k >= 0 && k < 4) Icon(stubIcon, m.VerbIcon[k], host.Picked >= 0 ? TurqLight : Cream);
-        }
-
         // ---------------------------------------------------------------- picking (brief 016 queue: Sky, "hard to select areas, like a camera")
 
         // Sky 2026-10-26 ("Simplify the visuals, it's way too crowded. Just having the agent facing who they're shooting should be enough to not
@@ -1038,13 +986,8 @@ namespace Suborned.Play
             for (int i = used; i < targetEls.Count; i++) Show(targetEls[i], false);
         }
 
+        /// <summary>The Enforcer's Enter is open and not armed: his row's Enter tab wears the dashed turquoise ring (Glyph 016 r2 D; HudToolkit.VerbRow).</summary>
         bool knobOn;
-        void DrawKnobRing(Painter2D p, Rect r)
-        {
-            if (!knobOn || knobs[0] == null || verbPlate == null) return;
-            var kb = knobs[0].worldBound; var pb = verbPlate.worldBound; if (kb.width <= 0) return;
-            var c = kb.center - pb.position; Dashed(p, c, kb.width / 2 - 3f, TurqLight, 1.6f, 12); // Glyph 016 r2 D: tight on the bezel, 2 px clear of the key number
-        }
 
 
         /// <summary>A key person's pin: their role badge (the same as their pip and scope blip) inside the edge disc.</summary>

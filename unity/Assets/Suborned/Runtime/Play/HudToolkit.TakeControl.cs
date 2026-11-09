@@ -20,7 +20,7 @@ namespace Suborned.Play
         const float TakeX = 100f, TakeD = 30f, TakeGap = 8f, SightEyeD = 24f;
         /// <summary>Seconds a face's tab stays up after the pointer leaves the face, so the pointer can cross the pips to it.</summary>
         const float TakeLingerS = 0.6f;
-        sealed class TakeTab { public VisualElement Root, Tab, Body; public KeyText Word, Key; }
+        sealed class TakeTab { public VisualElement Root, Tab, Body, Words; public KeyText Word, Key; }
         readonly TakeTab[] takeTabs = new TakeTab[4];
         readonly float[] takeSeenAt = { -9f, -9f, -9f, -9f };
         Capsule backCap; VisualElement backRow; KeyText backKey; int backFace = -1; bool backHot;
@@ -47,9 +47,11 @@ namespace Suborned.Play
 
         /// <summary>The tab or the capsule beside face i is under the pointer: the face's own label row gives way to its words.</summary>
         bool TakeHot(int i) => takeHot == i || backHot && backFace == i;
-        /// <summary>Where face i's label row starts (screen px at 1080): after the tab's slot, or after the capsule while it stands beside her.</summary>
+        /// <summary>Where face i's label row starts (screen px at 1080): after the tab's slot, or after the capsule while it stands beside her, or after the verb row while it
+        /// shows beside the selected face (brief 101 round 4).</summary>
         float TakeRowX(int i)
         {
+            if (VerbRowOn && i == m.Agent && verbRowRight > 0f) return verbRowRight + TakeGap;
             float w = backCap != null && backFace == i && Visible(backCap.Root) ? backCap.Root.resolvedStyle.width : float.NaN;
             return TakeX + (float.IsNaN(w) || w <= 0f ? TakeD : w) + TakeGap;
         }
@@ -61,7 +63,8 @@ namespace Suborned.Play
                 var t = takeTabs[i] = new TakeTab(); int k = i;
                 var r = t.Root = StackRow(root, TakeD); r.style.position = Position.Absolute; r.style.justifyContent = Justify.FlexStart; r.style.left = TakeX; r.style.top = FaceScreen(i).y - TakeD / 2f;
                 t.Tab = RoundTab(r, TakeD, "take_control", pick: true); t.Body = t.Tab.Q("body");
-                t.Word = KText(r, 15f); t.Word.Root.style.marginLeft = TakeGap; t.Key = KText(r, 15f, "k-bold", "k-soft"); t.Key.Root.style.marginLeft = 7f;
+                var tw = t.Words = StackRow(r, TakeD); tw.style.justifyContent = Justify.FlexStart; tw.style.marginLeft = TakeGap; t.Word = KText(tw, 15f); t.Key = KText(tw, 15f, "k-bold", "k-soft"); t.Key.Root.style.marginLeft = 7f; Show(tw, false);
+                var tt = t; manifest.Add((tw, "hover", () => (tt.Word.Words + " " + tt.Key.Words).Trim())); // round 4 (Splice): its hover line, as shown ("Take control · T")
                 t.Tab.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.TakeControlOf(k); e.StopPropagation(); } });
                 t.Tab.RegisterCallback<PointerEnterEvent>(_ => takeHot = k); t.Tab.RegisterCallback<PointerLeaveEvent>(_ => { if (takeHot == k) takeHot = -1; });
                 manifest.Add((r, "image", () => "take control tab")); // the tab, and its words while hovered: a button and its label, as the Squad tab's word was
@@ -72,7 +75,7 @@ namespace Suborned.Play
             c.Icon.style.width = c.Icon.style.height = TakeD * 0.52f; Icon(c.Icon, "map", Cream); // Glyph: the tab's pictogram size, the word Jost Bold 14, 9 px in and 13 px out
             c.Word.style.fontSize = 14f; c.Word.style.marginLeft = 6f; c.Root.style.paddingRight = 13f;
             if (c.Root.Q(className: "e-shadow") is VisualElement sh) { sh.style.top = 2f; sh.style.bottom = -2f; } // the tab's shadow, 2 px down: one slot, one family
-            backKey = KText(backRow, 14f, "k-bold", "k-soft"); backKey.Root.style.marginLeft = TakeGap;
+            backKey = KText(backRow, 14f, "k-bold", "k-soft"); backKey.Root.style.marginLeft = TakeGap; manifest.Add((backKey.Root, "hover", () => backKey.Words)); // round 4 (Splice): its hover, the key alone
             c.Root.RegisterCallback<PointerEnterEvent>(_ => backHot = true); c.Root.RegisterCallback<PointerLeaveEvent>(_ => backHot = false);
             manifest.Add((backRow, "image", () => "back to map capsule"));
             Show(backRow, false);
@@ -90,7 +93,7 @@ namespace Suborned.Play
                 bool show = map && h.CanTake(i) && (i == who || now - takeSeenAt[i] < TakeLingerS);
                 if (!show) { if (takeHot == i) takeHot = -1; if (t.Root.style.display != DisplayStyle.None) RingColour(t.Body, null); Show(t.Root, false); continue; } // hidden under the pointer: no hover is left lit
                 Show(t.Root, true); shown += (shown.Length > 0 ? " " : "") + Op.Name((OpId)i);
-                bool hot = takeHot == i; Show(t.Word.Root, hot); Show(t.Key.Root, hot);
+                bool hot = takeHot == i; Show(t.Words, hot); Show(t.Word.Root, hot); Show(t.Key.Root, hot);
                 if (hot) { t.Word.Set(h.TakeControlWord); t.Key.Set("· " + h.controls.Label(PlayAction.FollowView)); }
             }
             TakeShown = shown;

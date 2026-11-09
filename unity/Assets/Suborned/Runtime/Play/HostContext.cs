@@ -261,7 +261,7 @@ namespace Suborned.Play
         /// Tie, Hide, Drop, Knockout, Kill, Fire.</summary>
         string RingWord(Intent i)
         {
-            var o = i.Order; string key = o.Do == "turn" ? o.Approach : o.Do;
+            var o = i.Order; string key = o.Do == "turn" ? (string.IsNullOrEmpty(o.Approach) ? "turn" : o.Approach) : o.Do; // brief 102: the Already turned lock is the Turn as a whole (ring-turn)
             if (Text != null && Text.Actions.TryGetValue("ring-" + key, out var a) && a.Label.Length > 0) return a.Label;
             return key switch
             {

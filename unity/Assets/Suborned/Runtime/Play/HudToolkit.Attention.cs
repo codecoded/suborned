@@ -79,7 +79,7 @@ namespace Suborned.Play
         List<Rect> HudRects()
         {
             var l = new List<Rect>();
-            foreach (var e in new[] { column, verbPlate, pill, intel, keys, respPill, nextTip, scope, sheet, chip2, goal, history, armedPlate, feed, ticker, hint, clipBlock, personCard })
+            foreach (var e in new[] { column, verbRow, pill, intel, keys, respPill, nextTip, scope, sheet, chip2, goal, history, feed, ticker, hint, clipBlock, personCard })
             {
                 if (e == null || e.resolvedStyle.display == DisplayStyle.None || e.resolvedStyle.opacity < 0.05f) continue;
                 var r = e.worldBound; if (r.width <= 1 || r.height <= 1 || float.IsNaN(r.width)) continue;
@@ -130,7 +130,8 @@ namespace Suborned.Play
         void Callouts(float W, float H)
         {
             var list = new List<HandoverHost.Callout>(host.Callouts);
-            bool live = !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None && host.Game != null && !host.Following;
+            bool live = CalloutsLive();
+            list.RemoveAll(c => c.Speech != null && !dockedSay.Exists(d => d.b == c.Speech)); // round 4 (Glyph r4 §1): a speech face shows only while its line is one of the pool's two
             list.Sort((a, b) => a.Stage != b.Stage ? b.Stage.CompareTo(a.Stage) : b.Seq.CompareTo(a.Seq)); // the highest stage claims first, then the newest
             var size = new Vector2(W, H); var hud = live ? HudRects() : null; var claimed = new List<Vector2>();
             var agents = new List<Rect>(); var agentAt = new Vector2?[4];
@@ -145,7 +146,7 @@ namespace Suborned.Play
             for (int i = 0; i < medals.Length; i++)
             {
                 var c = live && i < list.Count ? list[i] : null;
-                medals[i] ??= NewMedal(i); var md = medals[i]; if (md.Say != null && (c?.Speech == null)) Show(md.Say, false);
+                medals[i] ??= NewMedal(i); var md = medals[i];
                 var rt = host.Views?.InsetFrame(i, c?.View);
                 if (c == null || rt == null) { Show(md.Root, false); md.For = null; md.Placed = false; continue; }
                 if (md.For != c) { md.For = c; md.Placed = false; md.Spot = -1; }
@@ -156,8 +157,8 @@ namespace Suborned.Play
                 var wbox = seen ? FigureBox(feet, tall, c.View.StartsWith("camera/") ? 10f : 14f) ?? new Rect(head, Vector2.zero) : new Rect();
                 int ak = c.Op.Length > 0 ? (int)Op.Parse(c.Op) : -1; Vector2 agentMid = ak >= 0 && agentAt[ak].HasValue ? agentAt[ak].Value : head;
                 float away = agentMid.x <= head.x ? 1f : -1f;
-                md.Speech = c.Speech != null; if (md.Speech && seen) { Show(md.Root, false); if (md.Say != null) Show(md.Say, false); md.Placed = false; continue; } // brief 085: in view, the ordinary bubble says it
-                Vector2 want = default; bool dock = !seen || floating >= 3;
+                md.Speech = c.Speech != null; // brief 085: in view, the ordinary bubble says it (round 4: the pool lists a line docked only when it can't be drawn at its speaker)
+                Vector2 want = default; bool dock = !seen || floating >= 3 || md.Speech;
                 if (!dock)
                 {
                     var others = new List<Rect>(agents);
@@ -236,34 +237,37 @@ namespace Suborned.Play
             return want;
         }
 
-        /// <summary>The line beside a docked speech inset: the normal speech plate, its tail to the inset, turned in from the edge and clear of the HUD.</summary>
+        /// <summary>Round 4 (Glyph, briefs/101/glyph/r4/notes.md §1): the line beside a docked speech face is the pool's street bubble with no face of its own (12 px each
+        /// side), 14 px off the face's rim: beside it toward the screen's centre and level with it, then below or above, then the diagonal, then the far side, then slid
+        /// along the edge. It keeps 10 px off the HUD (the scope's buttons too) and the other bubbles, 14 px inside the screen; the built stem, no dot, from its end to the rim.</summary>
         void SpeechPlate(Medal md, HandoverHost.Callout c, float W, float H, List<Rect> hud)
         {
-            if (md.Say == null)
-            {
-                md.Say = E(marks, "s-plate_light"); md.Say.style.position = Position.Absolute; md.Say.style.paddingLeft = 10; md.Say.style.paddingRight = 10; md.Say.style.paddingTop = 4; md.Say.style.paddingBottom = 5; md.Say.style.maxWidth = 320;
-                md.SayText = L(md.Say, "card-body"); md.SayText.style.whiteSpace = WhiteSpace.Normal; md.SayText.style.color = Ink; md.SayText.style.fontSize = 13;
-                md.SayTail = E(md.Say, null, 0, 0, 9, 9); md.SayTail.style.rotate = new Rotate(45); md.SayTail.style.backgroundColor = new Color(0.98f, 0.95f, 0.89f);
-                var mine = md; manifest.Add((md.Say, "speech", () => mine.SayText.text));
-            }
-            Show(md.Say, true); md.Say.BringToFront(); Text(md.SayText, c.Speech.Text);
-            float w = md.Say.resolvedStyle.width, h = md.Say.resolvedStyle.height; if (float.IsNaN(w) || w < 1f) w = 240f; if (float.IsNaN(h) || h < 1f) h = 26f;
-            float off = DockD / 2f + 12f + 8f; var a = md.At; bool leftOfCentre = a.x < W / 2f, aboveCentre = a.y < H / 2f;
+            int di = dockedSay.FindIndex(x => x.b == c.Speech); if (di < 0) return; var (_, ei, size) = dockedSay[di];
+            var r = bubbleEls[ei].root; Show(r, true); r.BringToFront();
+            float w = size.x, h = size.y, off = DockD / 2f + DockedLineGap;
+            var a = md.At; bool leftOfCentre = a.x < W / 2f, aboveCentre = a.y < H / 2f;
             var tries = new[] { new Vector2(leftOfCentre ? a.x + off : a.x - off - w, a.y - h / 2f), new Vector2(a.x - w / 2f, aboveCentre ? a.y + off : a.y - off - h), new Vector2(leftOfCentre ? a.x + off : a.x - off - w, aboveCentre ? a.y + off : a.y - off - h), new Vector2(leftOfCentre ? a.x - off - w : a.x + off, a.y - h / 2f) };
             var others = new List<Rect>(); foreach (var o in medals) if (o != null && o != md && o.Root.style.display != DisplayStyle.None && o.For != null) { float od = (o.Docked ? DockD : MedalD) + 24f; others.Add(new Rect(o.At.x - od / 2f, o.At.y - od / 2f, od, od)); }
-            bool Hit(Rect q) { if (Vector2.Distance(q.center, a) < DockD / 2f) return true; if (hud != null) foreach (var r in hud) if (r.Overlaps(q)) return true; foreach (var r in others) if (r.Overlaps(q)) return true; return false; }
-            Rect Inside(Vector2 t) => new Rect(Mathf.Clamp(t.x, ScreenPad, W - w - ScreenPad), Mathf.Clamp(t.y, ScreenPad, H - h - ScreenPad), w, h);
+            var keep = new List<Rect>(); if (hud != null) keep.AddRange(hud); // HudRects: each piece 12 px out (ScreenPad), past the 10 px the line keeps
+            if (scope != null && scope.resolvedStyle.display != DisplayStyle.None) foreach (var b in scope.Children()) if (b.name is "cones-button" or "turn-left" or "turn-right" && b.resolvedStyle.display != DisplayStyle.None && b.worldBound.width > 0) keep.Add(Grow(b.worldBound, 10f)); // Glyph r4 §1: the scope's buttons (2:39: Inez's line 3 px over the eye)
+            foreach (var br in bubbleRects) keep.Add(Grow(br, 10f));
+            bool Hit(Rect q) { if (Vector2.Distance(q.center, a) < DockD / 2f) return true; foreach (var k in keep) if (k.Overlaps(q)) return true; foreach (var k in others) if (k.Overlaps(q)) return true; return false; }
+            Rect Inside(Vector2 t) => new Rect(Mathf.Clamp(t.x, BubbleEdge, W - w - BubbleEdge), Mathf.Clamp(t.y, BubbleEdge, H - h - BubbleEdge), w, h);
             var best = Inside(tries[0]).position; bool found = false;
             foreach (var t in tries) if (!Hit(Inside(t))) { best = Inside(t).position; found = true; break; }
             if (!found) // further out along the edge, the nearest clear place; a callout in the way never loses to the first try
                 for (float d = 20f; d < Mathf.Max(W, H) && !found; d += 20f)
                     foreach (var t0 in tries) foreach (var sh in new[] { new Vector2(d, 0f), new Vector2(-d, 0f), new Vector2(0f, d), new Vector2(0f, -d) })
                         if (!found && !Hit(Inside(t0 + sh))) { best = Inside(t0 + sh).position; found = true; }
-            foreach (var r in others) if (r.Overlaps(new Rect(best, new Vector2(w, h)))) SpeechPlateHits++;
-            md.Say.style.left = best.x; md.Say.style.top = best.y; float age = Time.unscaledTime - c.Speech.Born; md.Say.style.opacity = Mathf.Clamp01((c.Speech.Life - age) / 0.3f);
-            var e = new Rect(best, new Vector2(w, h)); var near = new Vector2(Mathf.Clamp(a.x, e.xMin + 8f, e.xMax - 8f), Mathf.Clamp(a.y, e.yMin + 8f, e.yMax - 8f)); bool sides = a.x < e.xMin || a.x > e.xMax;
-            md.SayTail.style.left = (sides ? (a.x < e.xMin ? -4.5f : w - 4.5f) : near.x - e.xMin - 4.5f); md.SayTail.style.top = sides ? near.y - e.yMin - 4.5f : (a.y < e.yMin ? -4.5f : h - 4.5f);
+            var e = new Rect(best, new Vector2(w, h)); foreach (var k in others) if (k.Overlaps(e)) SpeechPlateHits++;
+            r.style.left = best.x; r.style.top = best.y; float age = Time.unscaledTime - c.Speech.Born, alpha = Mathf.Clamp01((c.Speech.Life - age) / 0.3f); r.style.opacity = alpha;
+            // the stem: from the bubble's end nearest the face (its round end, level with its middle, when the face is beside it; else its bottom or top over the face) to the rim
+            var end = a.x < e.xMin ? new Vector2(e.xMin, e.center.y) : a.x > e.xMax ? new Vector2(e.xMax, e.center.y) : new Vector2(Mathf.Clamp(a.x, e.xMin + 14f, e.xMax - 14f), a.y < e.yMin ? e.yMin : e.yMax);
+            var dv = end - a; float dist = dv.magnitude; if (dist > DockD / 2f + 2f) Stem(end, a + dv / dist * (DockD / 2f), alpha, dot: false);
+            bubbleRects.Add(e); // the edge faces keep 10 px off it too (Edges)
         }
+        /// <summary>The docked line's gap off its face's rim, and a bubble's least distance from the screen's edge (Glyph r4; Splice's budget rule 3).</summary>
+        const float DockedLineGap = 14f, BubbleEdge = 14f;
 
         /// <summary>Per frame, after the street marks: the Watch ring, the person marks, the callouts.</summary>
         void AttentionHud(float W, float H)

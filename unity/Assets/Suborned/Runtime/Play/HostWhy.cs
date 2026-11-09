@@ -73,7 +73,7 @@ namespace Suborned.Play
             if (r.ByCount && Text.WhyAgainLine.Length > 0) r.Again = Text.WhyAgainLine;
         }
         /// <summary>The causes with no place (Fable's meter rule: start, more, cordon, loud, split; and the seal, which is the clock's).</summary>
-        static bool NoPlace(string key) => key is "start" or "more" or "cordon" or "loud" or "split" or "seal" or "gang" or "staff" or "let-go" or "cut"; // a cut camera names its own place
+        static bool NoPlace(string key) => key is "start" or "more" or "cordon" or "loud" or "split" or "seal" or "gang" or "staff" or "let-go" or "cut" or "loiter"; // a cut camera names its own place; brief 102 (Fable, guide /24): the loitering card's short names who saw whom, its place in the hover line
 
         // ---------------------------------------------------------------- the Alert rises
 

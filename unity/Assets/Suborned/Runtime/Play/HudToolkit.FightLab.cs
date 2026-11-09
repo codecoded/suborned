@@ -268,12 +268,12 @@ namespace Suborned.Play
         {
             int a = m.Agent; float colW = 109 * RosterScale; bool left = m.Dock == RosterDock.Left;
             float WinMid(int i) => left ? ColY + BezelAt(i).y * RosterScale : 14 + 92 + 14 + ChipH / 2 + i * (ChipH + 4);
-            float plateX = ColX + colW + 4; bool folded = PlateFolded;
+            float plateX = ColX + colW + 4;
             float lastY = 0, lastX = 0;
             for (int k = 0; k < 4; k++)
             {
                 var (r, act, coin, text, dash, walk, walkS, exp, expN) = flQueue[k]; Show(walk, false); Show(walkS, false); Show(exp, false); Show(expN, false); var qp = flQPips[k]; qp.Clear(); Show(flQPipEl[k], false);
-                float x = !left ? 14 : k == a ? SelectedChipX(plateX, folded && PlateOn) : plateX; /* brief 030 (no plate): the ladder docks beside the portraits */ r.style.left = x; r.style.top = WinMid(k) - ChipH / 2; lastY = WinMid(k) + ChipH / 2; lastX = plateX;
+                float x = !left ? 14 : k == a ? SelectedChipX(plateX) : plateX; /* brief 030 (no plate): the ladder docks beside the portraits */ r.style.left = x; r.style.top = WinMid(k) - ChipH / 2; lastY = WinMid(k) + ChipH / 2; lastX = plateX;
                 var q = host.Queued[k]; int shots = host.VolleyShots[k]; string tgt = shots > 0 ? host.VolleyTarget[k] : q?.Target ?? "";
                 bool empty = q == null && shots <= 0; Show(dash, empty); r.EnableInClassList("s-plate_dark", !empty);
                 bool armed = g.Ops[k].Gun.W != null && !g.Ops[k].Down;

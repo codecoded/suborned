@@ -185,7 +185,7 @@ namespace Suborned.Play
             //      zoom); 3:20, the lookout posted on the far kerb (the four on foot framed together, as wide as they need); the wheelman rides aboard
             //      (not drawn: logged). All five together in their four looks: the safe fight's frame below.
             {
-                yield return Fresh(h); var g = h.Game; To(h, g.RivalAt + 10); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.35f); h.SetPaused(true); yield return Frames(3);
+                yield return Fresh(h); var g = h.Game; HandoverHost.PointerOverride = new Vector2(UnityEngine.Screen.width * 0.5f, 4f); /* off the street: an earlier section leaves the mouse mid-screen, and these frames centre on a rival (Latch 0.2.295's open item) */ To(h, g.RivalAt + 10); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.35f); h.SetPaused(true); yield return Frames(3);
                 var three = new List<Vector3>(); foreach (var id in new[] { "rival-1", "rival-2", "rival-3" }) if (ViewAt(h, id) is Vector3 p) three.Add(p);
                 h.Select(OpId.Scout, false); yield return Frame(h, three, log, "looks at 3:10 (the three at the cell's car)");
                 var (w310, ok310, n310) = Looks(h); string at310 = HandoverHost.MissionClock(g.Tick);
@@ -195,7 +195,7 @@ namespace Suborned.Play
                 var look4 = new List<Vector3>(); if (ViewAt(h, "rival-4") is Vector3 l4) look4.Add(l4); // the crew stands over 40 m apart now (three at the cell's car, the lookout on the far kerb): the lookout at play zoom
                 yield return Frame(h, look4, log, "looks with the lookout posted (rival-4)");
                 var (w320, ok320, n320) = Looks(h); string at320 = HandoverHost.MissionClock(g.Tick); bool drawn4 = new[] { "rival-1", "rival-2", "rival-3", "rival-4" }.All(id => ViewAt(h, id).HasValue);
-                yield return Shoot(h, dir, "r123-looks-320", log);
+                yield return Shoot(h, dir, "r123-looks-320", log); HandoverHost.PointerOverride = null;
                 bool looksOk = ok310 && ok320 && n310 >= 3 && drawn4 && n320 >= 4; ok &= looksOk;
                 parts.Add($"\"looks\": {{\"ok\": {B(looksOk)}, \"at310\": \"{at310}\", \"distinct310\": {n310}, \"members310\": \"{J(w310)}\", \"at320\": \"{at320}\", \"onFoot4\": {B(drawn4)}, \"distinct320\": {n320}, \"members320\": \"{J(w320)}\"}}");
                 log.Add($"r123 looks: {(looksOk ? "ok" : "FAILED")}: at {at310} {n310} looks drawn: {w310}; at {at320} the first four on foot {drawn4}, {n320} looks: {w320}");

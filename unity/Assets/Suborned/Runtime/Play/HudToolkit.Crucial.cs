@@ -33,7 +33,7 @@ namespace Suborned.Play
             crLoz.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.CrucialDismiss(); e.StopPropagation(); } });
             crLoz.RegisterCallback<PointerEnterEvent>(_ => { RingColour(crLozInline, TurqLight); crHover = true; }); crLoz.RegisterCallback<PointerLeaveEvent>(_ => { RingColour(crLozInline, null); crHover = false; });
             // brief 101 round 3 (Fable's lozenge round): hovering an Alert or Police card shows its cause's full line, filled, as a street label over the news; leaving hides it
-            crTipK = KText(root, 14.5f, "k-semi"); crTipK.Root.style.position = Position.Absolute; KeyWrap(crTipK, 460f); crTipK.Face.style.unityTextAlign = TextAnchor.UpperRight; foreach (var tc in crTipK.Copies) tc.style.unityTextAlign = TextAnchor.UpperRight; Show(crTipK.Root, false);
+            crTipK = KText(root, 14.5f, "k-semi"); crTipK.Root.style.position = Position.Absolute; KeyWrap(crTipK, 460f); crTipK.Face.style.unityTextAlign = TextAnchor.UpperRight; foreach (var tc in crTipK.Copies) tc.style.unityTextAlign = TextAnchor.UpperRight; Show(crTipK.Root, false); manifest.Add((crTipK.Root, "hover", () => crTipK.Words)); // round 4: a hover line, as shown
             // the roundel over the lozenge's left end
             VisualElement disc; (disc, crDiscInline) = Roundel(crLoz, CrDisc, "e-orange"); Pin(disc, new Vector2(-26f, -4f));
             crIcon = E(disc, null, w: CrDisc * 0.56f, h: CrDisc * 0.56f); crIcon.style.flexShrink = 0;

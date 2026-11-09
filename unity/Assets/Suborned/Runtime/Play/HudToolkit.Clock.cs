@@ -75,7 +75,7 @@ namespace Suborned.Play
                 w.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { if (KnownPerson(KeyPeople[k])) FindPerson(KeyPeople[k]); else host.IntelOpen = !host.IntelOpen; e.StopPropagation(); } });
             }
             manifest.Add((keys, "image", () => "known people"));
-            nextTipK = KText(pill, 14f, "k-semi"); nextTipK.Root.style.marginTop = 6; nextTip = nextTipK.Root; Show(nextTip, false);
+            nextTipK = KText(pill, 14f, "k-semi"); nextTipK.Root.style.marginTop = 6; nextTip = nextTipK.Root; Show(nextTip, false); manifest.Add((nextTip, "hover", () => nextTipK.Words)); // round 4: a hover line ("Next · Chime")
             manifest.Add((clockRow, "marker", () => clockK.Words)); manifest.Add((pauseBtn, "image", () => "pause button")); // the row, keylines and the button with it: a clock reading
         }
 

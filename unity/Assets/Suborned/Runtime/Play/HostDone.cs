@@ -304,7 +304,7 @@ namespace Suborned.Play
                     break;
                 case "call":
                     if (l.Code == "call.driver") { chip.AnchorKey = "camera/pickup"; Line("eye_shut", DW("gain.camera-blind", "Camera blind")); }
-                    else if (l.Code == "call.waitress") { chip.AnchorKey = "guard"; Line("eye_shut", DW("gain.guard-away", "Guard away")); }
+                    else if (l.Code is "call.waitress" or "call.guard") { chip.AnchorKey = "guard"; /* brief 102 (option 1): the guard's own call clears the door too */ Line("eye_shut", DW("gain.guard-away", "Guard away")); }
                     else { chip.AnchorKey = l.Code[5..]; Line("call", VerbWord("call")); }
                     break;
                 case "loop": chip.AnchorKey = "camera/" + g.LoopCam; Line("loop", DW("gain.camera-looped", "Camera looped")); break; // brief 058 (Motive): a looped camera shows the desk a clean picture; never "Camera dark" (Glyph 058 §3: the 2:00 rides the window marker under it)

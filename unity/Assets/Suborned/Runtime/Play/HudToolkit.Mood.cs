@@ -84,22 +84,5 @@ namespace Suborned.Play
             Show(vpillPredWord, mark == "likely"); vpillPred.style.paddingRight = mark == "likely" ? 8 : 5;
             if (vpillPredMark != mark) { vpillPredMark = mark; vpillPredRing.MarkDirtyRepaint(); }
         }
-
-        readonly Paint[] knobPred = new Paint[4]; readonly string[] knobPredShown = { "", "", "", "" };
-
-        /// <summary>Per frame with the plate: the dashed marks at each knob's lower right (the host's KnobPred, priced on hover change).</summary>
-        void KnobPredFrame()
-        {
-            for (int k = 0; k < 4; k++)
-            {
-                if (knobs[k] == null) continue;
-                if (knobPred[k] == null) { int kk = k; knobPred[k] = P(knobs[k], 48f - PredRing - 1f, 48f - PredRing - 1f, PredRing, PredRing, (p, r) => { var mk = knobPredShown[kk]; if (mk is "ok" or "half") return; PredGlyph(p, r.center, mk); }); }
-                string mark = m.VerbHas[k] && k < host.KnobPred.Length ? host.KnobPred[k] ?? "" : "";
-                if (mark is "ok" or "half") { knobPred[k].style.backgroundImage = new StyleBackground(Sp(mark == "ok" ? "badges/mark_ok" : "badges/mark_half")); }
-                else knobPred[k].style.backgroundImage = StyleKeyword.None;
-                Show(knobPred[k], mark.Length > 0);
-                if (knobPredShown[k] != mark) { knobPredShown[k] = mark; knobPred[k].MarkDirtyRepaint(); }
-            }
-        }
     }
 }
