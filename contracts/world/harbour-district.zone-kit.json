@@ -10,7 +10,7 @@
  "why": "brief 075 (stable zone): the kit pieces the Handover zone's street items took when the zone was signed off, pinned by place (kind, edge, position), so no change outside the zone swaps a piece inside it (Datum's S2 stations renumbered the zone and swapped 8 lamps). Written by bun run world:pin-zone, never by hand; world rule ZK-1 fails if a pin finds no item or an item in the zone has no pin.",
  "source": {
   "from": "the live plan's world",
-  "plan": "fb8709bf587c71b015532b87e452af78ca7b89217bdcceb397b1dcc8489514d2"
+  "plan": "3afaa25f9023a76839b7ade87c8ff10a459cad2fd90113e810651f9c7d9bed2f"
  },
  "pins": [
   { "kind": "bench", "edge": "garden-row-east/e2", "at": [ -84, -204.8 ], "kit": "Bench_Play" },
@@ -53,7 +53,7 @@
   { "kind": "lamp", "edge": "rocket-west/e1", "at": [ -192.6, -284 ], "kit": "Streetlamp" },
   { "kind": "lamp", "edge": "rocket-west/e1", "at": [ -192.6, -320 ], "kit": "PlazaSphereLamp" },
   { "kind": "lamp", "edge": "rocket-west/e1", "at": [ -192.6, -356 ], "kit": "PlazaSphereLamp" },
-  { "kind": "mast-camera", "edge": "records-square", "at": [ -145.5, -211.5 ], "kit": "MastCamera" },
+  { "kind": "mast-camera", "edge": "records-square", "at": [ -172.55, -226.15 ], "kit": "MastCamera" },
   { "kind": "phone-booth", "edge": "civic/apron-road", "at": [ -132, -309.15 ], "kit": "PhoneBooth_Play" },
   { "kind": "phone-booth", "edge": "civic/garden-row", "at": [ -138.85, -210 ], "kit": "PhoneBooth_Play" },
   { "kind": "phone-booth", "edge": "civic/garden-row", "at": [ -138.85, -254 ], "kit": "PhoneBooth_Play" },

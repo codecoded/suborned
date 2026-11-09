@@ -18,6 +18,7 @@ import { SITING, cornerOf, junctionCorners } from '../../civic/siting';
 import { type Ctx, r3, r4, rv } from '../common';
 import { cataloguedFor } from '../kitrefs';
 import type { Layer } from './kit';
+import { headStepDeg, mastSite } from './mast';
 import { sectionOf } from '../../../plan/sections';
 
 const STEP = 2; // m between kerb candidates along a road
@@ -135,8 +136,8 @@ export function dressQuiet(ctx: Ctx, L: Layer): Takedown | undefined {
   const rm = measure(boxes.field, samples, QUIET.reach.report), om = measure(posts.field, samples, QUIET.reach.origin), rbm = measure(rb, samples, QUIET.reach.report), obm = measure(ob, samples, QUIET.reach.origin);
     const wsec = ctx.S.watchers.types;
   const watchers: Takedown['watchers'] = L.items.filter(i => ['mast-camera', 'pole-camera', 'civic-robot-dock'].includes(i.kind) && near(i)).map(i => {
-    const t = wsec[i.kind === 'civic-robot-dock' ? 'civic-robot' : i.kind] as { range: number; cone: number; heads?: number; headStep?: number };
-    const heads = t.heads ?? 1, step = ((t.headStep ?? 0) * Math.PI) / 180;
+    const t = wsec[i.kind === 'civic-robot-dock' ? 'civic-robot' : i.kind] as { range: number; cone: number; heads?: number; headStep?: number | Record<string, number> };
+    const heads = t.heads ?? 1, step = (headStepDeg(t, mastSite(ctx, i.edge), i.id) * Math.PI) / 180; // brief 101: the step by the item's site (a square's mast 60, the circus's 120)
     return { id: i.id, kind: i.kind, at: i.at, facings: Array.from({ length: heads }, (_, k) => r4(i.yaw + k * step)), range: t.range, coneDeg: t.cone, item: i.id };
   });
   return {

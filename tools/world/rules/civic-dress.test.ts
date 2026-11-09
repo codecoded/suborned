@@ -37,7 +37,7 @@ describe('civic dressing: what is placed', () => {
     expect(count(/^civic\/cyp-/)).toBe(dr.cypress.at.length);
     expect(count(/^civic\/top-/)).toBe(dr.topiary.at.length);
     expect(count(/^civic\/band\//)).toBe(look.bands.pieces.length);
-    expect([dr.parasols.on.length, dr.lamps.at.length, dr.bollards.at.length, dr.cypress.at.length, dr.topiary.at.length, look.bands.pieces.length]).toEqual([7, 8, 12, 6, 6, 36]);
+    expect([dr.parasols.on.length, dr.lamps.at.length, dr.bollards.at.length, dr.cypress.at.length, dr.topiary.at.length, look.bands.pieces.length]).toEqual([8, 8, 12, 6, 6, 36]); // brief 101: table 7's parasol back (the square's mast left its corner for lamp-terrace-w); was 7
   });
   test('the pieces stand on what they replace: the structures they cover leave the export, the café is a ground storey under its upper mass', () => {
     const ids = new Set(base.w.civic.map(m => m.id));
@@ -71,7 +71,7 @@ describe('civic dressing: what is placed', () => {
     expect([...faded].filter(id => !/_Planting$/.test(id)).sort()).toEqual(fadeDrawn.sort());
     expect([...faded].filter(id => /_Planting$/.test(id))).toEqual(['CafeUpper_3_Planting']);
     expect(spare.size).toBe(1);
-    expect(base.w.civic.filter(m => m.fade && /\/parasol$/.test(m.id))).toHaveLength(7);
+    expect(base.w.civic.filter(m => m.fade && /\/parasol$/.test(m.id))).toHaveLength(8); // brief 101: table 7's parasol back; was 7
   });
   test('crossings: nine civic landings are built, each paired across the carriageway; x-apron-w and the two left out stay dropped', () => {
     const lands = dr.crossings.at.map(c => landingsOf(base.w).find(s => s.id.endsWith(`/crossing-${c.id}`)));
