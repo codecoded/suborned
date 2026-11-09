@@ -1,0 +1,11 @@
+{
+ "method": "the outline layer alone at 1080p, alpha >= 24 (tools/hud-budget's threshold), in % of the screen; look B",
+ "share": {
+  "door case, guard hovered": 0.032,
+  "door case, door hovered": 0.086,
+  "Sky's frame, fixer hovered": 0.038,
+  "Sky's frame, tech hovered": 0.033,
+  "Sky's frame, mast hovered": 0.037,
+  "the official car hovered": 0.087
+ }
+}
