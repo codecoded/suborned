@@ -8,6 +8,10 @@
 //    lead (the incident: place, time, the subject; the face). No Standing. On tape: a later loop, cut or shot does not undo it.
 //  · A record still to land when the mission ends is charged then: its Trail and its lead, no Alert.
 //  · The cards (Preview): QuoteRecord says it before the commit.
+//  · One act, one incident (engine 0.52.0; rulebook alert and camera, §05 witness, Keel's hold: one incident counts once toward Alert and
+//    dispatches once). The person turned may report the act too (a Loyal person reports an approach: rulebook reports): the record and the
+//    report are that one incident, counted toward Alert by whichever lands first; the other raises Alert no higher than that incident's own
+//    level (the record still at least camera.alert). Before 0.52.0 a taped Pressure on a Loyal Inez counted twice: Alert 2 (P85-MIXED, brief 101).
 // Integers only; records in the order made. Hashed only once a record exists, so a run with none hashes as before.
 using System;
 using System.Collections.Generic;
@@ -16,7 +20,7 @@ namespace Suborned.Sim
 {
     public sealed partial class Game
     {
-        sealed class CamRec { public string Cam = "", Subject = "", Approach = ""; public int From, LandAt; public Pt At; public bool Face, Landed, AtEnd, Witnessed; public Order? Act; }
+        sealed class CamRec { public string Cam = "", Subject = "", Approach = ""; public int From, LandAt, Incident; public Pt At; public bool Face, Landed, AtEnd, Witnessed; public Order? Act; } // Incident: the act's number among the reported incidents once counted (0 until)
         readonly List<CamRec> camRecs = new List<CamRec>();
         Order? camAct; CamRec? camCur; bool witnessTrailOff;
         /// <summary>One act, one incident (rulebook camera, alert): a record of this act has landed and charged its Trail, so the act's witnesses add none.</summary>
@@ -68,11 +72,22 @@ namespace Suborned.Sim
             var p = TurnSubject(r.Subject); // brief 096: a crew member by id
             if (!r.Witnessed) { AddTrail(R.CamTrail, cause); AddIncident("recorded", cause + (r.Face ? ":face" : ""), r.At, new[] { (p, r.At) }); } // one act, one incident: seen by people too, theirs stands
             if (!alert) { r.AtEnd = true; Note("camera.record-lands", $"The {r.Cam} camera's record of the {r.Approach} on {r.Subject} is on file at the end (+{R.CamTrail} T)."); return; }
-            Reported++;
-            RaiseAlert(Math.Max(R.CamAlert, R.AlertByIncident[Math.Min(Reported, R.AlertByIncident.Length) - 1]), cause);
+            if (r.Incident == 0) r.Incident = ++Reported; // one act, one incident: counted already if the person turned reported it first
+            RaiseAlert(Math.Max(R.CamAlert, R.AlertByIncident[Math.Min(r.Incident, R.AlertByIncident.Length) - 1]), cause);
             Note("camera.record-lands", $"The {r.Cam} camera's record reaches the desk: the Fixer's {r.Approach} on {r.Subject}{(r.Face ? ", his face on tape" : "")}. Alert {Alert}.");
             Alarm(null, r.At, null, "");
         }
+        /// <summary>A report by the person an act was done to (rulebook reports): an incident for Alert, the nth reported incident raising it to at
+        /// least byIncident[n−1]. One act, one incident: when a camera recorded this act, the record and the report are that incident, counted once.</summary>
+        void Report(Person p, Order act)
+        {
+            var rec = camRecs.Find(x => ReferenceEquals(x.Act, act));
+            int n = rec == null ? ++Reported : rec.Incident > 0 ? rec.Incident : (rec.Incident = ++Reported);
+            RaiseAlert(R.AlertByIncident[Math.Min(n, R.AlertByIncident.Length) - 1], $"report:{p.Role}");
+            AddIncident("report", "report:" + p.Role, PersonPos(p) ?? S.Stand(S.GuardPost), new[] { (p, PersonPos(p) ?? S.Stand(S.GuardPost)) });
+            Note("report", $"{p.Name} reports the approach. Alert {Alert}.");
+        }
+
         /// <summary>The mission ends (a fail, Go, a withdrawal): a record still to land is charged now, its Trail and its lead, no Alert.</summary>
         void RecordsAtEnd() { foreach (var r in camRecs) if (!r.Landed) { r.Landed = true; LandRecord(r, false); } }
 
@@ -118,7 +133,7 @@ namespace Suborned.Sim
         {
             if (camRecs.Count == 0) return;
             h.S("recorded");
-            foreach (var r in camRecs) h.S(r.Cam).S(r.Subject).S(r.Approach).I(r.From).I(r.LandAt).P(r.At).Z(r.Face).Z(r.Landed).Z(r.AtEnd).Z(r.Witnessed);
+            foreach (var r in camRecs) h.S(r.Cam).S(r.Subject).S(r.Approach).I(r.From).I(r.LandAt).P(r.At).Z(r.Face).Z(r.Landed).Z(r.AtEnd).Z(r.Witnessed).I(r.Incident);
             h.Z(camCur != null);
         }
     }

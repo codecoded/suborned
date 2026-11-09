@@ -1,28 +1,15 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route A, board and go (brief 018 §5), the route's primary: the same route as route-a to the ambush (no Reroute: the patrol sweeps the service yard, brief 067 A); then the Enforcer walks Vale to the car as it springs, the three fire until the blocker is down, then board, and the car leaves with the whole cell. Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11): watch and listen to Inez, loop the entrance camera at 1:25, help Inez as often as the card asks (twice, the cast's Inez being Fearful, §04: $20,000 a visit) and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed, never an Alert (engine 0.34.0), so the quiet route ends at Alert 0.",
+ "note": "Route A, board and go (brief 018 §5), the route's primary: the same route as route-a to the ambush (no Reroute: the patrol sweeps the service yard, brief 067 A); then the Enforcer walks Vale to the car as it springs, the three fire until the blocker is down, then board, and the car leaves with the whole cell. Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11): watch and listen to Inez, loop the entrance camera at 1:25, help Inez as often as the card asks (twice, the cast's Inez being Fearful, §04: $20,000 a visit) and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed, never an Alert (engine 0.34.0), so the quiet route ends at Alert 0. Brief 101 (engine 0.52.0, the square's mast on the terrace's west lamp, Sky's pick B): the Scout watches Inez from her start (17 m, a clear line) and the Listen walks to its discreet spot; the Fixer waits behind the mast where the cell starts, walks in only for the Help, walks back and makes the Call from her wait (a Call has no reach). Waiting at the Courtyard, the mast reported her at 45 s.",
  "start": {},
  "until": 4900,
  "steps": [
-  {
-   "op": "scout",
-   "do": "move",
-   "to": "beside-inez",
-   "why": "to Inez on the café terrace, at a run",
-   "run": true
-  },
   {
    "op": "tech",
    "do": "move",
    "to": "cabinet",
    "why": "to the control cabinet",
-   "run": true
-  },
-  {
-   "op": "fixer",
-   "do": "move",
-   "to": "d:Courtyard",
    "run": true
   },
   {
@@ -38,13 +25,13 @@
    "op": "scout",
    "do": "watch",
    "target": "waitress",
-   "gap": 9,
-   "why": "brief 031: once beside her (the run is about 7 s; 2 s to spare): the Scout's Watch reaches 30 m, so given at once it would start from the car and leave the walk to her after it; nobody who keeps a clock sees the terrace"
+   "why": "brief 101 (Sky's pick B, the square's mast on the terrace's west lamp; Motive briefs/101/motive/mast-pressure.md §3): from her start, 17 m on a clear line, behind the mast's lenses: beside Inez the Watch's 20 s ran on the mast's clock (brief 031: the Scout's Watch reaches 30 m)"
   },
   {
    "op": "scout",
    "do": "listen",
-   "target": "waitress"
+   "target": "waitress",
+   "why": "brief 101: the Listen walks to its discreet spot, out of every cone (under the mast about 37 s from beside her; engine 0.39.0, cell.listen)"
   },
   {
    "op": "tech",
@@ -78,11 +65,21 @@
   },
   {
    "op": "fixer",
+   "do": "move",
+   "to": "crew:fixer",
+   "after": [
+    "turned"
+   ],
+   "label": "back",
+   "why": "brief 101: the Help done, back behind the mast, where the cell starts, to wait for the call: waiting at the Courtyard (about a minute before the Help and 1:20 before the call) the mast reported her at 45 s (Alert 1, the dial's robots)"
+  },
+  {
+   "op": "fixer",
    "do": "call",
    "target": "waitress",
    "label": "call",
    "when": "rivals.coming",
-   "why": "once the rival car is seen coming (engine 0.44.0, brief 096: one Help turns Inez 35 s sooner; called at once Popovic comes out as the rival car turns in, so a prepared player waits for it and he comes out to a posted crew, as the Pressure pair has since c038)"
+   "why": "once the rival car is seen coming (engine 0.44.0, brief 096: one Help turns Inez 35 s sooner; called at once Popovic comes out as the rival car turns in, so a prepared player waits for it and he comes out to a posted crew, as the Pressure pair has since c038); brief 101 (Motive): made from her wait behind the mast: a Call has no reach (GameCall.cs checks no distance), so no walk in and no log of her beside a turned Inez"
   },
   {
    "op": "enforcer",

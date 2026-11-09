@@ -1,8 +1,10 @@
 // usage: bun run missions:check [check] <mission> [--record "<note>"] [--engine HEAD|tree|<commit>] [--inputs commit|tree]
 //        bun run missions:check bands <mission> [--seeds n] [--seed-from k] [--out dir]   brief 080: the adaptive plans across seeds (bands.ts)
 //        bun run missions:check replay <mission> <cNNN>
-//        bun run missions:check compose <mission> [<script id>…] [--engine …] [--inputs …] [--jobs n]
+//        bun run missions:check compose <mission> [<script id>…] [--engine …] [--inputs …] [--jobs n] [--unplayed-ok]
 // compose: rewrites each route script that has a plan (routes/plans/<id>.plan.json) from the plan, by playing the engine (compose.ts).
+// --unplayed-ok (brief 101, for missions:rerecord): a plan whose script the check doesn't play (routes.json pending, or played as its adaptive plan) and that doesn't
+// compose is reported and its script stands; only the plan of a script the check plays fails the command.
 // check: plays the mission's route scripts (contracts/missions/<mission>/routes) and their variations headless, prints the GDD §09
 // conditions, writes out/missions/<mission>/check.{json,html}; --record also writes runs/missions/<mission>/cNNN/. Exit 0 only if
 // the mission ships (every condition holds). replay: replays a recorded check; exit 0 only if every play lands on its recorded hash.
@@ -18,6 +20,7 @@ const args = process.argv.slice(2), flag = (k: string) => { const i = args.index
 // `--record` takes the note that goes in the run's record (what changed and why): a bare one used to record nothing and say nothing (Keel, 2026-10-24: `bun run missions:rerecord` with no note). It is refused now, before any play.
 const ri = args.indexOf('--record'), bare = ri >= 0 && (args[ri + 1] === undefined || args[ri + 1]!.startsWith('--') || !args[ri + 1]!.trim());
 if (bare) { console.error('missions:check: --record needs a note: bun run missions:rerecord "what moved and why" (or --record "<note>"); nothing was played or recorded'); process.exit(2); }
+const unplayedOk = (() => { const i = args.indexOf('--unplayed-ok'); if (i < 0) return false; args.splice(i, 1); return true; })();
 const note = flag('--record'), rev = flag('--engine') ?? 'HEAD', inputs = flag('--inputs') === 'tree' ? 'tree' : 'commit', composeJobs = Math.max(1, Number(flag('--jobs') ?? 4));
 const seedsFlag = Number(flag('--seeds') ?? 200), seedFrom = Number(flag('--seed-from') ?? 1), bandsOut = flag('--out');
 const cmd = ['replay', 'check', 'compose', 'bands'].includes(args[0] ?? '') ? args.shift()! : 'check';
@@ -54,22 +57,22 @@ if (cmd === 'compose') {
   const ids = args.length ? args : L.manifest.scripts.filter(s => s.plan).map(s => s.id);
   // plans compose side by side (each play is named by its script id, so they never share a temp file); a plan that fails to compose
   // fails the command, naming its step, once the others are done
-  const jobs = composeJobs, bad: string[] = [];
+  const jobs = composeJobs, bad: { id: string; why: string }[] = [], unplayed = (id: string) => { const x = L.manifest.scripts.find(y => y.id === id); return !!(x?.pending || x?.adaptive); };
   let next = 0;
   await Promise.all(Array.from({ length: Math.min(jobs, ids.length) }, async () => {
     while (next < ids.length) {
       const id = ids[next++]!, s = L.manifest.scripts.find(x => x.id === id);
-      if (!s?.plan) { bad.push(`${id}: no plan in routes.json`); continue; }
+      if (!s?.plan) { bad.push({ id, why: 'no plan in routes.json' }); continue; }
       const plan = loadPlan(join(dir, 'plans', s.plan)), t0 = performance.now();
       try {
         const { script } = await compose(plan, e, id, log);
         writeScript(join(dir, s.file), plan.note, script);
         console.log(`composed ${id}: ${script.orders.length} orders, last at tick ${script.orders.at(-1)!.tick} (${((performance.now() - t0) / 1000).toFixed(1)} s) → routes/${s.file}`);
-      } catch (err) { bad.push(`${id}: ${(err as Error).message}`); }
+      } catch (err) { bad.push({ id, why: (err as Error).message }); }
     }
   }));
-  for (const b of bad) console.error(`NOT COMPOSED ${b}`);
-  process.exit(bad.length ? 1 : 0);
+  for (const b of bad) console.error(`NOT COMPOSED ${b.id}: ${b.why}${unplayed(b.id) ? ' (the check does not play this script: it stands as it is)' : ''}`);
+  process.exit(bad.some(b => !(unplayedOk && unplayed(b.id))) ? 1 : 0);
 }
 
 // brief 078 B1: the mission's words and points must name ids the site has (ids.ts); a remap rename fails here, before any play

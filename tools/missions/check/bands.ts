@@ -2,7 +2,7 @@
 // played by sim/cli/Adaptive.cs: rules on what a player can see, a person's reaction time) plays across many seeds, and the result is read as win rates by playing
 // style, fight length, idle time and the price of loud. Two kinds of line:
 //  - RIGID, pass or fail, exit 1: no crash or stall, a saved run replays exactly from seed + orders, unknown = reject, every order shows its price, every fail names its
-//    cause, no reference window under 30 s at a person's pace.
+//    cause, no reference window under 30 s at a person's pace, no prepared quiet plan has a loiterer reported, the cell's start is out of every clock-keeping sight.
 //  - BAND, a report: a miss is what Motive tunes from next, never a reason to change a plan to fit or to fail a build. Exit stays 0.
 // The numbers are Motive's (briefs/080/design.html §7) except the loud split, which is Waymark's proposal for Motive to confirm (Sky's "preparation > improvisation holds").
 //
@@ -96,7 +96,21 @@ export function bands(s: Summary[], rows: Row[], caseEq = 3): Line[] {
   // brief 096 (Motive): a one-mistake twin is clearly worse than its quiet plan, and its mistake is seen (Alert on nearly every seed)
   for (const x of by('twin')) { const q = s.find(y => y.plan === TWINS[x.plan]); L.push({ id: `B-15 ${x.plan}`, rule: `one mistake costs: wins at least 10 points under ${TWINS[x.plan] ?? '(no twin)'}`, ok: !!q && x.winPct <= q.winPct - 10, value: q ? `${x.winPct} % against ${q.winPct} %` : 'no twin played' }); }
   for (const x of by('twin')) { const r = rows.filter(y => y.plan === x.plan), seen = r.filter(y => y.alert >= 1).length; L.push({ id: `B-16 ${x.plan}`, rule: 'the mistake is seen: Alert ≥ 1 on ≥ 95 % of seeds', ok: seen * 100 >= 95 * r.length, value: `${seen}/${r.length}` }); }
+  L.push(...mast101(s, rows)); // brief 101: the square's mast, two report lines
   L.push(...lend096(s, rows)); // engine 0.42.0: Motive's lend bands (lend.json) supersede the rivals round's (rivals096, kept for its record)
+  return L;
+}
+
+/** Brief 101 (Motive briefs/101/motive/mast-pressure.md §3): the square's mast on the terrace's west lamp, two report lines and no band. thin-quiet's
+ *  Pressure taped (it reads neither the mast nor its card); quiet-b-thinned's Pay card showing the mast's tape on rival-2, and the plan looping first. */
+function mast101(s: Summary[], rows: Row[]): Line[] {
+  const L: Line[] = [], pct = (a: number, b: number) => (b ? Math.round(a * 1000 / b) / 10 : 0);
+  for (const x of s.filter(y => y.style === 'thin-quiet')) { const r = rows.filter(y => y.plan === x.plan), t = r.filter(y => 'camera.recorded' in y.marks).length; L.push({ id: `M101 ${x.plan}`, rule: 'thin quiet: its Pressure taped (report only; Motive expects 90 % or more)', ok: true, value: `${pct(t, r.length)} % (${t}/${r.length})` }); }
+  const r = rows.filter(y => y.plan === 'quiet-b-thinned');
+  if (r.length) {
+    const shown = r.filter(y => 'loop-mast' in y.given || 'fixer-post-wait' in y.given).length, looped = r.filter(y => 'loop-mast' in y.given).length, taped = r.filter(y => 'camera.recorded' in y.marks).length;
+    L.push({ id: 'M101 quiet-b-thinned', rule: "quiet-b thinned: rival-2's Pay card shows the mast's tape, and the plan loops it first (report only)", ok: true, value: `the tape shown on ${pct(shown, r.length)} % (${shown}/${r.length}), looped first on ${looped}, taped ${taped}` });
+  }
   return L;
 }
 
@@ -148,10 +162,13 @@ function lend096(s: Summary[], rows: Row[]): Line[] {
 /** The rigid lines read from the band's rows; the replay, reject and window lines are played (rigid below). */
 export function rigidFromRows(rows: Row[], errors: { id: string; error?: string }[]): Line[] {
   const none = rows.filter(r => r.outcome === 'none'), unnamed = rows.filter(r => r.outcome === 'failure' && !(r.fail && r.cause));
+  const loiter = [...new Set(rows.filter(r => r.style === 'prepared-quiet').map(r => r.plan))].sort().map(plan => { const v = rows.filter(r => r.plan === plan); return { plan, n: v.length, rep: v.filter(r => 'attention.reporting' in r.marks) }; });
   return [
     { id: 'R-1', rule: 'no crash: every play gave its line', ok: !errors.length, value: `${rows.length} plays, ${errors.length} errors`, ...(errors.length ? { note: `${errors[0]!.id}: ${errors[0]!.error}` } : {}) },
     { id: 'R-2', rule: 'no stall: every play reaches a verdict by the close', ok: !none.length, value: `${none.length} plays reach the close with no verdict`, ...(none.length ? { note: `first: ${none.slice(0, 6).map(r => `${r.plan}#${r.seed}`).join(', ')}` } : {}) },
     { id: 'R-3', rule: 'every fail names its cause (fail code and culprit)', ok: !unnamed.length, value: `${rows.filter(r => r.outcome === 'failure').length - unnamed.length}/${rows.filter(r => r.outcome === 'failure').length}` },
+    // brief 101 (Motive briefs/101/motive/mast-pressure.md §3): §09's "no quiet route has a watcher report a loiterer", held on every seed of each prepared quiet plan
+    { id: 'R-8', rule: "§09: no quiet route has a watcher report a loiterer (each prepared quiet plan, on every seed)", ok: !loiter.some(q => q.rep.length), value: loiter.map(q => `${q.plan} ${q.rep.length}/${q.n}`).join(', ') || 'no prepared quiet plan played', ...(loiter.some(q => q.rep.length) ? { note: loiter.filter(q => q.rep.length).map(q => `${q.plan} seeds ${q.rep.slice(0, 8).map(r => r.seed).join(', ')}`).join('; ') } : {}) },
   ];
 }
 
@@ -164,6 +181,7 @@ export const BAD_PLANS: Bad[] = [
   { name: 'a rule it waits on that is not there', plan: badPlan([{ id: 'a', op: 'scout', do: 'move', to: 'cabinet', after: ['nope'] }]), why: /no rule 'nope'/ },
   { name: 'an unknown key on a rule', plan: badPlan([{ id: 'a', op: 'scout', do: 'move', to: 'cabinet', peek: true }]), why: /peek/ },
   { name: 'an unknown pace', plan: { ...badPlan([{ id: 'a', op: 'scout', do: 'move', to: 'cabinet' }]), pace: 'psychic' }, why: /pace/ },
+  { name: 'a tape mark no card shows', plan: badPlan([{ id: 'a', op: 'scout', do: 'move', to: 'cabinet', when: ['taped:waitress:pressure'] }]), why: /taped:rival-n:pay/ }, // brief 101: the condition reads a crew member's Pay card only
 ];
 /** The steps whose window a person's pace must have ≥ 30 s of (design §6). A plan's other steps wait on what they see and have no window to lose. */
 export const WINDOWS: Record<string, string[]> = {
@@ -221,7 +239,7 @@ export async function runBands(mission: string, e: EngineAt, o: { seeds: number;
     const l = JSON.parse(r.stdout.toString().trim().split('\n')[0]!) as { error?: string };
     if (!l.error || !b.why.test(l.error)) off.push(`${b.name}: ${l.error ?? 'it played'}`);
   }
-  rigid.push({ id: 'R-6', rule: 'unknown = reject: an unknown condition, a log line a player does not see, a missing rule, an unknown key, an unknown pace', ok: !off.length, value: `${BAD_PLANS.length - off.length}/${BAD_PLANS.length}`, ...(off.length ? { note: off.join('; ') } : {}) });
+  rigid.push({ id: 'R-6', rule: 'unknown = reject: an unknown condition, a log line a player does not see, a missing rule, an unknown key, an unknown pace, a tape mark no card shows', ok: !off.length, value: `${BAD_PLANS.length - off.length}/${BAD_PLANS.length}`, ...(off.length ? { note: off.join('; ') } : {}) });
 
   // R-7: no reference window under 30 s at a person's pace: the step given 30 s later than the plan would, the win rate stays within 10 points
   o.log('windows');
@@ -244,6 +262,14 @@ export async function runBands(mission: string, e: EngineAt, o: { seeds: number;
   }
   const short = windows.filter(w => !w.holds);
   rigid.push({ id: 'R-7', rule: 'no reference window under 30 s at a person\'s pace: each step 30 s late loses at most 10 points of wins', ok: !short.length, value: `${windows.length - short.length}/${windows.length}`, ...(short.length ? { note: short.map(w => `${w.plan} ${w.rule}: ${w.base} % → ${w.late} %`).join('; ') } : {}) });
+
+  // R-9 (brief 101, Motive and Vantage): the cell's start is a safe place: no camera, guard or robot that keeps a clock sees any point within 2 m of a start mark, at any
+  // tick of an idle mission, on any seed (suborned-sim stance: the engine's own sight, crowd off). An engine before 0.52.0's CLI has no stance command: the line says so.
+  o.log('the start stance');
+  const st = Bun.spawnSync(['dotnet', dll, 'stance', '--seeds', String(o.seeds), '--seed-from', String(o.from)], { cwd: dir, env, stdout: 'pipe', stderr: 'pipe' });
+  const sj = st.exitCode === 0 || st.exitCode === 1 ? JSON.parse(st.stdout.toString().trim().split('\n')[0]!) as { seedsSeen: number; seeds: number; points: number; ticks: number; seen: { seed: number; tick: number; watcher: string; mark: string; how: string }[] } : undefined;
+  rigid.push({ id: 'R-9', rule: "the cell's start out of sight: no camera, guard or robot that keeps a clock sees any point within 2 m of a start mark, at any tick of an idle mission, on any seed", ok: !!sj && sj.seedsSeen === 0,
+    value: sj ? `${sj.seeds - sj.seedsSeen}/${sj.seeds} seeds unseen (${sj.points} points, ${sj.ticks} ticks)` : `no stance read: ${st.stderr.toString().trim().slice(0, 120)}`, ...(sj?.seen.length ? { note: sj.seen.slice(0, 6).map(x => `${x.watcher} sees ${x.mark} (${x.how}) at tick ${x.tick} on seed ${x.seed}`).join('; ') } : {}) });
 
   return { seeds: o.seeds, from: o.from, engine: e.rev === 'tree' ? 'tree' : e.commit.slice(0, 12), seconds: Math.round((performance.now() - t0) / 1000), rigid, bands: bandLines, plans: plansOut, windows, saved, rows };
 }

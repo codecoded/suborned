@@ -6,6 +6,7 @@ import type { Mass } from '../../../contracts/world/world.schema';
 import type { Civic } from '../../plan/civic';
 import type { V } from '../../plan/geom';
 import { adoptedBy, catalogued } from '../gen/kitrefs';
+import { drawnByMast } from '../gen/street/mast';
 import { r3, r4 } from '../gen/common';
 import { dressBeds } from './beds';
 import { footOf } from './foot';
@@ -16,7 +17,7 @@ type At = { id: string; at: V; yawDeg?: number; on?: string };
 export type Dressing = {
   pieces: { piece: string; at: V; yawDeg: number; on?: string[] }[];
   parasols: { piece: string; on: { table: string; at: V }[] };
-  lamps: { piece: string; at: (At & { yawDeg: number; ring: boolean })[] };
+  lamps: { piece: string; at: (At & { yawDeg: number; ring: boolean; mast?: { site: string; headDeg: number } })[] };
   bollards: { piece: string; at: At[] };
   planterRuns: { runs: { id: string; yawDeg: number; modules: { piece: string; at: V }[] }[] };
   cypress: { piece: string; at: (At & { yawDeg: number })[] };
@@ -97,7 +98,7 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
   }
 
   for (const s of dr.parasols.on) keep(put(`civic/${s.table}/parasol`, look.swaps[dr.parasols.piece] ?? dr.parasols.piece, s.at, 0, pav)) // brief 026: Parasol_Testbed over each set's table;
-  for (const l of dr.lamps.at) keep(put(`civic/${l.id}`, dr.lamps.piece, l.at, l.yawDeg, pav));
+  for (const l of dr.lamps.at) if (!drawnByMast(l)) keep(put(`civic/${l.id}`, dr.lamps.piece, l.at, l.yawDeg, pav)); // brief 101: the lamp that carries the square's mast is drawn by the mast's piece (gen/street/mast.ts), its globe and banner included: one piece at the site
   for (const b of dr.bollards.at) keep(put(`civic/${b.id}`, dr.bollards.piece, b.at, 0, pav));
   for (const run of dr.planterRuns.runs) run.modules.forEach((m, i) => keep(put(`civic/${run.id}/${i}`, m.piece, m.at, run.yawDeg, pav)));
   for (const c of dr.cypress.at) { // planted in its bed: the bed's top is the base

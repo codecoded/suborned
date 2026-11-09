@@ -1,0 +1,23 @@
+# python3 briefs/101/vantage/proof/sight.py   (the port, checked against Keel's N67 for the mast as it stood before brief 101)
+Plaza east       stand (650.0, -2550.0) seen=True
+East side        stand (-1140.0, -1500) seen=True
+Café door        stand (-975.0, -2925.0) seen=False
+Office entrance  stand (6400, -4125.0) seen=False
+Courtyard        stand (-680.0, -2900) seen=False
+Under parasol    stand (-810.0, -2370.0) seen=False
+Between tables   stand (-710.0, -3545.0000000000005) seen=False
+Fountain         stand (1100, -3000) seen=False
+Plaza west       stand (650.0, -3450.0) seen=False
+
+# python3 briefs/101/vantage/proof/proof.py   (the mast as the world exports it: sim/data/handover.takedown.json after bun run sim:site, 57133d46d + this round)
+mast sim/data/handover.takedown.json street/records-square/mast-camera-z0: at (-385, -4255) cm, lens 768 cm; heads (500, 866) (compass 120.0), (-500, 866) (compass 60.0), (-1000, 0) (compass 0.0); cone ±34.992, reach 3000 cm
+  watched: compass 325.0 round through north to 155.0; behind the lenses: the rest
+  stance Fixer       5025 points (4875 on free cells), up to 7.4 m off: seen 0; nearest cone edge 51.58 deg outside (head 0, point (0.55, -44.75) m, 4.92 m off)
+  stance Tech        5025 points (5025 on free cells), up to 7.4 m off: seen 0; nearest cone edge 25.58 deg outside (head 0, point (1.20, -42.60) m, 5.05 m off)
+  stance Scout       5025 points (5025 on free cells), up to 4.9 m off: seen 0; nearest cone edge 18.67 deg outside (head 0, point (-1.60, -42.30) m, 2.26 m off)
+  stance Enforcer    5025 points (4934 on free cells), up to 10.3 m off: seen 0; nearest cone edge 48.68 deg outside (head 0, point (3.45, -45.75) m, 7.97 m off)
+  car area          18291 points (16881 on free cells), up to 24.2 m off: seen 0; nearest cone edge 28.81 deg outside (head 0, point (18.00, -44.00) m, 21.90 m off)
+  car spots             8 points (8 on free cells), up to 23.6 m off: seen 0; nearest cone edge 39.72 deg outside (head 0, point (10.25, -46.25) m, 14.58 m off)
+  margin: 18.67 deg (stance Scout)
+  turned counterclockwise: nothing seen within 60 deg (the engine's rules, walls included)
+  turned clockwise: first seen at 18.65 deg (the engine's rules, walls included)

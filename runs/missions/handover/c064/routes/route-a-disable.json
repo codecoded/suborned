@@ -1,0 +1,31 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route A (fight it out) with Disable in place of the Loop (brief 058 §4, §6): the cut (+2 T, where the loop is +1) is reported by the desk at its next scan, the run's first incident (Alert 1); route A has no later report, so it wins at the same time as route-a and one Trail dearer, with no 2:00 window to keep. No Reroute (brief 067 A): the patrol answers the dead screen and stands down without a report. The Enforcer holds Vale at (20.0, -65.0) as route-a does (Motive's rad-h3). Brief 101 (engine 0.52.0, the square's mast on the terrace's west lamp, Sky's pick B): the Scout watches Inez from her start (17 m, a clear line) and the Listen walks to its discreet spot; the Fixer waits behind the mast where the cell starts, walks in only for the Help, walks back and makes the Call from her wait (a Call has no reach). Waiting at the Courtyard, the mast reported her at 45 s.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":0,"op":"scout","do":"watch","target":"waitress"},
+  {"tick":125,"op":"tech","do":"disable","target":"entrance"},
+  {"tick":206,"op":"scout","do":"listen","target":"waitress"},
+  {"tick":225,"op":"enforcer","do":"move","to":[6925,-4250]},
+  {"tick":683,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
+  {"tick":1205,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":1556,"op":"fixer","do":"call","target":"waitress"},
+  {"tick":1556,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1556,"op":"fixer","do":"move","to":[725,-5025]},
+  {"tick":1556,"op":"scout","do":"move","to":[725,-4625]},
+  {"tick":1574,"op":"enforcer","do":"enter"},
+  {"tick":1574,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":1954,"op":"enforcer","do":"move","to":[2000,-6500]},
+  {"tick":2248,"op":"scout","do":"draw"},
+  {"tick":2248,"op":"fixer","do":"draw"},
+  {"tick":2248,"op":"tech","do":"draw"},
+  {"tick":2248,"op":"enforcer","do":"draw"},
+  {"tick":2370,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2474,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2474,"op":"cell","do":"go"}
+ ],
+ "until": 4900
+}

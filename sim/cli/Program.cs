@@ -16,6 +16,7 @@
 //   range list|play|script|hashes               brief 029's fight range on its own site (sim/cli/Range.cs)
 //   codes                                       every refusal code an order can get (Fable's text.json locks read these)
 //   facts                                       the site's facts a mission check reads, as JSON: patrolWatchesEntry (MC-3's needs, brief 067)
+//   stance [--seeds n] [--seed-from k]          brief 101: the cell's start out of every clock-keeping watcher's sight on every seed, over an idle mission (Stance.cs)
 //   cover-vectors                               the cover each fight post would take (car as foe, and advancing), for tools/cover/select.ts to agree
 //   fans [tick] [--crowd]                       every watcher's sight fan at a tick of an idle run (Game.ConeFan), with its cost
 //   hashes [--start-text <t>] [--legacy-start]  every scenario's and route script's checkpoint hashes as JSON; --legacy-start leaves a fixed
@@ -87,6 +88,7 @@ static class Program
                     Console.WriteLine(Hashes(inputs, root, k > 0 ? args[k + 1] : null)); return 0;
                 }
                 case "codes": { var w = new JWriter().Arr(); foreach (var c in Answer.Codes) w.Str(c); Console.WriteLine(w.EndArr().ToString()); return 0; }
+                case "stance": return StanceCli.Run(inputs, args); // brief 101 (Waymark): the start-stance rigid line the bands read
                 case "facts": // engine 0.34.0 (Motive briefs/067/motive-square.md §5.3): the site's facts a mission check reads (Waymark's MC-3 needs)
                 {
                     var g = Engine.New(inputs);

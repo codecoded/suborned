@@ -1,40 +1,10 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route B thinned (brief 059 S1; Motive's s1-rulings route-b-thin): route-b with one posted rival taken down before the pickup where the other two cannot see it: at about 5:08 the Enforcer, waiting at the square, knocks out rival-3 at his lone post by the café terrace's west wall from behind (1.3 m off his back; he faces our car), 28 m from the pair on the square's east side, beyond their pistols' 16 m, and leaves him; then on to the service lane at 5:30 as route-b. Brief 098 (Waymark): rebuilt on route B as brief 096 has it (engine 0.42.0, the lend): the Scout listens to the driver, the Tech loops the pickup camera and the Fixer pays the driver off tape, the Scout misleads the lookout (rival-4) once he posts, the Tech reroutes the patrol, the Enforcer takes Popovic in the back seat and the Take lends Popovic's car: its Go is the win, and the three break the posted crew at our car, board and Go before the police close in. The plan it replaces tipped the rival car off at 3:10 (retired by brief 096: the car boxes ours in on arrival and the Mislead is for a man on foot) and drove our car round to the service drive at 5:53 (refused: ours is boxed in at the square from 2:53).",
+ "note": "Route B thinned (brief 059 S1; Motive's s1-rulings route-b-thin): route-b with one posted rival taken down before the pickup where the other two cannot see it: at about 5:08 the Enforcer, waiting at the square, knocks out rival-3 at his lone post by the café terrace's west wall from behind (1.3 m off his back; he faces our car), 28 m from the pair on the square's east side, beyond their pistols' 16 m, and leaves him; then on to the service lane at 5:30 as route-b. Brief 098 (Waymark): rebuilt on route B as brief 096 has it (engine 0.42.0, the lend): the Scout listens to the driver, the Tech loops the pickup camera and the Fixer pays the driver off tape, the Scout misleads the lookout (rival-4) once he posts, the Tech reroutes the patrol, the Enforcer takes Popovic in the back seat and the Take lends Popovic's car: its Go is the win, and the three break the posted crew at our car, board and Go before the police close in. The plan it replaces tipped the rival car off at 3:10 (retired by brief 096: the car boxes ours in on arrival and the Mislead is for a man on foot) and drove our car round to the service drive at 5:53 (refused: ours is boxed in at the square from 2:53). Brief 101 (engine 0.52.0, the square's mast on the terrace's west lamp, Sky's pick B): rival-3's lone post by the café terrace is in the mast's view, so a takedown there is seen (Alert 3) and his body, left there, is found once a loop runs out (a knockout lasts 2:00, as long as a loop). So the Tech loops the mast once the pickup camera's loop has run out (planted at 4:15, live about 4:35 to 6:35), the knockout comes inside it, and the Enforcer carries him to the café's kitchen-door stash (20 m; only a stash hides a body) before going on to the service lane. He is tied first: untied, he would come round in the stash at about 7:10 and call out (the Office's staff report the noise); tied and hidden he stays out, so the rearguard at our car faces one gun fewer for good, where before he woke at about 7:08 and rejoined.",
  "start": {},
  "until": 4900,
  "steps": [
-  {
-   "op": "enforcer",
-   "do": "move",
-   "to": [
-    -700,
-    -3600
-   ],
-   "at": "4:55",
-   "why": "behind rival-3 at his lone post by the café terrace (-5.75, -36.25), 1.3 m off his back (he faces our car), out of his cone and 28 m from the pair on the square's east side, beyond their pistols' 16 m"
-  },
-  {
-   "op": "enforcer",
-   "do": "takedown",
-   "target": "rival-3",
-   "how": "knockout",
-   "at": "5:08",
-   "unless": "takedown.fails",
-   "clear": 1,
-   "label": "td"
-  },
-  {
-   "op": "enforcer",
-   "do": "move",
-   "to": "d:Service lane",
-   "at": "5:30",
-   "why": "brief 067 A (the patrol sweeps the service yard): waits at the square until the Reroute has landed (5:45), then walks to the service lane",
-   "after": [
-    "td"
-   ]
-  },
   {
    "op": "scout",
    "do": "move",
@@ -86,6 +56,18 @@
    "why": "brief 096: Lukac stands in the pickup camera's view, so the Pay is looped first (it was on tape in c051); the loop's 2:00 covers the walk in and the 35 s Pay"
   },
   {
+   "op": "tech",
+   "do": "loop",
+   "target": "mast-z0",
+   "after": [
+    "loop"
+   ],
+   "when": "loop.ends",
+   "at": "4:15",
+   "label": "mastloop",
+   "why": "brief 101 (Motive §2: on route B the Tech's loop is free for the mast: the driver's Pay is looped earlier, and the Reroute isn't a loop): one loop at a time, so once the pickup camera's has run out (about 3:27); planted at 4:15 it lands at 4:35 and runs to 6:35, over the knockout at rival-3's post and the carry to the stash, and the Tech is free again for the Reroute at 4:40"
+  },
+  {
    "op": "fixer",
    "do": "move",
    "to": "d:Boarding pavilion",
@@ -104,6 +86,19 @@
     "loop"
    ],
    "when": "loop.on"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7950,
+    -3850
+   ],
+   "after": [
+    "turned"
+   ],
+   "label": "fixer-off",
+   "why": "the Pay done, back to the corner 2.2 m outside the pickup camera's cone (as quiet-b-thinned's fixer-away): standing at the pavilion she was reported loitering once its loop ran out at about 3:27 (Alert 1; not the mast's: engine 0.52.0 on this script's old ticks)"
   },
   {
    "op": "scout",
@@ -151,6 +146,79 @@
   },
   {
    "op": "enforcer",
+   "do": "move",
+   "to": [
+    -595,
+    -3690
+   ],
+   "at": "4:55",
+   "why": "behind rival-3 at his lone post by the café terrace's west wall (engine 0.52.0: ambush-2, (-5.75, -37.75); he faces our car), 0.9 m off his back on the free ground north of him (the wall is at his west), out of his cone and 28 m from the pair on the square; brief 101: at 4:55 the mast's loop has landed (4:35)",
+   "after": [
+    "mastloop"
+   ]
+  },
+  {
+   "op": "enforcer",
+   "do": "takedown",
+   "target": "rival-3",
+   "how": "knockout",
+   "at": "5:08",
+   "unless": "takedown.fails",
+   "clear": 1,
+   "label": "td"
+  },
+  {
+   "op": "enforcer",
+   "do": "restrain",
+   "target": "rival-3",
+   "after": [
+    "td"
+   ],
+   "label": "tied",
+   "why": "brief 101: tie him first: untied, he comes round in the stash at about 7:10 and calls out, and the Office's staff report the noise (Alert 1 before the Go); tied and hidden he stays out (Keel's CREW-BODY)"
+  },
+  {
+   "op": "enforcer",
+   "do": "carry",
+   "target": "rival-3",
+   "after": [
+    "tied"
+   ],
+   "label": "lift",
+   "why": "brief 101: lift him (3 s): left at his post, the mast finds his body once its loop runs out (a camera finds an open body; a knockout lasts 2:00, as long as a loop)"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    -2275,
+    -2575
+   ],
+   "after": [
+    "lift"
+   ],
+   "why": "brief 101: carrying him round the café's west side to its kitchen door (20 m), inside the mast's loop"
+  },
+  {
+   "op": "enforcer",
+   "do": "stash",
+   "target": "stash/cafe-kitchen-door/door",
+   "label": "hid",
+   "by": "6:20",
+   "why": "brief 101: through the café's kitchen door (only a stash hides a body), well before the mast's loop runs out at about 6:35"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Service lane",
+   "at": "5:30",
+   "why": "brief 067 A (the patrol sweeps the service yard): waits at the square until the Reroute has landed (5:45), then walks to the service lane",
+   "after": [
+    "hid"
+   ]
+  },
+  {
+   "op": "enforcer",
    "do": "take",
    "when": "car.parks",
    "label": "take",
@@ -179,7 +247,7 @@
     -5025
    ],
    "after": [
-    "turned"
+    "fixer-off"
    ],
    "at": "5:35",
    "label": "fixer-sq",

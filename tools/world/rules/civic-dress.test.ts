@@ -12,6 +12,7 @@ import { type Dressing, dressingOf, footOf, placementKinds } from '../civic/dres
 import { look } from '../civic/look';
 import { adoptedBy, catalogued } from '../gen/kitrefs';
 import { landingsOf } from '../gen/street/crossings';
+import { drawnByMast } from '../gen/street/mast';
 import { adoptedRule, budgetRule, civicDressRules, civicTris, drawnApart, handoverPoints, namedPieces, overrideProblems, paletteRule } from './civic-dress';
 
 setDefaultTimeout(120000);
@@ -31,13 +32,13 @@ describe('civic dressing: what is placed', () => {
   const count = (id: RegExp) => base.w.civic.filter(m => id.test(m.id)).length;
   test('each dressing entry is one mass, in the counts the block states', () => {
     expect(count(/\/parasol$/)).toBe(dr.parasols.on.length);
-    expect(count(/^civic\/lamp-/)).toBe(dr.lamps.at.length);
+    expect(count(/^civic\/lamp-/)).toBe(dr.lamps.at.filter(l => !drawnByMast(l)).length); // brief 101: lamp-terrace-w is drawn by the square's lamp mast, one piece at the site
     expect(count(/^civic\/bol-/)).toBe(dr.bollards.at.length);
     expect(count(/^civic\/run-/)).toBe(dr.planterRuns.runs.reduce((n, r) => n + r.modules.length, 0));
     expect(count(/^civic\/cyp-/)).toBe(dr.cypress.at.length);
     expect(count(/^civic\/top-/)).toBe(dr.topiary.at.length);
     expect(count(/^civic\/band\//)).toBe(look.bands.pieces.length);
-    expect([dr.parasols.on.length, dr.lamps.at.length, dr.bollards.at.length, dr.cypress.at.length, dr.topiary.at.length, look.bands.pieces.length]).toEqual([7, 8, 12, 6, 6, 36]);
+    expect([dr.parasols.on.length, dr.lamps.at.length, dr.bollards.at.length, dr.cypress.at.length, dr.topiary.at.length, look.bands.pieces.length]).toEqual([8, 8, 12, 6, 6, 36]); // brief 101: table 7's parasol back (the square's mast left its corner for lamp-terrace-w); was 7
   });
   test('the pieces stand on what they replace: the structures they cover leave the export, the café is a ground storey under its upper mass', () => {
     const ids = new Set(base.w.civic.map(m => m.id));
@@ -71,7 +72,7 @@ describe('civic dressing: what is placed', () => {
     expect([...faded].filter(id => !/_Planting$/.test(id)).sort()).toEqual(fadeDrawn.sort());
     expect([...faded].filter(id => /_Planting$/.test(id))).toEqual(['CafeUpper_3_Planting']);
     expect(spare.size).toBe(1);
-    expect(base.w.civic.filter(m => m.fade && /\/parasol$/.test(m.id))).toHaveLength(7);
+    expect(base.w.civic.filter(m => m.fade && /\/parasol$/.test(m.id))).toHaveLength(8); // brief 101: table 7's parasol back; was 7
   });
   test('crossings: nine civic landings are built, each paired across the carriageway; x-apron-w and the two left out stay dropped', () => {
     const lands = dr.crossings.at.map(c => landingsOf(base.w).find(s => s.id.endsWith(`/crossing-${c.id}`)));

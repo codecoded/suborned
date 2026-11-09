@@ -4,7 +4,7 @@
  "frame": "integer centimetres, block frame (x south, y east), as sim/data/handover.site.json. Round clock: whole seconds from the stop's origin (mission second 0 if the stop began earlier); legs in whole seconds along the site grid's route at pace. Ticks are 10 Hz.",
  "rules": {
   "file": "contracts/people/routines.rules.json",
-  "sha256": "48085992d689a07266a917065c9cbe0ffa1ba5249feb5df7d7889df01a09734a",
+  "sha256": "babab5945511bb179d111965e54d0d39156d896b6fa61bb1e680210bbc2edd38",
   "paceCmPerS": 140,
   "lingerS": 3,
   "closeCm": 120,

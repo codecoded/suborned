@@ -3,8 +3,9 @@
 //    C102-OFFER          offered where the call has a use (Inez, the turned guard); absent where it has none (the turned driver), with Issue's code
 //    C102-UNTIED         an untied contact's Call is absent at both ends, and so is the Call on someone not turned
 //    C102-SAW-TAKEDOWN   Inez saw a takedown, then is called: call-saw-violence at no cost; the guard stays at his door; the Call stays offered, shut
-//    C102-SAW-KILLED     Inez saw her lover shot down at her side, then is called: call-saw-violence, before his state (he's down, he came once)
-//    C102-UNSEEN         the guard knocked out out of her sight: she tries, and nobody comes (summon-busy), never call-saw-violence
+//    C102-SAW-KILLED     Inez saw her lover shot down at her side, then is called: call-saw-violence, before his state (he's down, he came once); she knows
+//    C102-UNSEEN         the guard knocked out out of her sight: she tries, and nobody comes (summon-busy), never call-saw-violence; she doesn't know (KnowsDown)
+//    C102-KNOWS-CARRY    the same, then carried past her: she knows he's down (KnowsDown), though the call is still summon-busy: no "he's not answering"
 //    C102-GUARD-SAW      the turned guard saw a weapon drawn, then is called: call-saw-violence, before his own busy and the alarm
 //    C102-GUARD-CALL     the turned guard is called: he walks to Inez's post, stays a minute and walks back, the window hers would give
 //    C102-ONCE           once a shift across both ends: his call, then hers (busy while he's away, came once after) and his again
@@ -91,6 +92,7 @@ namespace Suborned.Sim
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down");
                 r.Is(g.Inez.Has("saw-gunfire") && g.InezWitnessedShooting, "she saw him shot");
+                r.Is(g.KnowsDown(Inez, GuardR), "she knows he's down (KnowsDown: the shot's witness)");
                 RefusedCall(r, Inez, "call-saw-violence", "her memory shows, not his state (summon-busy) or his one visit (summon-came-once)");
                 r.Is(g.CallOffered(Inez), "her Call stays offered, shut");
             }, Turned(Inez));
@@ -102,7 +104,21 @@ namespace Suborned.Sim
                 r.Takedown("guard", "knockout"); r.Done(Enf);
                 r.Is(g.GuardDown, "he is down");
                 r.Is(!g.Inez.Has("saw-takedown") && !g.Inez.Has("saw-violence") && !g.Inez.Has("saw-gunfire"), "she saw nothing");
+                r.Is(!g.KnowsDown(Inez, GuardR), "she doesn't know he's down (KnowsDown): the host's \"he's not answering\" is true");
                 RefusedCall(r, Inez, "summon-busy", "she tries; he can't come");
+            }, Turned(Inez));
+
+            Add("C102-KNOWS-CARRY", "102", "Keel's read for the host (brief 102, engine 0.52.0: KnowsDown): the guard knocked out out of her sight (C102-UNSEEN), then carried past her. She saw him carried, so she knows he's down. Her call is still refused summon-busy, his state: a carry is no memory of the cell's violence (step 4 reads gunfire, violence, a drawn weapon, a takedown), but \"he's not answering\" would be untrue: the host reads KnowsDown.", r =>
+            {
+                var g = r.G;
+                GuardQuiet(r);
+                r.Takedown("guard", "knockout"); r.Done(Enf);
+                r.Is(g.GuardDown && !g.KnowsDown(Inez, GuardR), "he is down, out of her sight: she doesn't know");
+                r.Body(Enf, "carry", "guard"); r.Done(Enf);
+                r.SendTo(Enf, r.Stand("d:Courtyard"));
+                r.Is(r.Until(() => g.Inez.Has("saw-carry") || g.Over, T(180)), $"she sees him carried ({Report.Clock(g.Tick)})");
+                r.Is(g.KnowsDown(Inez, GuardR) && !g.KnowsDown(GuardR, Inez), "she knows he's down (and he knows nothing of her: she is up)");
+                RefusedCall(r, Inez, "summon-busy", "her call: his state, summon-busy (a carry is no memory of violence)");
             }, Turned(Inez));
 
             Add("C102-GUARD-SAW", "102", "Step 4 from his end (option 1): the turned guard sees the Enforcer draw at his door, then is called. His own memory is the reason (call-saw-violence), before his state (engaged) and the alarm.", r =>
@@ -120,15 +136,15 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Is(g.CallOffered(GuardR) && !g.CallOffered(Inez), "his Call is offered; Inez isn't turned, so hers isn't");
                 r.Eq((g.CallLeaver(GuardR), g.CallLeaver(Inez), g.CallLeaver(Driver)), (GuardR, GuardR, ""), "the one who'd leave a post: the guard, from either end; nobody for the driver");
-                var w = g.GuardCallWindows(GuardR); var wi = g.GuardCallWindows(Inez);
-                r.Is(w.HasValue && wi.HasValue && w.Value.plain == wi.Value.plain && w.Value.pressed == wi.Value.pressed, "the card's window is the same from either end");
+                if (!Window(r, GuardR, out var w) || !Window(r, Inez, out var wi)) return;
+                r.Is(w.plain == wi.plain && w.pressed == wi.pressed, "the card's window is the same from either end");
                 long trail = g.Trail;
                 r.Do(Fixer, "call", GuardR);
                 int lure = g.LureTick, walk = g.VisitWalkTicks, stay = T(g.R.SummonStayS);
                 r.Eq(lure, g.Tick, "he takes the call at once");
                 r.Eq((long)g.Trail, trail + g.R.CallTrail, "the call's Trail");
                 r.Is(!g.GuardCallPressed, "nobody pressured: the plain visit");
-                r.Eq(g.GuardAwayUntil - lure, w!.Value.plain, "the door's window is the card's");
+                r.Eq(g.GuardAwayUntil - lure, w.plain, "the door's window is the card's");
                 r.Eq(g.GuardAwayUntil - lure, 2 * walk + stay, "there and back at his walk, and a minute's stay");
                 r.Is(g.LureCalled == GuardR && g.Chain.Contains("guard-goes-to-waitress") && g.GuardP.Has("job") && g.Log.Exists(l => l.Code == "call.guard"), "his own call: logged, chained and remembered as his");
                 r.Wait(1); r.Is(!g.GuardAtDoor && g.GuardPose()!.Value.phase == "walking to café", "he leaves his door and walks to her");
@@ -166,7 +182,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 PressGuard(r);
-                var w = g.GuardCallWindows(GuardR)!.Value;
+                if (!Window(r, GuardR, out var w)) return;
                 r.Is(w.pressed < w.plain, "the card's read: the pressed window is the shorter");
                 r.Is(g.CallWouldBePressed(GuardR) && g.CallWouldBePressed(Inez), "the card's read: short from either end");
                 r.Do(Fixer, "call", GuardR);
@@ -182,7 +198,7 @@ namespace Suborned.Sim
                 r.Is(!g.CallWouldBePressed(GuardR), "before the Pressure: the plain visit");
                 PressThenCall(r);
                 r.Is(g.CallWouldBePressed(GuardR) && !g.GuardP.Has("pressure"), "her Pressure makes his call the short one, though he was never pressured");
-                var w = g.GuardCallWindows(GuardR)!.Value;
+                if (!Window(r, GuardR, out var w)) return;
                 r.Do(Fixer, "call", GuardR);
                 r.Is(g.GuardCallPressed && g.LureCalled == GuardR, "his call, the short visit");
                 r.Eq(g.GuardAwayUntil - g.LureTick, w.pressed, "the pressed window");
@@ -194,7 +210,7 @@ namespace Suborned.Sim
                 PressGuard(r);
                 r.To(r.Send(Fixer, "d:Courtyard")); HelpUntilTurned(r, Inez);
                 r.Is(g.Inez.Turned && !g.Inez.Has("pressure"), "Inez helped, never pressured");
-                var w = g.GuardCallWindows(Inez)!.Value;
+                if (!Window(r, Inez, out var w)) return;
                 r.Do(Fixer, "call", Inez);
                 r.Is(g.GuardCallPressed && g.LureCalled == Inez, "her call, the short visit");
                 r.Eq(g.GuardAwayUntil - g.LureTick, w.pressed, "the pressed window");

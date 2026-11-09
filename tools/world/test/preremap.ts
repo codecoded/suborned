@@ -5,6 +5,8 @@
 // ripple run, 2026-11-07). They now generate it with the catalogue pinned here (tools/world/test/preremap.kit.json, its sha256 below): kit.json
 // as it stood at 0f75f128, every piece that plan places adopted, its file lists emptied: only the copy and the importer read them (the generator reads ids,
 // status, sizes, tags, the built tips and the poster sets: tools/world/gen/kitrefs.ts). A later kit change moves the live plan's tests, never these.
+// One piece was added after the pin (brief 101): MastCamera_Lamp, the square's lamp mast. The plan reads the live civic block, whose lamp-terrace-w now carries
+// the mast, and the zone pins name it, so without it the pre-remap zone took the old MastCamera and ZK-1 failed. It is the last row, its kit.json entry of 2026-11-09.
 //   prePlan()      the plan, and the pinned catalogue for the rest of this test file (kitrefs pinKit; afterAll takes it off)
 //   withPreKit(fn) fn on the pinned catalogue, for a file that also generates the live plan (which keeps the live catalogue)
 //   preKit()       the pinned catalogue, for a test that looks up a piece the pre-remap world places
@@ -21,7 +23,7 @@ const ROOT = resolve(import.meta.dir, '../../..');
 export const PRE_REMAP_PLAN = 'briefs/075/remap/base.plan.json';
 export const PRE_REMAP_KIT = resolve(import.meta.dir, 'preremap.kit.json');
 /** The pin's own bytes: an edit to it fails here, not as a moved rule somewhere else. */
-export const PRE_REMAP_KIT_SHA256 = '0366ff98e3554769ab123d319a2b6c180b6ed83ebc955d66cbbd5aa1759c7fc2';
+export const PRE_REMAP_KIT_SHA256 = 'bf6afe3681cd8122147ed74da429dc5630d675ae184f09eb04caed3b3b310304';
 /** Where the pin came from (its `pin` field says the same). */
 export const PRE_REMAP_KIT_FROM = { file: 'contracts/world/kit.json', commit: '0f75f128' } as const;
 

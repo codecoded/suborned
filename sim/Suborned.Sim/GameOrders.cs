@@ -360,7 +360,7 @@ namespace Suborned.Sim
             foreach (var act in acts) witnessed |= WitnessAct(act, p, "fixer");
             witnessTrailOff = false; if (witnessed) ActWitnessed(o); // and a record still to land charges none
             bool charged = false;
-            foreach (var c in changes) charged |= Apply(c, p, q, witnessed);
+            foreach (var c in changes) charged |= Apply(c, p, q, witnessed, o);
             if (paid > 0 && !charged) { Cash += paid; } // no deal: the money stays with the cell
             if (R.KnownBy.Contains(ev.Id)) p.Learn("temperament"); // rulebook preview.knownBy (Sky 2026-10-15: Listen)
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal))
@@ -372,8 +372,8 @@ namespace Suborned.Sim
             Note(ev.Id == "cell.watch" ? $"{Sim.Op.Name(op.Id)}.watch.{outcome.Id}" : $"{ev.Id}.{outcome.Id}", $"{p.Name} ({p.Role}): {ev.Id} → {outcome.Id}.");
         }
 
-        /// <summary>One change from a rulebook outcome. Returns true if it charged money.</summary>
-        bool Apply(Eff c, Person p, Quote q, bool witnessed)
+        /// <summary>One change from a rulebook outcome of the act `o`. Returns true if it charged money.</summary>
+        bool Apply(Eff c, Person p, Quote q, bool witnessed, Order o)
         {
             switch (c.Do)
             {
@@ -390,21 +390,10 @@ namespace Suborned.Sim
                     foreach (var w in c.L("what")) { if (w == "refused") p.KnownRefused.Add(q.Event.Substring(5)); else p.Learn(w); }
                     return false;
                 case "forget": foreach (var w in c.L("what")) p.Forget(w); return false;
-                case "report": Report(p); return false;
+                case "report": Report(p, o); return false; // GameCameraRecord.cs: one act, one incident
                 case "debrief": DebriefLines.Add((Tick, c.S("line"), p.Role, "")); return false;
                 default: throw new FormatException($"effect '{c.Do}' is not a mission effect");
             }
-        }
-
-        /// <summary>A report (rulebook reports): an incident for Alert — the nth reported incident raises it to at least byIncident[n−1].</summary>
-        void Report(Person p)
-        {
-            Reported++;
-            var list = R.AlertByIncident;
-            int at = list[Math.Min(Reported, list.Length) - 1];
-            RaiseAlert(at, $"report:{p.Role}");
-            AddIncident("report", "report:" + p.Role, PersonPos(p) ?? S.Stand(S.GuardPost), new[] { (p, PersonPos(p) ?? S.Stand(S.GuardPost)) });
-            Note("report", $"{p.Name} reports the approach. Alert {Alert}.");
         }
 
         /// <summary>rulebook witness.sees: anyone (but the subject and the cell) within witness range on a clear sightline sees a traceable act:

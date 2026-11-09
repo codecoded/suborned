@@ -2,8 +2,8 @@
  "schema": "suborned.plan/1",
  "id": "harbour-district",
  "name": "Harbour District",
- "version": "0.5.6",
- "date": "2026-10-29",
+ "version": "0.5.7",
+ "date": "2026-11-09",
  "status": "brief 075 remap (Sky 2026-10-28: \"why can't we just remap the world around d handover using old buildings\"): the old DecoKit town transcribed by tools/plan/oldtown/transcribe.ts from /Users/sky/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit (sources sha256 in oldtown.sources), the Handover zone kept byte for byte. transit from A04 run r008, accepted; world program brief 004; skyline and threaded sky rail brief 007 A; skyline text (why, crownWhy, conceptTiles, station kitWhy) from skyline run r011, accepted; play-street height cap brief 066 (Sky 2026-10-26)",
  "frame": {
   "units": "m",
@@ -3260,13 +3260,17 @@
      "mast-camera": {
       "mast": 8,
       "heads": 3,
-      "headStep": 120,
+      "headStep": {
+       "square": 60,
+       "circus": 120
+      },
+      "headStepWhy": "Degrees between neighbouring heads, by site (brief 101, Sky 2026-11-09, option B). The circus masts stand on the island and watch all round: 120°. A square's mast stands at the square's edge with its back to the street, so its heads fan 60° apart over the square: 190° of the 360° watched (three 70° cones, 10° shared between neighbours), the 170° behind it unwatched. The first head looks along the mast's yaw, each next one step further counterclockwise seen from above.",
       "range": 30,
       "cone": 70,
       "tilt": -20,
       "fixed": true,
       "tag": "[S]",
-      "on": "own mast, ≥ 6 m from any phoenix crown (crownBase 6 < 8)",
+      "on": "own mast, ≥ 6 m from any phoenix crown (crownBase 6 < 8); a square's mast is the square's own lamp standard carried up to the mast's height, its lamp kept at lamp height (brief 101)",
       "why": "squares and the circus are watched whole, from above the crowd"
      },
      "civic-robot": {
@@ -3294,8 +3298,10 @@
       "why": "a gate is where a mission seals: who came in, when"
      },
      "square": {
-      "cameras": "1 mast-camera at the edge nearest the square's main entrance",
-      "robot": "1 civic-robot"
+      "mainEntrance": "the square's boarding pavilion, where people arrive and wait to be picked up (Records Square: civic-block square-boarding-pavilion, over the square's bay on Rocket Lane)",
+      "cameras": "1 mast-camera at the square's edge nearest its main entrance, its three heads fanned 60° apart over the square (types.mast-camera.headStep.square), its back to the street and the entrance. The block names the standard it stands on and its turn (civic-block dressing: the lamp that carries `mast`); a block that names none stands it at the square's corner nearest the circus, yaw 0 (a run's pinned block)",
+      "robot": "1 civic-robot by its own rule: its dock 2 m west of the square's corner point nearest the circus (the circus centre held 7.5 m inside the square's edges)",
+      "why": "brief 101 (Sky 2026-11-09: \"main square camera isn't obvious it's looking over the square, it's hidden from start view\"; option B picked): a square is watched from where people come into it, in plain view of anyone arriving, looking over the square and not along the street behind it. The robot's dock keeps its corner toward the circus, and the response's robots their timings."
      },
      "circus": {
       "cameras": "2 mast-cameras on the island ring band, north and south of the monument",
@@ -10132,6 +10138,7 @@
    "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
   ],
   "history": [
+   "2026-11-09 (Datum, brief 101, Sky's pick B, the lamp mast; version 0.5.7): a square's mast stands at the square's edge nearest its main entrance, the boarding pavilion, with its three heads fanned 60° apart over the square and its back to the street (streetscape.watchers.sites.square, mainEntrance). types.mast-camera.headStep is now by site: square 60°, circus 120° (the circus masts as before). The robot's dock keeps its corner toward the circus by its own rule (sites.square.robot). On Records Square the block's lamp-terrace-w is the mast's standard and gives its turn (Vantage, civic-block.adjust.json); the generator reads it (Splice, tools/world/gen/street/mast.ts). The ids stay street/records-square/mast-camera-z0 and civic-robot-dock-z1.",
    "2026-10-29 (Datum, brief 075 SpaceHQ ours; version 0.5.6): Sky picked SpaceHQ 'ours', now the default form (plan.spacehq.form): the SpaceHQ_Portal at (0, 244), S1 north on x -95.5 from Circus Road and east on y 244 through the drum (signatures[space-hq].portal, y 244, openings x ±40), Crown Circus station inside at (0, 244), its banks on the drum's ground hall declared a public floor (levels[street].floor, Splice's onSignatureFloor), off the sheet east over the quay. To lay that turn with a straight platform the Sphere moves 42 m west to (-172, 124) (form ours only; no other way onto the axis holds R 70, the spans and Orbit Gardens' platform). Crown Walk runs through the hall (walk) with mall ends either side of the drum (their centre bands carry the last pylons 3 m outside the jambs), the west end's cap in a slot cut from Sphere Park. Opt-in fields of 345b1e19 adopted: pylonClear.walk (pylons out of clear walks), roads[].pavement on Sunset Way east (3.25) and Market Street east (2.75, R-PV1's narrowest; old 2 m), so E1 stands at its old 13 bays (y -242.75..-148.75) and N2 at y -301.25..-261.25 (E2 keeps 7 of 8: the east lane fixes its end), standards.blocks.massing (the old composed district; no plot exempted, swap2 builds every plan block) and standards.roads.frontageSquare.reach 45. Handover zone, routes and site unchanged. Notes: briefs/075/notes.md 'SpaceHQ ours'.",
    "2026-10-29 (Datum, brief 075 plan-match; version 0.5.5): Splice's plan-match patch (briefs/075/oldbuild/plan-patch.json, 175 ops from match.json) decided op by op in briefs/075/oldbuild/plan-patch-applied.json; the old-built town wins outside the Handover where the plan's rules let it. Applied: Crown Avenue at its old-built 16 m (kerbs x ±8, 10 m pavements to the old walls; no tram), its plots' kerb edges and circus-mouth faces with it, n_avenue 2 m north so its end kerb stays on the forecourt; the old Southside blocks on the plan's lines (N1 on its old line y -302..-262; SS1 and SS3 as ss3/a y -473..-427 and ss3/b y -525..-491, the old 18 m gap kept; SS4 34 m at y -518.5..-484.5); ss1 open ground (no old building stands there). Recorded: the old harbour promenade (-0.85) as street-level ground (standards.levels.grounds), not a fourth level. Kept: the Boulevard at 20 m (T1's stop islands need 10 m a half: two stops stand on it); the 0.18 pavement everywhere (one kerb height; the Handover zone fixes it); every Handover plot and street; the crescents, landmarks and old walls as transcribed (box artefacts rejected). Asked of Splice: a per-road pavement width (the old 2-4 m side-street flags at E1, E2, N2), a BG-1 'massing' exemption (the old CityMass west of the gardens), R-F1 for a plot fronting a square (old E1 on the harbour terrace). Handover zone, routes, timings and points unchanged.",
    "2026-10-29 (Datum, brief 075 swap: network; version 0.5.4): Latch's old-built town (cc903ae0) stands the old SphereStation at ×1 (188 m, legs to r 67, service towers to r 72.4) and S1's north leg on x -95 ran through its leg ring. The Sphere landmark is now the old ×1 (r 72.5, top 188.4; was ×0.425, r 31, top 80), and S1 goes round its east side: east on Circus Road's line past Orbit Gardens station, north (R 70) onto x -52 (78 m off the Sphere's centre, so pylons keep pylonClear.landmark outside its disc), then an S of two R 70 curves (corners (-52, 156) and (-95, 198)) between the Sphere and the west gate tower's shaft onto x -95 north of the Sphere. Crown Circus station moves north 15 m on that straight to (-95, 253) (platforms y 228..278), Crown Walk with it (y 253) and Sphere Park's slot. Sphere Park and the north lawn take x -54..-50 of west-wall-n's back yard for y 9..144 (the old W4 wall's back is at x -46), so the line and its pylons stand on park (S-C1, S-P2). S1 gardens → Crown Circus 304 → 374 m (run 25 → 31 s). T1 is unchanged: its streets (Crown Road, Sunset Way, Market Street) are the Handover's mission streets (official 1124, getaway 447, rivals 593) and its stops are kept, so the old pieces give way to Market Street at the Southside seam (briefs/075/notes.md, Swap: network). Handover zone unchanged (overlay: C-0, C-3, M-1, M-2, M-3, V-1, W-1 identical). The 'ours' form keeps S1 on x -95 (data only, through the ×1 Sphere: it would need the same detour if Sky picks it).",

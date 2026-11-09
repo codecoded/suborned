@@ -1,0 +1,32 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route A with Pressure for Help (Keel S25; Sky Q4), fight it out: Pressure leans on Inez's affair, learned by Listen ($0, +3 T); the cast's Inez is Fearful, so it is also her own approach and one order turns her. Pressed, she warns the guard (engine 0.38.0): he stays 5 s and runs back at 2.2 m/s, so the door is clear for about 1:37 of the call, not the walk both ways a helped Inez buys. No Reroute (brief 067 A). He holds Vale at (20.0, -65.0) as route-a does while the three break the crew, then boards; the car leaves at once and the three walk out. Brief 101 (engine 0.52.0, the square's mast on the terrace's west lamp, Sky's pick B; Motive briefs/101/motive/mast-pressure.md §1): the Pressure card shows the mast would tape it at her post (+1 T, Alert 1 at the desk's next scan + 3 s, the dial's robots to her, the Fixer's face on file). A player reading it loops the mast first: the loop is the same +1 T and buys silence (no Alert, no robots, no face, and no log of the Fixer beside the turned Inez, so her job stays unexposed); its price is time. So the Tech loops the mast from the cabinet (live about 0:45 to 2:45), the Scout watches Inez from her start and listens beside her inside the loop, the Fixer walks in from her wait behind the mast for the Pressure and back out before the loop runs out, the call goes when the rival car is seen coming, and the entrance loop follows the mast's (one at a time: live about 3:05 to 5:05), so the Enter starts about 3:05, inside the pressed guard's window (Motive: a call at 2:35 keeps him away to about 4:14).",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":0,"op":"scout","do":"watch","target":"waitress"},
+  {"tick":125,"op":"tech","do":"loop","target":"mast-z0"},
+  {"tick":325,"op":"scout","do":"listen","target":"waitress"},
+  {"tick":814,"op":"scout","do":"move","to":[725,-4625]},
+  {"tick":814,"op":"fixer","do":"turn","target":"waitress","approach":"pressure"},
+  {"tick":1194,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":1525,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":1556,"op":"fixer","do":"call","target":"waitress"},
+  {"tick":1556,"op":"fixer","do":"move","to":[725,-5025]},
+  {"tick":1725,"op":"enforcer","do":"move","to":[6925,-4250]},
+  {"tick":1756,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1766,"op":"enforcer","do":"enter"},
+  {"tick":1766,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":2146,"op":"enforcer","do":"move","to":[2000,-6500]},
+  {"tick":2440,"op":"scout","do":"draw"},
+  {"tick":2440,"op":"fixer","do":"draw"},
+  {"tick":2440,"op":"tech","do":"draw"},
+  {"tick":2440,"op":"enforcer","do":"draw"},
+  {"tick":2506,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2608,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2608,"op":"cell","do":"go"}
+ ],
+ "until": 4900
+}

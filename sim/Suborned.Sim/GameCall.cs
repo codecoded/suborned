@@ -81,6 +81,18 @@ namespace Suborned.Sim
             return CallAbsent(p) == null && VisitPair(p) is { } v && VisitIsPressed(v.leaves, v.visited);
         }
 
+        /// <summary>Host read (brief 102, engine 0.52.0; Fable's and Latch's): does `who` know that `of` is down? True once they saw the takedown, the carry
+        /// or the body (the act's Noticed), saw the shot that dropped him (the gunfire's witnesses, the act's lead), or a tie told them of it (the act's
+        /// Told); false while `of` is up. The Call's summon-busy ("he's down") is "he's not answering" only where the one calling doesn't know: they
+        /// found him, saw him carried or were told otherwise. Roles (waitress, guard, driver, councillor). Read-only, never hashed.</summary>
+        public bool KnowsDown(string who, string of)
+        {
+            if (!IsPersonRoleName(who) || !IsPersonRoleName(of)) return false;
+            Person p = PersonByRole(who), q = PersonByRole(of); if (p == q || !q.Down) return false;
+            foreach (var a in Acts) if (a.P == q && (a.Noticed.Contains(p.Id) || a.Told.Contains(p.Id) || (a.Lead != null && a.Lead.Witnesses.Exists(x => x.p == p)))) return true;
+            return false;
+        }
+
         /// <summary>Why the visit a call on `called` would send won't happen now (rulebook summon), or code null; walkTicks: the walk of the one who
         /// leaves to the other's post. The one called first (step 4), then the pair: who leaves (the door guard) and the one he goes to.</summary>
         (string? code, string why) SummonRefusal(Person called, out int walkTicks)

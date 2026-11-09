@@ -52,11 +52,9 @@
       "marginCm": 3,
       "faceCm": 30,
       "anchorCm": 150,
-      "stepCm": 10,
-      "tries": 8,
       "src": "Sky 2026-10-24 (\"Inez seems to be walking on an invisible ledge\"); brief 055 rule G-1d (tools/geometry); the rulebook's walk clearance for the body (bodies.radius + bodies.margin, 35 cm; engine 0.49.0, brief 098: was the plan's standards.walking.body.r, 65 cm, which stays the plan's); tools/sim/solids.ts for the solids",
       "proposed": true,
-      "reason": "a round leg keeps a body's width and marginCm from every drawn solid that is not a building's face, and faceCm from a face (a wall, a plinth, the curved front): the site grid blocks by cell centre and a string-pulled leg cuts the corners of its blocked cells, so a leg came within 2 to 20 cm of a wall and 3 cm inside a chair's clearance. The baker measures each leg against the drawn solids and, when one comes short, routes again on the grid with every cell stepCm further blocked, up to `tries` times; the first anchorCm of a leg (her post, on the door's own face) is not measured. A leg that never comes clear is kept as the grid made it and counted in the summary."
+      "reason": "a round leg keeps a body's width and marginCm from every drawn solid that is not a building's face, and faceCm from a face (a wall, a plinth, the curved front); the first anchorCm of a leg (her post, on the door's own face) is not measured. The walker that routed a leg again or eased it when it came short (stepCm, tries) is retired (brief 101, the bake test's own tripwire: \"if the grid ever keeps clear by itself, this rule has nothing left to do: retire it\"): since engine 0.49.0's walk law (every solid keeps bodies.radius + bodies.margin, 35 cm, from a walker's centre on the 5 cm raster) the plain grid walk keeps clear by itself, and on the live world, the square's mast now on the terrace's west lamp, no leg comes short: the bake with the walker and without it is the same bytes. These values stay as the measure the bake's test holds every leg to; a leg that comes short again fails it, and the walker comes back."
     },
     "leashM": { "v": 25, "src": "briefs/022-living-cafe.md", "proposed": true, "reason": "a table further than 25 m of walking from her post is not hers; the flank tables are 15 to 19 m, so all eight tables are." },
     "horizonS": { "v": 900, "src": "mission window 8 to 12 min (GDD §01)", "reason": "the round is baked for 15 minutes of round clock, which holds cover the longest mission (12 min) with room; after it she stands her post." },
