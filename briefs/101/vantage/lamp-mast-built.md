@@ -68,21 +68,48 @@ Proposal: `square-camera.md`. This round builds its handoff steps 1–3. The kit
   - The car area is 28.8° outside, and the waits and holds 39.7°.
   - Turned clockwise, the mast first sees the stance at 18.65°. Turned counterclockwise, it sees nothing of it within 60°.
 
+## Vela's piece, folded in (Aster, 2026-11-09)
+
+Vela's `MastCamera_Lamp` (adopted; Sky: "looks good") came in by merging `t3/square-mast-camera` (6c009678c). Her notes are `briefs/101/vela/lamp-mast.md`.
+
+- **The square's mast takes the piece.**
+  - On the block's lamp, with the piece adopted, the item is the variant `lamp` (`transit.ts`).
+  - The chooser gives that variant the use `mast-camera:lamp` and a slot of its own, 1.8 × 1.3 m and 8.2 m (`kitrefs.ts` `LAMP_MAST`, `slotOf`), so it takes `MastCamera_Lamp` by its tag at scale 1 and the item's own yaw. No other mast can take it.
+  - K-1 holds even a named kit ref to its slot, and the old mast slot (1.2 × 1.2 m) is too small for the piece's 1.77 × 1.25 m. Its own slot passes K-1, and the zone pins the piece like any other.
+- **The item's footprint** is the piece's plinth, 0.58 × 0.58 × 8.2 m.
+- **One piece at the site.** `dress.ts` no longer draws `lamp-terrace-w`'s own `PlazaSphereLamp_Play` (`mast.ts` `drawnByMast`): the mast's piece carries its globe and banner.
+  - A kit without the piece draws today's MastCamera and the lamp, as before.
+  - The plan still walks the site as the lamp's 0.52 m plinth (`civic.groundPieces`). The engine's site walks the piece's declared volumes, so no walk cell moves.
+- **The zone pin** for the mast now names `MastCamera_Lamp`, at its place by the lamp. That was the only pin to change.
+- **The export:** `street/records-square/mast-camera-z0` takes `{ "id": "MastCamera_Lamp", "scale": [1, 1, 1] }` at yaw −0.5236. Its camera k looks along `facings[k]`.
+  - The ids are unchanged: `mast-camera-z0` and `civic-robot-dock-z1`. The dock is unchanged.
+  - The circus masts keep `MastCamera`.
+- **The engine's data:**
+  - `sim/data/handover.takedown.json` is unchanged.
+  - In `sim/data/handover.site.json`, only the solid digest (`grid.collide`) and the cast hash move.
+  - In `handover.gaps.json`, only its `split` count moves.
+  - The proof prints the same.
+- **Splice's two items from Vela's notes:**
+  - `MastCamera_Lamp` joins `BUILD` (`tools/decokit/orders.ts`).
+  - The fit table skips rows whose piece `kit.json` has rejected (`tools/decokit/run.ts`). On both manifests, the main checkout's and Vela's, the table's 12 rows with 11 failing (exit 1) become 1 row that fits, SpaceHQ_Portal (exit 0).
+  - This was checked on the table's lines alone. `bun run decokit` itself was not run here: it would write into the shared generated root.
+
 ## Clearances (1.2 m)
 
-- On the ground, `police-3` (−2, −42) is 1.56 m from the lamp's 0.52 m plinth (as turned) and 1.65 m from the mast's 0.4 m column.
-- Overhead, the mast's 1.2 m pod slot is 1.25 m from `police-3` square to the block, and 1.08 m as turned, 7.4 m up (a canopy by CD-1's reading).
-- The nearest Handover point is the Scout's mark, 2.57 m from the plinth. CD-1 passes.
-- The wall's west arc is 2.45 m from the lamp.
+- On the ground, `police-3` (−2, −42) is 1.52 m from the piece's 0.58 m plinth (as turned) and 1.60 m from its sleeve.
+- Overhead, the banner (2.4–3.8 m), the crown and the cameras (7.4–8.2 m) come within 1.09 m of `police-3`.
+- The nearest Handover point is the Scout's mark, 2.54 m from the plinth.
+- The wall's west arc is 2.45 m from the pivot.
 
 ## For the next owners
 
-- **Vela (kit, step 4):**
-  - Until the lamp-mast piece is adopted, the world draws today's MastCamera (8 m column, pods modelled 120° apart) through the sphere lamp at the same point. The engine's heads are fanned 60°.
-  - The export's yaw is the first head. Each next head is 60° further counterclockwise seen from above, so the heads face ESE, ENE and N.
-  - When the piece is adopted, it should draw the lamp and the mast as one piece. Which entry carries it (the street item or the dressing's lamp) is Splice's and Vela's call.
-- **Latch (build):**
-  - It's a world change: run a full batch.
+- **Latch (build), in the main checkout after the merge:**
+  - Run `bun run decokit --only MastCamera_Lamp`, then `bun run kit`. The piece's files aren't in the shared `out/decokit` yet.
+  - It's a world and kit change, so run a full batch.
+  - Vela's items 4–6 are the host's:
+    - the lens cue per head (`DK_MastCamera_Lamp_Lens{k}`);
+    - the "?", the callout and the click reaching the crown (lenses at 7.68 m, top 8.2 m);
+    - the 3.2 m stand-in cylinder at a world mast's foot.
   - `GameBoot.cs`'s camera proof stands the Enforcer 6 m along the mast's first facing. That's now ESE, over the plaza.
 - **Merge (Aster):** the people file records the plan's and the block's hashes. After the merge, run `bun run people` before `bun run sim:site` or the sim tests. The people are unchanged; only that file's hash moves, and the site carries it.
 
@@ -138,6 +165,15 @@ Every result below was compared against a clean checkout of 57133d46d set up the
   - With the mast gone, the point is (−18.3, −15.2) and the walk keeps clear by itself.
   - The test's own comment says to retire the rule then, or give it a fixture.
   - The rounds file was not re-baked.
+
+### Waiting on Latch's export (`bun run test`)
+
+- **`tools/kit/kit.test.ts`, five tests:** the catalogue rebuild, the copy and the LOD checks.
+  - They fail wherever the shared generated root lacks `MastCamera_Lamp`'s files ("missing in source").
+  - Against Vela's root, which has them, all 20 pass.
+  - They pass in the main checkout once `bun run decokit --only MastCamera_Lamp` has run.
+
+After the lamp mast was folded in, `bun run sim:test` gives the same 31 failures as before it.
 
 ### Failing at 57133d46d as well (not this change)
 

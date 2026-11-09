@@ -53,7 +53,7 @@
   { "kind": "lamp", "edge": "rocket-west/e1", "at": [ -192.6, -284 ], "kit": "Streetlamp" },
   { "kind": "lamp", "edge": "rocket-west/e1", "at": [ -192.6, -320 ], "kit": "PlazaSphereLamp" },
   { "kind": "lamp", "edge": "rocket-west/e1", "at": [ -192.6, -356 ], "kit": "PlazaSphereLamp" },
-  { "kind": "mast-camera", "edge": "records-square", "at": [ -172.55, -226.15 ], "kit": "MastCamera" },
+  { "kind": "mast-camera", "edge": "records-square", "at": [ -172.55, -226.15 ], "kit": "MastCamera_Lamp" },
   { "kind": "phone-booth", "edge": "civic/apron-road", "at": [ -132, -309.15 ], "kit": "PhoneBooth_Play" },
   { "kind": "phone-booth", "edge": "civic/garden-row", "at": [ -138.85, -210 ], "kit": "PhoneBooth_Play" },
   { "kind": "phone-booth", "edge": "civic/garden-row", "at": [ -138.85, -254 ], "kit": "PhoneBooth_Play" },

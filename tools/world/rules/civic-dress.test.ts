@@ -12,6 +12,7 @@ import { type Dressing, dressingOf, footOf, placementKinds } from '../civic/dres
 import { look } from '../civic/look';
 import { adoptedBy, catalogued } from '../gen/kitrefs';
 import { landingsOf } from '../gen/street/crossings';
+import { drawnByMast } from '../gen/street/mast';
 import { adoptedRule, budgetRule, civicDressRules, civicTris, drawnApart, handoverPoints, namedPieces, overrideProblems, paletteRule } from './civic-dress';
 
 setDefaultTimeout(120000);
@@ -31,7 +32,7 @@ describe('civic dressing: what is placed', () => {
   const count = (id: RegExp) => base.w.civic.filter(m => id.test(m.id)).length;
   test('each dressing entry is one mass, in the counts the block states', () => {
     expect(count(/\/parasol$/)).toBe(dr.parasols.on.length);
-    expect(count(/^civic\/lamp-/)).toBe(dr.lamps.at.length);
+    expect(count(/^civic\/lamp-/)).toBe(dr.lamps.at.filter(l => !drawnByMast(l)).length); // brief 101: lamp-terrace-w is drawn by the square's lamp mast, one piece at the site
     expect(count(/^civic\/bol-/)).toBe(dr.bollards.at.length);
     expect(count(/^civic\/run-/)).toBe(dr.planterRuns.runs.reduce((n, r) => n + r.modules.length, 0));
     expect(count(/^civic\/cyp-/)).toBe(dr.cypress.at.length);

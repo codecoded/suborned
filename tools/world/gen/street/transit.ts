@@ -11,7 +11,8 @@ import { axisClears } from '../connectors';
 import { type Rect, bbox, edgeN, inRect } from '../geo';
 import type { DeckRec } from '../types';
 import { KERB_ARC_CLEAR, type Layer } from './kit';
-import { squareMast } from './mast';
+import { LAMP_MAST_SIZE, lampMastPiece, squareMast } from './mast';
+import { LAMP_MAST } from '../kitrefs';
 import { cutHits } from '../kerbreturn';
 
 type Seg = { a: V; b: V; n: V; kind: string };
@@ -131,8 +132,11 @@ export function dressTransit(ctx: Ctx, L: Layer, stops: Mass[], stations: Mass[]
     // entrance; a block that names none stands it at the corner point below, yaw 0, as before. The robot's dock keeps its own rule: 2 m west of the square's corner point
     // nearest the circus (the circus centre held 7.5 m inside the square's edges). Mast first, dock second, as before, so their zone ids stay mast-camera-z0 and
     // civic-robot-dock-z1 (brief 078: a changed mast id silently dropped its words and orders; zone-stable.test.ts holds them).
-    const b = bbox(sq.polyV), cc = ctx.plan.circus.c, corner: V = [Math.min(b[1] - 7.5, Math.max(b[0] + 7.5, cc[0])), Math.min(b[3] - 7.5, Math.max(b[2] + 7.5, cc[1]))], m = squareMast(ctx);
-    const placed = L.add('mast-camera', m?.at ?? corner, m?.yaw ?? 0, z, sq.id, { size: [0.4, 0.4, 8], variant: 'mast', force: true });
+    // On the block's lamp, with the lamp mast adopted (mast.ts lampMastPiece: Vela's MastCamera_Lamp), the item is the variant `lamp`: the chooser gives it that piece by
+    // its own tag and slot (kitrefs.ts LAMP_MAST), at scale 1 and the item's own yaw, so its cameras look along the export's facings, and the zone pins it as any piece.
+    // Its footprint is the piece's plinth. Without the piece, or on the old corner, it is today's mast.
+    const b = bbox(sq.polyV), cc = ctx.plan.circus.c, corner: V = [Math.min(b[1] - 7.5, Math.max(b[0] + 7.5, cc[0])), Math.min(b[3] - 7.5, Math.max(b[2] + 7.5, cc[1]))], m = squareMast(ctx), lamp = m ? lampMastPiece() : undefined;
+    const placed = L.add('mast-camera', m?.at ?? corner, m?.yaw ?? 0, z, sq.id, { size: lamp ? LAMP_MAST_SIZE : [0.4, 0.4, 8], variant: lamp ? LAMP_MAST.variant : 'mast', force: true });
     if (m && !placed) throw new Error(`the square's mast on ${m.lamp} (civic-block dressing) fails the street layer's tests there (kerb return, drive, crossing or door clearance): move the lamp, or the dock would take the mast's id`);
     L.add('civic-robot-dock', [corner[0] - 2, corner[1]], 0, z, sq.id, { force: true });
   }
