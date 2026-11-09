@@ -158,6 +158,7 @@ These are rules Sky already approved that the GDD text still lags, gathered as t
   - The agents speak only in scenes with people.
   - No line explains a rule or a consequence, and AI-sounding words fail.
 - **§10, the hover outline** (Sky 2026-11-09, brief 101: "B"): whatever a left click would act on wears a thin ink outline with a fine cream edge (1.5 + 1 px at 1080p), the cell included, never a passer-by. It replaces the cream ring at a person's feet and the dashed stack rings; the stack dots and the pill stay.
+- **§15, the civic block's balls** (Sky 2026-11-10, brief 103: "A · Nickel · sure"): the Records Office's ball and its finials are satin nickel, not chrome. Same for `suborned.style.json:55` and `art-bible.agent.md:13`.
 
 ## Done-check
 Sky can set the guards, people and cars in the dev panel, press Play and get that world, with no rebuild. The GDD goes to v0.40.0 with laws in place of per-case sums, and the crew is regenerated (`bun run crew`). Traffic runs in play under L8, with the Handover's bands holding across seeds and 60 fps on the Air. The witness rules run on L1–L6.

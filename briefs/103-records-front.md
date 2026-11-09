@@ -50,3 +50,17 @@ Glint's probe fix wasn't picked, so it's not started.
 1. Vela makes the piece in `civic_records.py` and runs DecoKit for it, without the kit step while Latch's outline round builds.
 2. Aster runs the kit step after that round lands.
 3. The full batch follows (a kit change), and Sky gets one build.
+
+
+**Built (Vela, 323cb578a).** Sheet: `briefs/103/vela/globe/real-piece.png`.
+- `civic_records.py`: the ball on three columns, 1.5 m across, in the arch.
+- `DK_Nickel_Satin` is in `civic_common.py` and `civic-look.json`.
+- The official front's two marquee finials are nickel too.
+- Below the marquee soffit, nothing moved. The doorway shows 42.5 % at yaw 210 and 59.4 % at 300, as before.
+- **Kit step after Latch's outline round:**
+  1. `bun run kit` (two rows, 8 files);
+  2. `bun run collide`;
+  3. `bun run sim:site` (only `grid.collide`'s hash should change; Keel re-pins anything that pins it);
+  4. then Latch re-imports, and the full batch runs.
+- **Left as is (Aster):** `collide097.json` pins the entrance's depth at 3.7 m, so the world's footprint ring sits 3.5 cm off the new mesh. Nothing drawn moves, so the pin stays.
+
