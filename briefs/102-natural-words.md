@@ -75,3 +75,7 @@ From Motive's options (`briefs/102/motive/turned-guard.md`):
    - the lock form that names nobody before a Listen;
    - option 1's lines, about a dozen.
 5. **Glyph:** the shut lock's look, and the Call card's "?" for someone who would leave his own post.
+
+**Open after Fable's guard-call round** (a8bf90bd8):
+- **Keel:** "He's not answering" is untrue if Inez found him, saw him carried or was told. The host needs an engine read for whether she knows he's down. It goes in the next engine round, with the camera move if Sky picks one.
+- **Fable:** the mast camera's Intel lines say "over the square". They follow Vantage's move.
