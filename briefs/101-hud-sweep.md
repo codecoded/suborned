@@ -218,6 +218,14 @@ Vantage's proposal is `briefs/101/vantage/square-camera.md`.
   - Keel: review `Stance.cs` and Waymark's `taped:` plan condition;
   - route-g's and loud's scripts no longer compose (since 0.51.0).
 
+**Built (0.2.299, 2bd13c8d8).** The mast stands over the cell in the opening view, with its "?" over the crown. The full report is `briefs/101/latch/mast.html`.
+- **The "?" at rest.** It now shows over every live camera the cell hasn't watched, not only on Alt or when noticing. This matches GDD §03 and §10 ("a watcher not yet watched shows '?'"). It applies to the entrance and pickup cameras too. Glyph to check it at 2x.
+- **Lenses.** One lens cue per head. The pods face away from the cell, so a cue is seen from the front.
+- **Card fixes.** Keel's crew Pay tape mark and Motive's `T ?+n` are in. Fable's knows-down line is wired. A downed contact's card shows only the lock.
+- **Open:**
+  - r083 failed only because the player window had no focus while the Studio was in use. Latch re-runs `bun run batch --from game-check`, plus `-proofOnly r101,r102` at 1920 × 1080 for the two hover pictures, once Sky says the Studio is free.
+  - tp-long is still red (draw distance, since 0.2.231).
+
 ## The hover outline: Sky's idea (2026-11-09)
 
 Sky: "when you move mouse over an item that has an action ring, maybe outline it a little as well? can we do concept for that? helps with those items close together e.g. guard and door".
