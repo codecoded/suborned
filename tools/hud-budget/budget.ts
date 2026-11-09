@@ -8,19 +8,21 @@
 import type { Image } from './png';
 import { checkPage, type PagePart } from './page';
 import { checkBook, isBook } from './book';
-import { BUBBLE, CARD_MAX as CARDS, SLIP_MAX, conversationCards, conversationLines, isConversationCard, speechFault } from './speech';
+import { BUBBLE, CARD_MAX as CARDS, SLIP_MAX, bubbleFaults, conversationCards, conversationLines, isConversationCard, isCutawayLine, slipPlaceFaults, speechFault } from './speech';
 import { NEXT_MAX, isNextText, nextFaults } from './next';
-export { NEXT_MAX, SLIP_MAX };
+import { HOVER_MAX, VERB_WORDS, hoverFaults } from './hover';
+import { glyphWords, segments, segWords } from './words';
+export { HOVER_MAX, NEXT_MAX, SLIP_MAX, VERB_WORDS, glyphWords, segments, segWords };
 
 /** `page`: a full-screen page outside play (the briefing page, GDD v0.27.0 §10), judged by its own checks (page.ts), never by coverage or the reading caps. `book`: the book's
  *  pages (the start page, the debrief), on their own checks (book.ts); a `page` manifest with the book's section signs is read as the book.
  *  `briefing`: RETIRED with the street overlay (brief 062 B, gone in v0.27.0); kept only so the archived street-briefing fixtures still judge as they were shot. */
 export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing' | 'page' | 'book';
 export interface Rect { x: number; y: number; w: number; h: number }
-export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'next' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar' | 'pin' | 'paper' | 'band' | 'card' | 'slip'; // pin, paper, band: the page's (page.ts); card: a panel (the news lozenge); slip: a person's card on them (speech.ts); next: the next-event row (next.ts)
+export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'next' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar' | 'pin' | 'paper' | 'band' | 'card' | 'slip' | 'hover'; // pin, paper, band: the page's (page.ts); card: a panel (the news lozenge); slip: a person's card on them (speech.ts); next: the next-event row (next.ts); hover: a line the pointer opens (hover.ts)
 /** The kinds whose words the reader takes from the manifest and holds to their own caps (never as running text). A `bar`'s figures stay `hud`: they still face the running-text rules. */
-export type TextKind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'next' | 'pill' | 'lock' | 'chip' | 'altline' | 'card' | 'slip';
-export const TEXT_KINDS: readonly Kind[] = ['speech', 'beat', 'line', 'pop', 'marker', 'next', 'pill', 'lock', 'chip', 'altline', 'card', 'slip'];
+export type TextKind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'next' | 'pill' | 'lock' | 'chip' | 'altline' | 'card' | 'slip' | 'hover';
+export const TEXT_KINDS: readonly Kind[] = ['speech', 'beat', 'line', 'pop', 'marker', 'next', 'pill', 'lock', 'chip', 'altline', 'card', 'slip', 'hover'];
 export interface Element extends Rect {
   kind: Kind; text?: string; facts?: string[]; verbs?: string[];
   /** The page's pieces (state `page`, page.ts): its part (read from text and layout when absent), a pin's number or `car`, the rows as wrapped, and an id a child names as its `parent`. */
@@ -37,6 +39,8 @@ export interface Report {
   failures: string[]; warnings: string[]; pass: boolean;
   /** state `page`: the words the page reads (glyph-budget §0), its cap is page.ts PAGE.words */
   pageWords?: number;
+  /** the speech elements on screen, as the manifest lists them (`speech` above is their runs) */
+  bubbles?: number;
 }
 
 /** Fail above this share of the screen at rest (brief 014: about 15%); an open order card and the Alt layer get more room. `log`: the history panel
@@ -90,17 +94,6 @@ export const ALTLINE_MAX = { lines: 1, words: 6, onScreen: 1 };
  *  included; the conversation cutaway too, Glyph §5). Its figures stay `hud` for the running-text rules; the bar adds its own. */
 export const BAR_MAX = { rows: 1, onScreen: 1, h: 48, slack: 1.1, cap: 24 }; // cap: the end caps' width at 1080 (the pill's 24 px padding, HudToolkit.cs), rim art
 
-const UNIT = /^(s|ms|m|%|px|x)$/;
-/** Words as Glyph counts them (glyph-budget §0) for the new kinds: as shown, a keycap one word, the separator `·` not a word, and a figure with its unit one word (`8 s`, `1:55`, `$20,000`,
- *  `+2`); a segment that is only a label and a figure is one price mark (`siren 1`, `draws 1.0 s`). */
-export function glyphWords(text: string): number { return segments(text).reduce((a, g) => a + segWords(g), 0); }
-/** A pill's fields: its text split at the separator dots. */
-export const segments = (text: string) => text.replace(/<[A-Za-z]+>/g, 'K').split(/\s*·\s*/).map(t => t.trim()).filter(Boolean);
-export function segWords(seg: string): number {
-  const t = seg.split(/\s+/).filter(x => /[\p{L}\p{N}]/u.test(x)), fig = (x: string) => /\d/.test(x);
-  if (t.length >= 2 && t.length <= 3 && !fig(t[0]!) && fig(t[1]!) && (t.length === 2 || UNIT.test(t[2]!))) return 1; // `siren 1`, `draws 1.0 s`: one mark
-  let n = 0; for (let i = 0; i < t.length; i++) { n++; if (fig(t[i]!) && i + 1 < t.length && UNIT.test(t[i + 1]!)) i++; } return n;
-}
 /** A time figure as a pill shows it: `8 s`, `29 s`, `1:55`. */
 export const isTime = (seg: string) => /^\d+(\.\d+)?\s*s$/.test(seg.trim()) || isClock(seg);
 const HEAD = /^(Hold|Let go)$/;
@@ -331,7 +324,7 @@ export function analyse(shot: Image, o: Options): Report {
   const wordsIn = (b: Run[]) => { const seen = new Set<Element>(); let n = 0; for (const r of b) { const e = owner.get(r); if (e) { if (!seen.has(e)) { seen.add(e); n += r.words; } } else n += r.words; } return n; };
   for (const r of all) { const e = els.find(e => TEXT_KINDS.includes(e.kind) && inside(r, e)); if (e) { r.kind = e.kind as TextKind; } }
   for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line' || e.kind === 'pop' || e.kind === 'marker' || e.kind === 'next')) for (const r of all) if (inside(r, e)) { r.words = e.kind === 'speech' ? speechWords(e.text) : wordsOf(e.text); owner.set(r, e); } }
-  for (const e of els) { const n = e.kind === 'chip' ? chipWords(e) : (e.kind === 'pill' || e.kind === 'lock' || e.kind === 'altline') && e.text ? glyphWords(e.text) : undefined; if (n !== undefined) for (const r of all) if (r.kind === e.kind && inside(r, e)) { r.words = n; owner.set(r, e); } } // the new kinds count as Glyph counts (glyph-budget §0)
+  for (const e of els) { const n = e.kind === 'chip' ? chipWords(e) : (e.kind === 'pill' || e.kind === 'lock' || e.kind === 'altline' || e.kind === 'hover') && e.text ? glyphWords(e.text) : undefined; if (n !== undefined) for (const r of all) if (r.kind === e.kind && inside(r, e)) { r.words = n; owner.set(r, e); } } // the new kinds count as Glyph counts (glyph-budget §0)
   const art = els.filter(e => e.kind === 'image'), pillRuns = all.filter(r => r.kind === 'pill'), lockRuns = all.filter(r => r.kind === 'lock'), chipRuns = all.filter(r => r.kind === 'chip'), altRuns = all.filter(r => r.kind === 'altline'), hudRuns = all.filter(r => r.kind === 'hud' && !art.some(e => inside(r, e))), speech = all.filter(r => r.kind === 'speech'), beats = all.filter(r => r.kind === 'beat'), lineRuns = all.filter(r => r.kind === 'line'), popRuns = all.filter(r => r.kind === 'pop'), markerRuns = all.filter(r => r.kind === 'marker');
   const isSentence = (r: Run) => (o.state === 'alt' ? r.words > ALT_WORDS : r.words >= SENTENCE_WORDS && r.comps >= SENTENCE_COMPS);
   const sentences = READING.includes(o.state) ? [] : hudRuns.filter(isSentence); // the open history is read, so its lines are sentences by design
@@ -350,17 +343,20 @@ export function analyse(shot: Image, o: Options): Report {
   // the strongest row's strokes, and at least three.
   const lines = (rs: Run[]) => rowsOf(rs).length;
   // Speech, one manifest element at a time: one bubble, one line, its rows the longest stack of its own runs. Two people talking at once are two lines, never one long one (0.2.290's
-  // r123-fight-ground: two street lines one above the other stacked into one 32-word line). Nothing caps the bubbles on screen together: Glyph's rounds 2 and 3 set no such rule.
-  const said = conversationLines(), bubbles = new Map<Element, Run[]>(); // a conversation's line has the cutaway's caps, a bubble the bubble's (speech.ts, from the text schema)
+  // r123-fight-ground: two street lines one above the other stacked into one 32-word line). The elements on screen together, each box's place and a row's width: bubbleFaults (speech.ts).
+  const said = conversationLines(), bubbles = new Map<Element, Run[]>(), talk = els.filter(e => e.kind === 'speech' && onScreen(e, { w, h })); // a conversation's line has the cutaway's caps, a bubble the bubble's (speech.ts, from the text schema)
   for (const r of speech) { const o = owner.get(r), e = o?.kind === 'speech' ? o : els.find(x => x.kind === 'speech' && inside(r, x))!; bubbles.set(e, [...(bubbles.get(e) ?? []), r]); }
   for (const [e, rs] of bubbles) { // the conversation bubble sets its speaker's name on a row of its own: a label, not a row of speech
     const t = e.text ?? '', named = t && speechWords(t) < wordsOf(t) && !/^\s*[^:]*:\s/.test(t) ? 1 : 0, rows = Math.max(...stack(rs).map(b => b.length)) - named;
-    const f = speechFault(t, rows, t ? speechWords(t) : rs.reduce((a, r) => a + r.words, 0), said); if (f) failures.push(f);
+    const f = speechFault(t, rows, t ? speechWords(t) : rs.reduce((a, r) => a + r.words, 0), said, isCutawayLine(e, els)); if (f) failures.push(f);
   }
+  failures.push(...bubbleFaults(talk, els, { w, h }, !READING.includes(o.state)));
   { const on = (k: Kind) => els.filter(e => e.kind === k && e.text && e.w > 0), cards = on('card'), slips = on('slip'); // the news and a person's slip: one of each at a time, counted apart
     if (cards.length > CARD_MAX.onScreen) failures.push(`${cards.length} card panels on screen (at most ${CARD_MAX.onScreen})`); if (cards.some(e => wordsOf(e.text!) > CARD_MAX.words)) failures.push(`the cards run over ${CARD_MAX.words} words`);
     if (slips.length > SLIP_MAX.onScreen) failures.push(`${slips.length} slips on screen (a person's card, on them: at most ${SLIP_MAX.onScreen})`);
-    for (const e of slips) if (wordsOf(e.text!) > SLIP_MAX.words) failures.push(`the slip "${e.text!.trim().slice(0, 40)}…" runs ${wordsOf(e.text!)} words (at most ${SLIP_MAX.words})`); }
+    for (const e of slips) if (wordsOf(e.text!) > SLIP_MAX.words) failures.push(`the slip "${e.text!.trim().slice(0, 40)}…" runs ${wordsOf(e.text!)} words (at most ${SLIP_MAX.words})`);
+    failures.push(...slipPlaceFaults(slips.filter(e => onScreen(e, { w, h })), els.filter(e => onScreen(e, { w, h })), { w, h })); }
+  failures.push(...hoverFaults(els.filter(e => onScreen(e, { w, h })), (e, k) => rowsOf(all.filter(r => r.kind === k && inside(r, e))).length));
   if (beats.length) {
     const bs = els.filter(e => e.kind === 'beat'); if (bs.length > BEAT_MAX.onScreen) failures.push(`${bs.length} story beats on screen (at most ${BEAT_MAX.onScreen})`);
     if (beats.some(r => r.words > BEAT_MAX.words)) failures.push(`a story beat is longer than ${BEAT_MAX.words} words`);
@@ -449,7 +445,7 @@ export function analyse(shot: Image, o: Options): Report {
   }
   // the clock bar (glyph-budget §5): one row of figures, at play size, one on screen
   const cap = BAR_MAX.cap * (h / 1080), inBar = (r: Run, e: Rect) => inside(r, e) && r.x + r.w / 2 > e.x + cap && r.x + r.w / 2 < e.x + e.w - cap; // the end caps' rims and screws are art, not figures
-  const bars = els.filter(e => e.kind === 'bar'), barRuns = all.filter(r => bars.some(e => inBar(r, e)) && !art.some(e => inside(r, e))); // the lamps and pause glyph are art too (the host's image rect)
+  const bars = els.filter(e => e.kind === 'bar'), barRuns = all.filter(r => r.kind !== 'hover' && bars.some(e => inBar(r, e)) && !art.some(e => inside(r, e))); // the lamps and pause glyph are art too (the host's image rect); a hover tip in it is the tip's (hover.ts)
   if (bars.length > BAR_MAX.onScreen) failures.push(`${bars.length} clock bars on screen (at most ${BAR_MAX.onScreen})`);
   for (const e of bars) {
     const rows = bands(barRuns.filter(r => inBar(r, e))), scale = e.h / (BAR_MAX.h * (h / 1080));
@@ -457,7 +453,7 @@ export function analyse(shot: Image, o: Options): Report {
     if (rows > BAR_MAX.rows) failures.push(`the clock bar reads as ${rows} rows (one row of figures)`);
     const word = e.text?.split(/\s+/).find(x => /\p{L}{2,}/u.test(x)); if (word) failures.push(`the clock bar carries the word "${word}" (figures and icons only)`);
   }
-  return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct, runs: hudRuns, sentences, blocks, speech, beats, lines: lineRuns, pops: popRuns, markers: markerRuns, nexts: nextRuns, pills: pillRuns, locks: lockRuns, chips: chipRuns, altlines: altRuns, bars: barRuns, failures, warnings, pass: failures.length === 0 };
+  return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct, runs: hudRuns, sentences, blocks, speech, beats, lines: lineRuns, pops: popRuns, markers: markerRuns, nexts: nextRuns, pills: pillRuns, locks: lockRuns, chips: chipRuns, altlines: altRuns, bars: barRuns, failures, warnings, pass: failures.length === 0, bubbles: talk.length };
 }
 
 /** The share (%) of the frame outside the HUD layer (and 2 px clear of it) that is textured, not flat: a page's paper reads about 1%, the street 25 to 45% (0.2.130). Sampled every 2 px. */

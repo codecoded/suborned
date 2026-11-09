@@ -25,18 +25,24 @@ describe('speech, one bubble at a time: 0.2.290\'s r123-fight-ground (fixtures/t
     expect([said.has(inez.text!), said.has(milena.text!)]).toEqual([true, true]);
     expect([speechWords(inez.text!), speechWords(milena.text!)]).toEqual([17, 15]);
   });
-  test('as shot: within budget, though its runs still stack into one block across both bubbles (the frame keeps proving the count is per bubble)', () => {
-    const r = run(man); expect(r.failures).toEqual([]); expect(r.pass).toBe(true); expect(r.speech.length).toBe(7);
+  // 0.2.290 drew both lines one row, 710 and 643 px wide. Option B (Glyph's round 4, Sky's pick) wraps a bubble at 460 px into two rows, so the frame fails on the two widths
+  // (Latch's piece 5, the wrap), and on nothing else: the word tests below keep those two standing and add their own.
+  const q = (t: string) => `"${t.trim().slice(0, 40)}${t.trim().length > 40 ? '…' : ''}"`, wide = (t: string, w: number) => `the speech bubble ${q(t)} is one row ${w} px wide (a bubble wraps at ${SPEECH_MAX.wrap} px)`;
+  const own = (f: string[]) => f.filter(x => !/ is one row (710|643) px wide /.test(x));
+  test('as shot: two one-row lines over the wrap\'s 460 px; its runs still stack into one block across both bubbles, yet the words are counted per bubble', () => {
+    const r = run(man); expect([...r.failures].sort()).toEqual([wide(inez.text!, 710), wide(milena.text!, 643)].sort());
+    expect(r.speech.length).toBe(7); expect(r.bubbles).toBe(2);
     expect(stack(r.speech).some(b => b.some(x => inside(x, inez)) && b.some(x => inside(x, milena)))).toBe(true);
   });
   test('failing example: one bubble over its cap still fails, alone and once, whichever it is', () => {
     for (const [a, b] of [[`${words(12)} thirteen`, milena.text!], [inez.text!, `${words(12)} thirteen`]] as const) {
-      const f = say(a, b).failures; expect(f.length).toBe(1); expect(f[0]).toContain(`runs 13 words (a bubble at most ${SPEECH_MAX.words}: text.schema MAX_WORDS)`);
+      const all = say(a, b).failures, f = own(all); expect(all.length - f.length).toBe(2);
+      expect(f.length).toBe(1); expect(f[0]).toContain(`runs 13 words (a bubble at most ${SPEECH_MAX.words}: text.schema MAX_WORDS)`);
     }
   });
   test('two short bubbles at once pass (7 and 7 words, 14 together, over a bubble\'s 12); the 14 in one bubble fail', () => {
-    expect(say(words(7, 'a'), words(7, 'b')).failures).toEqual([]);
-    const f = say(words(14, 'a'), words(7, 'b')).failures; expect(f.length).toBe(1); expect(f[0]).toContain(`runs 14 words (a bubble at most ${SPEECH_MAX.words}`);
+    expect(own(say(words(7, 'a'), words(7, 'b')).failures)).toEqual([]);
+    const f = own(say(words(14, 'a'), words(7, 'b')).failures); expect(f.length).toBe(1); expect(f[0]).toContain(`runs 14 words (a bubble at most ${SPEECH_MAX.words}`);
   });
 });
 
@@ -55,6 +61,81 @@ describe('a bubble\'s rows are its own', () => {
   });
   test('two bubbles of two rows each, one just under the other, pass: their four rows stack as one, but they are two bubbles', () => {
     expect(drawn([400, 416, 432, 448], [bubble(392, 36, words(8, 'a')), bubble(428, 36, words(8, 'b'))])).toEqual([]);
+  });
+  // rule 2 (Glyph's round 4): in the street a conversation's line is a bubble, two rows at most; the cutaway's own line (its column, beside the speaker's face) has no row cap
+  const line = [...conversationLines()!].find(l => speechWords(l) > 12 && speechWords(l) <= 25)!, face: Element = { kind: 'image', x: 470, y: 392, w: 136, h: 136, text: "speaker's face" };
+  test('failing example: a conversation\'s street line over two rows fails as a bubble does; two rows pass; three in the cutaway pass', () => {
+    const q = `"${line.slice(0, 40)}…"`;
+    expect(drawn([400, 416, 432], [bubble(392, 52, line)])).toEqual([`the conversation line ${q} runs 3 rows (in the street a bubble, at most ${SPEECH_MAX.lines})`]);
+    expect(drawn([400, 416], [bubble(392, 36, line)])).toEqual([]);
+    expect(drawn([400, 416, 432], [bubble(392, 52, line), face])).toEqual([]);
+  });
+});
+
+describe('round 4: two lines at once, each box inside the screen, one row at most 460 px (Glyph, briefs/101/glyph/r4/notes.md "For Splice" 1, 3 and 4)', () => {
+  const blank = (w: number, h: number): Image => { const data = new Uint8Array(w * h * 4); for (let i = 0; i < w * h; i++) data.set([120, 120, 120, 255], i * 4); return { w, h, data }; };
+  /** The faults of a frame with these elements and nothing drawn: the boxes alone. */
+  const judge = (els: Element[], state: 'rest' | 'active' | 'alt' | 'log' = 'rest', [w, h] = [1920, 1080]) => analyse(blank(w, h), { state, rects: [{ x: 0, y: 0, w: 10, h: 10 }], manifest: { state, elements: els } }).failures;
+  const b = (x: number, y: number, w: number, text = 'Two short words.', h = 28): Element => ({ kind: 'speech', x, y, w, h, text });
+  const q = (t: string) => `"${t.trim().slice(0, 40)}${t.trim().length > 40 ? '…' : ''}"`, edge = '(inside 14 px of the edge)';
+  // 0.2.295's r123-fight-safe: the Fixer's call line, a rival's line, and the guard's line docked beside his face (the old plate, 25 px)
+  const fixer = b(663, 326, 430, "It's time, Miss Nikolaou.", 47), rival = b(946, 669, 302, "The job's not worth this. Get to the car."), docked = b(857, 28, 207, "There's no running past this post.", 25);
+  const callout: Element = { kind: 'image', x: 1084, y: 12, w: 56, h: 56, text: 'attention callout' };
+  test('the caps: two on screen (text.schema\'s most for less.feed.bubblesAtOnce), two rows, 460 px a row at 1080, 14 px inside the screen', () => {
+    expect([SPEECH_MAX.onScreen, SPEECH_MAX.lines, SPEECH_MAX.wrap, SPEECH_MAX.margin]).toEqual([2, 2, 460, 14]);
+    const text = JSON.parse(readFileSync(join(import.meta.dir, '../../contracts/missions/handover/text.json'), 'utf8')); expect(text.less.feed.bubblesAtOnce).toBeLessThanOrEqual(SPEECH_MAX.onScreen);
+  });
+  test('rule 1: two pass; a third fails with Glyph\'s fault, the docked line one of them, in every play state; one off the frame is not on screen; outside play none is counted', () => {
+    expect(judge([fixer, rival, callout])).toEqual([]);
+    for (const s of ['rest', 'active', 'alt'] as const) expect(judge([fixer, rival, docked, callout], s)).toEqual(['3 speech bubbles on screen (at most 2; a docked line counts)']);
+    expect(judge([fixer, rival, { ...docked, x: -300 }])).toEqual([]); expect(judge([fixer, rival, docked], 'log')).toEqual([]);
+  });
+  test('the cutaway\'s line counts toward the two; its column, beside the speaker\'s face, is no bubble: no place or width rule', () => {
+    const face: Element = { kind: 'image', x: 67, y: 890, w: 136, h: 136, text: "speaker's face" }, col = b(227, 887, 1020, "Inez I didn't want anyone to know.", 139);
+    expect(judge([face, col])).toEqual([]); expect(judge([face, { ...col, x: 5, w: 1910, h: 30 }])).toEqual([]);
+    expect(judge([face, col, fixer, rival])).toEqual(['3 speech bubbles on screen (at most 2; a docked line counts)']);
+  });
+  test('rule 3: 14 px inside the screen on every side, a pixel for the manifest\'s rounding; 0.2.290\'s line to x 2120 fails as Glyph wrote it', () => {
+    const t = 'The line two rows of 460 px hold.', two = (x: number, y: number, w = 432) => b(x, y, w, t, 47);
+    expect(judge([two(1474, 952)])).toEqual([]); expect(judge([two(1475, 952)])).toEqual([]); // to x 1906, and 1907
+    expect(judge([two(1476, 952)])).toEqual([`the speech bubble ${q(t)} runs to x 1908 ${edge}`]);
+    expect(judge([two(13, 400)])).toEqual([]); expect(judge([two(12, 400)])).toEqual([`the speech bubble ${q(t)} starts at x 12 ${edge}`]);
+    expect(judge([two(600, 12)])).toEqual([`the speech bubble ${q(t)} starts at y 12 ${edge}`]); expect(judge([two(600, 1020)])).toEqual([]);
+    expect(judge([two(600, 1021)])).toEqual([`the speech bubble ${q(t)} runs to y 1068 ${edge}`]);
+    expect(judge([b(-225, 532, 287, t, 47)])).toEqual([`the speech bubble ${q(t)} starts at x -225 ${edge}`]); // briefs/014's 01-tech-loop-targets: half off the left edge
+    const fx2 = "It's time, Miss Nikolaou. Call Arthur across now, the way we said, and quietly.";
+    expect(judge([b(1530, 952, 590, fx2)])).toEqual([`the speech bubble ${q(fx2)} runs to x 2120 ${edge}`, `the speech bubble ${q(fx2)} is one row 590 px wide (a bubble wraps at 460 px)`]);
+  });
+  test('rule 4 (option B): one row at most 460 px, a pixel for rounding; Glyph\'s 712 px row fails; two rows are wider only for a line two rows of 460 can\'t hold (490 px passes); the old docked plate passes', () => {
+    expect(judge([b(600, 400, 460)])).toEqual([]); expect(judge([b(600, 400, 461)])).toEqual([]);
+    expect(judge([b(600, 400, 462)])).toEqual([`the speech bubble ${q('Two short words.')} is one row 462 px wide (a bubble wraps at 460 px)`]);
+    expect(judge([b(600, 400, 712)])).toEqual([`the speech bubble ${q('Two short words.')} is one row 712 px wide (a bubble wraps at 460 px)`]);
+    expect(judge([b(600, 400, 490, 'Two rows.', 47)])).toEqual([]); expect(judge([docked])).toEqual([]);
+  });
+  test('at 3840 x 2160 the caps double: 920 px a row, 28 px inside the screen; the width is said at 1080', () => {
+    const size: [number, number] = [3840, 2160];
+    expect(judge([b(1200, 800, 920, 'Two short words.', 56)], 'rest', size)).toEqual([]); expect(judge([b(2634, 1904, 1178, 'Two short words.', 94)], 'rest', size)).toEqual([]); // t101-window-2x as clamped, as two rows
+    expect(judge([b(2634, 1904, 1178, 'Two short words.', 56)], 'rest', size)).toEqual([`the speech bubble ${q('Two short words.')} is one row 589 px wide (a bubble wraps at 460 px)`]);
+    expect(judge([b(2637, 1904, 1178, 'Two short words.', 94)], 'rest', size)).toEqual([`the speech bubble ${q('Two short words.')} runs to x 3815 ${edge}`]);
+  });
+});
+
+describe('the slip\'s place (Glyph\'s r5 review, Splice\'s question 1): never in the news and Book box, never over the clock stack', () => {
+  const t = load('talk-123'), s = load('slip-085'), slip0 = { ...s.man.elements.find(e => e.kind === 'card')!, kind: 'slip' as const }; // 0.2.290's dock: the clock stack, the news lozenge and the Book
+  const blank: Image = (() => { const data = new Uint8Array(1920 * 1080 * 4); for (let i = 0; i < 1920 * 1080; i++) data.set([120, 120, 120, 255], i * 4); return { w: 1920, h: 1080, data }; })();
+  const dock = t.man.elements.filter(e => e.kind !== 'speech'), noNews = dock.filter(e => e.kind !== 'card' && e.text !== 'card badge');
+  const judge = (x: number, y: number, els = dock) => analyse(blank, { state: 'rest', rects: [{ x: 0, y: 0, w: 10, h: 10 }], manifest: { state: 'rest', elements: [...els, { ...slip0, x, y }] } }).failures;
+  const q = `"${slip0.text!.trim().slice(0, 40)}…"`, inBox = `the slip ${q} sits in the news and Book box (the bottom right holds only the news and the Book)`, overClock = `the slip ${q} sits over the clock stack (the top right: the clock, the next event and the key people)`;
+  test('the dock as 0.2.290 draws it: the news, its badge and the Book at the bottom right; the bar, the next event and the key people at the top right', () => {
+    for (const n of ['card badge', 'book key', 'known people']) expect(dock.some(e => e.text === n)).toBe(true);
+    expect(['card', 'bar', 'next'].every(k => dock.some(e => e.kind === k))).toBe(true);
+  });
+  test('where r085 drew it, over her head, it passes; so does a slip just clear of either corner', () => {
+    expect(judge(slip0.x, slip0.y)).toEqual([]); expect(judge(1100, 850)).toEqual([]); expect(judge(1500, 840)).toEqual([]); expect(judge(1290, 170)).toEqual([]);
+  });
+  test('failing examples: in the news corner; over the clock stack; with the news down, over the Book alone', () => {
+    expect(judge(1500, 900)).toEqual([inBox]); expect(judge(1560, 100)).toEqual([overClock]); expect(judge(1560, 0)).toEqual([overClock]);
+    expect(judge(1500, 900, noNews)).toEqual([inBox]); expect(judge(1450, 900, noNews)).toEqual([]); // the news down: only the Book's corner, 1844 on
   });
 });
 

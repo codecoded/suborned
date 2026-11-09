@@ -230,8 +230,11 @@ describe('the kinds of GDD v0.26.0 §10 (Glyph\'s limits, briefs/067/glyph-budge
     expect(recognise(el('speech', 'Hold · Board · 8 s'), 'active').kind).toBe('speech'); // only `line` is re-read
   });
 
-  test('r067-lock-pill-guard as shot (0.2.125): the lock pill and the goal line share the frame, the two done chips are a list: within budget', () => {
-    const r = judge('lock-067'); expect(r.failures).toEqual([]); expect(r.pass).toBe(true);
+  // 0.2.125 drew the slim feed's newest line beside the two bubbles ("Guard: It's not generous…", bottom right): three lines at once, which brief 101 round 4's two-at-once rule fails
+  // (speech.ts bubbleFaults). The feed's lines are gone from today's builds; the frame keeps its other verdicts.
+  const THREE = '3 speech bubbles on screen (at most 2; a docked line counts)';
+  test('r067-lock-pill-guard as shot (0.2.125): the lock pill and the goal line share the frame, the two done chips are a list: within budget but for the three lines', () => {
+    const r = judge('lock-067'); expect(r.failures).toEqual([THREE]); expect(r.bubbles).toBe(3);
     expect(r.locks.length).toBeGreaterThan(0); expect(r.locks[0]!.words).toBe(6); expect(r.lines.every(l => l.words === 3)).toBe(true); // "Take Vale alive." alone is the goal line
     expect(r.chips.length).toBeGreaterThanOrEqual(5); expect(r.sentences).toEqual([]); expect(r.blocks).toEqual([]);
     expect(r.warnings.filter(w => /not spelled in the manifest/.test(w)).length).toBe(2); // the chips' word caps wait for the host to spell them
@@ -243,7 +246,7 @@ describe('the kinds of GDD v0.26.0 §10 (Glyph\'s limits, briefs/067/glyph-budge
     expect(fails(judge('lock-067', m => ({ ...m, elements: [...m.elements, el('line', 'Hold · Watch the guard · 9 s', 786, 600)] })))).toContain('2 pills on screen');
     expect(fails(judge('lock-067', m => m, { state: 'rest' }))).toContain('shows in a rest frame (a pill is active only)');
     const re = (t: string) => judge('lock-067', m => ({ ...m, elements: m.elements.map(e => (e.text === 'Listen to the guard · Already heard' ? { ...e, kind: 'lock' as const, text: t } : e)) }));
-    expect(re('Listen to the guard · Already heard').failures).toEqual([]); // tagged `lock` by the host: the same verdict
+    expect(re('Listen to the guard · Already heard').failures).toEqual([THREE]); // tagged `lock` by the host: the same verdict
     expect(fails(re('Listen to the guard · Already heard him once'))).toContain(`its reason is 4 words (at most ${LOCK_MAX.reason})`);
     expect(fails(re('Listen to the guard at the public door · Already heard'))).toContain(`at most ${LOCK_MAX.words}`);
   });

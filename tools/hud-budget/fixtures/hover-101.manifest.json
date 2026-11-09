@@ -1,0 +1,30 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 1648, "y": 144, "w": 84, "h": 28, "text": "alert lamps"},
+  {"kind": "image", "x": 1744, "y": 148, "w": 20, "h": 20, "text": "trail icon"},
+  {"kind": "image", "x": 1796, "y": 148, "w": 20, "h": 20, "text": "cash icon"},
+  {"kind": "bar", "x": 1648, "y": 144, "w": 252, "h": 28, "text": ""},
+  {"kind": "image", "x": 1789, "y": 177, "w": 18, "h": 18, "text": "next icon"},
+  {"kind": "next", "x": 1789, "y": 172, "w": 111, "h": 28, "text": "Chime 5:10"},
+  {"kind": "image", "x": 1784, "y": 204, "w": 116, "h": 30, "text": "known people"},
+  {"kind": "marker", "x": 1760, "y": 14, "w": 140, "h": 48, "text": "3:48"},
+  {"kind": "image", "x": 1760, "y": 21, "w": 34, "h": 34, "text": "pause button"},
+  {"kind": "image", "x": 14, "y": 14, "w": 86, "h": 329, "text": "roster portraits"},
+  {"kind": "image", "x": 1844, "y": 1000, "w": 56, "h": 56, "text": "book key"},
+  {"kind": "image", "x": 1529, "y": 999, "w": 58, "h": 58, "text": "card badge"},
+  {"kind": "card", "x": 1529, "y": 1003, "w": 301, "h": 64, "text": "Police coming · shots heard at the Office door · 2:33"},
+  {"kind": "image", "x": 18, "y": 922, "w": 146, "h": 146, "text": "plot scope"},
+  {"kind": "image", "x": 9, "y": 933, "w": 32, "h": 32, "text": "turn button"},
+  {"kind": "image", "x": 141, "y": 933, "w": 32, "h": 32, "text": "turn button"},
+  {"kind": "image", "x": 75, "y": 899, "w": 32, "h": 32, "text": "cones button"},
+  {"kind": "image", "x": 797, "y": 552, "w": 30, "h": 26, "text": "car held marker"},
+  {"kind": "image", "x": 34, "y": 368, "w": 36, "h": 36, "text": "squad button"},
+  {"kind": "image", "x": 100, "y": 37, "w": 30, "h": 30, "text": "take control tab"},
+  {"kind": "marker", "x": 1773, "y": 62, "w": 127, "h": 50, "text": "1:53"},
+  {"kind": "image", "x": 1773, "y": 72, "w": 30, "h": 30, "text": "seal lock"},
+  {"kind": "image", "x": 1793, "y": 112, "w": 107, "h": 28, "text": "seal job"},
+  {"kind": "image", "x": 1879, "y": 901, "w": 30, "h": 30, "text": "edge cameo"},
+  {"kind": "image", "x": 912, "y": 729, "w": 26, "h": 26, "text": "holder"}
+ ]
+}
