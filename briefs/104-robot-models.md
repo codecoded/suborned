@@ -33,3 +33,28 @@ Vela (the board and the mapping). Then Latch (install) once Sky picks.
 
 ## Next owner
 Vela, then Sky, then Latch.
+
+## Vela's board (2026-11-10, cdd312770)
+14 models are on one board (`briefs/104/vela/robots/`).
+- **Proposed:**
+  - the Patrol robot with the red lamp for the response units;
+  - a Patrol robot standing in the square's dock;
+  - the store robots stay in the store.
+- **Aster's note:** the small blue-domed service robot reads close to a famous film robot. Repaint or reshape it later.
+
+## A new patrol robot: concept work (Sky, 2026-11-10: "create some concept work for a suborned patrol robot")
+**Vela, $0 Codex stills from an open brief (the style contract's `concept_prompt`):**
+- two or three lineup sheets of about six designs;
+- a play-size strip at about 80 px;
+- her top three.
+
+**The robot's world facts, given to the art:**
+- it walks a round and is sent from street docks when the alert rises;
+- it reports people who linger;
+- it is clockwork-smart, with no networks;
+- a dot-matrix face shows its four attention stages, with no cartoon eyes;
+- an unlit emissive alarm signal;
+- the city's "optimistic surface, coercive underneath";
+- original, like no film or game robot.
+
+**Deliverables:** `briefs/104/vela/patrol-concepts/`, with images in `paid/104-patrol-robot/`.
