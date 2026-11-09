@@ -84,3 +84,9 @@ Glint's probe fix wasn't picked, so it's not started.
   - **Yaw labels:** Vela's render rig calls "yaw 210" what the game shows at yaw 30. Align the rig's labels on Vela's next round. The done-check is met at the heading where the front shows.
   - **Highlight:** the ball still catches a cool sky highlight. That's Glint's probe fix, which Sky hasn't picked.
 
+**DP1 confirmed (Keel, 2026-11-10).** The re-record is correct, and the behaviour is identical.
+- **The two changed fields** are `grid.collide` and `cast.sha256`. The site parser accepts both but never reads their values (`Site.cs:250`, `:392`).
+- **Why the checkpoints moved:** the site's text feeds the inputs hash, then the start hash, and the start hash leads every checkpoint hash. It seeds no rolls.
+- **Replay:** the 142 orders replayed on the old and the new site match on every crew member's position at all 300 ticks, every answer, the log and the end state.
+- **Result:** DP1 is ok.
+
