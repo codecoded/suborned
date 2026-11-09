@@ -1,0 +1,51 @@
+{
+ "schema": "suborned.fable-words/1",
+ "status": "In text.json, by hand, not scored. The Intel entry and the order tips are outside the style loop; the two Watch rows are silent (out of the loop since guide /13); the place word belongs to the why/places family, whose runs need Sky's approval. Held by contracts/missions/handover/mast.test.ts.",
+ "by": "Fable (dialogue designer), by hand, 2026-11-09",
+ "why": "Brief 101, 'The square's camera: Sky picks B, the lamp mast' (Aster's step 5; Vantage's briefs/101/vantage/square-camera.md section 3 B). The terrace's west lamp beside the cell's start becomes the square's mast: the sphere lamp and the café's banner at lamp height, a chrome column to a crown at about 8 m, three camera pods fanned 60° over the café's side and front, the terrace and the square, their backs to the cell. The old words said 'On a mast over the square' and 'It turns between three views'. The engine sees through every head at once (sim Game.cs InHeads), and a loop, a cut or a shot darkens the whole camera (CameraWatching, CameraDark). The ids stay: camera-mast-z0 (the sim's mast-z0). Brief 102's bar: plain words, no rule explained.",
+ "edits": [
+  { "key": "targets.camera-mast-z0.about", "before": "On a mast over the square. A person watches it live.", "after": "On the lamp post by the café terrace. A person watches it live.",
+    "why": "Where it stands, in words anyone can see from the start: the terrace's west lamp, outside the terrace wall's west end. Like the other cameras' told lines ('On a pole by the public door.'), it names no view: what the lenses see is the Watch's to teach." },
+  { "key": "targets.camera-mast-z0.watched", "before": "Its cone covers the square. It turns between three views.", "after": "Its three lenses watch at once: the café, the terrace and the square.",
+    "why": "Three fixed heads, all live together (InHeads), so it never turns. The heads, by the check below: N along the café's west side, ENE over its front and the terrace, ESE over the square and the fountain. 69 characters (≤ 70 after 'Learned: ')." },
+  { "key": "actions.watch.onTarget.camera-mast-z0", "before": "Watch it from close by to learn what it sees. Needs a clear line.", "after": "Watch it from close by to learn what its three lenses see. Needs a clear line.",
+    "why": "The tip names the three lenses the Watch will show." },
+  { "key": "actions.watch.onTargetBy.tech.camera-mast-z0", "before": "Study the lens: its cone, and when it turns. Needs a clear line.", "after": "Study the three lenses: their cones, their blind side. Needs a clear line.",
+    "why": "'when it turns' was untrue. Its blind side is behind it, at the kerb where the cell starts; the pickup camera's tip has the same words ('its cone, its blind side')." },
+  { "key": "actions.loop.onTarget.camera-mast-z0", "before": "Loop this camera for two minutes. The Tech can leave the cabinet.", "after": "Loop all three lenses for two minutes. The Tech can leave the cabinet.",
+    "why": "One loop takes the whole camera (CameraWatching: the loop is per camera), so the player knows the café, the terrace and the square all go quiet together." },
+  { "key": "actions.disable.onTarget.camera-mast-z0", "before": "Cut this camera for good. The desk soon sees a dead screen.", "after": "Cut the line to all three lenses for good. The desk soon sees a dead screen.",
+    "why": "One cut darkens all three (CameraDark). The Tech cuts its line at the cabinet. 'a dead screen' stays: it is the plate the player then sees (why.onWay.ways.screen, 'Dead screen · desk in {s} s')." },
+  { "key": "why.places.d:Courtyard", "before": "in the courtyard", "after": "on the café terrace",
+    "why": "The check below: the case Sky's loitering card will meet under B is route A's Fixer waiting beside Inez, and its {where} is this place. No courtyard is drawn there. It is the middle of the café terrace, between the café door (x -10.3) and the terrace wall's gate (x -4.3). The HUD calls it 'the café terrace' (the hint 'Watch the [café terrace]') and the people 'the terrace'. 'courtyard' was the mission file's name for the destination. It now shares its words with d:Under parasol, as both sides of the café share 'beside the café'. The hover reads: 'The mast camera saw the Fixer hanging about on the café terrace.'" },
+  { "key": "dialogue read/watch/scout/camera-mast-z0 (silent)", "before": "The mast camera covers the square. · It turns between three views. I've got the square. · The mast turns. The square's all it watches.", "after": "The mast camera covers the café, the terrace and the square. · Three lenses up there, and none of them moves. · It watches the café and the square, all three ways at once.",
+    "why": "Silent in play since brief 102, but its lines stay so one moment can come back. They were untrue (it turns). No `hand` mark: a silent row is no item of any writer run." },
+  { "key": "dialogue read/watch/tech/camera-mast-z0 (silent)", "before": "Mast camera. Three views, one lens. · It pans the square. I have the turns. · One lens on a slow pan. I know its views.", "after": "Mast camera. Three fixed lenses, all live. · Café, terrace and square. No pan on any of them. · Three lenses, no pan. I know what each one covers.",
+    "why": "As the Scout's row: one panning lens was untrue. Written to match the other cameras' Tech rows ('No pan, no zoom.')." }
+ ],
+ "kept": {
+  "names.targets.camera-mast-z0": "'the mast camera': the short name, which fits the lozenge and names no place (tools/style-agent/hand-whys-3.test.ts holds it so).",
+  "less.done.walk.who.camera-mast-z0": "'camera': the walk-in plate's one word.",
+  "actions.fire.onTarget.camera-mast-z0": "'Shoot this camera out for good. Gunfire raises Alert at once. Adds Trail.' True: one shot-out darkens the whole camera (CameraDark).",
+  "why.alert.loiter": "Title, short and line unchanged. The short carries no place (HostWhy.cs NoPlace), and the line's {where} is where the agent stood, so it holds wherever the mast stands.",
+  "why.places (the rest)": "'beside the café' still holds: the N head looks along the West side, and the ENE head reaches the East side. 'behind the café', 'among the tables', 'at the terrace gate', 'at the café door', 'in the square', 'by the fountain' and 'on the south walk' are true for the ground they name.",
+  "briefing, hints, cards, the Pay and Pressure tape lines": "None names or places the mast. The tape lines name it by {camera} ('A camera might tape this: Watch the mast camera to be sure')."
+ },
+ "check": {
+  "what": "The loitering card's hover place under the new cones: which {where} the host would give for every walkable spot each head sees.",
+  "how": "Vantage's scratch port of the engine's sight rules (out/scratch/vantage/101/cover.py, checked by Vantage against Keel's N67 for today's mast), with B at block (-3.85, -42.55) and facings(330, 3, 60) (heads N, ENE, ESE, a 30 m × ±35° wedge each, lens 7.68 m, no crowd). {where} as HostWhy.Names.cs WhyWhere gives it: the nearest of why.places within 13 m, else 'nearby'. Scripts: out/scratch/fable/101/mast_places.py and mast_heads.py (args: Vantage's folder, text.json). An estimate: once the world is regenerated, Keel's engine is the measure.",
+  "today": { "cells": 3957, "nearby": 59.0, "in the square (Plaza east)": 14.6, "beside the café (East side)": 13.7, "on the north street": 8.5, "on the café terrace": 3.1, "at the terrace gate": 1.1 },
+  "B": { "cells": 3695, "in the square (Plaza east)": 16.2, "nearby": 15.4, "beside the café (West side)": 12.0, "behind the café": 9.3, "by the fountain": 9.0, "beside the café (East side)": 7.1, "on the south walk": 6.3, "among the tables": 6.1, "at the terrace gate": 5.8, "on the café terrace (Under parasol)": 5.5, "in the square (Plaza west)": 4.5, "in the courtyard (Courtyard), now on the café terrace": 2.2, "at the café door": 0.7 },
+  "B by head": {
+   "N": "nearby 41 %, West side 33 %, Behind café 25 % (the pavement along the café's west side)",
+   "ENE": "East side 32 %, Under parasol 23 %, Between tables 19 %, Courtyard 12 %, Terrace gate 8 %, Café door 4 % (the café's front and terrace)",
+   "ESE": "Plaza east 31 %, Fountain 17 %, South walkway 12 %, Terrace gate 11 %, Plaza west 9 % (the square)"
+  },
+  "spots": "None of the four starts is seen. beside-inez (route A's Fixer waits there twice, Vantage section 3 B) is seen, and its {where} is d:Courtyard's word."
+ },
+ "open": [
+  "Chime: briefs/090/chime/lines-handover.json is a snapshot of text.json (handover_lines.py) and still holds the old mast lines. They are silent rows, never live, so nothing is to be voiced; a re-run of the script picks up the new ones.",
+  "Fable, next places guide: the style loop's PLACE_FACTS (tools/style-agent/short-whys19.ts) give d:Courtyard no fact, which is how 'in the courtyard' was written. The fact ('the middle of the café terrace, between the door and the gate') goes in with the next guide, not into today's, whose recorded runs replay. Until then mast.test.ts fails any run that writes a courtyard back.",
+  "Keel and Waymark, after the merge: mast.test.ts reads beside-inez and d:West side from sim/data/handover.site.json, so a regenerated site that moves them shows here as a failed place word, to be re-read."
+ ]
+}
