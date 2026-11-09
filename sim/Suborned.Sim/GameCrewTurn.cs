@@ -165,11 +165,12 @@ namespace Suborned.Sim
         }
 
         /// <summary>The card's price of an act on a member (§02 full price): a Listen's time; a Pay's money, time and Trail, its outcome by what the
-        /// cell knows of him ("?" before a Listen); a Mislead's time and Trail. A read too (Latch's card).</summary>
+        /// cell knows of him ("?" before a Listen), and its camera mark as a person's (Quote.Recorded*: engine 0.52.0, brief 101; a member paid in a
+        /// live camera's view is taped since 0.41.0, and the card said nothing); a Mislead's time and Trail. A read too (Latch's card).</summary>
         public Quote CrewQuote(Order o, CrewMember m)
         {
             var q = new Quote { Event = o.Do == "turn" ? "rivals.pay" : o.Do == "listen" ? "rivals.listen" : "rivals.mislead" };
-            if (o.Do == "turn") { q.Usd = q.WorstUsd = Cr.PayUsd; q.S = Cr.PayS; q.Trail = Cr.PayTrail; q.Outcome = !m.KTemperament ? "?" : m.Temperament == "mercenary" ? "turned" : "refused"; }
+            if (o.Do == "turn") { q.Usd = q.WorstUsd = Cr.PayUsd; q.S = Cr.PayS; q.Trail = Cr.PayTrail; q.Outcome = !m.KTemperament ? "?" : m.Temperament == "mercenary" ? "turned" : "refused"; var fx = OpOf(OpId.Fixer); var mp = MemberPose(m)?.pos; QuoteRecord(q, "pay", m.P, fx, mp.HasValue && G.Within(fx.Pos, mp.Value, actReach) ? fx.Pos : mp, mp); }
             else if (o.Do == "listen") { q.S = (long)R.Num("v:listen-s"); q.Outcome = "heard"; }
             else { q.S = R.MisleadS; q.Trail = R.MisleadTrail; q.Outcome = "misled"; }
             q.Lines.Add(new Quote.L { Line = "base", Usd = q.Usd, S = q.S, Trail = q.Trail, Holds = q.Outcome == "?" ? "?" : "yes" });

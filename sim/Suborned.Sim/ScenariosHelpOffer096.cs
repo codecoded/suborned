@@ -7,9 +7,11 @@ namespace Suborned.Sim
 {
     public static partial class Scenarios
     {
-        static void ListenToInez(Run r)
+        /// <summary>The Scout's Watch and Listen on Inez at her post. loopMast (brief 101): the Tech, sent to the cabinet beforehand, loops the square's mast
+        /// after the Watch, before it can report her loitering by Inez's post; then her Listen's spot is beside her, as before the mast moved.</summary>
+        static void ListenToInez(Run r, bool loopMast = false)
         {
-            r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
+            r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout); if (loopMast) LoopMast(r);
             r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
             r.Is(r.G.Inez.KNeed, "the Listen landed: her need is heard");
         }

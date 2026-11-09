@@ -499,12 +499,12 @@ namespace Suborned.Sim
                 // Changed: the prototype shot the guard at the door, then moved the Enforcer across the map by hand. Here the cell plays it:
                 // the patrol is rerouted, the guard is lured and shot from behind in the square (unseen: the response comes in 45 s), and
                 // the Enforcer walks to the north street, where the response unit comes in (sim/data site security-entry).
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, new Pt(1400, -3300))));
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, FreeWhere(r, new Pt(1400, -3300), c => !g.S.Cameras.Exists(m => g.CameraWatching(m.Id, c, false)), Enf)!.Value))); // brief 101: the nearest spot no camera sees (the square's mast sees the old one)
                 // Changed 2026-10-19 (Keel, brief 023; the door on the west face): the Tech's walk to the cabinet on the forecourt is longer, and
                 // a call after the reroute lands put the shot at 1:55, its 45 s response after the 2:30 mark; the Fixer calls as the reroute
                 // starts (it lands at 1:19, before the shot), so the shot comes before 1:45 and the unit, not the mark, is the shot's
                 r.Do(Tech, "reroute", "patrol");
-                r.Do(Fixer, "call", Inez);
+                r.Do(Fixer, "call", Inez); r.Done(Tech); r.Do(Tech, "loop", MastCam); // brief 101: the square's mast watches the way to the north street; looped from 1:15
                 // engine 0.34.0 (M067-B1): at 1.8 m/s the shot would come at 0:55.8, before his 1:00 mark, which would then call the unit itself: the
                 // Enforcer lets the mark pass first, as N10 does, so the unit is the shot's (45 s), before the 2:30 mark
                 { int mk = g.NextMarkOf(g.GuardP, g.Tick); if (mk - g.Tick < T(45)) r.To(mk + 1); }
@@ -516,7 +516,7 @@ namespace Suborned.Sim
                 r.Is(!g.InezWitnessedShooting && !g.PatrolChasing, "unwitnessed, and the patrol is away");
                 int arrive = g.SecurityArrives;
                 r.Eq(arrive, g.Tick + T(45), "an unseen shot: the response in 45 s");
-                r.Until(() => g.GuardDown, T(30));
+                r.Until(() => g.GuardDown, T(30)); r.Until(() => g.LoopOn && g.LoopCam == MastCam, T(30)); // he runs under the loop
                 // Changed (Sky 2026-10-15 fights): the guard drops in 2 s; the run is loud, so running is free: the Enforcer runs to the north
                 // street. (Brief 013: his missed check-in is at his next 90 s mark, after the shot's 45 s here, so it no longer calls them sooner.)
                 var (ran, _) = g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "move", Point = new Pt(-3400, -3400), Run = true });
@@ -608,9 +608,9 @@ namespace Suborned.Sim
                 // back to 6 m from her first, so the Listen is given out of reach as this case means
                 { var ip = g.PersonPos(g.Inez)!.Value; var d = r.Op(Scout).Pos - ip; long len = Math.Max(1, G.Isqrt((long)d.X * d.X + (long)d.Y * d.Y)); var back = ip + new Pt((int)(d.X * 600 / len), (int)(d.Y * 600 / len)); r.To(r.SendTo(Scout, g.S.Grid.NearestFree(back) ?? back)); }
                 r.ForHer("listen", Inez);
-                var l = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }); int given = g.Tick;
+                int card = g.WalkInS(Scout, "listen", Inez); var l = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }); int given = g.Tick; // brief 101: its spot is out of the square's mast's cones now, so the walk is the card's, not a fixed 30 s
                 r.Is(l.ok && r.Op(Scout).Busy == null, $"the Scout's Listen from 6 m is taken, and walks him in first ({l.code})");
-                r.Is(r.Until(() => r.Op(Scout).Busy != null, T(30)) && G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.ListenReachCm), $"the Scout must stand beside Inez to hear the debt (3 m): it starts there, {(g.Tick - given) / Game.Hz} s later");
+                r.Is(r.Until(() => r.Op(Scout).Busy != null, T(card) + T(1)) && G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.ListenReachCm), $"the Scout must stand beside Inez to hear the debt ({g.R.ListenReachCm / 100} m): it starts there, {(g.Tick - given) / Game.Hz} s later, within the {card} s the card said");
                 r.Done(Scout);
                 r.To(r.Send(Fixer, "d:Courtyard"));
                 HelpUntilTurned(r, Inez);
@@ -653,9 +653,9 @@ namespace Suborned.Sim
             });
 
             var idealist = new Start(); idealist.Temperament[Inez] = "idealist";
-            Add("S24", "421", "Pay is open with no Watch to give (engine 0.28.0, brief 054 §2.2: an Idealist Inez reads neutral; it was the Watch that unlocked it), shown at $70,000 with \"?\"; Help stays locked; an Idealist Inez refuses Pay, and it is remembered (Sky 2026-10-15). The refusal is the rule under test, so the start state makes her an Idealist whoever the cast is.", r =>
+            Add("S24", "421", "Pay is open with no Watch to give (engine 0.28.0, brief 054 §2.2: an Idealist Inez reads neutral; it was the Watch that unlocked it), shown at $70,000 with \"?\"; Help stays locked; an Idealist Inez refuses Pay, and it is remembered (Sky 2026-10-15). The refusal is the rule under test, so the start state makes her an Idealist whoever the cast is. Brief 101: the square's mast watches her post, so the Tech loops it first and the offer's own Trail is the one counted.", r =>
             {
-                var g = r.G;
+                var g = r.G; LoopMast(r); int trail0 = g.Trail;
                 // engine 0.28.0 (brief 054 §2.2): an Idealist Inez has fear 0 and reads neutral, so there is no Watch to give and Pay needs none
                 r.To(r.Send(Scout, "d:Courtyard"));
                 r.Is(!g.WatchOffered(Inez) && g.ScoutQuery("watch", Inez).code == "nothing-to-see", "no Watch to give on a neutral Inez: nothing-to-see");
@@ -668,21 +668,21 @@ namespace Suborned.Sim
                 r.Do(Fixer, "turn", Inez, "pay"); r.Done(Fixer);
                 r.Is(!g.Inez.Turned, "an Idealist refuses the fee");
                 r.Eq(g.Cash, 100000L, "the fee stays with the cell");
-                r.Eq(g.Trail, 2, "the offer still leaves its trail");
+                r.Eq(g.Trail - trail0, 2, "the offer still leaves its trail"); r.Eq(g.CameraRecords().Count, 0, "no camera taped it (the mast looped)");
                 r.Is(g.Inez.Has("refusal"), "she remembers the refusal");
                 r.Is(!g.Inez.KTemperament && g.Preview("pay", Inez).Outcome == "refused", "the cell learns only that she refuses a fee (✗), not her temperament");
             }, idealist);
 
-            Add("S25", "434", "Pressure: $0, +3 T (exposure of her affair, learned by Listen: no step worse whatever her temperament; Motive, motive-lovers.md), and she can be called.", r =>
+            Add("S25", "434", "Pressure: $0, +3 T (exposure of her affair, learned by Listen: no step worse whatever her temperament; Motive, motive-lovers.md), and she can be called. Brief 101: the square's mast watches her post, so the Tech loops it first and the Pressure's own Trail is the one counted.", r =>
             {
-                var g = r.G;
-                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
+                var g = r.G; r.Send(Tech, "cabinet"); // brief 101: he walks while the Scout watches, and loops the mast before her clock on him can report him
+                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout); LoopMast(r);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
-                r.To(r.Send(Fixer, "d:Courtyard"));
+                r.To(r.Send(Fixer, "d:Courtyard")); int trail0 = g.Trail;
                 r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
                 r.Is(g.Inez.Turned, "she agrees under pressure");
                 r.Eq(g.Cash, 100000L, "pressure avoids the payment");
-                r.Eq(g.Trail, 3, "pressure by exposure leaves +3 T: Listen found her affair, so no wrong-approach step (Motive, motive-lovers.md §2.2; was +4)");
+                r.Eq(g.Trail - trail0, 3, "pressure by exposure leaves +3 T: Listen found her affair, so no wrong-approach step (Motive, motive-lovers.md §2.2; was +4)"); r.Eq(g.CameraRecords().Count, 0, "no camera taped it (the mast looped)");
                 r.Is(g.CanCall(Inez), "she can be called");
             });
 
@@ -833,10 +833,10 @@ namespace Suborned.Sim
                 r.Is(!next.Lines.Exists(l => l.Line == "word" && l.Who != Inez), "between missions: no onlooker passes word of it");
             });
 
-            Add("N12c", "—", "Pressure stays witnessable (rulebook privacy: a threat is visible): the Fixer presses Inez with the same customers in sight. A witness adds Trail once, moves Standing one step toward Menace (§04 public threats), remembers the Fixer's face, and the threat is an incident for the investigators.", r =>
+            Add("N12c", "—", "Pressure stays witnessable (rulebook privacy: a threat is visible): the Fixer presses Inez with the same customers in sight. A witness adds Trail once, moves Standing one step toward Menace (§04 public threats), remembers the Fixer's face, and the threat is an incident for the investigators. Brief 101: the square's mast watches her post and would tape it (one act, one incident: the record's Trail, not the witnesses'), so the Tech loops it first.", r =>
             {
-                var g = r.G;
-                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
+                var g = r.G; r.Send(Tech, "cabinet"); // brief 101: he walks while the Scout watches, and loops the mast before her clock on him can report him
+                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout); LoopMast(r);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
                 r.To(r.Send(Fixer, "d:Courtyard")); InSightOfSecurity(r); // engine 0.28.0: at Alert 0 only security minds a threat
                 int trail = g.Trail, standing = g.Standing;
@@ -846,7 +846,7 @@ namespace Suborned.Sim
                 r.Eq(g.Trail - trail, (int)q.Trail + g.R.WitnessTrail, "the Pressure's own Trail, and +1 T for the witnessed threat (once, however many saw it)");
                 r.Eq(g.Standing, standing - g.R.StandingStep, "a public threat moves Standing one step toward Menace");
                 r.Is(g.Walkers.Exists(w => w.P != g.Inez && g.HoldsFace(w.P)), "a witness remembers the Fixer's face");
-                r.Is(g.Ledger.Exists(l => l.cause == "witnessed:threat:waitress"), "the ledger names the witnessed act");
+                r.Is(g.Ledger.Exists(l => l.cause == "witnessed:threat:waitress") && g.CameraRecords().Count == 0, "the ledger names the witnessed act, and no camera taped it (the mast looped)");
                 r.Is(g.Incidents.Exists(i => i.Cause == "threat:waitress" && i.Witnesses.Count > 1), "an incident with its witnesses, for the investigators");
             });
 
@@ -914,7 +914,7 @@ namespace Suborned.Sim
                 r.Is(q.Outcome == "lies" && q.Facts.Count == 1 && q.Facts[0] == "nothing", $"questioned, Inez lies: nothing ({q.Outcome} {string.Join(",", q.Facts)})");
             }, brave);
 
-            Add("N18", "—", "Between missions (rulebook phases): after route A, Inez's ladder follows the investigation: questioned, her job is exposed (resentment compliant → resentful), else it is not (bravery informant → helper); her met debt is replaced from her own stream (Q2), told free as she is a contact; obliged, she passes no word (K3, Motive #10); she can introduce along her own family, workmate and regular ties (K5).", r =>
+            Add("N18", "—", "Between missions (rulebook phases): after route A, Inez's ladder follows the exposure law (rulebook exposure): questioned by the investigators, or logged by a watcher beside a cell operative (brief 101: the square's mast watches her post; Sky 2026-11-09, \"Keep it\"), her job is exposed (resentment compliant → resentful), else it is not (bravery informant → helper); her met debt is replaced from her own stream (Q2), told free as she is a contact; obliged, she passes no word (K3, Motive #10); she can introduce along her own family, workmate and regular ties (K5).", r =>
             {
                 var g = r.G;
                 RouteA(r, reroute: true);
@@ -926,9 +926,8 @@ namespace Suborned.Sim
                 // investigators reach Inez by another lead is the cast's and the route's; the ladder must follow it.
                 var inv = Debrief.Of(g).Inv;
                 r.Is(!inv.Findings.Exists(f => f.Lead.StartsWith("incident:debt-cleared", StringComparison.Ordinal) || f.Lead.StartsWith("incident:payment", StringComparison.Ordinal)), "a private Help leaves the investigators no witnessed lead");
-                bool asked = inv.Findings.Exists(f => f.Who == Inez);
-                string ladder = asked ? "job-exposed: resentment compliant → resentful" : "job-unexposed: bravery informant → helper";
-                r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Inez && l.Detail == ladder), $"{(asked ? "questioned" : "not questioned")}, her ladder: {ladder}");
+                bool asked = inv.Findings.Exists(f => f.Who == Inez), logged = g.ExposedByWatcher.Contains(Inez); string ladder = asked || logged ? "job-exposed: resentment compliant → resentful" : "job-unexposed: bravery informant → helper";
+                r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Inez && l.Detail == ladder), $"{(asked ? "questioned" : "not questioned")}, {(logged ? "logged beside the cell" : "not logged")}: her ladder: {ladder}"); // brief 101: route A works at her post, in the square's mast's view
                 var need = next.Lines.Find(l => l.Line == "need-replaced" && l.Who == Inez);
                 r.Is(need != null && need.Detail.StartsWith("debt → ", StringComparison.Ordinal) && need.Detail.EndsWith("(told free: a contact)", StringComparison.Ordinal), $"her debt is replaced and told free ({need?.Detail})");
                 r.Is(!next.Lines.Exists(l => l.Line == "word" && l.Who == Inez), "obliged, she passes no word");
@@ -1067,7 +1066,7 @@ namespace Suborned.Sim
             Always059(); Camera096(); Box096(); Parked096(); Rivals096(); Lend096(); Lend096b(); Misses096(); HelpOffer096(); HelpOnce096(); // engine 0.45.0 (brief 096): a worse Help once, one step dearer (ScenariosHelpOnce096.cs); engine 0.44.0 (brief 096): the small offer, a Fearful person helped once (ScenariosHelpOffer096.cs); engine 0.43.0 (brief 096): Motive's misses (ScenariosMisses096.cs); engine 0.42.0 (brief 096): the lend, the fight fixes, the veteran's placing (ScenariosLend096*.cs); engine 0.41.0 (brief 096): the block on arrival, the lookout, thinning, the gang shooting (ScenariosRivals096*.cs)
             // engine 0.40.0 (brief 096): bribes on camera, box-in and the kerbside stop, the parked car (Scenarios*096.cs); engine 0.33.0 (brief 059, Sky's S1 = no): the gate, the late spring, the floor, crew destroyed, the crew as people, Motive's balance (ScenariosAlways059.cs)
             FightBCases(); // engine 0.35.0 (brief 039 B): Covering fire holding Vale, Talk down on the blocker (ScenariosFightB.cs)
-            Pace067(); Bodies098(); // brief 098 L9 (ScenariosBodies098.cs): the scenarios the law moved, rewritten; engine 0.34.0 (brief 067): the walk split, the run seen and suspicious, hiding in a held car loses, Go needs a driver, Pulse's posts (ScenariosPace067.cs)
+            Pace067(); Bodies098(); Mast101(); // brief 101 (ScenariosMast101.cs): the square's lamp mast; brief 098 L9 (ScenariosBodies098.cs): the scenarios the law moved, rewritten; engine 0.34.0 (brief 067): the walk split, the run seen and suspicious, hiding in a held car loses, Go needs a driver, Pulse's posts (ScenariosPace067.cs)
         }
     }
 }

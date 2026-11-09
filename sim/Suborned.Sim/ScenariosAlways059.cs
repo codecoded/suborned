@@ -82,6 +82,8 @@ namespace Suborned.Sim
             return takeEnd;
         }
 
+        /// <summary>Brief 101: Inez's round keeps `at` out of her sight for the next `ticks` (read ahead along it, PoseAhead: her cone, on a clear line).</summary>
+        static bool InezAway(Run r, Pt at, int ticks) { var g = r.G; for (int k = 0; k <= ticks; k += 5) if (g.PoseAhead(g.Inez, k) is var (q, f, _) && G.InCone(q, f, g.R.PeopleReachCm, g.R.PeopleHalfCm, 0, at) && g.S.Sight(q, at, g.R.Eye)) return false; return true; }
         /// <summary>A takedown on a member of the crew by real orders: the Enforcer walks to free ground within reach of him, outside his facing
         /// cone (so he is not aware) and, quiet, outside every crewmate's cone with its near ring (so nobody sees it), else inside `seenBy`'s;
         /// waits (up to `limit`) for the beats to give such a spot, and for no civilian or watcher to see it there (quiet only). True when ordered.</summary>
@@ -201,19 +203,20 @@ namespace Suborned.Sim
             void Wake(Run r)
             {
                 var g = r.G;
-                r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Tech, "cabinet")));
-                r.Do(Scout, "watch", Inez); r.Done(Scout);
-                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
-                r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, g.S.Grid.NearestFree(new Pt(-575, -2775))!.Value); // 10 m north of ambush-2, off the square's way
-                r.Done(Scout); r.SendTo(Scout, TipSpot(r)); HelpUntilTurned(r, Inez);
-                r.Until(() => Mem(r, 3).Mode == CrewMode.Posted || g.Over, T(120));
+                // brief 101: the square's mast watches the café front and ambush-2, rival-3's post. The Scout watches and listens from out of its view (her
+                // start is 17 m from Inez), the Fixer comes in for the Help and goes back, and the Tech loops the mast over rival-3's post (2:33 to 4:33),
+                // then the entrance for the Enter: one loop at a time
+                r.Send(Tech, "cabinet"); r.Do(Scout, "watch", Inez); r.Done(Scout); r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.SendTo(Scout, TipSpot(r)); r.To(r.Send(Fixer, "d:Courtyard")); HelpUntilTurned(r, Inez); r.SendTo(Fixer, r.Stand("crew:fixer"));
+                r.To(Math.Max(g.Tick, T(133))); r.Do(Tech, "loop", MastCam); r.Done(Tech); r.SendTo(Enf, g.S.Grid.NearestFree(new Pt(-575, -2775))!.Value); // 10 m north of ambush-2, off the square's way
+                r.Until(() => Mem(r, 3).Mode == CrewMode.Posted && InezAway(r, r.Stand("ambush-2"), T(g.R.KoS + 2)) || g.Over, T(120)); // her round moved with the Listen's and the Help's holds: a moment it keeps her away for the whole knockout
                 if (!CrewTakedownAt(r, "rival-3", "knockout", T(60))) return;
                 r.Done(Enf);
                 int down = g.Tick;
                 r.Is(Mem(r, 3).Gun.Down && g.BodyById("rival-3") != null && !g.Acts.Last().Kill, $"rival-3 is out at {Report.Clock(down)} (a body, brief 013)");
                 r.Send(Enf, "d:Office entrance"); // away from him before he wakes: he would shoot the man who took him down on sight (M059-3.4); engine 0.41.0: no tip (retired)
                 ToSweepAtDoor(r); // engine 0.34.0 (brief 067 A): the yard sweep never sees the door, so no wait
-                r.Do(Tech, "loop", "entrance"); r.Do(Fixer, "call", Inez);
+                r.Until(() => !g.LoopOn, T(120)); r.Do(Tech, "loop", "entrance"); r.Do(Fixer, "call", Inez); // brief 101: the mast's loop runs out first
                 ToEntryOpening(r, walkDone: true);
                 r.Do(Enf, "enter"); r.Done(Enf);
                 r.Is(LogTick(g, "rivals.see-takedown") < 0, "no crewmate saw the takedown");
@@ -235,6 +238,8 @@ namespace Suborned.Sim
             void KoRival3(Run r)
             {
                 var g = r.G;
+                r.Send(Tech, "cabinet"); // brief 101: the square's mast watches ambush-2, rival-3's post: the Enforcer waits out of its view, the Tech loops it to land as he posts
+                r.Until(() => Mem(r, 2).Mode == CrewMode.Posted || g.Over, T(260)); LoopMast(r);
                 r.SendTo(Enf, g.S.Grid.NearestFree(new Pt(-575, -2775))!.Value);
                 r.Until(() => Mem(r, 3).Mode == CrewMode.Posted || g.Over, T(260));
                 if (CrewTakedownAt(r, "rival-3", "knockout", T(90))) r.Done(Enf);

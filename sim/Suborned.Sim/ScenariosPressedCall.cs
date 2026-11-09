@@ -1,7 +1,7 @@
 // Engine 0.38.0 (brief 085; Motive briefs/085/motive/pressure-guard.md). What it holds:
 //    P85-PRESSED  a pressed Inez's call: he walks over as ever, stays 5 s, runs back at security's speed; the door is clear for less; the Trail is the call's, Alert doesn't move
 //    P85-PLAIN    Help and Pay: the visit as it always was
-//    P85-MIXED    helped, then pressured: any Pressure counts (N93)
+//    P85-MIXED    helped, then pressured: any Pressure counts (N93); under the square's mast (brief 101) the Pressure is taped and she reports it: one incident, so the call still goes
 //    P85-LATE     an Enter after he is back fails on the guard, inside what today's window would have been
 //    P85-ALARM    an alarm on his walk over still sends him back at a guard's pace, as a recall, not as a run
 //    P85-RUN-ALARM  an alarm on his run back doesn't slow him: he keeps running, on the same clock, with no recall
@@ -23,6 +23,13 @@ namespace Suborned.Sim
             if (temperamentOfInez.Length > 0) s.Temperament[Inez] = temperamentOfInez;
             return s;
         }
+        /// <summary>The card's door clock for a call on this role (Game.GuardCallWindows). It is null while the visit wouldn't go: a failed check
+        /// naming the call's refusal, never an exception (brief 101: before engine 0.52.0 a Pressure the square's mast taped left none).</summary>
+        static bool Window(Run r, string role, out (int plain, int pressed) w)
+        {
+            var v = r.G.GuardCallWindows(role); w = v ?? default;
+            return r.Is(v.HasValue, $"the card's door clock for a call on {role}{(v.HasValue ? "" : ": none, the call is shut (" + r.G.CallQuery(role).code + ")")}");
+        }
         static void PressThenCall(Run r)
         {
             r.To(r.Send(Fixer, "d:Courtyard"));
@@ -35,7 +42,7 @@ namespace Suborned.Sim
             Add("P85-PRESSED", "085", "A pressed Inez's call (rulebook summon.pressed): he walks to her as ever, stays 5 s, runs back at security's speed, and the door is clear for less. No Alert and no Trail beyond the call's.", r =>
             {
                 var g = r.G; PressThenCall(r);
-                var w = g.GuardCallWindows(Inez)!.Value;
+                if (!Window(r, Inez, out var w)) return;
                 r.Is(w.pressed < w.plain, $"the card's read: {w.pressed} ticks pressed, shorter than the plain {w.plain}");
                 long trail = g.Trail; int alert = g.Alert;
                 r.Do(Fixer, "call", Inez);
@@ -59,7 +66,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard")); HelpUntilTurned(r, Inez);
-                var w = g.GuardCallWindows(Inez)!.Value;
+                if (!Window(r, Inez, out var w)) return;
                 r.Do(Fixer, "call", Inez);
                 r.Is(!g.GuardCallPressed, "helped: not pressed");
                 r.Eq(g.GuardAwayUntil - g.LureTick, 2 * g.VisitWalkTicks + g.R.SummonStayS * 10, "there and back at his walk, and the stay");
@@ -76,13 +83,15 @@ namespace Suborned.Sim
                 r.Eq(g.GuardAwayUntil - g.LureTick, 2 * g.VisitWalkTicks + g.R.SummonStayS * 10, "there and back at his walk, and the stay");
             }, Reads("mercenary"));
 
-            Add("P85-MIXED", "085", "Helped once, then pressured (N93): she remembers the Pressure, so the call is pressed. A Loyal Inez by the start (engine 0.44.0: one Help turns a Fearful one; 0.45.0 a Mercenary one; trust over time still takes two).", r =>
+            Add("P85-MIXED", "085", "Helped once, then pressured (N93): she remembers the Pressure, so the call is pressed. A Loyal Inez by the start (engine 0.44.0: one Help turns a Fearful one; 0.45.0 a Mercenary one; trust over time still takes two). Brief 101 (engine 0.52.0): the square's mast watches the Courtyard, so it tapes the Pressure, and a Loyal Inez reports it as well: one act, one incident (rulebook alert, camera), Alert 1, so the guard still answers (summon-alert-max 1). Before 0.52.0 the tape and her report counted twice: Alert 2, no call.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
                 r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer); r.Is(g.Inez.Has("help") && !g.Inez.Turned, "one Help, not yet turned");
                 r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer); r.Is(g.Inez.Turned, "the Pressure turned her");
-                var w = g.GuardCallWindows(Inez)!.Value;
+                r.Is(g.CameraRecords().Exists(x => x.cam == "mast-z0" && x.subject == Inez && x.approach == "pressure" && x.state == "landed") && g.Log.Exists(l => l.Code == "report"), "the mast taped the Pressure and she reported it");
+                r.Eq((g.Alert, g.Reported), (1, 1), "one act, one incident: Alert 1");
+                if (!Window(r, Inez, out var w)) return;
                 r.Do(Fixer, "call", Inez);
                 r.Is(g.GuardCallPressed, "any Pressure counts");
                 r.Eq(g.GuardAwayUntil - g.LureTick, w.pressed, "the pressed window");
@@ -93,7 +102,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Tech, "cabinet")));
                 r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
-                var w = g.GuardCallWindows(Inez)!.Value;
+                if (!Window(r, Inez, out var w)) return;
                 r.Do(Fixer, "call", Inez); int plainEnd = g.LureTick + w.plain;
                 r.To(r.Send(Enf, "d:Office entrance"));
                 r.To(g.GuardAwayUntil + 5);

@@ -199,8 +199,16 @@ namespace Suborned.Sim
             if (aheadCache.TryGetValue(key, out var hit)) return hit;
             (Pt, string, int, int)? read = null;
             if (ListenPick(op, p, ActReachOf(op, "listen")) is (Pt at, string chair, Path path, int startT, Pt _))
-            { int speed = Math.Max(1, PaceOf(op, false)); int walk = (int)((path.Length + speed - 1) / speed); read = (at, chair, walk, Math.Max(walk, startT)); }
+            { int speed = Math.Max(1, PaceOf(op, false)); int walk = (int)((path.Length + speed - 1) / speed); read = (at, chair, walk, StartsAt(p, at, walk, Math.Max(walk, startT), ActReachOf(op, "listen"))); }
             aheadCache[key] = read; return read;
+        }
+        /// <summary>When a Listen walked to its spot starts (engine 0.52.0, the card's read): the agent there from `walk` on, the first tick the person is
+        /// within reach of it (ListenInPlace), at the latest the moment the spot was chosen for, when her pose is in its ring. Brief 101 (N130): a chair
+        /// chosen for her walk home 12 s ahead starts when the Scout sits in it, 9 s, as she still serves beside it; the card said 12.</summary>
+        int StartsAt(Person p, Pt at, int walk, int by, int reach)
+        {
+            for (int t = walk; t < by; t++) if (PoseAhead(p, t)?.pos is Pt q && G.Within(q, at, reach)) return t;
+            return by;
         }
     }
 }
