@@ -175,3 +175,19 @@ Vantage's proposal is `briefs/101/vantage/square-camera.md`.
 4. **After the merge, Keel and Waymark:** the mast's facts in N67, N110 and 096; route A's waits behind the mast; the Scout watching Inez from her start; route B-thin's takedown; a rule that no clock-keeping watcher sees the cell's starting stance on any seed; the bands.
 5. **Fable:** the mast's words ("It turns between three views" is wrong today: all three heads see at once).
 6. **Latch:** a full batch, since it's a world and kit change. A fresh opening shot shows the mast and its "?".
+
+**Motive's ruling** (`briefs/101/motive/mast-pressure.md`):
+- **The prices hold:**
+  - Pressure under the mast keeps +1 Trail and the desk's report. It's the brief 096 on-camera law, applied more often, with the loop first as the fair counter.
+  - The rivals at posts 2, 4 and 5 being taped or seen is fair under the same laws.
+- **Bands:** every band holds. Two things are added:
+  - §09's "no quiet route has a loiterer reported" is held at 0 of 200 for the prepared quiet plans (quiet-a has one on 81 of 200 today, the report Sky saw);
+  - no camera sees the cell's starting spots on any seed.
+- **For Waymark:**
+  - the Fixer makes the Call from her wait (a Call has no distance limit);
+  - B-thinned loops the mast, then pays.
+- **For Glyph and Latch:** a card for a mast the cell hasn't watched shows the Alert as uncertain but leaves the +1 Trail out (`HostTape.cs`).
+- **For Keel:**
+  - N18 should expect Inez exposed if she's questioned or logged;
+  - add a scenario in which the Pay card shows the tape for a crew member.
+- **For Sky:** under B the mast logs the Fixer beside Inez as she's turned, so between missions a helped Inez grows resentful and a pressured one turns informer, unless the mast is looped. Motive would keep the law.
