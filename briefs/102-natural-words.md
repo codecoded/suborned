@@ -79,3 +79,9 @@ From Motive's options (`briefs/102/motive/turned-guard.md`):
 **Open after Fable's guard-call round** (a8bf90bd8):
 - **Keel:** "He's not answering" is untrue if Inez found him, saw him carried or was told. The host needs an engine read for whether she knows he's down. It goes in the next engine round, with the camera move if Sky picks one.
 - **Fable:** the mast camera's Intel lines say "over the square". They follow Vantage's move.
+
+**Inez knows he's down** (c94c7a657): `summon-knows-down`, "What have you lot done to him?" / "Never mind that. Is he all right?", played when `Game.KnowsDown` says she knows. Otherwise "He's not answering." Latch wires it, and fixes a contact who's down still answering the phone.
+- **Open, low priority:**
+  - Keel: a guard shot in the final fight leaves no record `KnowsDown` can read.
+  - Fable: the reverse case (the guard knows Inez is down), only if Sky wants it.
+  - The mission generator's call lines have no "he's down" split.
