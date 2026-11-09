@@ -193,3 +193,27 @@ Vantage's proposal is `briefs/101/vantage/square-camera.md`.
 - **For Sky:** under B the mast logs the Fixer beside Inez as she's turned, so between missions a helped Inez grows resentful and a pressured one turns informer, unless the mast is looped. Motive would keep the law.
 - **Sky (2026-11-09): "Keep it".** The mast's log exposes a turned Inez between missions unless the mast is looped across the turn: the same law as any recorded act. Keel's N18 changes to match.
 - **Vela's lamp mast** (`MastCamera_Lamp`, branch `t3/square-mast-camera` at 5f5753ad7): Sky (2026-11-09): "looks good". It's adopted as built, with deep-teal hoods (seafoam vanished against the café's glazing) and seafoam on the column's bands.
+
+**Merged (3b693b567).** Vantage's plan, block and world, Vela's piece, Keel's engine 0.52.0 and Waymark's re-plans with record c064 are in.
+- **Engine 0.52.0:**
+  - one act is one incident however many report or tape it;
+  - the drawn fan is the engine's sight (0 disagreements, from 913);
+  - the crew Pay card shows its tape;
+  - `Game.KnowsDown` says whether Inez knows the guard is down.
+- **Routes:**
+  - the Fixer waits behind the mast and calls from there;
+  - the Scout watches Inez from her start;
+  - route-a-pressure loops the mast across the Pressure;
+  - route-b-thin's knockout comes inside a mast loop;
+  - B-thinned loops, then pays.
+- **c064:**
+  - every band holds: quiet-a 100 %, and thin-quiet 89.5 %, back in its band;
+  - R-8, no loiterer reported on a quiet route, holds on 0 of 200 seeds;
+  - R-9, the start stance unseen, holds on 200 of 200.
+- **Checks after the merge:** sim:test 3,400/3,400; tests across the touched areas 667/668 (Pulse's recorded-routes test, red before).
+- **Next:** Latch's full batch (decokit, kit, world, the host's crown reach and lens cues), and Fable's line for when Inez knows he's down.
+- **Open:**
+  - Motive: thin-quiet's Pressure is taped on 73.5 % of seeds (the crowd stands across the line), and B-4 sits 3.5 points over its floor;
+  - Pulse: the recorded-routes test should start agents at their marks;
+  - Keel: review `Stance.cs` and Waymark's `taped:` plan condition;
+  - route-g's and loud's scripts no longer compose (since 0.51.0).
