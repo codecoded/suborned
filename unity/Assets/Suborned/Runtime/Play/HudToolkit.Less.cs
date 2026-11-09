@@ -709,15 +709,7 @@ namespace Suborned.Play
             }
             for (int i = nDisc; i < actDiscs.Count; i++) Show(actDiscs[i], false);
             ActMarkDiscsSeen = 0; if (actMarkRoot != null && actMarkRoot.resolvedStyle.visibility == Visibility.Visible) for (int i = 0; i < nDisc; i++) if (actDiscs[i].resolvedStyle.display != DisplayStyle.None) ActMarkDiscsSeen++;
-            // brief 083 note 5 ("Needs to be more clear which character you're controlling"): a turquoise-light chevron (the HUD's live accent, not a fire, cone or guard signal; an ink-deep edge carries it over pale paving and in shade)
-            // over each selected agent's head, in both views, with the thick ground ring (HostViews.CellRings) and the portrait's ring and bright face
-            SelectedCarets = 0;
-            for (int i = 0; i < 4; i++)
-            {
-                if (!host.Selected[i] || !m.Marks[i].World.HasValue || !Proj(m.Marks[i].World.Value + Vector3.up * 2.02f, out var caretAt)) continue;
-                SelectedCarets++; var cc = caretAt;
-                ActPaint(pp => { void Tri(float g, Color c) { pp.fillColor = c; pp.BeginPath(); pp.MoveTo(cc + new Vector2(-11f - g, -8f - g * 0.6f)); pp.LineTo(cc + new Vector2(11f + g, -8f - g * 0.6f)); pp.LineTo(cc + new Vector2(0f, 7f + g)); pp.ClosePath(); pp.Fill(); } Tri(2f, InkDeep); Tri(0f, TurqLight); });
-            }
+            SelectionMarks(); // brief 083 note 5: the selected chevrons; brief 101: the eye over the driven agent (HudToolkit.TakeControl)
             // Glyph techwatch r2 C: a camera being watched (the Scout's or the Tech's Watch under way) carries a small apex mark where its cone will
             // start: a red diamond with a cream rim, unlit like the cone
             for (int k = 0; k < 4; k++)

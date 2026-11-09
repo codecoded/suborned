@@ -71,6 +71,10 @@ namespace Suborned.Play
             var px = t.GetPixels32(); var g = px[px.Length - 1]; int n = 0; foreach (var p in px) if (Mathf.Abs(p.r - g.r) + Mathf.Abs(p.g - g.g) + Mathf.Abs(p.b - g.b) > 30) n++; Object.Destroy(t); return n / (float)px.Length;
         }
         /// <summary>Every line said in the docked inset while the mission clock runs `ticks` on from now, each sampled as it shows: two frames apart differ and each has a face.
+        /// The pressed run opens it on a frame of play: it holds the pause 2 frames after its synchronous steps, so that long frame (0.2.290: 1.8 s) and the camera's first render
+        /// are dropped while paused, not caught up at once; the clock trace and each line's "docked N s in" then read play (brief 101, Latch's r5; 0.2.292: longest frame 12 ms, Inez
+        /// at 0.0 s, the guard at 1.5 s). Route A opens it in the steps' own frame: the guard's arrival bark is said inside the steps, stamped with that frame's start, and 2 held
+        /// frames aged it 6.9 s past its life before the window opened (0.2.292: one line seen of two).
         /// The window is mission time, and it stays open while a line said in it is still up or due unsampled, never a span of real seconds: in a busy player the clock stalls
         /// and catches up, and on route A that put the guard's second line (15 ticks after his first) at the edge of an 8 s real-time window, so the row passed or failed by the
         /// wall clock (brief 101, Splice: on 0.2.283 two of three runs failed, and the picture after the window shows that line still docked in passing and failing runs). A clock that will not
@@ -212,7 +216,7 @@ namespace Suborned.Play
             Step(h, rp, 1300); yield return ToScene(h, rp, 1600, got); string wc = Words(h, "call-inez-pressure"); row("r085pressedCall", got[0] && wc.Length == 0 && g.GuardCallPressed, $"{h.ConvoLast}; {wc}; pressed {g.GuardCallPressed}"); yield return EndScene(h);
             // the arrival, the camera far from both: each speaks from a docked inset that moves
             var far = h.Views.Find("guard").position + new Vector3(70f, 0f, 70f); h.LookAt(far); yield return Frames(2); bool atCafe = false; int nLog = g.Log.Count; for (int i = 0; i < 1200 && !atCafe && !g.Over; i++) { h.RunTo(g.Tick + 1); for (int j = nLog; j < g.Log.Count; j++) if (g.Log[j].Code == "guard.at-cafe") atCafe = true; nLog = g.Log.Count; }
-            h.LookAt(far); h.SetPaused(false); var seenP = new List<string>(); var okP = new[] { true }; var hitsP = new int[1]; yield return EveryInsetLine(h, 70, seenP, okP, hitsP, false, log, dir, "r085-inset-inez"); yield return Shoot(dir, "r085-docked-inset", log); // 7 s of mission time; her line pictured once sampled
+            h.LookAt(far); yield return Frames(2); h.SetPaused(false); var seenP = new List<string>(); var okP = new[] { true }; var hitsP = new int[1]; yield return EveryInsetLine(h, 70, seenP, okP, hitsP, false, log, dir, "r085-inset-inez"); yield return Shoot(dir, "r085-docked-inset", log); // 7 s of mission time; her line pictured once sampled
             row("r085insetEveryLine", atCafe && seenP.Count == 2 && okP[0] && hitsP[0] == 0, $"pressed: {string.Join("; ", seenP)}; plate on a callout {hitsP[0]}");
             yield return new WaitForSecondsRealtime(3f); bool noBreak = !h.Talk.Exists(x => x.Speaker == "guard" && x.Tick >= g.LureTick && (x.Text.Contains("Break") || x.Text.Contains("Back to my post")));
             bool scoutQuiet = !h.Talk.Exists(x => x.Speaker == "scout" && x.Tick >= g.LureTick); int keptQuiet = h.CellLines.FindAll(x => x.Speaker == "scout" && x.Tick >= g.LureTick && !x.Said).Count; // brief 102: the cell is quiet in play; the Scout's street lines are kept, not said

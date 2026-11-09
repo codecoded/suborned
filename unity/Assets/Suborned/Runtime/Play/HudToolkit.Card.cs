@@ -33,7 +33,7 @@ namespace Suborned.Play
                 var page = E(personCard, "e-page"); page.style.position = Position.Absolute; page.style.left = page.style.right = page.style.top = page.style.bottom = 0; Round(page, SlipR);
                 slipCol = E(personCard); slipCol.style.paddingLeft = SlipText; slipCol.style.paddingRight = 26; slipCol.style.paddingTop = 3; slipCol.style.paddingBottom = 21;
                 slipFace = SFace(personCard, SlipFace, 2.5f); Pin(slipFace, new Vector2(-14f, -16f));
-                manifest.Add((personCard, "card", () => host.PersonCardNow is HandoverHost.PersonCard pc ? string.Join(" ", pc.Learned) + " " + string.Join(" ", pc.Opens) : ""));
+                manifest.Add((personCard, "slip", () => host.PersonCardNow is HandoverHost.PersonCard pc ? string.Join(" ", pc.Learned) + " " + string.Join(" ", pc.Opens) : ""));
             }
             // on her, over her head, clear of her speech and the pill; off screen (or behind the roster) it waits: her read time held, her key face dotted
             Vector2 q = default, qf = default; bool seen = host.AnchorWorld(c.Who) is Vector3 at && Proj(at + Vector3.up * 2.3f, out q) && Proj(at, out qf) && InPlay(q);

@@ -31,7 +31,7 @@ namespace Suborned.Play
             // the HUD groups an edge mark slides clear of (panel space), with 6 px air
             var blocks = new List<Rect>();
             foreach (var e in new[] { column, verbPlate, pill, keys, scope, historyKey2, goal, respPill, intel, chip2, sheet, crCard, plateStub, squadBtn, freeBtn, freePlate, clipBlock })
-                if (e != null && e.resolvedStyle.display != DisplayStyle.None && e.worldBound.width > 0) { var b = e.worldBound; float air = e == goal ? 12 : e == pill ? 14 : 6; blocks.Add(Rect.MinMaxRect(b.xMin - air, b.yMin - air, b.xMax + air, b.yMax + air)); } // Glyph 016 r2 G: 12 px clear of the goal line; techwatch fix 1: 14 px clear of the status pill, the HUD groups' margin
+                if (e != null && e.resolvedStyle.display != DisplayStyle.None && e.worldBound.width > 0) { var b = e.worldBound; float air = e == goal ? 12 : e == pill ? 14 : e == crCard || e == historyKey2 ? 22 : 6; blocks.Add(Rect.MinMaxRect(b.xMin - air, b.yMin - air, b.xMax + air, b.yMax + air)); } // Glyph 016 r2 G: 12 px clear of the goal line; techwatch fix 1: 14 px clear of the status pill, the HUD groups' margin; Glyph r5 #6: 22 px clear of the news and the Book (a face's chevron reaches 30 px from its centre)
             // Glyph N7 (0.2.125): the left column's band is no place for an edge mark (the Squad and weapons buttons stand under the roster): edge marks keep x >= the roster's right + 12
             if (column != null && column.resolvedStyle.display != DisplayStyle.None && column.worldBound.width > 0) blocks.Add(Rect.MinMaxRect(-100f, -100f, column.worldBound.xMax + 12f, H + 100f));
             // Glyph techwatch r2 A: the street's own marks win over the edge marks, which slide along the edge clear of them (4 px air): the people's
@@ -40,6 +40,7 @@ namespace Suborned.Play
             foreach (var (pr, _, _) in pipEls) WorldBlock(pr, 26, 26);
             WorldBlock(doorMark, 26, 26); WorldBlock(carMark, 26, 26); WorldBlock(heldMark, 26, 26); WorldBlock(doorNext, 52, 26);
             foreach (var om in OtherMarks()) blocks.Add(new Rect(om.x - 4, om.y - 4, om.width + 8, om.height + 8));
+            foreach (var br in bubbleRects) blocks.Add(new Rect(br.x - 4, br.y - 4, br.width + 8, br.height + 8)); // Glyph r5 #5: speech is the street's too (0.2.293: a line held on screen covered the right-edge face)
             const float M = 26; // the marks' centres run round this inset rectangle
             float pw = W - 2 * M, ph = H - 2 * M, per = 2 * (pw + ph);
             Vector2 Perim(float d) { d = Mathf.Repeat(d, per); if (d < pw) return new Vector2(M + d, M); d -= pw; if (d < ph) return new Vector2(W - M, M + d); d -= ph; if (d < pw) return new Vector2(W - M - d, H - M); d -= pw; return new Vector2(M, H - M - d); }

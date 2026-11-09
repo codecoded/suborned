@@ -1,0 +1,107 @@
+{
+ "schema": "suborned.coverage/latch-tc",
+ "build": "0.2.295",
+ "brief": "101 take control (Sky 2026-11-09: Button + eye)",
+ "method": "tools/hud-budget's reading: the HUD layer's alpha >= 24 at 1920 x 1080; a piece's share inside its manifest box (+3 px for the shadow)",
+ "states": {
+  "rest": {
+   "shot": "r083-take-rest",
+   "hud_pct": 2.48,
+   "glyph_mock_pct": 3.75,
+   "pieces": [
+    {
+     "name": "take control tab",
+     "box": [
+      100,
+      37,
+      30,
+      30
+     ],
+     "pct": 0.038
+    }
+   ]
+  },
+  "hover": {
+   "shot": "r083-take-hover",
+   "hud_pct": 2.55,
+   "glyph_mock_pct": 3.82,
+   "pieces": [
+    {
+     "name": "take control tab",
+     "box": [
+      100,
+      37,
+      148,
+      30
+     ],
+     "pct": 0.108
+    }
+   ]
+  },
+  "control": {
+   "shot": "r083-take-control",
+   "hud_pct": 2.62,
+   "glyph_mock_pct": 2.58,
+   "pieces": [
+    {
+     "name": "back to map capsule",
+     "box": [
+      100,
+      37,
+      125,
+      30
+     ],
+     "pct": 0.184
+    },
+    {
+     "name": "sight eye",
+     "box": [
+      948,
+      591,
+      24,
+      24
+     ],
+     "pct": 0.016
+    }
+   ]
+  },
+  "back": {
+   "shot": "r083-take-back-hover",
+   "hud_pct": 2.62,
+   "glyph_mock_pct": 2.61,
+   "pieces": [
+    {
+     "name": "back to map capsule",
+     "box": [
+      100,
+      37,
+      141,
+      30
+     ],
+     "pct": 0.192
+    },
+    {
+     "name": "sight eye",
+     "box": [
+      948,
+      591,
+      24,
+      24
+     ],
+     "pct": 0.016
+    }
+   ]
+  }
+ },
+ "note_states": "The build's frames are r083's (the Scout at her Watch, 0:0x); Glyph's mocks are 0.2.288's t101-quiet and 0.2.289's hold proof, so whole-frame shares differ by moment; the pieces compare.",
+ "glyph_r5_frames_0_2_295": {
+  "t101-rest": 3.0,
+  "t101-quiet": 3.7,
+  "t101-window": 4.9,
+  "t101-loud": 3.6,
+  "t101-busy-aim": 4.2,
+  "within_budget": "5/5",
+  "audits_clean": "8/8",
+  "note": "t101-window was 4.5 % on 0.2.290: the Fixer's line, clamped, now shows whole"
+ }
+}

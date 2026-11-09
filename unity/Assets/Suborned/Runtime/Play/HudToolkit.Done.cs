@@ -52,7 +52,7 @@ namespace Suborned.Play
                     float cw = float.IsNaN(c.Root.resolvedStyle.width) ? 180f : c.Root.resolvedStyle.width, chh = float.IsNaN(c.Root.resolvedStyle.height) ? 60f : c.Root.resolvedStyle.height;
                     float rise = (1f - Ease(Mathf.Min(1f, age / 0.25f))) * 10f;
                     // a second chip on the same thing stacks above the first by the first's own height (0.2.66 at 2x: a short turn chip sat inside the tall listen chip)
-                    float x = q.x - cw / 2f, bottom = (stackTop.TryGetValue(ch.AnchorKey, out var st0) ? st0 - 6f : markTop.TryGetValue(ch.AnchorKey, out var mt) ? mt - 8f : q.y - 10f) - rise; // over its window's marker
+                    float x = q.x - cw / 2f, bottom = (stackTop.TryGetValue(ch.AnchorKey, out var st0) ? st0 - 6f : markTop.TryGetValue(ch.AnchorKey, out var mt) ? mt - 14f : q.y - 10f) - rise; // over its window's marker, 14 px clear (Glyph r5 #8; his floor is 10)
                     bottom = ClearOfSpeech(bubbles, x, cw, bottom, chh);
                     // lift clear of the pill when they share the thing (the playground's hover lift)
                     float pillClear = stackTab != null && stackTab.style.display != DisplayStyle.None ? 10f + 4f : 8f; // Glyph N4 (0.2.125): 4 px clear of the stack tab seated 10 px up on the pill's top edge

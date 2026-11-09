@@ -125,7 +125,7 @@ namespace Suborned.Play
             {
                 int n0 = g.Orders.Count, end = g.Ops[0].BusyEnd; h.DriveEnter083(); yield return Wait(0.8f); bool inTp = h.Driving && h.DriveTrailing; string tpMarks = HudToolkit.ActMarksShown; var e1 = Since(h, n0); int d1 = Drives(h, n0);
                 h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r083-third-person-acting", log); h.SetPaused(false); yield return Frames(2);
-                Row("thirdEnterKeeps", inTp && g.Ops[0].Busy != null && g.Ops[0].BusyEnd == end && e1.Count == 0 && d1 == 0 && tpMarks.Contains("scout:watch:") && HudToolkit.ActMarkDiscsSeen == 1 && HudToolkit.SelectedCarets == 1, $"orders [{string.Join(",", e1)}], drive samples {d1}, marks '{tpMarks}', discs seen {HudToolkit.ActMarkDiscsSeen}");
+                Row("thirdEnterKeeps", inTp && g.Ops[0].Busy != null && g.Ops[0].BusyEnd == end && e1.Count == 0 && d1 == 0 && tpMarks.Contains("scout:watch:") && HudToolkit.ActMarkDiscsSeen == 1 && HudToolkit.SelectedCarets == 0 && HudToolkit.SightEyeShown.StartsWith("scout:"), $"orders [{string.Join(",", e1)}], drive samples {d1}, marks '{tpMarks}', discs seen {HudToolkit.ActMarkDiscsSeen}, chevrons {HudToolkit.SelectedCarets}, eye '{HudToolkit.SightEyeShown}'");
                 // first press asks, nothing moves or cancels
                 int asks = h.BusyAsks; n0 = g.Orders.Count; Keys(Key.W); yield return Wait(0.5f); Keys(); yield return Wait(0.2f);
                 bool asked = h.BusyAsks == asks + 1 && g.Ops[0].Busy != null && g.Ops[0].BusyEnd == end && Drives(h, n0) == 0 && !Since(h, n0).Contains("scout:cancel");
@@ -134,10 +134,10 @@ namespace Suborned.Play
                 // T out: nothing changes
                 yield return Wait(3.1f); n0 = g.Orders.Count; h.DriveLetGoToMap(true); yield return Wait(0.9f); var e2 = Since(h, n0);
                 Row("thirdLeaveKeeps", !h.Following && g.Ops[0].Busy != null && g.Ops[0].BusyEnd == end && !e2.Contains("scout:cancel") && !e2.Contains("scout:move"), $"orders [{string.Join(",", e2)}]");
-                // the way back is a real button: in Squad's place, in third person, with the agent at her act
+                // the way back is a real button: brief 101, the capsule beside her face, in third person, with the agent at her act; hovered, it names T, never Esc
                 h.DriveEnter083(); yield return Wait(0.8f); n0 = g.Orders.Count;
-                if (HudToolkit.SquadBtnScreen is Vector2 sb) { Btn(sb); yield return Frames(3); bool over = HandoverHost.OverHud(sb) && !HudToolkit.FollowChipShown; Btn(sb, true); yield return Frames(2); Btn(sb); yield return Wait(0.8f); var e3 = Since(h, n0); Row("backToMapButton", over && !h.Following && !h.Driving && g.Ops[0].Busy != null && g.Ops[0].BusyEnd == end && !e3.Contains("scout:cancel"), $"over HUD {over}, word '{h.BackToMapWord}', following {h.Following}, orders [{string.Join(",", e3)}]"); }
-                else Row("backToMapButton", false, "no button");
+                if (HudToolkit.BackCapsuleScreen is Vector2 sb) { Btn(sb); yield return Frames(3); bool over = HandoverHost.OverHud(sb) && !HudToolkit.FollowChipShown; string bk = HudToolkit.BackKeyShown; Btn(sb, true); yield return Frames(2); Btn(sb); yield return Wait(0.8f); var e3 = Since(h, n0); Row("backToMapButton", over && bk == h.controls.Label(PlayAction.FollowView) && !h.Following && !h.Driving && g.Ops[0].Busy != null && g.Ops[0].BusyEnd == end && !e3.Contains("scout:cancel"), $"over HUD {over}, word '{h.BackToMapWord}', key on hover '{bk}', following {h.Following}, orders [{string.Join(",", e3)}]"); }
+                else Row("backToMapButton", false, "no capsule");
                 // press, press: the act stops and the stick is hers
                 h.DriveEnter083(); yield return Wait(0.8f); n0 = g.Orders.Count; var p0 = g.Ops[0].Pos; Keys(Key.W); yield return Wait(0.2f); Keys(); yield return Wait(0.3f); Keys(Key.W); yield return Wait(1f); Keys(); yield return Wait(0.3f); var e4 = Since(h, n0);
                 float walked = Mathf.Sqrt((float)Suborned.Sim.G.D2(p0, g.Ops[0].Pos)) / 100f;
@@ -146,6 +146,10 @@ namespace Suborned.Play
                 yield return ScoutWatching(h); g = h.Game; h.DriveEnter083(); yield return Wait(0.7f); var mp = new Vector2(Screen.width * .55f, Screen.height * .45f); Btn(mp); yield return Frames(2); Btn(mp, true); yield return Frames(2); n0 = g.Orders.Count; h.DriveLetGoToMap(); yield return Frames(2); Btn(mp); yield return Frames(4); var e5 = Since(h, n0);
                 Row("pressAcrossSwitch", !e5.Contains("scout:cancel") && !e5.Contains("scout:move") && g.Ops[0].Busy != null, $"[{string.Join(",", e5)}]");
             }
+
+            // ---- brief 101 (Sky: "Button + eye"): the tab beside a face takes that face's agent with nothing cancelled; the capsule brings you back, her act still running.
+            // Pictures of the four states for the budget: at rest, the tab hovered, in control, the capsule hovered (the clock held for each).
+            yield return ScoutWatching(h); yield return TakeControlTab(h, dir, log, Row);
 
             // ---- WASD dead: the two ways in, each reproduced
             yield return Fresh(h); g = h.Game; h.DriveEnter083(); yield return Wait(0.6f);
@@ -159,6 +163,26 @@ namespace Suborned.Play
             yield return ProofBook.Run(h, dir, log, Row); // brief 088: the book
             yield return Proof085.Run(h, dir, log, Row); // brief 085: Sky's play notes on 0.2.177 (the squad in third person, the door guard)
             json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";
+        }
+
+        /// <summary>Brief 101: the Scout at her Watch. At rest her tab stands beside her face; with the Fixer selected, pointing at her face shows her own tab and its click takes
+        /// her (no cancel, no drive sample: she is trailed at her act); the capsule beside her face, hovered, names T; its click glides back with her Watch running.</summary>
+        static IEnumerator TakeControlTab(HandoverHost h, string dir, List<string> log, System.Action<string, bool, string> row)
+        {
+            var g = h.Game; int end = g.Ops[0].BusyEnd; h.SetPaused(true); yield return Frames(3);
+            string atRest = HudToolkit.TakeShown, word = "", key = "", eye = ""; bool onFace = false, over = false, took = false, back = false; int carets = -1;
+            yield return Shoot(dir, "r083-take-rest", log);
+            if (HudToolkit.TakeTabScreen(0) is Vector2 t0) { Btn(t0); yield return Frames(3); word = HudToolkit.TakeWordShown; yield return Shoot(dir, "r083-take-hover", log); }
+            h.Select(OpId.Fixer, false); Btn(new Vector2(Screen.width * .5f, Screen.height * .5f)); yield return Wait(0.8f); string fixerOnly = HudToolkit.TakeShown; h.SetPaused(false); yield return Frames(2);
+            int n0 = g.Orders.Count;
+            if (HudToolkit.TakeFaceScreen(0) is Vector2 fp) { Btn(fp); yield return Frames(3); onFace = HudToolkit.TakeShown.Contains("scout"); }
+            if (HudToolkit.TakeTabScreen(0) is Vector2 tp) { Btn(tp); yield return Frames(3); over = HandoverHost.OverHud(tp); Btn(tp, true); yield return Frames(2); Btn(tp); yield return Wait(0.8f); }
+            var e1 = Since(h, n0); int drove = h.DriveAgent; took = h.Driving && drove == 0 && g.Ops[0].Busy != null && g.Ops[0].BusyEnd == end && !e1.Contains("scout:cancel") && Drives(h, n0) == 0;
+            Btn(new Vector2(Screen.width * .5f, Screen.height * .88f)); h.SetPaused(true); yield return Frames(3); eye = HudToolkit.SightEyeShown; carets = HudToolkit.SelectedCarets; yield return Shoot(dir, "r083-take-control", log);
+            if (HudToolkit.BackCapsuleScreen is Vector2 cp) { Btn(cp); yield return Frames(3); key = HudToolkit.BackKeyShown; yield return Shoot(dir, "r083-take-back-hover", log); h.SetPaused(false); yield return Frames(2); n0 = g.Orders.Count; Btn(cp, true); yield return Frames(2); Btn(cp); yield return Wait(0.8f); back = !h.Following && !h.Driving; }
+            var e2 = Since(h, n0); h.SetPaused(false); Btn(new Vector2(Screen.width * .5f, Screen.height * .5f)); yield return Frames(2);
+            row("takeControlTab", atRest == "scout" && word == $"{h.TakeControlWord} · {h.controls.Label(PlayAction.FollowView)}" && fixerOnly == "fixer" && onFace && over && took && eye.StartsWith("scout:") && carets == 0 && key == h.controls.Label(PlayAction.FollowView) && back && g.Ops[0].Busy != null && g.Ops[0].BusyEnd == end && !e2.Contains("scout:cancel"),
+                $"tabs at rest '{atRest}', hovered '{word}', with the Fixer selected '{fixerOnly}', on her face {onFace}, over HUD {over}; took her {took} (driving {drove}), orders [{string.Join(",", e1)}]; eye '{eye}', chevrons {carets}; capsule key '{key}', back {back}, her Watch {(g.Ops[0].Busy != null && g.Ops[0].BusyEnd == end ? "running" : "gone")}, orders [{string.Join(",", e2)}]");
         }
 
         /// <summary>In third person the agent is in hand, W walks her and a ground click gives no walk.</summary>

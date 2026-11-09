@@ -94,8 +94,27 @@ namespace Suborned.Play
         public void CancelHoldScripted() => CancelHold();
         /// <summary>The button's word (Fable's actions.drive.ways.release).</summary>
         public string BackToMapWord => Text != null && Text.Actions.TryGetValue("drive", out var da) && da.Ways.TryGetValue("release", out var rw) ? rw.label : "Back to map";
-        /// <summary>The roster's "Back to map" button in third person (the T key's act): the view goes back, the agent's act or walk goes on (a trailed agent has no drive to release; a driven one stands).</summary>
+        /// <summary>The capsule beside her face in third person (the T key's act): the view goes back, the agent's act or walk goes on (a trailed agent has no drive to release; a driven one stands).</summary>
         public void BackToMap() { if (Driving) DriveLetGoToMap(true); else if (Following) FollowExitGlide(fAgent); } // brief 096: a plain follow view glides back too
+        /// <summary>The tab's word (Fable's actions.drive.label).</summary>
+        public string TakeControlWord => Text != null && Text.Actions.TryGetValue("drive", out var da) && da.Label.Length > 0 ? da.Label : "Take control";
+        /// <summary>Brief 101 (Sky 2026-11-09, "Button + eye"): the agent T would take now, whose face wears the tab.</summary>
+        public int TakeWho => FollowWho();
+        /// <summary>Agent k can be taken now: DriveEnter's own refusals (down, inside, in a car) and a live run.</summary>
+        public bool CanTake(int k) { if (Game == null || Game.Over || k < 0 || k > 3) return false; var op = Game.Ops[k]; return !op.Down && !op.Inside && !op.InCar; }
+        /// <summary>The tab beside face k: take control of that agent as T does (TakeInSquad, then DriveEnter), from the map with nothing modal and no conversation up.</summary>
+        public void TakeControlOf(int k) { if (Driving || Following || ConvoOn || !CanTake(k) || !ModalGate.AllowsClicks(Modal)) return; TakeInSquad(k); DriveEnter(); }
+        /// <summary>Brief 101 (GDD §10, who sees you): would an act or run where agent k stands now be seen? The ring's seen read (the engine's card-only SeenAt) at her
+        /// place, refreshed at most twice a second like the roster's run eye (HostLess.RunEye): "shut", "open", "unk"; "" with no run.</summary>
+        public string SightEye(int k)
+        {
+            if (Game == null || k < 0 || k > 3) return "";
+            if (Time.unscaledTime - sightSeenAt[k] < 0.5f) return sightEye[k];
+            sightSeenAt[k] = Time.unscaledTime; SeenQuote q = null; var at = Game.Ops[k].Pos;
+            Guard("sight eye", () => q = Game.SeenAt(at));
+            return sightEye[k] = q == null ? "" : EyeOf(q);
+        }
+        readonly float[] sightSeenAt = { -1f, -1f, -1f, -1f }; readonly string[] sightEye = { "", "", "", "" };
 
         void DriveEnter()
         {
@@ -108,7 +127,7 @@ namespace Suborned.Play
             if (!Following) FollowEnter();
             Driving = true; intentKey = "";
             DriveTrailIfBusy(k);
-            // brief 083 (Sky on 0.2.159: "I saw a Let Go label where squad is - no idea what that means - did nothing when I clicked on it"): the "Let go: T" pop was a tip on a plate that looked like a button. The way back is a real button now (BackToMap, in the Squad button's place)
+            // brief 083 (Sky on 0.2.159: "I saw a Let Go label where squad is - no idea what that means - did nothing when I clicked on it"): the "Let go: T" pop was a tip on a plate that looked like a button. The way back is a real button (BackToMap): brief 101, the capsule beside her face
             Status = $"Driving the {Op.Name((OpId)k)} ({controls.Label(PlayAction.FollowView)} lets go)";
         }
 
@@ -165,7 +184,7 @@ namespace Suborned.Play
             // ground view as a plain follow; only T (DriveLetGoToMap) goes back to the map
             if (toMap && Following && glide) FollowExitGlide(k); // brief 067 G3 (Sky on 0.2.122, Glyph): back on the map by a 0.5 s glide, centred on the agent at play zoom, at the quarter-step yaw it was left at (HostFollow)
             else if (toMap && Following) { FollowExit(); if (cam) { cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); centreGoal = null; centreStart = -1f; camFollow = false; } } // a script's let-go: the same map view at once (LookAt below)
-            if (k >= 0 && views?.Find("op/" + Op.Name((OpId)k)) is Transform t && !Following) LookAt(t.position); // brief 101 round 3 (Aster, Fable, Glyph): no "Take control: T" pop: no click takes control, and it said nothing as control ended
+            if (k >= 0 && views?.Find("op/" + Op.Name((OpId)k)) is Transform t && !Following) LookAt(t.position); // brief 101 round 3 (Aster, Fable, Glyph): no "Take control: T" pop: the tab beside her face says it (HudToolkit.TakeControl)
             Status = Following ? "Follow view" : "Overhead view";
         }
 

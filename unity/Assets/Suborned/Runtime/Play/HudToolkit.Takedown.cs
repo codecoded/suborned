@@ -16,7 +16,7 @@ namespace Suborned.Play
         VisualElement wayRow, wayKnock, wayKill, before, marks, respPill, respList; Label respLine; readonly List<(VisualElement row, VisualElement icon, Label text)> beforeRows = new();
         readonly List<(VisualElement row, VisualElement icon, Label label, Label text)> respRows = new();
 
-        sealed class Mark { public VisualElement Root, Plate, Glyph, Second, Tape, Leader; public Label Text; public KeyText Name; public bool Tight; public float Lead = -1f; public readonly List<VisualElement> Ring = new(), Outer = new(), Dots = new(), Pips = new(); }
+        sealed class Mark { public VisualElement Root, Plate, Glyph, Second, Tape, Leader; public Label Text; public KeyText Name; public bool Tight, Hot; public float Lead = -1f, Frac = -1f; public Paint Clock; public readonly List<VisualElement> Ring = new(), Outer = new(), Dots = new(), Pips = new(); }
         readonly List<Mark> bodyMarks = new(), stashMarks = new(), doorMarks = new(), reportMarks = new(), unitMarks = new(), edgeMarks = new(), headMarks = new();
 
         // ---------------------------------------------------------------- build
@@ -92,6 +92,16 @@ namespace Suborned.Play
 
         void Ring(Mark k, int n, float cx, float cy, float r, float d) { for (int i = 0; i < n; i++) { float a = Mathf.PI / 2 - i * Mathf.PI * 2 / n; k.Ring.Add(Dot(k.Root, cx + r * Mathf.Cos(a), cy - r * Mathf.Sin(a), d, TurqLight)); } }
         void Outer(Mark k, int n, float cx, float cy, float r, float d) { for (int i = 0; i < n; i++) { float a = i * Mathf.PI * 2 / n; k.Outer.Add(Dot(k.Root, cx + r * Mathf.Cos(a), cy - r * Mathf.Sin(a), d, Cream)); } }
+        /// <summary>Glyph r5 #7 (rule 3: time that runs is the tab's own ring): a knocked-out body's tab rings its wake, the book's ink filling in cream toward waking, orange in
+        /// its last 10 s (it retires the 16 turquoise wake dots, a second clock form); a dead body keeps the plain cream ring.</summary>
+        void WakeRing(Mark u, HandoverHost.BodyMark b)
+        {
+            bool timed = !b.Dead; if ((u.Clock.style.display != DisplayStyle.None) != timed) { BorderW(u.Plate, timed ? 0f : 2f); Show(u.Clock, timed); }
+            if (!timed) return;
+            float left = (1f - b.Wake) * (host.Game?.R.WakeS ?? 0); bool hot = b.Wake > 0f && left <= 10f;
+            if (Mathf.Abs(b.Wake - u.Frac) > 0.002f || hot != u.Hot) { u.Frac = b.Wake; u.Hot = hot; u.Clock.MarkDirtyRepaint(); }
+        }
+
         static void Fill(Mark k, float frac, bool on) { int lit = Mathf.RoundToInt(frac * k.Ring.Count); for (int i = 0; i < k.Ring.Count; i++) { Show(k.Ring[i], on); k.Ring[i].style.backgroundColor = i < lit ? TurqLight : new Color(1, 1, 1, 0.22f); } }
 
         // ---------------------------------------------------------------- per frame
@@ -107,18 +117,16 @@ namespace Suborned.Play
                 Border(wayKnock, kill ? 0f : 1.6f, TurqLight); Border(wayKill, kill ? 1.6f : 0f, TurqLight);
                 wayKnock.style.opacity = kill ? 0.7f : 1f; wayKill.style.opacity = kill ? 1f : 0.7f;
             }
-            float pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 6f);
-            // bodies: round disc + wake ring (knockout), square plate (kill); tied: a small second disc; found: a dashed outer ring
+            // bodies: a round tab, its own ring the wake clock (knockout); a square plate (kill); tied: a small second disc; found: a dashed outer ring
             int bi = 0;
             foreach (var b in m.Bodies)
             {
                 if (!Proj(b.World, out var p)) continue;
-                if (bodyMarks.Count <= bi) { var k = NewMark(bodyMarks, "e-body e-inline", 44, 44); Round(k.Plate, 13f); BorderW(k.Plate, 2f); k.Plate.style.left = k.Plate.style.top = 9; k.Plate.style.width = k.Plate.style.height = 26; k.Glyph.style.left = k.Glyph.style.top = 6.25f; k.Glyph.style.width = k.Glyph.style.height = 13.5f; var bsh = Disc(k.Root, 26f, "e-shadow"); Pin(bsh, new Vector2(9f, 11f)); bsh.style.opacity = 0.6f; bsh.SendToBack(); Ring(k, 16, 22, 22, 16, 3.2f); Outer(k, 12, 22, 22, 20, 3f); k.Second = E(k.Root, "e-body e-inline", 30, 0, 16, 16); Round(k.Second, 8f); BorderW(k.Second, 1.6f); Icon(E(k.Second, null, 3.5f, 3.5f, 9, 9), "restrain", Cream); /* brief 101 round 3 (Glyph's rule 2): the body a round tab in its wake ring */ manifest.Add((k.Root, "image", () => k.Tight ? null : "body")); manifest.Add((k.Plate, "image", () => k.Tight ? "body" : null)); } // Glyph N5 (0.2.137): a bare kill is its 30 x 30 plate; a knockout (its wake ring), a found or tied body the whole 44 px root
+                if (bodyMarks.Count <= bi) { var k = NewMark(bodyMarks, "e-body e-inline", 44, 44); Round(k.Plate, 13f); BorderW(k.Plate, 2f); k.Plate.style.left = k.Plate.style.top = 9; k.Plate.style.width = k.Plate.style.height = 26; k.Glyph.style.left = k.Glyph.style.top = 6.25f; k.Glyph.style.width = k.Glyph.style.height = 13.5f; var bsh = Disc(k.Root, 26f, "e-shadow"); Pin(bsh, new Vector2(9f, 11f)); bsh.style.opacity = 0.6f; bsh.SendToBack(); var kc = k; k.Clock = P(k.Plate, 0, 0, 26, 26, (pp, rc) => TimedRing(pp, rc, kc.Frac, kc.Hot)); Show(k.Clock, false); Outer(k, 12, 22, 22, 20, 3f); k.Second = E(k.Root, "e-body e-inline", 30, 0, 16, 16); Round(k.Second, 8f); BorderW(k.Second, 1.6f); Icon(E(k.Second, null, 3.5f, 3.5f, 9, 9), "restrain", Cream); /* brief 101 round 3 (Glyph's rule 2): the body a round tab; Glyph r5 #7: its own ring is the wake clock (WakeRing) */ manifest.Add((k.Root, "image", () => k.Tight ? null : "body")); manifest.Add((k.Plate, "image", () => k.Tight ? "body" : null)); } // Glyph N5 (0.2.137): a bare kill is its 30 x 30 plate; a knockout (its wake ring), a found or tied body the whole 44 px root
                 var u = bodyMarks[bi++]; Show(u.Root, true); Place(u.Root, p, 44, 44);
                 // brief 101 round 3: knocked out or dead, the same round tab; its pictogram says which (body_out, body_dead)
                 Icon(u.Glyph, b.Dead ? "body_dead" : "body_out", Cream);
-                Fill(u, b.Wake, !b.Dead);
-                if (!b.Dead && b.Pulse) foreach (var d in u.Ring) d.style.opacity = 0.5f + 0.5f * pulse; else foreach (var d in u.Ring) d.style.opacity = 1f;
+                WakeRing(u, b);
                 foreach (var d in u.Outer) Show(d, b.Found);
                 Show(u.Second, b.Tied); u.Tight = b.Dead && !b.Found && !b.Tied;
                 u.Root.style.opacity = b.Hidden ? 0.75f : 1f;

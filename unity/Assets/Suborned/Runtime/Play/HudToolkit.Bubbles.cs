@@ -55,13 +55,22 @@ namespace Suborned.Play
                 var ae = who.Q("art"); float inset = badge ? 1f : 0f; ae.style.left = ae.style.top = inset; ae.style.width = ae.style.height = BubbleFace - 2f * inset; Bg(ae, art, Color.white);
                 float w = r.resolvedStyle.width, h = r.resolvedStyle.height; if (float.IsNaN(w)) w = 160; if (float.IsNaN(h)) h = BubbleH;
                 int ri = Array.IndexOf(CellOrder, b.Speaker); bool ringed = ri >= 0 && m.Rings[ri].Show; // techwatch fix 3: over an activity ring the stem clears it by 8 px more
-                float y = p.y - h - 34 - (ringed ? 16 : 0), x = p.x - w / 2; // review 12: 8 more px over the ring
+                float y = p.y - h - 34 - (ringed ? 16 : 0), x = BubbleX(p.x - w / 2, w, y); // review 12: 8 more px over the ring; Glyph r5 #5: inside the screen
                 const float BubbleGap = 14; // at least 10 px between stacked bubbles as drawn, so each reads, and is counted, as its own; the newest nearest the speaker
                 for (int guard = 0; guard < 4; guard++) { bool hit = false; foreach (var pr in bubbleRects) if (pr.Overlaps(new Rect(x - BubbleGap / 2, y - BubbleGap / 2, w + BubbleGap, h + BubbleGap))) { y = pr.y - h - BubbleGap; hit = true; } if (!hit) break; }
                 bubbleRects.Add(new Rect(x, y, w, h));
                 r.style.left = x; r.style.top = y; bubbleLeads.Add((tail, new Rect(x, y, w, h), head));
                 float age = Time.unscaledTime - b.Born; r.style.opacity = tail.style.opacity = Mathf.Clamp01((b.Life - age) / 0.3f);
             }
+        }
+
+        /// <summary>Glyph r5 #5 (0.2.290: the Fixer's line ran to x 2120 of 1920, over a face at the edge): a bubble's left edge, 14 px inside the screen as the slip's, and
+        /// clear of the roster's band (its faces, pips and take-control tab) beside it; BubbleTails slides the stem to the speaker.</summary>
+        float BubbleX(float x, float w, float y)
+        {
+            var lay = root.panel.visualTree.layout; float W = float.IsNaN(lay.width) || lay.width <= 0 ? 1920f : lay.width;
+            bool band = column != null && column.resolvedStyle.display != DisplayStyle.None && column.worldBound.width > 0 && y < (squadBtn != null && squadBtn.resolvedStyle.display != DisplayStyle.None ? squadBtn.worldBound.yMax : column.worldBound.yMax) + 40f;
+            float lo = band ? TakeX + TakeD + 12f : 14f; return Mathf.Clamp(x, lo, Mathf.Max(lo, W - w - 14f));
         }
 
         /// <summary>Glyph 022, after the pips are placed: each bubble's stem drops from its bottom to its speaker's head (the mock's fine cream line, 2.2 px), and when a pip

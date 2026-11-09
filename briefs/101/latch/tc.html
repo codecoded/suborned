@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Take control: the tab, the capsule and the eye · build 0.2.295 (brief 101, Latch)</title>
+<style>
+body{font:15px/1.5 -apple-system,Helvetica,Arial,sans-serif;color:#17302f;background:#f7f4ec;max-width:1180px;margin:24px auto;padding:0 20px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:28px 0 8px;border-top:1px solid #d2e6e2;padding-top:16px}
+.sub{color:#4e625f;margin:0 0 16px}img{max-width:100%;border:1px solid #d2e6e2;border-radius:6px;display:block;margin:8px 0}
+table{border-collapse:collapse;margin:8px 0}td,th{border-bottom:1px solid #d2e6e2;padding:4px 12px 4px 0;text-align:left;vertical-align:top}th{color:#4e625f;font-weight:600}
+code{background:#eae6dc;padding:0 4px;border-radius:3px;font-size:13px}.ok{color:#1f6c67;font-weight:600}.no{color:#c0392b;font-weight:600}
+li{margin:3px 0}
+</style></head><body>
+<h1>Take control: the tab, the capsule and the eye</h1>
+<p class="sub">Brief 101 · Latch · 2026-11-09 · build <b>0.2.295</b> (draw check ok) · Sky's call: "Button + eye", and "esc is always pause menu". Pictures sit beside this file in <code>tc/</code> (git-ignored, on disk).</p>
+
+<h2>What's built (Glyph's pieces 1, 2, 4, 5 and 6)</h2>
+<ul>
+<li><b>The tab.</b> A 30 px round tab (the built <code>RoundTab</code>) right of the pips, level with the face. It stands beside the agent T would take, and beside any face the pointer is on. It hides while she's down, inside or in a car. A click runs <code>TakeInSquad</code>, then <code>DriveEnter</code>, as T does. Hovered, its ring turns turquoise and "Take control · T" shows as a street label, the key in the soft ink.</li>
+<li><b>The capsule.</b> In third person the same slot holds the map pictogram and "Back to map". Hovered, it shows the T key only, never Esc. A click runs the built 0.5 s glide back, and her order keeps running. The Squad tab is <code>SelectAll</code> in both views, and its "Back to map · T" word is gone.</li>
+<li><b>The pictograms.</b> <code>take_control</code> and <code>map</code> are in <code>Kit/icons/singles</code>, with metas cloned from <code>units</code>.</li>
+<li><b>The eye.</b> One keyed eye, 24 px, sits over the driven agent where the chevron was, and she has no chevron while driven. Shut in ink, open in the cones' red, "?" in ink. It reads the ring's own seen read (the engine's card-only <code>SeenAt</code>) at her place, twice a second. Presentation only.</li>
+<li><b>Proofs.</b> <code>backToMapButton</code> clicks the capsule. The new row <code>takeControlTab</code> clicks the Scout's own tab with the Fixer selected, then the capsule. <code>thirdEnterKeeps</code> checks the eye and the absent chevron. Manifest names: "take control tab" and "back to map capsule" (the hover words are inside each box), plus "sight eye".</li>
+</ul>
+
+<h2>The four states beside Glyph's frames</h2>
+<p>Glyph's mock is on the left and the build on the right, cropped at 2x round the slot. In third person the eye is on the far right: Glyph drew "?", and this moment reads shut.</p>
+<img src="tc/states.png" alt="the four states beside Glyph's frames">
+<p>At rest at native 2x (the shot runner's <code>t101-quiet-2x</code>, 3840 × 2160):</p>
+<img src="tc/rest-2x.png" alt="the tab at rest, native 2x" style="max-width:700px">
+
+<h2>Coverage (tools/hud-budget's reading, 1920 × 1080)</h2>
+<table>
+<tr><th>state</th><th>whole HUD</th><th>Glyph's mock</th><th>the new pieces</th></tr>
+<tr><td>at rest</td><td>2.48 %</td><td>3.75 %</td><td>take control tab 0.038 %</td></tr>
+<tr><td>tab hovered</td><td>2.55 %</td><td>3.82 %</td><td>tab with its words 0.108 %</td></tr>
+<tr><td>in control</td><td>2.62 %</td><td>2.58 %</td><td>capsule 0.184 %, eye 0.016 %</td></tr>
+<tr><td>capsule hovered</td><td>2.62 %</td><td>2.61 %</td><td>capsule with T 0.192 %, eye 0.016 %</td></tr>
+</table>
+<p>The four states read <span class="ok">4/4 within budget</span>, with no running text. Whole-frame shares differ from Glyph's because the moments differ, so compare the pieces. Glyph estimated 0.05 %, +0.12 % and 0.14 %. Evidence: <code>coverage-tc.json</code>.</p>
+
+<h2>Changes from Glyph's spec, and why</h2>
+<ul>
+<li><b>No Esc.</b> Sky's call: piece 3 is dropped, and the capsule's hover names only T.</li>
+<li><b>Pictograms at 64 px, not 128.</b> The kit's singles are 64 × 64 @2x, so Glyph's drawings were reduced with Lanczos. They read cleanly at the tab's 15.6 px.</li>
+<li><b>A face's tab stays up 0.6 s after the pointer leaves the face.</b> Without it, the tab hides before the pointer can cross the pips to it.</li>
+<li><b>The face's label row starts after the tab's slot on every face</b> (x 138), so labels never jump when the selection moves. In third person it starts after the capsule. While a tab or capsule is hovered, that face's row gives way to its words.</li>
+<li><b>No tab or capsule under a modal</b> (book, menu, briefing, end card) <b>or in a conversation</b>, where T isn't heard either.</li>
+<li><b>Code homes.</b> The eye's read is in <code>HostDrive.cs</code>, not <code>HostLess.cs</code>: it's only read for the driven agent, and r29's 100 s stays out of the delta. The chevrons moved out of <code>HudToolkit.Less.cs</code> (1140 → 1132 lines) into the new <code>HudToolkit.TakeControl.cs</code> (135).</li>
+</ul>
+
+<h2>Glyph's review of 0.2.290, rolled in</h2>
+<ul>
+<li><b>Learns marks keyed</b> (<code>RingLabels.cs:89</code>): the Watch's mood mark and Listen's two "?" are <code>Ki(…, "ki-ink")</code>. The cream disc is only for the outcome badge.</li>
+<li><b>Bubbles clamped</b> 14 px inside the screen, and kept clear of the roster's band (faces, pips and the tab). Edge marks now slide clear of bubbles, as of the street's other marks. Without that, the clamped line covered the right-edge face: the 22 px of air had pushed it from y 964 to 948, under the line.</li>
+<li><b>22 px of air</b> round the news and the Book for edge marks. The bottom face's chevron now stops about 10 px short of the roundel.</li>
+<li><b>The ring retaken</b> in a 1080 run, plus a 3840 copy. It opens on Inez. A re-place on resize was not done, because <code>HostContext.cs</code> is already 619 lines.</li>
+<li><b>The zZ tab's own ring</b> is now the wake clock: ink, filling in cream toward waking, orange in the last 10 s. The 16 dots are gone.</li>
+<li><b>The done chip</b> sits 14 px above its window tab (was 8).</li>
+</ul>
+<img src="tc/window-br.png" alt="the window frame's bottom right, 0.2.290 against 0.2.295">
+<table><tr><td><img src="tc/zz-tab.png" alt="the knockout's tab" style="max-width:640px"></td><td><img src="tc/ring-3840-crop.png" alt="the ring on Inez at 3840" style="max-width:420px"></td></tr></table>
+
+<h2>Splice's items</h2>
+<ul>
+<li>Inez's person card is manifest kind <code>slip</code>.</li>
+<li>The r083 yield patch, checked in the player. The pressed window keeps it: longest frame 12 ms (was 1.8 s), Inez's line docks at 0.0 s and the guard's at 1.5 s. <b>Route A doesn't.</b> The guard's arrival bark is said inside the proof's own fast-forward, stamped with that long frame's start. Two held frames aged it about 6.9 s, past its life, before the window opened, so the row saw one line of two (0.2.292). Route A's window opens in the steps' own frame again, as before, and the window's comment says why.</li>
+</ul>
+
+<h2>Checks</h2>
+<table>
+<tr><td>compile (runtime-compile)</td><td class="ok">clean (the one warning is HostNotice.cs, old)</td></tr>
+<tr><td>host logic</td><td class="ok">186/186</td></tr>
+<tr><td>comment lint</td><td class="ok">0 hits</td></tr>
+<tr><td>proof map coverage test</td><td class="ok">58/58 (the new file placed on the faces' row, which runs r083)</td></tr>
+<tr><td>proof, 0.2.292 (the map's 16 sections + r101)</td><td>every gated section ok except r083's route-A row (the patch, above)</td></tr>
+<tr><td>proof, 0.2.295 (the 11 sections the later changes touch, r101 included)</td><td class="ok">every gated section ok; r083 102 rows, 0 failing; r101 ok</td></tr>
+<tr><td>r123 <code>fight</code> row (not gated)</td><td>fails, as it did in 0.2.290's proof</td></tr>
+<tr><td>proof sets r059 / r067 / r123 alone, 0.2.295</td><td class="ok">14/14, 32/32, 7/7 within budget</td></tr>
+<tr><td>Glyph's t101 frames, 0.2.295</td><td class="ok">5/5 within budget; layout audits 8/8 clean</td></tr>
+<tr><td>the four states</td><td class="ok">4/4 within budget</td></tr>
+<tr><td>exceptions in the players' logs</td><td class="ok">0</td></tr>
+</table>
+
+<h2>Open</h2>
+<ul>
+<li><b>Splice (proof map).</b> I added <code>HudToolkit.TakeControl.cs</code> to the faces' row; move it if another row suits. The two new singles count as a kit change, which means a full proof. I ran the code's delta instead, because nothing but the new pieces names them. A narrower row for a new single would keep that honest.</li>
+<li><b>Proof order (Latch, next build).</b> In a delta that runs <code>done</code> before r059, three set pictures (<code>r059-300-step-out</code>, <code>r067-reticle-handoff</code>, <code>r123-looks-320</code>) catch a lock pill: the pointer is left on a rival. Run alone, they pass. Each picture should park the pointer first.</li>
+<li><b>Glyph.</b> The 2x look at hover and the capsule needs a 3840 r083 run (about 5 minutes or more). The ring's 3840 copy is in <code>out/scratch/latch/101tc/proof295-3840/</code>.</li>
+<li><b>Splice (r083 route A).</b> To read play there too, the arrival steps need to say their lines frame by frame, or the window needs to start with the steps.</li>
+</ul>
+</body></html>

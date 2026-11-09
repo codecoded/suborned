@@ -70,7 +70,7 @@ namespace Suborned.Play
                 var b = faceBits[i] = new FaceBits(); float kd = Ce(20f);
                 b.Known = E(frame, "e-ink e-inline", c.x - Cs(24f) - kd / 2f, c.y - Cs(22f) - kd / 2f, kd, kd); Round(b.Known, kd / 2f); BorderW(b.Known, Cs(1.5f)); Icon(E(b.Known, null, Cs(2.5f), Cs(2.5f), Cs(13f), Cs(13f)), "sawyou", Cream); Show(b.Known, false);
                 // beside the face, in the root at screen px: the run's eye, a cause's icon and two words, as street labels; the act's × on hover
-                var at = FaceScreen(i); b.Row = StackRow(root, 28f); b.Row.style.position = Position.Absolute; b.Row.style.left = at.x + 52f; b.Row.style.top = at.y - 14f; b.Row.style.justifyContent = Justify.FlexStart;
+                var at = FaceScreen(i); b.Row = StackRow(root, 28f); b.Row.style.position = Position.Absolute; b.Row.style.left = TakeX + TakeD + TakeGap; b.Row.style.top = at.y - 14f; b.Row.style.justifyContent = Justify.FlexStart; // brief 101: after the take-control tab's slot (HudToolkit.TakeControl)
                 b.Eye = KIcon(b.Row, "eye_unk", 16f); b.Eye.Root.pickingMode = PickingMode.Position; b.Eye.Root.style.marginRight = 6f;
                 b.Eye.Root.RegisterCallback<PointerEnterEvent>(_ => EyeTipShow(faceBits[k].Eye.Root, HudModel.EyeTip(host.RunEye(k), ""))); b.Eye.Root.RegisterCallback<PointerLeaveEvent>(_ => EyeTipShow(null, null));
                 b.Why = KIcon(b.Row, "", 16f); b.Why.Root.style.marginRight = 5f; b.Words = KText(b.Row, 14f, "k-semi"); Show(b.Row, false);
@@ -124,10 +124,10 @@ namespace Suborned.Play
             if (words.Length == 0 && live && !s.Down && !s.InCar && hw.Length == 0 && !s.Busy && host.UnderFireNow[i].Count > 0) { var (uc, uw) = host.UnderFireWords(i, host.Peeking); if (uw.Length > 0) { whyIcon = WhyIcon(uc) is { Length: > 0 } wi ? wi : "bang"; words = uw; alpha = 1f; } }
             if (words.Length == 0 && FaceWord(hw)) { words = hw; whyIcon = ""; alpha = 1f; }
             string eye = s.Phase == "running" && live ? host.RunEye(i) : "";
-            bool row = (words.Length > 0 || eye.Length > 0) && m.Dock == RosterDock.Left; Show(b.Row, row);
+            bool row = (words.Length > 0 || eye.Length > 0) && m.Dock == RosterDock.Left && !TakeHot(i); Show(b.Row, row); // brief 101: a hovered tab or capsule says its own words there
             if (row)
             {
-                b.Row.style.opacity = words.Length > 0 ? Mathf.Clamp01(alpha) : 1f; b.Words.Set(words); Show(b.Words.Root, words.Length > 0); b.Why.Set(this, words.Length > 0 ? whyIcon : "");
+                float rx = TakeRowX(i); if (b.Row.style.left.value.value != rx) b.Row.style.left = rx; b.Row.style.opacity = words.Length > 0 ? Mathf.Clamp01(alpha) : 1f; b.Words.Set(words); Show(b.Words.Root, words.Length > 0); b.Why.Set(this, words.Length > 0 ? whyIcon : "");
                 b.Eye.Set(this, eye.Length > 0 ? "eye_" + eye : ""); if (eye.Length > 0) b.Eye.Face.style.unityBackgroundImageTintColor = eye == "open" ? Red : BkInk;
             }
             // the act's × while the face or its disc is hovered (or the × itself): it stops the act, as the old chip's did

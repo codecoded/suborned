@@ -160,9 +160,9 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- the street marks
 
         const float GhostH = 24f;
-        /// <summary>The proof reads it: where the Squad / Back to map button is on screen (pixels, origin bottom left), null when hidden.</summary>
+        /// <summary>The proof reads it: where the Squad tab is on screen (pixels, origin bottom left), null when hidden.</summary>
         public static Vector2? SquadBtnScreen { get { var b = live?.squadBtn; if (b == null || b.resolvedStyle.display == DisplayStyle.None) return null; var c = b.worldBound.center; var sz = b.panel.visualTree.layout.size; return new Vector2(c.x / sz.x * Screen.width, Screen.height - c.y / sz.y * Screen.height); } }
-        KeyText squadK; VisualElement squadBtn; readonly List<(VisualElement root, VisualElement face, KeyText text)> ghostEls = new(); 
+        VisualElement squadBtn; readonly List<(VisualElement root, VisualElement face, KeyText text)> ghostEls = new(); 
         VisualElement dragGhost; readonly List<VisualElement> dragFaces = new();
 
         /// <summary>A ring on the ground (brief 046: drawn in the world, depth-tested, so legs and props in front hide it; HudToolkit.Ground).</summary>
@@ -179,12 +179,11 @@ namespace Suborned.Play
             if (squadBtn == null)
             {
                 squadBtn = Tab(root, SquadD, "units", out _); squadBtn.style.position = Position.Absolute; squadBtn.style.left = SquadX; squadBtn.style.top = SquadY; // brief 101 step 4: the street tab under the faces (the mock's)
-                squadK = KText(root, 14f, "k-semi"); squadK.Root.style.position = Position.Absolute; squadK.Root.style.left = SquadX + SquadD + 8f; squadK.Root.style.top = SquadY + SquadD / 2f - 11f; squadK.Root.pickingMode = PickingMode.Position; manifest.Add((squadK.Root, "image", () => "squad button word")); // the button's own word (it was inside the old plate): art, as the button
-                foreach (var sb in new[] { squadBtn, squadK.Root }) sb.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { if (host.Following) host.BackToMap(); else host.SelectAll(); e.StopPropagation(); } }); // brief 083: in third person this slot is the way back (the tab and its word)
+                squadBtn.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.SelectAll(); e.StopPropagation(); } }); // brief 101 (take control): Squad in both views; the way back is the capsule beside her face (HudToolkit.TakeControl)
                 manifest.Add((squadBtn, "image", () => "squad button"));
             }
             Show(squadBtn, on && m.Dock == RosterDock.Left && !h.FollowExiting);
-            { bool back = h.Following && squadBtn.style.display != DisplayStyle.None; Show(squadK.Root, back); squadK.Set(back ? $"{h.BackToMapWord} · {h.controls.Label(PlayAction.FollowView)}" : ""); } // brief 083: third person names the way back beside the tab
+            TakeControlFrame(on); // brief 101: the take-control tab beside a face on the map, the capsule back to it in third person
             int gu = 0, cu = 0;
             if (on && !h.Following && h.View)
             {

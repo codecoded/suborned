@@ -86,7 +86,7 @@ namespace Suborned.Play
                     }
                     continue;
                 }
-                if (f.Kind == "learns") { foreach (var li in f.Icons) RoundTab(part, 20f, li).style.marginRight = 2; continue; }
+                if (f.Kind == "learns") { foreach (var li in f.Icons) Ki(li, "ki-ink").Root.style.marginRight = 3; continue; } // Glyph r5 #3: keyed like the other price marks (a round tab means "click me"; the cream disc is the outcome badge's)
                 if (f.Icon.Length > 0) Ki(f.Icon, "ki-ink").Root.style.marginRight = 3;
                 if (f.Text.Length > 0) KText(part, PriceType).Set(f.Text);
             }
