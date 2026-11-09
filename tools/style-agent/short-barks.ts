@@ -24,7 +24,7 @@ export const BARK_FAMILIES: { id: string; title: string; pick: (r: Row) => boole
   { id: 'bark/reply-driver-ask-pay', title: 'The driver answers Ask and Pay', pick: r => r.event === 'reply' && r.speaker === 'driver' && ['ask', 'pay'].includes(r.verb!) },
   { id: 'bark/reply-driver-help-pressure', title: 'The driver answers Help and Pressure', pick: r => r.event === 'reply' && r.speaker === 'driver' && ['help', 'pressure'].includes(r.verb!) },
   { id: 'bark/reply-guard-popovic', title: 'The guard answers; Popovic is taken', pick: r => (r.event === 'reply' && r.speaker === 'guard') || r.event === 'taken' },
-  { id: 'bark/summons', title: 'The call refused; questioned later', pick: any('summon-refused', 'summon-unanswered', 'questioned') }, // brief 102: nobody answers her call
+  { id: 'bark/summons', title: 'The call refused; questioned later', pick: any('summon-refused', 'summon-unanswered', 'summon-knows-down', 'questioned') }, // brief 102: nobody answers her call, or she knows why
   { id: 'bark/clock', title: 'The mission\'s clock: the chime, Popovic, the rival car, the driver', pick: any('chime', 'last-turn', 'vale-exits', 'vale-at-car', 'rivals-coming', 'rivals-arrive', 'rivals-follow-car', 'car-parks', 'car-leaves', 'driver-tail', 'close-warning') },
   { id: 'bark/guard-call', title: 'The guard off his door and back', pick: any('guard-lured', 'guard-at-cafe', 'guard-leaves-cafe', 'guard-back', 'guard-recalled', 'guard-woken', 'guard-stands-down') },
   { id: 'bark/machines', title: 'Cameras, the loop and the patrol', pick: any('camera-shot', 'camera-reported', 'loop-ends', 'patrol-rerouted', 'patrol-returns', 'patrol-breaks', 'patrol-alarm', 'patrol-stands-down', 'patrol-resumes', 'patrol-sweep', 'post-missed') },

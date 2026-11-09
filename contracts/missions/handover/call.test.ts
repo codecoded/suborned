@@ -1,6 +1,7 @@
 // Brief 102 (engine 0.51.0, Sky's calls on the guard, 2026-11-09): the guard's end of the call in words. Option 1, the turned guard leaves his own door when called;
 // step 4, nobody acts on a call after the cell's violence. A row or scene `about` the guard is his own call (HostCall.SummonAbout: the one called is the one who leaves);
 // Inez's call reads the rows with no `about`, as before. The round's record is briefs/102/fable/guard-call.json; Sky reads briefs/102/fable/guard-call.html.
+// Engine 0.52.0 (Keel's KnowsDown, Fable 2026-11-09): when he is down, her answer splits on whether she knows it; that round's record is briefs/102/fable/knows-down.json.
 import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -19,6 +20,12 @@ const HIS = ['summon-busy', 'summon-came-once', 'summon-alert', 'summon-too-far'
 /** What Inez can overhear of his refusal: within earshot of him only, so never when she is off the street (summon-off-street from his end is hers) or down. */
 const HERS = ['summon-busy', 'summon-came-once', 'summon-alert', 'summon-too-far'];
 const linesOf = (sc: { variants: { beats: ({ speaker: string; line: string } | { speaker: string; ref: string })[] }[] }) => sc.variants.flatMap((v) => v.beats.flatMap((b) => ('line' in b ? [b.line] : [])));
+type Edit = { path: string; after: unknown; before?: unknown };
+const raw = JSON.parse(read('contracts/missions/handover/text.json'));
+const at = (path: string) => path.split('|').reduce<unknown>((o, k) => (o as Record<string, unknown> | undefined)?.[k], raw);
+/** The call's round records, in order. A path a later round moved reads that round's words, where its `before` is the earlier round's `after`. */
+const ROUNDS = ['briefs/102/fable/guard-call.json', 'briefs/102/fable/knows-down.json'].map((f) => (JSON.parse(read(f)) as { edits: Edit[] }).edits);
+const since = (round: number, path: string, after: unknown) => ROUNDS.slice(round + 1).reduce((x, es) => es.find((e) => e.path === path && Bun.deepEquals(e.before, x))?.after ?? x, after);
 
 describe('brief 102: the guard\'s end of the call', () => {
   test('his call scene in each temperament a guard can have: the Fixer asks, he says yes (his confirm), and nobody names where he goes', () => {
@@ -72,6 +79,26 @@ describe('brief 102: the guard\'s end of the call', () => {
     expect(e.lines.length).toBe(2);
     for (const x of e.lines) expect(x).not.toMatch(/down|hurt|dead|knock|shot|tied|moment/i); // what she knows: only that nobody answers
   });
+  test('"What have you lot done to him?": Inez\'s call to a guard who is down and she knows it (KnowsDown), with its own lines', () => {
+    if (existsSync(CALL_CS)) {
+      const src = readFileSync(CALL_CS, 'utf8');
+      expect(src).toContain('public bool KnowsDown(string who, string of)'); // the read the host splits her two answers on
+      expect(src.indexOf('HoldsCellViolence(called)')).toBeLessThan(src.indexOf('GuardDown || leaves.Down')); // a takedown or a shot she saw shuts the call first, so she never saw it done
+    }
+    const ev = t.events['summon-knows-down']!;
+    expect(ev.speakers).toEqual(['waitress']); expect(ev.log).toBeUndefined();
+    for (const id of ['summon-knows-down', 'summon-unanswered']) expect(t.events[id]!.note, id).toContain('KnowsDown');
+    expect(t.events['summon-refused']!.trigger).toContain('summon-knows-down');
+    const e = lookup(t, { event: 'summon-knows-down', speaker: 'waitress' })!;
+    expect(e.lines.length).toBe(2);
+    const others = [...lookup(t, { event: 'summon-unanswered', speaker: 'waitress' })!.lines, ...lookup(t, { event: 'summon-refused', speaker: 'waitress', outcome: 'summon-busy' })!.lines];
+    for (const x of e.lines) {
+      expect(others, x).not.toContain(x); // her other answers on the same card: he's down and she doesn't know it, or he's busy on his feet
+      expect(x).not.toMatch(/answer/i); // she knows why he is silent
+      expect(x).not.toMatch(/down|dead|kill|knock|shot|tied|hurt|carr|found|told|saw|seen/i); // true however she knows (found him, saw him carried, was told) and whatever his state
+      expect(x).not.toMatch(/won't|can't|again|\bnever\b(?! mind)|any more|remember|forget/i); // no rule, nothing foretold ("never mind" waves the ask away)
+    }
+  });
   test('the lock form before a Listen: every summons refusal whose words name the pair has a tie-unknown form naming only {who}', () => {
     const pair = /Inez|guard|lover|\b(he|she|him|her|his|hers)\b/i;
     const summons = Object.entries(t.locks).filter(([c]) => c.startsWith('summon-') || c === 'call-saw-violence');
@@ -114,7 +141,6 @@ describe('brief 102: the guard\'s end of the call', () => {
   test('the record (guard-call.json): every row as written and marked by hand, every scene, every edit at its path, every kept placeholder', () => {
     const rec = JSON.parse(read('briefs/102/fable/guard-call.json')) as { rows: { event: string; speaker: string; outcome?: string; temperament?: string; about?: string; lines: string[] }[];
       scenes: unknown[]; edits: { path: string; after: unknown; before?: unknown }[]; kept: { path: string; words: unknown }[] };
-    const at = (path: string) => path.split('|').reduce<unknown>((o, k) => (o as Record<string, unknown> | undefined)?.[k], JSON.parse(read('contracts/missions/handover/text.json')));
     expect(rec.rows.length).toBe(14);
     for (const r of rec.rows) {
       const e = t.dialogue.find((x) => x.event === r.event && x.speaker === r.speaker && x.outcome === r.outcome && x.temperament === r.temperament && x.about === r.about)!;
@@ -122,7 +148,17 @@ describe('brief 102: the guard\'s end of the call', () => {
       expect(e.hand?.startsWith(HAND_WORDS)).toBe(true); expect(e.hand).toContain('guard-call.json');
     }
     for (const s of rec.scenes) expect(t.scenes.items).toContainEqual(s as never);
-    for (const e of rec.edits) { expect(at(e.path), e.path).toEqual(e.after); if (e.before !== undefined) expect(at(e.path), e.path).not.toEqual(e.before); }
+    for (const e of rec.edits) { expect(at(e.path), e.path).toEqual(since(0, e.path, e.after)); if (e.before !== undefined) expect(at(e.path), e.path).not.toEqual(e.before); }
     for (const k of rec.kept) expect(at(k.path), k.path).toEqual(k.words);
+  });
+  test('the record (knows-down.json): its row as written, read line by line and marked by hand, and every edit at its path', () => {
+    const rec = JSON.parse(read('briefs/102/fable/knows-down.json')) as { rows: { event: string; speaker: string; lines: string[]; reads: { line: string }[] }[]; edits: Edit[] };
+    expect(rec.rows.length).toBe(1);
+    for (const r of rec.rows) {
+      const e = t.dialogue.find((x) => x.event === r.event && x.speaker === r.speaker && !x.outcome && !x.about)!;
+      expect(e.lines).toEqual(r.lines); expect(r.reads.map((x) => x.line)).toEqual(r.lines);
+      expect(e.hand?.startsWith(HAND_WORDS)).toBe(true); expect(e.hand).toContain('knows-down.json');
+    }
+    for (const e of rec.edits) { expect(at(e.path), e.path).toEqual(since(1, e.path, e.after)); if (e.before !== undefined) expect(at(e.path), e.path).not.toEqual(e.before); }
   });
 });

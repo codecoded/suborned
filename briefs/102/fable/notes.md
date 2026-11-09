@@ -389,3 +389,50 @@ Sky's calls on the guard (option 1: he leaves his door when called; step 4: nobo
   - `tools/style-agent/short-barks.ts`, `short-lozenge.ts`, `short-whys19.ts`, `short-types.ts` (/24), `lozenge.test.ts`, `short.test.ts` (the row count 492 → 506), `README.md`;
   - `tools/levels/dialogue/drift.json`.
 - **Scratch:** `out/scratch/fable/102e/` (apply, record, page, the loiter fits, verify-all).
+
+
+## She knows he's down (Fable, 2026-11-09, engine 0.52.0)
+
+Closes this brief's open item ("He's not answering" is untrue if Inez found the guard, saw him carried or was told). Keel's `Game.KnowsDown(who, of)` (briefs/101/keel/report-lamp-mast.md §7) is the read; Latch plays `summon-unanswered` only where it is false. **Record:** `knows-down.json` (the row, a read of each line, three event edits, five lines turned down and why). Marked `hand`; not scored (a judge run needs Sky's approval).
+
+### The moment
+- Inez's call is refused `summon-busy` because the guard is down, and she knows it. She found him, saw him carried, or was told. He may be knocked out, tied (awake or not) or dead.
+- She never saw it done. A takedown or shot of the cell's that she saw shuts the call first (`call-saw-violence`), and nothing rings. A carry, a found body and a tell aren't on step 4's list, so the call gets through to `summon-busy`.
+- The card: her line to the Fixer on the telephone, then the summon-busy lock ("Inez or the guard is down, or he's busy or away from the door."). He says nothing.
+
+### The lines (`summon-knows-down` / waitress)
+- "What have you lot done to him?"
+- "Never mind that. Is he all right?"
+- Both are questions, so neither claims his state, how she knows, or who did it. No endearment: the warmth is gone. "You lot" is her idiom, said to the voice on the line.
+
+### The key (Latch)
+- Event `summon-knows-down`, speaker `waitress`; no outcome, no `about`, no log code.
+- In `FeedSummonRefused`, on Inez's call refused `summon-busy` when the one who'd leave (`Game.CallLeaver`) is her tie and down:
+  - `Game.KnowsDown(role, leaver)` → `summon-knows-down`;
+  - otherwise `summon-unanswered`, as today.
+- In both cases her line replaces her summon-busy line, and the guard is silent (`TieHears` is false while he's down).
+
+### Also changed
+- `events.summon-unanswered.note` names the read (`!Game.KnowsDown`) and points here. `events.summon-refused.trigger` names both cases.
+- `call.test.ts`: the new event's test and its record's. guard-call.json's record test now follows a path a later round moved (`since`), as `hand.test.ts` does.
+- `tools/style-agent`: the row joins `bark/summons` (`short-barks.ts`) with its own tell (`short-guard102.ts`); `short.test.ts` counts 507 rows. No saved run's text has the row, so every older run rebuilds as it ran.
+
+### Open
+- **Latch:** a downed contact still answers. On Inez's own call when she is down (`summon-busy`, "she's down"), `FeedSummonRefused` plays her busy line; on the guard's own call when he is down, his. Nobody picks up, so the card wants no line from the one called, only the lock.
+- **Keel (low):** `KnowsDown` reads acts. A guard dropped in the final fight gets none (`GuardHit` makes a body only outside it), so if Inez watched the rivals shoot him there, the host would play "He's not answering."
+- **Not written (scope):** the mirror case, the Fixer calling the turned guard while Inez is down and he knows it. His busy words ("Now's no good. Leave it.") hold but don't show he knows. A row `about` guard if Sky wants it.
+- **The generator's lexicon** (`dialogue.rules.json` `summonKeys`) has no down split yet, so a generated mission plays its busy line in both cases. A later round.
+- `text.json` is 3,495 lines, data the host reads whole; this round adds 2. Splitting it is a change to Latch's read, not this round's.
+
+### Checks
+- `bun test contracts/missions/handover`: 218/218 (216 before, plus the two new).
+- `bun test tools/style-agent`: 101/101.
+- `bun test tools/dialogue`: 75/75. `bun test tools/names tools/levels/dialogue`: 27/27.
+- `bun run typecheck`: clean. `bun tools/lint/comments.ts`: 0 hits.
+- Every saved style-agent run rebuilds exactly (`out/scratch/fable/102e/verify-all.ts`).
+- Not run: `bun run hostlogic` and the export to the player (Latch is building in `unity/Assets`).
+
+### Files
+- **New:** `briefs/102/fable/knows-down.json`.
+- **Changed:** `contracts/missions/handover/text.json` (1 event, 1 row, 2 event texts), `call.test.ts`; `tools/style-agent/short-barks.ts`, `short-guard102.ts`, `short.test.ts`; these notes.
+- **Scratch:** `out/scratch/fable/101-knows/` (record.py, the test, lint and rebuild logs).

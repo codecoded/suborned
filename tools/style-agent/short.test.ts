@@ -78,7 +78,7 @@ describe('the families: every short line in the game, a family per run', () => {
     const live = (text.dialogue as { parked?: string; pending?: string }[]).filter(r => !r.parked && !r.pending).map(r => barkKey(r as never));
     expect(new Set(keys).size).toBe(keys.length);
     expect([...keys].sort()).toEqual([...live].sort());
-    expect(keys.length).toBe(506); // brief 102's sweep cut five rows as filler: the patrol's three status lines, the camera room's alarm, a rival's "I'm out"; the guard's end of the call added 14 (guard-call.json)
+    expect(keys.length).toBe(507); // brief 102's sweep cut five rows as filler: the patrol's three status lines, the camera room's alarm, a rival's "I'm out"; the guard's end of the call added 14 (guard-call.json), and Inez knowing he's down 1 (knows-down.json)
     // Sky 2026-11-07 ("what is this stupid words at the start of every game?"): the game opens quiet. No start event (its four speakers would ask text.test.ts for
     // the cut barks), no start bark, and the start log line silent on purpose.
     expect(text.events.start).toBeUndefined(); expect(live.some(k => k.startsWith('start/'))).toBe(false); expect(text.silentLogs.start).toContain('stupid words');

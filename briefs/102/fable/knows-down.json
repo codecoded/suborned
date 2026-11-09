@@ -1,0 +1,107 @@
+{
+ "schema": "suborned.knows-down/1",
+ "status": "In text.json (Fable, 2026-11-09), for Latch to build in. The row carries `hand`, so no run of the style loop replaces it. Not scored: a judge run needs Sky's approval. Each line was read in every case `cases` lists, on the refused call's card as the host draws it (her line, then the summon-busy lock).",
+ "by": "Fable (dialogue designer), by hand",
+ "why": "Brief 102's open item, closed by engine 0.52.0 (Keel, briefs/101/keel/report-lamp-mast.md §7): Game.KnowsDown(who, of). \"He's not answering.\" (summon-unanswered) is untrue once Inez found the guard, saw him carried or was told. Latch plays it only where she doesn't know, and this row where she does.",
+ "keys": "Event summon-knows-down, speaker waitress; no outcome, no about, no log code. The host picks it on the refused call's card (HostFeed.FeedSummonRefused) for Inez's call refused summon-busy, when the one who'd leave (Game.CallLeaver) is her tie and down, and Game.KnowsDown(her role, his role) is true; else summon-unanswered, as today. The guard says nothing: he's down, so TieHears is false. The lock line under it is summon-busy's own, unchanged.",
+ "rows": [
+  {
+   "event": "summon-knows-down",
+   "speaker": "waitress",
+   "lines": [
+    "What have you lot done to him?",
+    "Never mind that. Is he all right?"
+   ],
+   "cases": "Inez's call; the guard is down and she knows it. She found him, saw him carried, or was told (the engine's KnowsDown), and he may be knocked out, tied (awake or not) or dead. She never saw it done: had she seen the cell's takedown or shot, step 4 would have shut the call before it rang (call-saw-violence), and nothing plays.",
+   "where": "In place of her summon-busy line, said to the Fixer on the telephone; he says nothing. Under it, the summon-busy lock: \"Inez or the guard is down, or he's busy or away from the door.\"",
+   "reads": [
+    {
+     "line": "What have you lot done to him?",
+     "why": "Her fear comes out as an accusation. It is a question, so it claims nothing she can't know: not his state, not how she knows, not who did it. She suspects the people who asked her to draw him off his door, which is true of her in every case. \"You lot\" is her own idiom (\"what your lot do\" on summon-saw-violence), said straight at the voice on the line. No endearment: the warmth is gone."
+    },
+    {
+     "line": "Never mind that. Is he all right?",
+     "why": "She waves the Fixer's ask away and asks the only thing she cares about now. True if he is knocked out, tied or dead, and whether she found him, saw him carried or was told: she doesn't know how he is. A different thought from the first line (fear for him, not blame), in her quick café rhythm."
+    }
+   ]
+  }
+ ],
+ "edits": [
+  {
+   "path": "events|summon-knows-down",
+   "after": {
+    "kind": "world",
+    "trigger": "Inez's call finds the guard down (summon-busy, he's down) and she knows it: she found him, saw him carried or was told (Game.KnowsDown, engine 0.52.0). Only she speaks, to the Fixer, in place of her summon-busy line. Had she seen the cell's takedown or shot, step 4 would have shut the call before it rang (call-saw-violence), so she knows he is down but never saw it done: not whether he is knocked out, tied or dead (brief 102)",
+    "speakers": [
+     "waitress"
+    ],
+    "note": "no log code: the host speaks it on the refused call's card (FeedSummonRefused) when the one who'd leave is down and Game.KnowsDown(called, leaver); he says nothing (he's down, so TieHears is false). Where she doesn't know, summon-unanswered"
+   },
+   "why": "New: the case next to summon-unanswered, split by the engine's read (KnowsDown). The host keys on the event."
+  },
+  {
+   "path": "events|summon-unanswered",
+   "before": {
+    "kind": "world",
+    "trigger": "Inez's call finds the guard down (summon-busy, he's down) and she doesn't know it: she tries him and nobody answers. Only she speaks, to the Fixer, in place of her summon-busy line (brief 102, Motive turned-guard.md §1.4)",
+    "speakers": [
+     "waitress"
+    ],
+    "note": "no log code: the host speaks it on the refused call's card (FeedSummonRefused) when the one who'd leave is down and the one called holds no memory of it; if she found him, saw him carried or was told, she knows, and these words are untrue"
+   },
+   "after": {
+    "kind": "world",
+    "trigger": "Inez's call finds the guard down (summon-busy, he's down) and she doesn't know it: she tries him and nobody answers. Only she speaks, to the Fixer, in place of her summon-busy line (brief 102, Motive turned-guard.md §1.4)",
+    "speakers": [
+     "waitress"
+    ],
+    "note": "no log code: the host speaks it on the refused call's card (FeedSummonRefused) when the one who'd leave is down and the one called doesn't know it (!Game.KnowsDown(called, leaver), engine 0.52.0); if she found him, saw him carried or was told, she knows: summon-knows-down"
+   },
+   "why": "Its note names the read the host now uses (!KnowsDown) and points to the new event, where it said only that these words would be untrue."
+  },
+  {
+   "path": "events|summon-refused",
+   "before": {
+    "kind": "world",
+    "trigger": "the call is refused for a summon-* reason: the contact says why. On Inez's call she answers the Fixer, and the guard if he hears her (TieHears); when he is down she gets no answer (summon-unanswered). On the guard's own call (brief 102, option 1: rows `about` guard) he answers the Fixer, and Inez only if she is within earshot. call-saw-violence plays nothing: no card, no line",
+    "speakers": [
+     "waitress",
+     "guard"
+    ],
+    "note": "outcome is the refusal code; refused at no cost; `about` is the one the Fixer called, when the call is the leaver's own (HostCall.SummonAbout)"
+   },
+   "after": {
+    "kind": "world",
+    "trigger": "the call is refused for a summon-* reason: the contact says why. On Inez's call she answers the Fixer, and the guard if he hears her (TieHears); when he is down she gets no answer if she doesn't know it (summon-unanswered), and if she knows it her answer is summon-knows-down. On the guard's own call (brief 102, option 1: rows `about` guard) he answers the Fixer, and Inez only if she is within earshot. call-saw-violence plays nothing: no card, no line",
+    "speakers": [
+     "waitress",
+     "guard"
+    ],
+    "note": "outcome is the refusal code; refused at no cost; `about` is the one the Fixer called, when the call is the leaver's own (HostCall.SummonAbout)"
+   },
+   "why": "Its trigger said that when he is down she gets no answer; now it says when that holds, and names the other case."
+  }
+ ],
+ "rejected": [
+  {
+   "line": "Is he alive?",
+   "why": "Untrue if she found him tied: a tied man is alive (an awake, tied body waits for a finder, GameTakedown.cs)."
+  },
+  {
+   "line": "Where have you taken him?",
+   "why": "True only of the carry. If she found him she knows where he is, and told, she may."
+  },
+  {
+   "line": "I saw him.",
+   "why": "Untrue if she was told (KnowsDown reads a tie's tell)."
+  },
+  {
+   "line": "He can't come. You know why.",
+   "why": "Reads out the refusal (NATURAL), and asserts what the Fixer knows."
+  },
+  {
+   "line": "Don't you ever ring me again.",
+   "why": "A promise the game breaks: he can wake and go back to his door, and her Call is still open (no memory of violence)."
+  }
+ ]
+}
