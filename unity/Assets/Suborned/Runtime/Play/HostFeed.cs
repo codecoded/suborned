@@ -262,16 +262,16 @@ namespace Suborned.Play
         }
 
         /// <summary>A call the contact's lover refuses (the engine's summon-* codes): a call card with Fable's summon-refused lines, the contact's
-        /// answer to the Fixer and then her tie's, only when the tie hears it (TieHears), and the lock line for the code as its result.</summary>
+        /// answer to the Fixer and then her tie's, only when the tie hears it (TieHears), and the lock line for the code as its result. Her tie down,
+        /// her line is the one for what she knows (HostCall.TieDownEvent); the one called down, nobody picks up: the card is the lock alone (Fable, brief 102).</summary>
         void FeedSummonRefused(string role, Order o, Answer a)
         {
             if (Text == null) return;
             var p = CastOf(role); if (p == null) return;
             var c = NewCard("call", Text.Action("call", role).label, "call", $"{Name(role)} · {PlaceWords(role)}", TargetWorld(new Target { Kind = "person", Key = role }), role);
             c.Agent = (int)OpId.Fixer; c.Verb = "call"; c.Target = role; c.Tone = Feedback.Refused;
-            string about = SummonAbout(role); // brief 102 (option 1): the guard's own call reads his rows `about` him (HostCall)
-            bool unanswered = Unanswered(role, a); // Fable: she tries him and nobody answers (summon-unanswered, in place of her summon-busy line)
-            foreach (var sp in new[] { role, p.Lover != null && TieHears(a.code, p, p.Lover) ? p.Lover.Role : null }) if (sp != null && Text.Pick(unanswered && sp == role ? new PlayText.Query { Event = "summon-unanswered", Speaker = sp } : new PlayText.Query { Event = "summon-refused", Speaker = sp, Outcome = a.code, About = about }) is string line) Add(c, sp, Fill(line, Name(sp)));
+            string about = SummonAbout(role), down = TieDownEvent(role, a); // brief 102 (option 1): the guard's own call reads his rows `about` him; her tie down: summon-knows-down or summon-unanswered in place of her busy line (HostCall)
+            if (!IsDown(p)) foreach (var sp in new[] { role, p.Lover != null && TieHears(a.code, p, p.Lover) ? p.Lover.Role : null }) if (sp != null && Text.Pick(down.Length > 0 && sp == role ? new PlayText.Query { Event = down, Speaker = sp } : new PlayText.Query { Event = "summon-refused", Speaker = sp, Outcome = a.code, About = about }) is string line) Add(c, sp, Fill(line, Name(sp)));
             c.Footer = LockLine(o, a) ?? a.why; c.Revealed = Math.Min(1, c.Lines.Count); c.NextBeatAt = Game.Tick + 15;
         }
 

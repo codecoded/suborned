@@ -153,7 +153,7 @@ namespace Suborned.Play
                 if (h.Views.Find("op/scout") is Transform s5 && s5) h.LookAt(s5.position);
                 HudToolkit.SealHoverForce = true; yield return Frames(4); yield return new WaitForSecondsRealtime(0.4f);
                 string seal = HudToolkit.SealWords, card = HudToolkit.CrucialShown;
-                yield return Shoot(h, dir, "r101-seal-police", log, "active"); HudToolkit.SealHoverForce = false;
+                yield return Shoot(h, dir, "r101-seal-police", log, "active"); HudToolkit.SealHoverForce = false; yield return Frames(3); yield return new WaitForSecondsRealtime(0.2f); // the window back at the frames' size: the panel laid out again before the lozenge's screen point is read
                 Check("sealPolice", Clock.IsMatch(seal) && Bare(Plates()), $"seal '{seal}'; card '{card}'; plates '{Plates()}' at tick {g.Tick}");
                 // brief 101 round 3 (Fable's lozenge round): the card's full line on hover, gone on leave
                 if (h.CrucialNow is HandoverHost.CrucialCard cc && cc.Kind is "alert" or "police" && cc.Why != null && HudToolkit.CrucialScreen is Vector2 ls)
@@ -166,6 +166,9 @@ namespace Suborned.Play
                 else Check("lozengeHover", false, $"no Alert or Police card with a why on the lozenge at the seal (tick {g.Tick}): '{card}'");
             }
             else Check("sealPolice", false, $"no seal by tick {g.Tick}");
+
+            // 6 · the square's lamp mast (Sky's pick B): its "?" at 0:00, its cones beside the cell once watched, the lens cue on the head that saw (Proof101Mast)
+            var mast = new[] { "null" }; yield return Proof101Mast.Run(h, dir, log, mast); parts.Add($"\"mast\": {mast[0]}"); ok &= mast[0].StartsWith("{\"ok\": true");
 
             json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";
             h.Begin(); h.IntelOpen = false; yield return null;

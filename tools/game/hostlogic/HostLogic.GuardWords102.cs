@@ -1,6 +1,7 @@
 // Brief 102, Fable's words for the guard's end of the call (a8bf90bd8; briefs/102/fable/notes.md, "The keys (Latch reads them)") as the host plays them, on the real
 // text: his call scene (scenes.items kind call, about guard); his own refusals (summon-refused rows `about` guard, HostCall.SummonAbout); "He's not answering"
-// (summon-unanswered, in place of Inez's summon-busy line when he's down and she doesn't know it); the café on his own call (its city scene `about` guard); the pressed
+// (summon-unanswered, in place of Inez's summon-busy line when he's down and she doesn't know it; summon-knows-down when she does, Game.KnowsDown, c94c7a657); a contact
+// who is down picks nothing up (the lock alone); the café on his own call (its city scene `about` guard); the pressed
 // visit's warning by who remembers the Pressure (Inez's conversation lines, or his `he-warns` scene), never by who called; the tie-unknown lock form before the cell
 // knows the pair; the loitering card's place in its hover line only; the debrief's "answered" for his call.
 using System.Linq;
@@ -64,9 +65,45 @@ public class GuardWords102
         foreach (var o in sc.Orders.Where(x => x.Tick <= 1510).OrderBy(x => x.Tick)) { if (o.Tick > g.Tick) h.RunTo(o.Tick); if (o.Do is "watch" or "listen" or "turn") h.GiveScripted(o); else h.Issue(o); }
         Assert.That(Host.Until(h, () => g.GuardDown, 300), $"route G's knockout never landed: {h.Status}");
         Assert.That(g.Inez.Memory.Any(m => m.Act is "saw-takedown" or "saw-violence" or "found-body" or "saw-carry" or "told"), Is.False, "she knows nothing of it");
-        var c = Refused(h, "waitress"); Assert.That(g.Orders.Last().code, Is.EqualTo("summon-busy"));
+        var c = Refused(h, "waitress"); Assert.That(g.Orders.Last().code, Is.EqualTo("summon-busy")); Assert.That(g.KnowsDown("waitress", "guard"), Is.False, "the engine's read: she doesn't know");
         Assert.That(Rows(h, "summon-unanswered", "waitress"), Does.Contain(Line(c, "waitress")), "He's not answering");
         Assert.That(c.Lines.Any(l => l.Speaker == "guard"), Is.False, "he is down");
+    }
+
+    /// <summary>Engine 0.52.0's KnowsDown (Keel's C102-KNOWS-CARRY): the guard knocked out out of her sight, then carried past her. She knows he's down, so her call refused
+    /// summon-busy plays Fable's summon-knows-down in place of her busy line ("He's not answering" would be untrue); he says nothing; the lock is summon-busy's.</summary>
+    [Test] public void SheKnowsHesDownSoSheAsksAfterHim()
+    {
+        var h = Start(new[] { "waitress" }); var s = Scenarios.Find("C102-KNOWS-CARRY"); Assert.That(s, Is.Not.Null, "Keel's C102-KNOWS-CARRY is gone");
+        var g = Scenarios.Run(h.PlayInputs, s).G; Host.Set(h, "Game", g); Host.Tick(h);
+        Assert.That(g.GuardDown && g.KnowsDown("waitress", "guard"), $"she knows he's down (down {g.GuardDown}, knows {g.KnowsDown("waitress", "guard")})");
+        var c = Refused(h, "waitress"); Assert.That(g.Orders.Last().code, Is.EqualTo("summon-busy"));
+        Assert.That(Rows(h, "summon-knows-down", "waitress"), Does.Contain(Line(c, "waitress")), "Fable's line for what she knows");
+        Assert.That(c.Lines.Any(l => l.Speaker == "guard"), Is.False, "he is down"); Assert.That(c.Footer, Is.Not.Empty, "the busy lock under her line");
+    }
+
+    /// <summary>Fable (brief 102): a contact who is down picks nothing up. The engine refuses a call on them before any summons (person-down): no call card, no line, the pop its
+    /// lock. Should a summons' refusal reach the card with the one called down (his GuardDown read as he's down too), the card is the summon-busy lock alone, no line from anyone.
+    /// The guard by route G's quiet knockout, Inez by the Enforcer's.</summary>
+    [Test] public void ADownedContactAnswersNothing()
+    {
+        void Silent(HandoverHost h, string role, string what)
+        {
+            var g = h.Game; int f0 = h.Feed.Count, t0 = h.Talk.Count; h.Issue(new Order { Op = "fixer", Do = "call", Target = role });
+            Assert.That(g.Orders.Last().code, Is.EqualTo("person-down"), what); Assert.That(h.Feed.Skip(f0).Any(c => c.Kind == "call"), Is.False, $"{what}: no call card"); Assert.That(h.Talk.Count, Is.EqualTo(t0), $"{what}: no line");
+            int f1 = h.Feed.Count; Host.Call(h, "FeedSummonRefused", role, new Order { Op = "fixer", Do = "call", Target = role }, new Answer { ok = false, code = "summon-busy", why = role == "guard" ? "he's down" : "she's down" });
+            var card = h.Feed.Skip(f1).Single(c => c.Kind == "call");
+            Assert.That(card.Lines, Is.Empty, $"{what}: " + string.Join(" / ", card.Lines.Select(l => l.Speaker + ": " + l.Text))); Assert.That(card.Footer, Is.Not.Empty, $"{what}: the card is the lock");
+        }
+        var h = Start(new[] { "waitress", "guard" }); var g = h.Game;
+        var sc = Script.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(Root.Path, "contracts/missions/handover/routes/route-g.json")));
+        foreach (var o in sc.Orders.Where(x => x.Tick <= 1510).OrderBy(x => x.Tick)) { if (o.Tick > g.Tick) h.RunTo(o.Tick); if (o.Do is "watch" or "listen" or "turn") h.GiveScripted(o); else h.Issue(o); }
+        Assert.That(Host.Until(h, () => g.GuardDown, 300), $"route G's knockout never landed: {h.Status}");
+        Silent(h, "guard", "his own call, him knocked out");
+        var h2 = Start(new[] { "waitress" }); var g2 = h2.Game;
+        h2.GiveScripted(new Order { Op = "enforcer", Do = "takedown", Target = "waitress", How = "knockout" }); // the host walks him in, as a click on her ring does
+        Assert.That(Host.Until(h2, () => g2.Inez.Down, 3000), $"she was never knocked out: {g2.Orders.Last().code} {g2.Orders.Last().why}");
+        Silent(h2, "waitress", "her call, her knocked out");
     }
 
     /// <summary>On his own call the café's scene is his (`about` guard: "Look who's left his door."); on Inez's call hers plays, as before.</summary>

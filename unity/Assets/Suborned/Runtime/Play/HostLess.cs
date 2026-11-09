@@ -336,7 +336,7 @@ namespace Suborned.Play
             string Pri(IEnumerable<string> ids) { string best = ""; int rank = 9; foreach (var w in ids) { var kind = Game.WatcherKind(w); int r = kind == "camera" ? 0 : kind is "guard" or "security" or "patrol" ? 1 : kind == "rivals" ? 2 : 3; if (r < rank) { rank = r; best = kind == "security" || kind == "patrol" ? "guard" : kind; } } return best; }
             mp.SeenKind = whole == null ? "" : Pri(whole.SeenBy);
             mp.State = whole == null || whole.Seen == "no" ? "safe" : whole.Seen == "?" ? "unk" : carrying ? "alert" : "seen";
-            if (whole != null) foreach (var w in whole.MaybeSeenBy) if (WatcherAt(w) is Vector3 wp) mp.Unwatched.Add(wp + Vector3.up * 3f);
+            if (whole != null) foreach (var w in whole.MaybeSeenBy) if (Game.WatcherKind(w) != "camera" && WatcherAt(w) is Vector3 wp) mp.Unwatched.Add(wp + Vector3.up * 3f); // brief 101: an unwatched camera wears its own "?" always
             if (whole == null || whole.SeenBy.Count == 0) return;
             var route = MoveRoute(g.Ops[k].Pos, to); if (route == null) return; // engine 0.33.1: round the standing cars
             var pts = new List<Pt>(); for (int i = 1; i < route.Length; i++) { Pt a = route[i - 1], c = route[i]; int n = Math.Max(1, G.Dist(a, c) / 60); for (int j = 0; j < n; j++) pts.Add(G.Lerp(a, c, j, n)); } pts.Add(route[^1]);

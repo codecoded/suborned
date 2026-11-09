@@ -7,7 +7,8 @@ namespace Suborned.Play
     /// <summary>Brief 096 (engine 0.40.0, Keel's gdd-text-rules.md §05 cameras and attention; Motive's rules page; Sky 2026-11-04 "yeah, they should have been punished
     /// for not turning off camera"): what a watcher would make of an act, on its card before the commit.
     /// · The camera mark on Pay and Pressure (Quote.Recorded*): a live camera the cell knows would record it (the eye open, red), one it hasn't watched ("?", the
-    ///   unknown eye); the record's Trail is in the Trail and its Alert in the Alert; the eye's hover and the panel row say which camera and when its desk sees it;
+    ///   unknown eye); the record's Trail is in the Trail and its Alert in the Alert, each marked "?" for the unwatched one (T ?+n, A ?→n); the eye's hover and
+    ///   the panel row say which camera and when its desk sees it;
     ///   Alt adds "loop ends m:ss" when a loop runs out inside the act. Help, Ask and Listen stay private: the engine gives them no mark.
     /// · The parked car on the Drive card (Game.ParkedQuote): on private ground, who would see the car standing there and how long until they report it.
     /// Reads only.</summary>
@@ -32,7 +33,7 @@ namespace Suborned.Play
             var w = BookWordsFile.Get(); string cam = CameraName(q.RecordedBy);
             i.Tape = q.Recorded; i.TapeBy = q.RecordedBy; i.TapeInS = q.RecordInS; i.TapeLoopEnds = q.RecordLoopEnds;
             if (q.Recorded == "yes") { i.Trail = $"T +{TrailPlus(i.Trail) + q.RecordTrail}"; i.Alert = $"A →{Math.Max(AlertTo(i.Alert), q.RecordAlert)}"; }
-            else if (AlertTo(i.Alert) == 0) i.Alert = $"A ?→{q.RecordAlert}";
+            else { i.Trail = $"T ?+{TrailPlus(i.Trail) + q.RecordTrail}"; if (AlertTo(i.Alert) == 0) i.Alert = $"A ?→{q.RecordAlert}"; } // brief 101 (Motive): a camera not yet watched may tape it: its Trail in the Trail as its Alert in the Alert, both marked "?"
             var tip = (q.Recorded == "yes" ? w.TapeSeen : w.TapeMaybe).Replace("{camera}", cam).Replace("{alert}", q.RecordAlert.ToString()).Replace("{trail}", q.RecordTrail.ToString())
                 .Replace("{s}", q.RecordInS >= 0 ? q.RecordInS.ToString() : "?");
             if (q.RecordLoopEnds >= 0) tip += " · " + w.TapeLoopEnds.Replace("{t}", MissionClock(q.RecordLoopEnds));

@@ -121,7 +121,8 @@ public class Lend096
         var eye = HudModel.PriceLine(h, i).Find(f => f.Kind == "eye"); Assert.That(eye.Eye, Is.EqualTo("open")); Assert.That(eye.Tip, Is.EqualTo(i.TapeTip));
         Assert.That(HudModel.AltLine(h, i).Exists(f => f.Icon == "loop" && f.Text == HandoverHost.MissionClock(300)));
         var u = new HandoverHost.Intent { Order = i.Order, Trail = "T +1", Alert = "A 0" }; Host.Call(h, "Tape", u, new Quote { Recorded = "?", RecordedBy = "pickup", RecordTrail = 1, RecordAlert = 1, RecordInS = 12 });
-        Assert.That(HudModel.PriceLine(h, u).Find(f => f.Kind == "eye").Eye, Is.EqualTo("unk"), "a camera the Scout hasn't watched is '?'"); Assert.That(u.Trail, Is.EqualTo("T +1")); Assert.That(u.Alert, Is.EqualTo("A ?→1"));
+        Assert.That(HudModel.PriceLine(h, u).Find(f => f.Kind == "eye").Eye, Is.EqualTo("unk"), "a camera the Scout hasn't watched is '?'"); Assert.That(u.Alert, Is.EqualTo("A ?→1"));
+        Assert.That(u.Trail, Is.EqualTo("T ?+2"), "brief 101 (Motive): the record's Trail is in the Trail too, marked '?' as its Alert"); Assert.That(HudModel.PriceLine(h, u).Find(f => f.Kind == "trail")?.Text, Is.EqualTo("+2"));
         Host.NoTokens("tape", i.TapeTip, u.TapeTip);
         // the real cards: every turn row carries the engine's own mark (Help, Ask: never)
         h.Select(OpId.Fixer, false);

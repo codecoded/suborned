@@ -37,6 +37,27 @@ public class Crew096
     static void Give(HandoverHost h, HandoverHost.PanelRow r, string id) => Host.Call(h, "Give", r.By, r.I.Order, new HandoverHost.Target { Kind = "rivals", Key = id, Id = id, Label = id }, null);
     static bool Run(HandoverHost h, Func<bool> done, int ticks = 4000) { for (int i = 0; i < ticks && !done() && !h.Game.Over; i += 5) { h.RunTo(h.Game.Tick + 5); Host.Call(h, "Track"); } Host.Call(h, "CrucialTrack"); return done(); }
 
+    /// <summary>The Pay card's Trail as HostTape writes it from the engine's quote: the record's Trail in it where a camera would tape the Pay, "?" for one not yet watched.</summary>
+    static string TapedTrail(Quote q) => q.Recorded == "yes" ? $"T +{q.Trail + q.RecordTrail}" : q.Recorded == "?" ? $"T ?+{q.Trail + q.RecordTrail}" : $"T +{q.Trail}";
+
+    /// <summary>Engine 0.52.0 (Keel's CAM-10: the crew's Pay card carries the tape): a Pay on a member in a live camera's view shows its mark as a person's card does (HostTape):
+    /// the camera, the record's Trail and Alert in its price, "?" until the camera is watched; a Pay out of every view, none. Every member on foot at 4:29 on route B.</summary>
+    [Test] public void APayOnAManInACamerasViewCarriesItsTape()
+    {
+        var h = Posted(); var g = h.Game; g.RivalsWatched = true; var seen = new List<string>();
+        foreach (var m in g.Crew.Where(x => x.OnFoot && !x.Paid && !x.Fight && !x.Gun.Down))
+        {
+            var pay = Row(h, OpId.Fixer, m.Id, "pay"); if (pay == null) continue;
+            var q = g.CrewQuote(pay.I.Order, m); string tape = q.Recorded is "yes" or "?" ? q.Recorded : "";
+            Assert.That((pay.I.Tape, pay.I.Trail), Is.EqualTo((tape, TapedTrail(q))), $"{m.Id}: the card's mark and Trail are the engine's");
+            if (tape.Length == 0) { Assert.That(pay.I.Alert, Is.EqualTo("A 0"), $"{m.Id}: private, out of every view"); continue; }
+            Assert.That((pay.I.TapeBy, pay.I.Alert), Is.EqualTo((q.RecordedBy, tape == "yes" ? $"A →{q.RecordAlert}" : $"A ?→{q.RecordAlert}")), m.Id);
+            Assert.That(HudModel.PriceLine(h, pay.I).Find(f => f.Kind == "eye")?.Eye, Is.EqualTo(tape == "yes" ? "open" : "unk"), m.Id); seen.Add($"{m.Id} {tape} {q.RecordedBy}");
+        }
+        Assert.That(seen, Is.Not.Empty, "no member on foot stands in a camera's view at 4:29 on route B: " + string.Join(", ", g.Crew.Select(x => $"{x.Id} {x.Mode}")));
+        Console.WriteLine("taped: " + string.Join("; ", seen));
+    }
+
     [Test] public void EachAgentHasItsWaysOnTheLookoutAtTheEnginesPrices()
     {
         var h = Posted(); var g = h.Game; var id = Lookout(h); var m = g.CrewOf(id);
@@ -49,7 +70,7 @@ public class Crew096
         g.RivalsWatched = true; // rivals.turn.needs "watched": the Watch the rules ask for before a Pay
         var pay = Row(h, OpId.Fixer, id, "pay"); Assert.That(pay, Is.Not.Null); Assert.That(pay.Available, pay.Reason);
         var pq = g.CrewQuote(pay.I.Order, m); Assert.That(ContextRank.Num(pay.I.Usd), Is.EqualTo(pq.Usd)); Assert.That(pq.Usd, Is.EqualTo(30000), "Motive's $30,000");
-        Assert.That(pay.I.Outcome, Is.EqualTo("?"), "his temperament unknown before a Listen"); Assert.That(pay.I.Trail, Is.EqualTo($"T +{pq.Trail}"));
+        Assert.That(pay.I.Outcome, Is.EqualTo("?"), "his temperament unknown before a Listen"); Assert.That(pay.I.Trail, Is.EqualTo(TapedTrail(pq)), "the Pay's Trail, with a camera's record when one would tape it (engine 0.52.0)");
         var en = Rows(h, OpId.Enforcer, id); Assert.That(en.Exists(r => r.I.Order.Do == "takedown" && r.I.How == "knockout"), "Knock out"); Assert.That(en.Exists(r => r.I.Order.Do == "takedown" && r.I.How == "kill"), "Kill");
         Assert.That(Rows(h, OpId.Tech, id).Exists(r => r.I.Order.Do is "listen" or "turn" or "mislead"), Is.False, "the Tech has none of the talking ways");
         foreach (var k in new[] { OpId.Scout, OpId.Fixer, OpId.Enforcer }) foreach (var r in Rows(h, k, id)) Host.NoTokens($"{k} on the lookout", r.Verb, r.I.Does, r.Reason, string.Join(" ", r.I.Rows.Select(x => x.text)));

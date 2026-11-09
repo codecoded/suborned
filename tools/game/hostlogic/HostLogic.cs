@@ -362,7 +362,7 @@ public static class Runner
                 var name = $"{t.Name}.{m.Name}"; if (filter.Length > 0 && !name.Contains(filter, StringComparison.OrdinalIgnoreCase)) continue;
                 try { m.Invoke(Activator.CreateInstance(t), null); pass++; }
                 catch (TargetInvocationException e) when (e.InnerException is InconclusiveException) { skip++; Console.WriteLine($"SKIP {name}: {e.InnerException.Message.Trim()}"); }
-                catch (TargetInvocationException e) { fail++; var x = e.InnerException; while (x is TargetInvocationException && x.InnerException != null) x = x.InnerException; var at = (x.StackTrace ?? "").Split('\n').Where(l => l.Contains("/unity/") || l.Contains("HostLogic.cs")).Take(4).Select(l => l.Trim().Replace(root + "/", "")); Console.WriteLine($"FAIL {name}: {x.GetType().Name}: {x.Message.Trim()}\n     {string.Join("\n     ", at)}"); }
+                catch (TargetInvocationException e) { fail++; var x = e.InnerException; while (x is TargetInvocationException && x.InnerException != null) x = x.InnerException; var at = (x.StackTrace ?? "").Split('\n').Where(l => l.Contains("/unity/") || l.Contains("/hostlogic/")).Take(4).Select(l => l.Trim().Replace(root + "/", "")); Console.WriteLine($"FAIL {name}: {x.GetType().Name}: {x.Message.Trim()}\n     {string.Join("\n     ", at)}"); }
             }
         Console.WriteLine($"host logic: {pass} pass, {fail} fail, {skip} skipped in {sw.Elapsed.TotalSeconds:F1} s (no Unity)");
         return fail > 0 ? 1 : 0;

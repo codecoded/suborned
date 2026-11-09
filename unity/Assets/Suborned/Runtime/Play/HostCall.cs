@@ -90,15 +90,18 @@ namespace Suborned.Play
         /// <summary>The lock variant a refusal is worded by: tie-unknown for a summons' refusal on a Call before the cell knows the tie; else the text's own (LockVariant).</summary>
         string LockVariantFor(Order o, Answer a) => o?.Do == "call" && (a.code ?? "").StartsWith("summon-", System.StringComparison.Ordinal) && CastOf(o.Target) is Person p && !TieKnown(p) ? "tie-unknown" : LockVariant(a, TargetKindOf(o?.Target ?? ""));
 
-        /// <summary>Fable's summon-unanswered: Inez's call finds the one who'd leave his post down and she doesn't know it (no body found, no carry seen, nothing told: her
-        /// memories; Keel's open read), so she tries him and nobody answers.</summary>
-        bool Unanswered(string role, Answer a)
+        /// <summary>Fable's line for a call refused summon-busy because the one who'd leave his post is the contact's tie and he's down (brief 102; engine 0.52.0's
+        /// Game.KnowsDown): summon-knows-down where she knows it (she found him, saw him carried or was told), else summon-unanswered (she tries him and nobody
+        /// answers); "" in any other case, and when she is down herself (then nobody answers at all: FeedSummonRefused).</summary>
+        string TieDownEvent(string role, Answer a)
         {
-            if (a.code != "summon-busy" || CastOf(role) is not Person p || p.Lover is not Person tie) return false;
-            string leaver = ""; Guard("call leaver", () => leaver = Game.CallLeaver(role)); if (leaver != tie.Role || !(tie.Down || tie == Game.GuardP && Game.GuardDown)) return false;
-            foreach (var m in p.Memory) if (m.Act is "found-body" or "saw-carry" or "told") return false;
-            return true;
+            if (a.code != "summon-busy" || CastOf(role) is not Person p || p.Lover is not Person tie || IsDown(p)) return "";
+            string leaver = ""; Guard("call leaver", () => leaver = Game.CallLeaver(role)); if (leaver != tie.Role || !IsDown(tie)) return "";
+            bool knows = false; Guard("knows down", () => knows = Game.KnowsDown(role, leaver));
+            return knows ? "summon-knows-down" : "summon-unanswered";
         }
+        /// <summary>A cast person down: knocked out, tied or dead (the door guard by the engine's GuardDown).</summary>
+        bool IsDown(Person p) => p.Down || p == Game.GuardP && Game.GuardDown;
 
         /// <summary>Brief 102 (Fable's findings; text.json events summon-refused: "Inez answers the Fixer; the guard, if he is within earshot"): whether the
         /// contact's tie hears a refused call, and so answers. Never when he is down (knocked out, tied or dead: the engine's "he's down"). A call that sends for
@@ -108,7 +111,7 @@ namespace Suborned.Play
         /// within earshot of the contact: both out on the street, within the people's reach (rulebook witness-range-m, Fable's "sight or earshot", brief 012).</summary>
         bool TieHears(string code, Person contact, Person tie)
         {
-            if (tie.Down || tie == Game.GuardP && Game.GuardDown) return false;
+            if (IsDown(tie)) return false;
             string leaves = ""; Guard("call leaver", () => leaves = Game.CallLeaver(contact.Role));
             if (leaves == tie.Role && code is not ("summon-off-street" or "summon-too-far")) return true;
             var at = Game.PersonPos(contact); var by = Game.PersonPos(tie);

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>The square's lamp mast in the build (brief 101, Sky's pick B) · Latch</title>
+<style>
+body{font:15px/1.5 -apple-system,system-ui,sans-serif;max-width:1100px;margin:24px auto;padding:0 18px;color:#17302f;background:#f7f4ec}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:19px;margin:28px 0 8px;border-bottom:1px solid #cbc6c3;padding-bottom:4px}h3{font-size:16px;margin:18px 0 6px}
+code{background:#ebe6db;padding:1px 4px;border-radius:3px;font-size:13px}table{border-collapse:collapse;margin:8px 0;width:100%}td,th{border:1px solid #d6d0c4;padding:5px 8px;text-align:left;vertical-align:top;font-size:14px}
+th{background:#ebe6db}.ok{color:#16613a;font-weight:600}.no{color:#a0341a;font-weight:600}img{max-width:100%;border:1px solid #cbc6c3;margin:6px 0}.cap{font-size:13px;color:#4d5f5d;margin:-2px 0 14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+</style></head><body>
+<h1>The square's lamp mast in the build</h1>
+<p>Latch, 2026-11-09 · build <b>0.2.299</b> (<code>out/build/play/The Suborned.app</code>, record c064, engine 0.52.0) · branch <code>work/098-living-playbook</code>, built on <code>0280860e7</code>, HEAD now <code>8d8ddeede</code> (brief text only) · uncommitted (Aster commits).<br>
+In the build: Vela's <code>MastCamera_Lamp</code> (DecoKit export, FBX sha256 <code>074728ce…</code>, as the catalogue pins it), the world with the mast on the terrace's west lamp, Keel's engine 0.52.0 exported from HEAD, and Fable's <code>summon-knows-down</code> line (<code>c94c7a657</code>).</p>
+
+<h2>In short</h2>
+<ul>
+<li>The mast stands over the four in the opening view, with its "?" and three pods turned away from them. Watched, its cones lie beside the cell, and the Watch's chip says "Cone" on the mast. When it notices someone, the lens of the head that saw takes the cue.</li>
+<li>Every requested check ran on 0.2.299. Three things are short of green:
+<ul>
+<li><b>r083 (gated) failed on five parts.</b> Four need real pointer events, and the player ran unfocused: someone was working in Outlook in front. Every saved proof before today ran focused. The fifth, <code>r085listenApart</code>, broke on its setup after Waymark's route A re-plan; it is fixed in the tree for the next build.</li>
+<li><b>Fire hovered on the verb row has no picture</b>, for the same focus reason.</li>
+<li><b>tp-long</b> fails as it has since 0.2.231 (the world's draw distance).</li>
+</ul></li>
+</ul>
+
+
+<h2>What changed</h2>
+<h3>Brought in</h3>
+<ul>
+<li><code>bun run decokit --only MastCamera_Lamp</code>: 10,760 triangles, LODs 2,687 and 641, three lens parts; the FBX is byte for byte the catalogue's (<code>074728ce…</code>). The fit table now has one row, which fits (Splice's rejected-row fix).</li>
+<li><code>bun run kit</code>: the three files copied, 2,398 others verified. <code>bun run world</code>: <code>street/records-square/mast-camera-z0</code> takes <code>MastCamera_Lamp</code> at yaw −0.5236, facings (−30°, 30°, 90°).</li>
+<li>Engine 0.52.0 through <code>tools/sim/unity.ts</code> from HEAD: 489/489 scenarios headless with identical replay, 99/99 range.</li>
+</ul>
+<h3>Vela's host notes (new <code>HostViews.Mast.cs</code>, <code>HostMast.cs</code>; <code>PlayInstall.Masts</code>)</h3>
+<ul>
+<li><b>Where the lenses come from.</b> The install step finds each world mast's piece in the scene by its street item's element and records its three LOD0 lenses (<code>_Lens0</code> to <code>_Lens2</code>) on the host, in the engine's head order. Nothing is searched for at runtime. A kit without the lamp mast records none, and the mast behaves as before.</li>
+<li><b>A lens cue per head.</b> The cue's stages are the hovering camera's (calm, noticed glow, wary pulse, reporting flash with its burst). They go on the lens of the head that has the agent: of the heads whose cone holds him (the engine's <code>G.InCone</code> on each facing), the one facing him most squarely. The other two lenses keep their built material. A dark mast dims all three.</li>
+<li><b>The stand-in.</b> The 3.2 m cylinder at the mast's foot is hidden; its collider stays the click target.</li>
+<li><b>The crown.</b> The click capsule runs from the foot to the crown's top (8.2 m), and a box sits round the three pods (+25 cm). The "?", the dead disc and the callout's figure reach the crown's top. The ring's focus sits on the lenses (7.68 m) and the pick anchor on the pods.</li>
+</ul>
+<h3>Keel's handoffs</h3>
+<ul>
+<li><code>HostCrewTurn.cs</code>: the crew Pay card calls <code>Tape(i, q)</code> on the <code>CrewQuote</code>, as the people's cards do. On route B at 4:29, rival-3 under the mast reads "?" (the mast not watched), its Trail and Alert marked so.</li>
+<li><code>HostCall.cs</code>: <code>TieDownEvent</code> replaces <code>Unanswered</code>. On Inez's call refused <code>summon-busy</code>, with the one who'd leave (<code>Game.CallLeaver</code>) her tie and down: <code>Game.KnowsDown(role, leaver)</code> plays Fable's <code>summon-knows-down</code>, otherwise <code>summon-unanswered</code>. Either replaces her busy line; he stays silent; the lock follows.</li>
+</ul>
+<h3>Fable's bug: a downed contact answering</h3>
+<ul>
+<li><code>FeedSummonRefused</code>: when the one called is down, the card is the lock alone, with no line from anyone (<code>IsDown</code>: <code>Down</code>, or the guard's <code>GuardDown</code>).</li>
+</ul>
+<h3>Motive's gap</h3>
+<ul>
+<li><code>HostTape.cs</code>: a card for a camera the cell hasn't watched now carries its +1 Trail too, marked as its Alert is: <code>T ?+n</code> beside <code>A ?→n</code>. The price line shows the Trail's number with the unknown eye.</li>
+</ul>
+<h3>Waymark's handoffs</h3>
+<ul>
+<li>The host-logic cases that play route-a and route-a-pressure pass. route-a plays <code>listen-inez</code>, <code>help-inez-2</code>, <code>call-inez</code> by 1600 with the Call given from the Fixer's wait (17–20 m from Inez), and route-a-pressure plays its Listen and Pressure scenes. A call is a telephone scene, so the distance changes nothing.</li>
+</ul>
+<h3>My open item: the verb row with the plate on</h3>
+<ul>
+<li>Proof102's block 4 (from the end of last round) runs in this build: at rest, Fire hovered, Knock out armed, with the Action plate on.</li>
+</ul>
+
+<h3>Found while testing, fixed in this build</h3>
+<ul>
+<li><b>Watching the mast said "Nothing new"</b>, on the Scout. The done chip reads the engine's line ("The Scout has watched the mast-z0 camera") with <code>watched the (\w+)</code>, which stops at the hyphen. The chip now takes <code>[\w-]+</code>, so it says "Cone" and stands on the mast (<code>HostDone.cs</code>; host logic <code>Mast101</code>). A world mast's id always had the hyphen, but the old mast stood 36 m off the opening view and was seldom watched.</li>
+<li><b>Two hover pictures came out empty in the full proof</b>: the verb row's Fire hovered (r102) and the lozenge's hover (r101, which passed in 0.2.292 and 0.2.295). The full proof switches the window between 2880×1864 for frame times and 1920×1080 for pictures. Both blocks read a HUD piece's screen point on the frame after a picture, before the panel had laid out again, so the pointer missed. Both now wait 3 frames and 0.2 s. The lens close-up now centres the crown: it framed the camera's 1.6 m view point and showed the foot.</li>
+</ul>
+
+<h2>Pictures (0.2.299)</h2>
+<h3>The opening view (the batch's fresh <code>start-overhead-day</code>, 0:05)</h3>
+<img src="mast/start-overhead-day.png" alt="the opening view at 0:05 with the lamp mast over the four">
+<p class="cap">The terrace's west lamp has become the mast. Its globe and the green comet banner stay at lamp height, and the chrome column carries on to the crown over the four. The budget reads 2.5 % at rest.</p>
+<img src="mast/start-overhead-day-crown-2x.png" alt="the crown at 2x: three pods and the question mark">
+<p class="cap">At 2x: three ivory pods with deep-teal hoods fan over the café front, the terrace and the plaza, their backs to the four. The red-rimmed "?" (not yet watched) stands 20 px over the crown.</p>
+<h3>Watched: its cones beside the cell</h3>
+<img src="mast/r101-mast-cones.png" alt="the mast watched and hovered: its cones and the Cone chip">
+<p class="cap">The Scout watched it from her start at 0:20 without a step. With the pointer on the pods (the Fixer selected): the cones' back edge runs just behind the four, and everything beyond it is the mast's. The Watch's chip reads "Cone · Rounds" on the mast's column; before this round's fix it said "Nothing new" on the Scout.</p>
+<img src="mast/r101-mast-cones-mid.png" alt="close: the chip on the column, the pill, the cell behind the edge">
+<h3>A lens cue</h3>
+<img src="mast/mast-lens-y300-play.png" alt="from yaw 300: the Enforcer wary in head 0's view, the callout over the crown">
+<p class="cap">From yaw 300, head 0 (ESE) faces the camera. The Enforcer stands in its view, "wary" at 0:30, and the camera's callout sits over the crown. From the opening yaw the lenses face away, so the cue is seen from the front, as a camera's eye is.</p>
+<img src="mast/mast-lens-y300-2x.png" alt="2x: head 0's lens glowing inside its hood">
+<p class="cap">At 2x: head 0's lens glows phosphor inside its deep-teal hood (the wary pulse). The other two keep their glass as built. In the proof, the same moment reads: the head whose lens wears the cue 0, lenses cued 1 of 3.</p>
+<img src="mast/r101-mast-noticed.png" alt="from yaw 30: noticed, the callout at the crown">
+<p class="cap">The noticed moment from the opening yaw: the "noticed" tag on the Enforcer, and the camera's callout at the crown, not the column.</p>
+<h3>The verb row with the plate on (Glyph's 2x check)</h3>
+<div class="grid"><figure><img src="mast/r102-row-rest-2x.png" alt="the verb row at rest at 2x"><figcaption class="cap">At rest: the Enforcer's take-control tab, then Enter, Fire, Knock out, Watch.</figcaption></figure>
+<figure><img src="mast/r102-row-armed-2x.png" alt="Knock out armed at 2x"><figcaption class="cap">Knock out armed: the deep-teal tab, its name under it in outlined ink.</figcaption></figure></div>
+<p class="cap">Fire hovered: no picture yet. The hover needs a pointer event the unfocused player didn't get (see the checks).</p>
+
+
+<h2>Changed from the notes, and why</h2>
+<table>
+<tr><th>What</th><th>Why</th></tr>
+<tr><td>The "?" now shows at rest over every live camera the cell hasn't watched: the mast, and the Office's entrance and pickup cameras when they're on screen. Until now it showed only over a watcher noticing someone, or on Alt.</td><td>The check asks for the mast's "?" in the opening view, and Sky picked B from Vantage's picture of it at 0:00. GDD §10 lists "?" over a watcher not yet watched as a world marker. A rule by kind (cameras) rather than one for this mast (systems over scripts). People, robots and the rivals keep "noticing now, every one on Alt". <b>Glyph to look at it at 2x.</b></td></tr>
+<tr><td>A camera's "?" stands 20 px over its top, where its dead disc stands: the mast's crown, or a hovering camera's own head (it was 3.6 m up at the camera's foot, under the floating head, on Alt). Cameras left the noticing "?" and the move preview's faint "?", and the pill keeps clear of it.</td><td>One mark a camera, never two at different heights; the floating head is the camera since brief 096.</td></tr>
+<tr><td>The mast's window tab, chips and cards sit where a pole camera's do relative to its head: on the column under the crown. They don't sit on the crown.</td><td>On the crown, a loop's tab would cover the "?" of a looped but unwatched mast (route-a-pressure loops it unwatched).</td></tr>
+<tr><td>The click capsule runs to the crown slimmed to 0.7 m, with a box round the pods. It isn't the pole's 1.25 m capsule stretched up.</td><td>A 1.25 m-wide target 8.2 m tall beside the cell's start would take walk clicks across the terrace. The pods are what a player clicks.</td></tr>
+<tr><td>The pods don't nod toward the agent.</td><td>They are one mesh with the crown. The lens cue carries the stage.</td></tr>
+<tr><td>Fable's "a downed contact still answers": the engine already refuses a call on a downed contact <code>person-down</code>, before any summons, so no card is built and no line plays. The host guard is a safety net.</td><td>The summons' own "he's down" and "she's down" come only from the other one of the pair in 0.52.0. If they ever reach the card with the one called down, the card is the lock alone. Host logic proves both.</td></tr>
+</table>
+
+<h2>Checks</h2>
+<p>The full batch ran in three passes on one content, since the world and kit didn't change between them.</p>
+<ol>
+<li><code>bun run batch --full</code> passed sim, words, compile, host logic, kit, world, the Unity world and the Unity match. It built 0.2.298, and I stopped it at game-check to roll in the chip fix its pictures showed.</li>
+<li>Compile and host logic again by hand, then <code>--full --from game-build</code>: 0.2.299 and its full proof, stopped at game-check by r083.</li>
+<li><code>--full --from shots</code>: shots, budget, late fight, tp-long.</li>
+</ol>
+<table>
+<tr><th>Check</th><th>Result</th></tr>
+<tr><td>DecoKit, kit, world</td><td class="ok">ok: <code>MastCamera_Lamp</code> exported (10,760 triangles, 3 lens parts, FBX <code>074728ce…</code> as pinned); kit copy 3 new, 2,398 verified; the world's mast takes the piece</td></tr>
+<tr><td>Engine export (HEAD, 0.52.0)</td><td class="ok">489/489 headless with identical replay; 99/99 range</td></tr>
+<tr><td>Words (HEAD)</td><td class="ok">ok: text.json a97bb35a, with Fable's <code>summon-knows-down</code></td></tr>
+<tr><td>Compile</td><td class="ok">clean (one warning, HostNotice.cs, not this round's)</td></tr>
+<tr><td>Host logic</td><td class="ok">202/202. New: <code>Crew096.APayOnAManInACamerasViewCarriesItsTape</code> (rival-3 under the mast reads "?"), <code>GuardWords102.SheKnowsHesDownSoSheAsksAfterHim</code> (Keel's C102-KNOWS-CARRY), <code>GuardWords102.ADownedContactAnswersNothing</code>, <code>Mast101.WatchingTheMastPutsItsConeOnTheMast</code>. Updated: <code>Lend096</code> (T ?+2). The route-a and route-a-pressure cases (<code>Convo085</code>, <code>Quiet102</code>) pass.</td></tr>
+<tr><td>Unity world</td><td class="ok">ok: rebuilt with the kit (NP-1, 10,687 refs), the old town's swap and zone check, the host install (<code>world masts with a lens a head: mast-z0 (3)</code>), the zone's bake</td></tr>
+<tr><td>Unity match</td><td class="ok">588/588 match headless</td></tr>
+<tr><td>Build</td><td class="ok">0.2.299, 0 errors (0.2.298 was taken by the first pass, before the chip fix)</td></tr>
+<tr><td>Full proof (gated)</td><td class="no">every gated section ok but r083, which failed on 5 parts. Four need real pointer events: <code>backToMapButton</code> and <code>takeControlTab</code> (hover and a tab click), <code>bookAgentRows</code>, <code>r085doorPrice</code> (a click on Inez to open her ring). The proof's own log reads <code>input checks: focused False</code>, with Outlook in front and its user active. Every saved proof before today reads <code>focused True</code>. The fifth, <code>r085listenApart</code>, dropped route A's tick-0 Scout order, which is now her Watch; fixed in <code>Proof085Beats.cs</code> for the next build.</td></tr>
+<tr><td>Scenarios in the player</td><td class="ok">489/489; the driven and fire sessions replay on every checkpoint</td></tr>
+<tr><td>r101 (not gated)</td><td>The mast block: <span class="ok">start, cones, lens ok</span>. <span class="no">lozengeHover failed</span> (unfocused, as above). The rest ok.</td></tr>
+<tr><td>r102 (not gated)</td><td><span class="ok">guardCall, sawViolence, alreadyTurned ok</span> (last round's fixes hold); <span class="no">verbRow's Fire hover empty</span> (unfocused). The rest and armed pictures are above.</td></tr>
+<tr><td>Shots</td><td class="ok">13 shots (11 with HUD); <code>start-overhead-day</code> 232.6 fps (p99 6.1 ms)</td></tr>
+<tr><td>Budget</td><td class="ok">11/11 within budget; layout audit 11/11 clean; proof sets r059 14/14, r067 32/32, r123 7/7, r083 2/2</td></tr>
+<tr><td>Late fight</td><td class="ok">loud-fight worst 32.5 ms (tick 3122, tail), p99 9.4 ms; loud-left-downed worst 32 ms, p99 10.7 ms</td></tr>
+<tr><td>tp-long</td><td class="no">fails as since 0.2.231 (third person 6.4 M and 8.4 M triangles, casters 1,254 and 1,408, far renderers): the world's draw distance, not this round's</td></tr>
+<tr><td>Draw check</td><td class="ok">ok, 8 s</td></tr>
+<tr><td>Tools</td><td class="ok">tools/game, hud-budget and mission text 651/651; proof map 58/58 (r101 added to the rows of the four host files the mast block reads); typecheck clean; comment lint 0</td></tr>
+<tr><td>Files over 500 lines</td><td class="ok">none grew: HostViews.cs 537, HudToolkit.Less.cs 1,075. New files: HostViews.Mast.cs 150, HostMast.cs 22, Proof101Mast.cs 79, HostLogic.Mast101.cs 23</td></tr>
+</table>
+
+<h2>Open, and next owners</h2>
+<ul>
+<li><b>Latch:</b> once the Studio is idle (the player then takes focus), re-run the failed proof section alone: <code>bun run batch --from game-check</code>, which runs r083 by itself. Then take the r101 and r102 hover pictures with <code>-proofOnly r101,r102</code> at one 1920×1080 size. The <code>r085listenApart</code> setup fix and the hover waits are proof-only edits in the tree. They take effect in the next build.</li>
+<li><b>Glyph:</b>
+<ul>
+<li>the "?" at rest over unwatched cameras, at 2x (the mast, and the entrance and pickup cameras when on screen);</li>
+<li>the verb row at rest and armed at 2x (the hover follows the re-run);</li>
+<li>the lens cue reads only from the front, since the pods face away from the four by design. Is a cue seen from behind wanted (the hood's rim, say)? Glyph's and Vela's.</li>
+</ul></li>
+<li><b>Keel (low, Fable's note):</b> <code>KnowsDown</code> reads acts, and a guard dropped in the final fight gets none, so "He's not answering" can still play there.</li>
+<li><b>Aster:</b> GDD §10's world marker "? over a watcher not yet watched" is now built at rest for cameras (people and robots still on noticing and Alt). The GDD can say so.</li>
+</ul>
+
+</body></html>

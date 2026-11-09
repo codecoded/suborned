@@ -2,7 +2,7 @@
   "schema": "suborned.geometry.summary/1",
   "brief": "055",
   "world": {
-    "sha256": "f810fb19d6381fe8c44a58e3e412d9f0488e178eb8eb27b7ca12ac49c3b6dbef",
+    "sha256": "735066aa9b11bd8ccddef81f2abf3ba1ec97b4ddecff0ace4d4a44477852c06c",
     "stale": false
   },
   "window": {
@@ -15,33 +15,33 @@
     "cell": 0.25
   },
   "ground": {
-    "walkCells": 43351,
-    "walkableCells": 43351,
-    "sunk": 685,
+    "walkCells": 44910,
+    "walkableCells": 44894,
+    "sunk": 807,
     "floating": 44,
     "bands": {
       "sunk 5-15 cm": 0,
-      "sunk 15-50 cm": 661,
-      "sunk 0.5 m or more": 24,
+      "sunk 15-50 cm": 775,
+      "sunk 0.5 m or more": 32,
       "floats 5-15 cm": 0,
       "floats 15 cm or more": 44
     },
     "byCause": {
-      "a drawn piece (stair, platform, kerb stone) raises the floor": 595,
-      "ground layer drawn above the host height (kerb strip, quantised edge)": 90,
+      "a drawn piece (stair, platform, kerb stone) raises the floor": 710,
+      "ground layer drawn above the host height (kerb strip, quantised edge)": 97,
       "ground layer drawn below the host height (quantised edge)": 44
     }
   },
   "walk": {
-    "freeCells": 43351,
-    "throughSolid": 0,
-    "lowCeiling": 0,
-    "brush": 0,
-    "invisibleWall": 118
+    "freeCells": 44910,
+    "throughSolid": 5,
+    "lowCeiling": 9,
+    "brush": 15,
+    "invisibleWall": 102
   },
   "sight": {
-    "drawnAtEye": 485,
-    "drawnAtChest": 722,
+    "drawnAtEye": 481,
+    "drawnAtChest": 719,
     "occludersWithGaps": [
       {
         "id": "plot-04",
@@ -73,7 +73,7 @@
     "blockedBy": ""
   },
   "kit": {
-    "measured": 413,
+    "measured": 414,
     "offPivotOrSize": 21,
     "placedHere": [
       "BikeRack_Play: size 0.32 m off the catalogue",
@@ -95,37 +95,37 @@
     },
     {
       "id": "G-1d",
-      "count": 4,
+      "count": 7,
       "unit": "stretches",
-      "example": "Inez Nikolaou (p-cafe-14) to cafe-table-0: 0.5 m brush on PottedPalm_Small (+0 m) from -9.08,-29.92 to -8.92,-30.08"
+      "example": "Inez Nikolaou (p-cafe-14) to cafe-table-6: 0.25 m solid on civic/cafe-palm-1 (+1.25 m) from -9.11,-27.66 to -9.11,-27.66"
     },
     {
       "id": "G-1c",
-      "count": 729,
+      "count": 851,
       "unit": "cells",
-      "example": "civic/office-public-entrance: 36 cells, worst 0.75 m"
+      "example": "civic/office-public-entrance: 48 cells, worst 0.75 m"
     },
     {
       "id": "G-2a",
-      "count": 0,
+      "count": 5,
       "unit": "cells",
-      "example": "none"
+      "example": "street:civic-robot-dock: 1 cells, 5 solids in all"
     },
     {
       "id": "G-2b",
-      "count": 118,
+      "count": 102,
       "unit": "cells",
-      "example": "atom-fountain: 89 cells blocked, nothing drawn"
+      "example": "atom-fountain: 82 cells blocked, nothing drawn"
     },
     {
       "id": "G-2c",
-      "count": 0,
+      "count": 9,
       "unit": "cells",
-      "example": "none"
+      "example": "civic/cafe-palm-5: 3 cells"
     },
     {
       "id": "G-3a",
-      "count": 59,
+      "count": 58,
       "unit": "objects",
       "example": "street:phone-booth: 9 objects, 68.25 m²"
     },

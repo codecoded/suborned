@@ -136,7 +136,7 @@ namespace Suborned.Play
             {
                 yield return Fresh(h); var keepPlate = h.controls.actionPlate; h.controls.actionPlate = true; string rest = "", hover = "", armed = "";
                 h.Select(OpId.Enforcer, false); Btn(OffStreet); yield return Frames(3); yield return new WaitForSecondsRealtime(0.2f); rest = HudToolkit.VerbRowShown;
-                yield return Shoot(h, dir, "r102-row-rest", log, "rest");
+                yield return Shoot(h, dir, "r102-row-rest", log, "rest"); yield return Frames(3); yield return new WaitForSecondsRealtime(0.2f); // the window back at the frames' size: the panel laid out again before a tab's screen point is read
                 var plate = h.PlateOf(OpId.Enforcer); int fire = Array.FindIndex(plate, x => x.Id == "fire"), td = Array.FindIndex(plate, x => x.Id == "takedown");
                 if (HudToolkit.VerbTabScreen(fire) is Vector2 fp) { Btn(fp); yield return Frames(4); yield return new WaitForSecondsRealtime(0.2f); hover = HudToolkit.VerbRowWords; yield return Shoot(h, dir, "r102-row-hover", log, "rest"); Btn(OffStreet); yield return Frames(4); }
                 if (td >= 0) { h.Pick(td); yield return Frames(4); yield return new WaitForSecondsRealtime(0.2f); armed = HudToolkit.VerbRowWords; yield return Shoot(h, dir, "r102-row-armed", log, "rest"); }

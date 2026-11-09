@@ -183,8 +183,8 @@ namespace Suborned.Play
             }
             var f = host.RingFocus; Transform t = f.HasValue && host.Views != null ? host.Views.Find(f.Value.view) : null;
             bool camera = f.HasValue && f.Value.view.StartsWith("camera/");
-            // a camera's pole view stands 1.6 m up its pole; the head (HostViews.CamHeadUp) is 3.25 m up on the stand-in, 4.78 m on the kit pole
-            Vector2 q = default; bool on = t != null && t.gameObject.activeInHierarchy && Proj(t.position + Vector3.up * (camera ? host.Views.CamHeadUp - 1.6f : 1.2f), out q);
+            // a camera's pole view stands 1.6 m up its pole; the head (HostViews.HeadUp) is 3.25 m up on the stand-in, 4.78 m on the kit pole, 7.68 m on the lamp mast's lenses
+            Vector2 q = default; bool on = t != null && t.gameObject.activeInHierarchy && Proj(t.position + Vector3.up * (camera ? host.Views.HeadUp(f.Value.view) - 1.6f : 1.2f), out q);
             Show(ringFocusEl, on); RingFocusName = on ? f.Value.view : "";
             if (!on) return;
             GroundRing(t.position - Vector3.up * (camera ? 1.6f : 0f), 0.8f, LookLive, 2.6f, false, 0.6f); // and on the ground at its foot, behind legs (brief 046)

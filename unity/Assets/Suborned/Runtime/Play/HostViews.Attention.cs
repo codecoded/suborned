@@ -50,7 +50,7 @@ namespace Suborned.Play
         /// kit pole only the cue lens, set over the model's glass.</summary>
         void CamHeadFor(Suborned.Sim.Camera c, Vector3 at)
         {
-            if (c.World) return; // the world's own masts draw themselves
+            if (c.World) { MastHead(c); return; } // the world's own masts draw themselves; brief 101: the lamp mast's lenses take the cue (HostViews.Mast)
             var fwd = frame.Dir(c.Facing); if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.forward;
             var head = new GameObject("camera/" + c.Id + "/head").transform; head.SetParent(root, false);
             if (host.hoverCamera) { HoverHead(c, at, head); return; } // brief 096: Sky's hovering camera
@@ -142,6 +142,7 @@ namespace Suborned.Play
                 CamCue(kv.Value, st, st > 0 ? AgentAt(op) : null, t, dt);
             }
             HoverViews(t, dt); // brief 096: the hovering heads read the engine (HostViews.HoverCam)
+            MastViews(t); // brief 101: the cue on the lamp mast's lens that saw (HostViews.Mast)
             foreach (var kv in stageRobots)
             {
                 var (face, idle) = kv.Value; if (!face) continue;

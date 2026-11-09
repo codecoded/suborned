@@ -10,7 +10,8 @@ namespace Suborned.Play
     ///  · Watch (any agent): the crew's timetable, once (as on their car).
     ///  · Listen (the Scout): his temperament, Mercenary or Loyal.
     ///  · Pay (the Fixer): the engine's price (rivals.turn: $30,000, 35 s, +2 T); a Mercenary takes it and walks off for good, a Loyal man refuses, the money
-    ///    stays with the cell and his crew count the Fixer a foe. The card's outcome is "?" until a Listen (or a refusal) taught him.
+    ///    stays with the cell and his crew count the Fixer a foe. The card's outcome is "?" until a Listen (or a refusal) taught him. A camera that would tape
+    ///    it marks the card as on a person's (HostTape; engine 0.52.0).
     ///  · Mislead (the Scout): cell.mislead's time and Trail; he goes to watch elsewhere for rivals.lookout.misled s and walks back, the card says when.
     ///  · Knock out, Kill, then carry, tie and hide: the takedown and body rows as on any person (engine 0.33.0 rivals.peopleRule; HostTakedown).
     /// Every price is the engine's (CrewQuote, MisleadBackTick); every lock is the engine's own answer (LearnQuery, CrewActQuery) and the order
@@ -52,7 +53,8 @@ namespace Suborned.Play
                     {
                         if (by != OpId.Fixer) return null;
                         var i = I("turn", "pay"); var q = g.CrewQuote(i.Order, m);
-                        i.Usd = $"${q.Usd:N0}"; i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Alert = "A 0"; i.Outcome = q.Outcome; i.Exact = m.KTemperament; // private (rivals.turn): no report, no tape
+                        i.Usd = $"${q.Usd:N0}"; i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Alert = "A 0"; i.Outcome = q.Outcome; i.Exact = m.KTemperament; // private (rivals.turn): he reports nothing
+                        Tape(i, q); // engine 0.52.0 (CrewQuote's QuoteRecord): a live camera in view tapes the Pay, its mark as on a person's card (HostTape)
                         i.Rows.Add(q.Outcome switch { "turned" => ("pay", w.CrewPayTakes), "refused" => ("talker", w.CrewPayRefuses), _ => ("p_unknown", w.CrewPayUnknown) });
                         return i;
                     }

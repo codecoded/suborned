@@ -273,7 +273,7 @@ namespace Suborned.Play
                     else if ((l.Text ?? "").Contains("rivals' timetable")) { chip.AnchorKey = "car/rivals"; Line("nextevent", DW("gain.timetable", "Timetable")); } // brief 059 §2.2: a Watch on the rival car
                     else
                     {
-                        var mm = System.Text.RegularExpressions.Regex.Match(l.Text ?? "", @"watched the (\w+)( camera)?");
+                        var mm = System.Text.RegularExpressions.Regex.Match(l.Text ?? "", @"watched the ([\w-]+)( camera)?"); // brief 101: a world mast's id has a hyphen (mast-z0)
                         string w = !mm.Success ? "" : mm.Groups[2].Success ? "camera:" + mm.Groups[1].Value : mm.Groups[1].Value;
                         chip.AnchorKey = w.StartsWith("camera:") ? "camera/" + w[7..] : w;
                         var kn = w.Length > 0 ? Game.Known(w) : null; knownBefore.TryGetValue(w, out var wb);
@@ -359,7 +359,7 @@ namespace Suborned.Play
         {
             if (string.IsNullOrEmpty(key) || views == null) return null; var tr = views.Find(key);
             if ((!tr || !tr.gameObject.activeInHierarchy) && key.StartsWith("body/")) tr = views.Find("body/" + key[5..]);
-            return tr && tr.gameObject.activeInHierarchy ? tr.position : (Vector3?)null;
+            return tr && tr.gameObject.activeInHierarchy ? tr.position + Vector3.up * views.AnchorLift(key) : (Vector3?)null; // brief 101: a world mast's tab and chip under its crown, as a pole camera's under its head
         }
 
         /// <summary>One row in the notes (L) per landing: "Inez · Bureau loan · Idealist · Loves the guard", the doer's card, unread.</summary>

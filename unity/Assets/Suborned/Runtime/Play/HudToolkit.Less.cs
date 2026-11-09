@@ -739,7 +739,7 @@ namespace Suborned.Play
                 foreach (var cm in g.S.Cameras)
                 {
                     string dead = ""; try { dead = g.CameraDeadAs(cm.Id); } catch { } if (dead.Length == 0) continue;
-                    var ct = host.Views.Find("camera/" + cm.Id); if (ct == null || !ct.gameObject.activeInHierarchy || !Proj(ct.position + Vector3.up * (host.Views.CamHeadUp - 1.6f), out var hq)) continue;
+                    var ct = host.Views.Find("camera/" + cm.Id); if (ct == null || !ct.gameObject.activeInHierarchy || !Proj(ct.position + Vector3.up * (host.Views.TopUp("camera/" + cm.Id) - 1.6f), out var hq)) continue;
                     bool cut = dead == "cut"; var de = WorldEl(cut ? "s-disc_dark_24" : null, 24, 24); de.style.left = hq.x - 12; de.style.top = hq.y - 20 - 12;
                     if (!cut) Bg(de, "markers/disc_light_24", Color.white);
                     var dg = de.Q("g"); dg.style.left = 4.5f; dg.style.top = 4.5f; dg.style.width = 15; dg.style.height = 15; Icon(dg, cut ? "disable" : "fire", cut ? Cream : Ink);
@@ -772,9 +772,9 @@ namespace Suborned.Play
                     });
                 }
             }
-            // "?" over watchers not yet watched: those noticing an agent now; on Alt all of them
+            // "?" over watchers not yet watched (GDD §10): every live camera, 20 px over its top as its dead disc stands (brief 101 B: the square's mast over the four at 0:00); those noticing an agent now; on Alt all of them
             foreach (var u in m.Unknowns) if (Proj(u, out var uq)) EyeMark(uq, "unk", Cream);
-            if (alt) foreach (var (w, col) in UnwatchedWatchers()) if (Proj(w, out var wq)) EyeMark(wq, "unk", col);
+            foreach (var (w, col, top) in UnwatchedWatchers(alt)) if (Proj(w, out var wq)) EyeMark(top ? wq - new Vector2(0f, 20f) : wq, "unk", col);
             // turned contacts: the ✓ rides on their pip's corner (Pips; Glyph 022: a loose tick beside the cup belonged to nobody)
             // reports in transit: the "!" disc, its ring, the dotted line to the phone and the phone's own small disc (Glyph §3)
             foreach (var rp in m.Reports)
@@ -853,16 +853,16 @@ namespace Suborned.Play
             if (rim != Cream) Border(e, 1.2f, rim);
         }
 
-        /// <summary>The watchers the cell has not learned (cameras, the guard, the patrol, the rivals) where they stand, for Alt's "?".</summary>
-        IEnumerable<(Vector3 w, Color c)> UnwatchedWatchers()
+        /// <summary>The watchers the cell has not learned where they stand (top: a camera's top, HostViews.CamTop): the live cameras always, the guard, the patrol and the rivals on Alt.</summary>
+        IEnumerable<(Vector3 w, Color c, bool top)> UnwatchedWatchers(bool alt)
         {
             var g = host.Game;
-            foreach (var c in g.S.Cameras) if (g.Known("camera:" + c.Id) is not { Sight: true }) yield return (host.frame.World(c.At) + Vector3.up * 3.6f, Red);
+            foreach (var c in g.S.Cameras) if (g.Known("camera:" + c.Id) is not { Sight: true } && !g.CameraDark(c.Id) && host.Views != null) yield return (host.Views.CamTop(c), Red, true);
             bool fight = host.OneInput && g.FightOn; // Glyph N4 (0.2.137): on Alt too, no "?" over the guard, the patrol or the rivals while the fight is on
-            if (fight) yield break; // the cameras above keep theirs
-            if (g.Known("guard") is not { Sight: true } && g.GuardPose() is var gp && gp.HasValue && !g.GuardP.KRoutine) yield return (host.frame.World(gp.Value.pos) + Vector3.up * 2.9f, Amber);
-            if (g.Known("patrol") is not { Sight: true } && g.PatrolPose() is var pp && pp.HasValue) yield return (host.frame.World(pp.Value.pos) + Vector3.up * 2.9f, Amber);
-            if (g.RivalsPresent && !g.RivalsWatched && g.RivalCarPose() is var rp && rp.HasValue) yield return (host.frame.World(rp.Value.pos) + Vector3.up * 2.2f, Violet); // brief 059 §2.2: the Watch is on the car (RivalsWatched)
+            if (fight || !alt) yield break; // the cameras above keep theirs
+            if (g.Known("guard") is not { Sight: true } && g.GuardPose() is var gp && gp.HasValue && !g.GuardP.KRoutine) yield return (host.frame.World(gp.Value.pos) + Vector3.up * 2.9f, Amber, false);
+            if (g.Known("patrol") is not { Sight: true } && g.PatrolPose() is var pp && pp.HasValue) yield return (host.frame.World(pp.Value.pos) + Vector3.up * 2.9f, Amber, false);
+            if (g.RivalsPresent && !g.RivalsWatched && g.RivalCarPose() is var rp && rp.HasValue) yield return (host.frame.World(rp.Value.pos) + Vector3.up * 2.2f, Violet, false); // brief 059 §2.2: the Watch is on the car (RivalsWatched)
         }
 
         // ---------------------------------------------------------------- key-person pips (Sky, 2026-10-16: "no idea who the waitress is")

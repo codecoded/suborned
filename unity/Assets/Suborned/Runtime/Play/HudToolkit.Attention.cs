@@ -125,7 +125,7 @@ namespace Suborned.Play
             return new Rect(Mathf.Min(a.x, b.x) - halfW, Mathf.Min(a.y, b.y), Mathf.Abs(a.x - b.x) + 2 * halfW, Mathf.Abs(a.y - b.y));
         }
 
-        float WatcherTall(string view) => view.StartsWith("camera/") ? (host.Views != null ? host.Views.CameraTall : 3.4f) : view == "patrol" || view.Contains("robot") ? 1.45f : 1.85f;
+        float WatcherTall(string view) => view.StartsWith("camera/") ? (host.Views != null ? host.Views.TallOf(view) : 3.4f) : view == "patrol" || view.Contains("robot") ? 1.45f : 1.85f; // brief 101: a mast to its crown's top
 
         void Callouts(float W, float H)
         {

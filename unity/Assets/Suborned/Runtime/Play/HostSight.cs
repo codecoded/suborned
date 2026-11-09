@@ -268,7 +268,7 @@ namespace Suborned.Play
             List<Noticing> n = null; if (!Guard("detection", () => n = Game.Detection())) return;
             noticingNow.Clear(); foreach (var x in n) noticingNow.Add(x.Watcher); // brief 057 §3 (4): a watcher noticing someone draws strong
             bool fightEyes = OneInput && Game.FightOn; // Glyph N4 (0.2.137): a hostile in the fight (an officer, a unit, a rival, the guard and patrol once it is on) wears no "?": he is already hostile; cameras and the rest keep theirs
-            foreach (var x in n) { if (x.Known || fightEyes && CombatWatcher(x.Watcher)) continue; var at = frame.World(x.From) + Vector3.up * 3.2f; if (!Unknowns.Contains(at)) Unknowns.Add(at); }
+            foreach (var x in n) { if (x.Known || fightEyes && CombatWatcher(x.Watcher) || Game.WatcherKind(x.Watcher) == "camera") continue; var at = frame.World(x.From) + Vector3.up * 3.2f; if (!Unknowns.Contains(at)) Unknowns.Add(at); } // brief 101: a camera wears its "?" always while unwatched (HudToolkit.UnwatchedWatchers)
             bool fight = Game.FightOn || AnyDrawn(); // as ShowSight: in a fight the combatants' cones take no rule 3, so they are not counted
             foreach (var x in n) { if (!x.Known || fight && CombatWatcher(x.Watcher)) continue; int k = System.Array.IndexOf(OpNames, x.Op); if (k >= 0) SeenBy[k]++; }
         }

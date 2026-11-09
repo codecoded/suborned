@@ -24,11 +24,11 @@ namespace Suborned.Play
             row("r085scoutSideOn", chair != null ? seated && chairOff < 5f : scAt > 60f, chair != null ? $"seated in {chair.Value.chair} as a customer, facing the table ({chairOff:0} deg off the chair's way), {scAt:0} deg off looking at her; clip {h.Views.FigureClip("op/scout").Item1}" : $"standing, {scAt:0} deg off looking at her, clip {h.Views.FigureClip("op/scout").Item1}, plate '{h.PlateWords(0)}'"); // engine 0.49.0: seated, she faces the table as a customer does; standing, side on
         }
 
-        /// <summary>The Scout not beside her (the routes still walk him to beside-inez): 4 m off, as the rule has him: the plate while he waits, and the shot frames the pair with him off to the side.</summary>
+        /// <summary>The Scout not beside her: route A (re-planned for the square's mast, brief 101) watches Inez from her start and listens from the spot the Listen walks to, so the
+        /// route's own orders keep her apart (a run to beside-inez, if a route had one, is dropped): the plate while she waits, and the shot frames the pair with her off to the side.</summary>
         static IEnumerator ListenApart(HandoverHost h, string dir, List<string> log, System.Action<string, bool, string> row)
         {
-            yield return Fresh(h, ConversationScenes.Always); var g = h.Game; var cam = h.View; var r = new RouteRun { Orders = Route("route-a").FindAll(o => o.Tick < 500 && !(o.Tick == 0 && o.Op == "scout")) };
-            var door = g.S.At(g.S.GuardCafe); var pt = new Pt(door.X + 450, door.Y + 250); h.Issue(new Order { Op = "scout", Do = "move", Point = g.Walk.NearestFree(pt) ?? pt });
+            yield return Fresh(h, ConversationScenes.Always); var g = h.Game; var cam = h.View; var r = new RouteRun { Orders = Route("route-a").FindAll(o => o.Tick < 500 && !(o.Op == "scout" && o.Do == "move" && o.To == "beside-inez")) };
             bool waited = false; string plate = ""; var inez = h.Views.Find("waitress"); var sc = h.Views.Find("op/scout"); h.LookAt(inez.position);
             for (int i = 0; i < 1500 && g.Ops[0].Busy?.Do != "listen" && !g.Over && !h.ConvoPending; i++) { Step(h, r, g.Tick + 1); if (g.ListenSpotNow("scout") is { waiting: true } && !waited) { waited = true; plate = h.PlateWords(0); yield return Frames(3); yield return Shoot(dir, "r085-scout-waiting", log); } }
             var spot = g.ListenSpotNow("scout"); h.SetPaused(false); float t0 = Time.unscaledTime; while (h.Views.ListenPartnerAlong < 1f && Time.unscaledTime - t0 < 14f) yield return null; yield return new WaitForSecondsRealtime(0.5f); h.SetPaused(true); yield return Frames(3); yield return Shoot(dir, "r085-apart-street", log);

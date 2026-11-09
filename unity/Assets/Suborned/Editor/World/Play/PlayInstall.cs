@@ -69,6 +69,7 @@ namespace Suborned.World.Play
             f.origin.y += worldZ; host.worldZ = worldZ; // the old town stands the plan 206 m up Unity z (OldTownSwap.DZ); after the walk file, whose frame is the plan's
             Dress(host);
             MeasureDoor(host);
+            Masts(host, world);
             EditorSceneManager.MarkSceneDirty(go.scene);
             Debug.Log($"Play: installed the Handover host (`{RootName}`): frame origin {f.origin}, heights {f.nx}x{f.ny} at {f.cell} m (max {f.heights.Max():F2} m)");
             return host;
@@ -125,6 +126,32 @@ namespace Suborned.World.Play
             host.carFx = CarFxBuild.Ensure(); // brief 078: the cars' smoke, fire and blast (Generated/Fx/CarFx.prefab)
             Debug.Log(TrafficKit.Apply(host)); // brief 098 step 1: the passing cars' van, scooter and Pulse's paints (the sedans are sedanOfficial and sedanGetaway, repainted)
             host.litTemplate = Template("PlayLit", "Universal Render Pipeline/Lit"); host.unlitTemplate = Template("PlayUnlit", "Universal Render Pipeline/Unlit"); host.fanTemplate = FanTemplate();
+        }
+
+        /// <summary>Brief 101 (Vela's note 4): the world's masts whose piece carries a lens a head (MastCamera_Lamp's _Lens0.._Lens2 at LOD0), found here once in the open
+        /// scene by their street item's element (the builder names it by the item's id), so the host cues the head that saw with no search at runtime. The engine's id is
+        /// the item's last segment less "-camera" (Site.cs: street/records-square/mast-camera-z0 is mast-z0). A piece with no lens parts (MastCamera) gives none.</summary>
+        static void Masts(HandoverHost host, WorldDto world)
+        {
+            var want = new HashSet<string>(world.Street.Where(s => s.Kind == "mast-camera" && s.Kit != null).Select(s => s.Id), System.StringComparer.Ordinal);
+            var found = new Dictionary<string, HandoverHost.WorldMast>(System.StringComparer.Ordinal);
+            foreach (var r in host.gameObject.scene.GetRootGameObjects())
+                foreach (var el in r.GetComponentsInChildren<Transform>(true))
+                {
+                    if (!want.Contains(el.name)) continue;
+                    var lens = new SortedDictionary<int, Renderer>();
+                    foreach (var mr in el.GetComponentsInChildren<MeshRenderer>(true))
+                    {
+                        bool lod0 = true; for (var p = mr.transform; p && p != el; p = p.parent) if (p.name.StartsWith("__LOD")) lod0 = false; // the play camera draws LOD0
+                        var mm = System.Text.RegularExpressions.Regex.Match(mr.name, @"_Lens(\d+)$"); if (lod0 && mm.Success) lens[int.Parse(mm.Groups[1].Value)] = mr;
+                    }
+                    string id = el.name[(el.name.LastIndexOf('/') + 1)..].Replace("-camera", "");
+                    if (lens.Count == 0 || lens.Keys.Last() != lens.Count - 1) continue;
+                    if (found.ContainsKey(id)) throw new InvalidDataException($"Play: two scene elements named {el.name}");
+                    found[id] = new HandoverHost.WorldMast { id = id, piece = el, lens = lens.Values.ToArray() };
+                }
+            host.worldMasts = found.Values.ToArray();
+            Debug.Log($"Play: world masts with a lens a head: {(found.Count == 0 ? "none" : string.Join(", ", found.Values.Select(f => $"{f.id} ({f.lens.Length})")))}");
         }
 
         static void MeasureDoor(HandoverHost host)

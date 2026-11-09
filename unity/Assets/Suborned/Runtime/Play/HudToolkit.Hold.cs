@@ -71,14 +71,15 @@ namespace Suborned.Play
 
         /// <summary>Per frame (the hold preset): what the pill says and where. A charge first, then the live words (fire, then the orders on
         /// the thing under the cursor or the focus), then the offer of the hovered thing's main act; a lock; a passing car's state (brief 098).</summary>
-        /// <summary>The top (panel y) of what stands over a camera: its window marker (as DoneMarks places it, before any lift for speech) or its dead
-        /// disc (as StreetLess places it); +inf when neither.</summary>
+        /// <summary>The top (panel y) of what stands over a camera: its window marker (as DoneMarks places it, before any lift for speech), its dead
+        /// disc or, live and not yet watched, its "?" (as StreetLess places them); +inf when none.</summary>
         float CameraMarkTop(string camKey)
         {
             var h = host; float top = float.PositiveInfinity;
             foreach (var w in h.WindowMarks) if (w.Key == camKey && h.AnchorWorld(camKey) is Vector3 at && Proj(at + Vector3.up * 0.75f, out var mq)) top = Mathf.Min(top, mq.y - 18f - WinD);
             string id = camKey.Substring(7), dead = ""; try { dead = h.Game?.CameraDeadAs(id) ?? ""; } catch (System.Exception) { }
-            if (dead.Length > 0 && h.Views?.Find(camKey) is Transform ct && ct.gameObject.activeInHierarchy && Proj(ct.position + Vector3.up * (h.Views.CamHeadUp - 1.6f), out var hq)) top = Mathf.Min(top, hq.y - 20f - 12f);
+            if (dead.Length > 0 && h.Views?.Find(camKey) is Transform ct && ct.gameObject.activeInHierarchy && Proj(ct.position + Vector3.up * (h.Views.TopUp(camKey) - 1.6f), out var hq)) top = Mathf.Min(top, hq.y - 20f - 12f);
+            if (dead.Length == 0 && h.Views != null && h.Game?.S.Cameras.Find(c => c.Id == id) is Suborned.Sim.Camera cm && h.Game.Known("camera:" + id) is not { Sight: true } && Proj(h.Views.CamTop(cm), out var uq)) top = Mathf.Min(top, uq.y - 20f - 12f); // brief 101: its "?"
             return top;
         }
 

@@ -36,7 +36,7 @@ namespace Suborned.Play
                 if (!x || !x.gameObject.activeInHierarchy) continue;
                 if (n.StartsWith("act/") || n.StartsWith("crowd/") && !CrowdSecurityView(n)) continue; // Pulse 067 W2: the crowd's shift guards are pickables ("Guard"); passers-by never
                 var t = TargetOf(x); if (t == null) continue;
-                float up = t.Kind is "op" or "person" or "bystander" or "hostile" or "rivals" or "security" or "patrol" or "unit" || t.Security ? 1.0f : t.Kind == "car" ? 0.8f : t.Kind is "body" or "stash" ? 0.25f : 0f;
+                float up = t.Kind is "op" or "person" or "bystander" or "hostile" or "rivals" or "security" or "patrol" or "unit" || t.Security ? 1.0f : t.Kind == "car" ? 0.8f : t.Kind is "body" or "stash" ? 0.25f : t.Kind == "camera" ? views.PickUp(n) : 0f; // brief 101: a mast's on its pods
                 pickables.Add(new Pickable { T = t, Anchor = x.position + Vector3.up * up, Name = OneWord(t) });
             }
             return pickables;
