@@ -141,6 +141,27 @@
     }
    ],
    "whatsNew": ""
+  },
+  {
+   "build": 303,
+   "version": "0.2.303",
+   "date": "2026-11-09T20:38:05.000Z",
+   "builtAt": "2026-11-09T19:57:28.5892230Z",
+   "sha": "cc9d8f294",
+   "dirty": true,
+   "engine": "0.52.0",
+   "engineSource": "the build's own stamp (StreamingAssets/build.json)",
+   "dllSha256": "2480eb92ab57ed33a96c370684fe5ac4b881faf5b045b098e1153f16f2ab9128",
+   "recording": "c064",
+   "zip": "TheSuborned-0.2.303.zip",
+   "sent": [
+    {
+     "device": "skys-macbook-air-1",
+     "at": "2026-11-09T20:38:05.000Z",
+     "how": "scp over the LAN to ~/Downloads/suborned-air-0303 (unzipped there), zip sha256 9832663597173f71\u2026"
+    }
+   ],
+   "whatsNew": "The square's lamp mast camera by the cell's start; the hover outline (Sky's B); the Records Office's ball in satin nickel (Sky's A); police targeted one by one."
   }
  ]
 }
