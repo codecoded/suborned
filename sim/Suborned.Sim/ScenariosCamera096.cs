@@ -99,7 +99,7 @@ namespace Suborned.Sim
             {
                 var alt = With059(r.Inputs!, "\"people-care-alert\": \\{ \"v\": 2", "\"people-care-alert\": { \"v\": 0");
                 var a = Alt(r, alt); var g = a.G;
-                a.To(a.Send(Scout, "beside-inez")); a.Do(Scout, "watch", Inez); a.Done(Scout); a.Do(Scout, "listen", Inez); a.Until(() => g.Log.Exists(l => l.Code == "scout.listen.heard"), T(240));
+                a.Do(Scout, "watch", Inez); a.Done(Scout); a.Do(Scout, "listen", Inez); a.Until(() => g.Log.Exists(l => l.Code == "scout.listen.heard"), T(240)); // brief 101: from her start, out of the square's mast's view (17 m), so it never reports her loitering first
                 Pt? spot = null; // a free point on her round, in the mast camera's view
                 for (int k = 0; k < 600 && spot == null && !g.Over; k++) { var ip = g.PersonPos(g.Inez); if (ip.HasValue && g.CameraWatching("mast-z0", ip.Value) && g.S.Grid.NearestFree(ip.Value + new Pt(0, 150)) is Pt f && g.CameraWatching("mast-z0", f)) spot = f; else a.Wait(5); }
                 if (!r.Is(spot.HasValue, "a point on Inez's round in the mast camera's view")) return;
@@ -118,7 +118,7 @@ namespace Suborned.Sim
                 foreach (var c in a.Checks) if (!c.ok) r.Is(false, "alt: " + c.what);
             });
 
-            Add("CAM-6", "096", "Motive CAM-6: a Pay where no camera sees either person: Inez at the café (no camera sees it): no record, and the card shows no eye.", r =>
+            Add("CAM-6", "096", "Motive CAM-6: a Pay where no camera sees either person: no record, and the card shows no eye. Brief 101: the square's mast watches Inez's post, so the Pay is given at the far table her round serves out of its view (the act holds her there).", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "watch", Inez); r.Done(Scout);
@@ -126,7 +126,7 @@ namespace Suborned.Sim
                 for (int k = 0; k < 360 && g.Preview("pay", Inez).Recorded != "no" && !g.Over; k++) r.Wait(T(1)); // her round takes her out of the mast camera's view
                 var q = g.Preview("pay", Inez);
                 r.Eq(q.Recorded, "no", Iv($"the card shows no eye ({Mark(q)})"));
-                bool anySeen = false; r.Do(Fixer, "turn", Inez, "pay");
+                bool anySeen = false; r.Is(g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "turn", Target = Inez, Approach = "pay" }).ok, "the Pay is given as the card reads, where she is (brief 101: ForHer would wait for her post, in the square's mast's view)");
                 while (!g.Over && (r.Op(Fixer).Act != null || r.Op(Fixer).Busy != null)) { foreach (var c in g.S.Cameras) anySeen |= g.CameraWatching(c.Id, r.Op(Fixer).Busy != null ? r.Op(Fixer).Pos : new Pt(0, 0)) || (g.PersonPos(g.Inez) is Pt ip && r.Op(Fixer).Busy != null && g.CameraWatching(c.Id, ip)); g.Step(); }
                 r.Wait(T(g.R.CamScanS + g.R.CamCallS + 1));
                 r.Is(!anySeen, "no camera watched either of them during the Pay");

@@ -79,14 +79,14 @@ namespace Suborned.Sim
                 r.Is(!g.Ledger.GetRange(ledger, g.Ledger.Count - ledger).Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), "and no found fault");
             });
 
-            Add("N20c", "—", "Ordinary people don't notice a run (engine 0.22.0, Sky 2026-10-22: \"running only in front of camera, patrol bots and guards get you noticed, anyone else fine\"): the Fixer runs where no security watcher sees him, past people on the street. Nobody remembers it, nobody holds the Fixer's face, no Alert, no Trail, no found fault.", r =>
+            Add("N20c", "—", "Ordinary people don't notice a run (engine 0.22.0, Sky 2026-10-22: \"running only in front of camera, patrol bots and guards get you noticed, anyone else fine\"): the Fixer runs where no security watcher sees him, past people on the street. Nobody remembers it, nobody holds the Fixer's face, no Alert, no Trail, no found fault. Brief 101: the Tech loops the square's mast for it.", r =>
             {
                 var g = r.G;
                 string to = "";
                 // engine 0.28.0 (brief 054 §3.3): the off-duty guards at the café tables see a run by their seat's facing cone now, not by the 3 m near
                 // sense alone; the Fixer waits to 3:00, when they have left the tables (from 2:30 the chip's run to the Courtyard meets a guard walking
                 // into his cone: the chip reads people where they stand now, "~"), then half a minute at a time, for a run no security watcher would see
-                r.To(T(180));
+                r.Send(Tech, "cabinet"); r.To(T(160)); LoopMast(r); r.To(T(180)); // brief 101: the square's mast watches the café front and the plaza now; looped, it covers 3:00 to 5:00
                 for (int k = 0; k < 6 && to.Length == 0; k++)
                 {
                     if (k > 0) r.To(g.Tick + T(30));
@@ -262,10 +262,10 @@ namespace Suborned.Sim
                 r.Is(!r.Op(Scout).Down, $"the guard fired back but the Scout stands ({r.Op(Scout).Gun.Health}/{r.Op(Scout).Gun.Max})");
             }, new Start { PinCell = false }); // brief 039: unpinned, the Scout's count stays 750 a shot (the guard fires back: pinned she fires at half, N-PIN's case)
 
-            Add("N23", "—", "A drawn weapon is an act (motive-fights.md §2.3): drawn among people out of security's sight, one witnessed incident (+1 T, Alert 1), and they hold the Fixer's face; drawn in the guard's cone, Alert 2, he engages and calls it in.", r =>
+            Add("N23", "—", "A drawn weapon is an act (motive-fights.md §2.3): drawn among people out of security's sight, one witnessed incident (+1 T, Alert 1), and they hold the Fixer's face; drawn in the guard's cone, Alert 2, he engages and calls it in. Brief 101: the square's mast watches the Courtyard, so the Tech loops it first.", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Fixer, "d:Courtyard"));
+                r.Send(Fixer, "d:Courtyard"); LoopMast(r);
                 var card = g.GoingLoud(new Order { Tick = g.Tick, Op = Fixer, Do = "draw" });
                 r.Is(!card.Loud && card.Why == "unseen-draw", $"no security sees him: drawing isn't going loud ({card.Why})");
                 int trail = g.Trail;
@@ -355,10 +355,10 @@ namespace Suborned.Sim
                 ShotFrom(r, fc, r.Shots().FindLast(s => s.hit).by, Enf);
             }, pressure);
 
-            Add("N37", "—", "The crowd scatters (Pulse §4): a weapon drawn among people on the square startles those in sight within witness range; after the startle they run to a refuge farther from it than they stood, shelter off the street, and walk back when it has been quiet.", r =>
+            Add("N37", "—", "The crowd scatters (Pulse §4): a weapon drawn among people on the square startles those in sight within witness range; after the startle they run to a refuge farther from it than they stood, shelter off the street, and walk back when it has been quiet. Brief 101: the square's mast watches the Courtyard (a draw it sees calls security), so the Tech loops it first.", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Fixer, "d:Courtyard"));
+                r.Send(Fixer, "d:Courtyard"); LoopMast(r);
                 var at = r.Op(Fixer).Pos;
                 // engine 0.28.0 (brief 054 §3.2): those who would see the draw by the engine's own rule (a civilian in their cone, security all round)
                 var near = g.Walkers.FindAll(w => g.CrowdPos(w).HasValue && g.NoticesNow(w.P.Id, "weapon-drawn", at));
@@ -475,14 +475,14 @@ namespace Suborned.Sim
             // the Loyal guard's exposure rule is under test (§2.2: a Loyal man pressed by exposure doesn't report it), so the start state makes the
             // guard Loyal whoever the cast is (§04 restricted: a guard is Loyal or Mercenary; the r016 cast's guard is a Mercenary)
             var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" }; known.Temperament[GuardR] = "loyal";
-            Add("N40", "—", "Engine 0.29.0 (brief 054 §9.2: a Watch never teaches a secret, only Listen does): with the lovers together during the summons visit, a Watch on Inez is refused already-watched and teaches nothing; Listen on her teaches the affair on both (Motive, motive-lovers.md §1.2); with the guard's secret known, Pressure on the Loyal guard is at its proper step, needs no pressable need, and he doesn't report it (§2.2).", r =>
+            Add("N40", "—", "Engine 0.29.0 (brief 054 §9.2: a Watch never teaches a secret, only Listen does): with the lovers together during the summons visit, a Watch on Inez is refused already-watched and teaches nothing; Listen on her teaches the affair on both (Motive, motive-lovers.md §1.2); with the guard's secret known, Pressure on the Loyal guard is at its proper step, needs no pressable need, and he doesn't report it (§2.2). Brief 101: the Tech loops the square's mast, which watches the café front now.", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Scout, "d:Courtyard")));
+                r.Send(Tech, "cabinet"); r.To(r.Send(Fixer, "d:Courtyard")); // brief 101: the Scout waits at her start, out of the square's mast's view, until it is looped
                 HelpUntilTurned(r, Inez);
                 r.Is(!g.Inez.KSecret && !g.GuardP.KSecret, "help needs no secret: the affair is still unknown");
                 r.Eq(g.Preview("pressure", GuardR).Outcome == "?" || !g.Preview("pressure", GuardR).Leverage, true, "no leverage on the guard yet");
-                r.Do(Fixer, "call", Inez);
+                r.Do(Fixer, "call", Inez); LoopMast(r); r.To(r.Send(Scout, "d:Courtyard")); // looped to 3:06: the Listen's spot by the lovers, and the Pressure, as before the mast moved
                 r.To(g.LureTick + g.VisitWalkTicks);
                 r.Is(G.Within(g.PersonPos(g.Inez)!.Value, g.GuardPose()!.Value.pos, 400), "the lovers stand together");
                 RefusedFree(r, "watch", Inez, "already-watched", g.Inez); // brief 054 §9.2: offered only for her mood, and she is turned; no Watch shows the affair

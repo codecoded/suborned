@@ -1,6 +1,6 @@
 // Transit kits and watchers: a tram stop's shelter, benches, ticket machine, timetable column, bin and bollards; the
 // kiosks and crossings round it; each sky rail station's entrances, kiosks and clocks; and the cameras and robots at the
-// sites standards.streetscape.watchers lists (stations, tram stops, gates, the circus, the square).
+// sites standards.streetscape.watchers lists (stations, tram stops, gates, the circus, the square: its mast where the civic block puts it, mast.ts).
 import type { Connector, Mass } from '../../../../contracts/world/world.schema';
 import { type V, dist, lineDist, norm, sub } from '../../../plan/geom';
 import { boxRing, quayBlock, samples9 } from '../../../plan/street-zones';
@@ -11,6 +11,8 @@ import { axisClears } from '../connectors';
 import { type Rect, bbox, edgeN, inRect } from '../geo';
 import type { DeckRec } from '../types';
 import { KERB_ARC_CLEAR, type Layer } from './kit';
+import { LAMP_MAST_SIZE, lampMastPiece, squareMast } from './mast';
+import { LAMP_MAST } from '../kitrefs';
 import { cutHits } from '../kerbreturn';
 
 type Seg = { a: V; b: V; n: V; kind: string };
@@ -125,7 +127,19 @@ export function dressTransit(ctx: Ctx, L: Layer, stops: Mass[], stations: Mass[]
     L.add('pole-camera', p, Math.atan2(-dir[1] * toArea, -dir[0] * toArea), z, g.id, { size: [0.25, 0.25, S.watchers.types['pole-camera'].mount], variant: 'pole-camera', force: true });
   }
   const sq = ctx.d.plots.find(p => p.civic === 'square');
-  if (sq) { const b = bbox(sq.polyV), cc = ctx.plan.circus.c; const p: V = [Math.min(b[1] - 7.5, Math.max(b[0] + 7.5, cc[0])), Math.min(b[3] - 7.5, Math.max(b[2] + 7.5, cc[1]))]; L.add('mast-camera', p, 0, z, sq.id, { size: [0.4, 0.4, 8], variant: 'mast', force: true }); L.add('civic-robot-dock', [p[0] - 2, p[1]], 0, z, sq.id, { force: true }); }
+  if (sq) {
+    // brief 101 (Sky's pick B): the mast stands where the block puts it (mast.ts: the lamp standard that carries it, and its turn), at the square's edge nearest its main
+    // entrance; a block that names none stands it at the corner point below, yaw 0, as before. The robot's dock keeps its own rule: 2 m west of the square's corner point
+    // nearest the circus (the circus centre held 7.5 m inside the square's edges). Mast first, dock second, as before, so their zone ids stay mast-camera-z0 and
+    // civic-robot-dock-z1 (brief 078: a changed mast id silently dropped its words and orders; zone-stable.test.ts holds them).
+    // On the block's lamp, with the lamp mast adopted (mast.ts lampMastPiece: Vela's MastCamera_Lamp), the item is the variant `lamp`: the chooser gives it that piece by
+    // its own tag and slot (kitrefs.ts LAMP_MAST), at scale 1 and the item's own yaw, so its cameras look along the export's facings, and the zone pins it as any piece.
+    // Its footprint is the piece's plinth. Without the piece, or on the old corner, it is today's mast.
+    const b = bbox(sq.polyV), cc = ctx.plan.circus.c, corner: V = [Math.min(b[1] - 7.5, Math.max(b[0] + 7.5, cc[0])), Math.min(b[3] - 7.5, Math.max(b[2] + 7.5, cc[1]))], m = squareMast(ctx), lamp = m ? lampMastPiece() : undefined;
+    const placed = L.add('mast-camera', m?.at ?? corner, m?.yaw ?? 0, z, sq.id, { size: lamp ? LAMP_MAST_SIZE : [0.4, 0.4, 8], variant: lamp ? LAMP_MAST.variant : 'mast', force: true });
+    if (m && !placed) throw new Error(`the square's mast on ${m.lamp} (civic-block dressing) fails the street layer's tests there (kerb return, drive, crossing or door clearance): move the lamp, or the dock would take the mast's id`);
+    L.add('civic-robot-dock', [corner[0] - 2, corner[1]], 0, z, sq.id, { force: true });
+  }
   const circ = kerbNear(segs, [0, -60], 60, 1.1);
   if (circ) { // brief 075 (Datum): the pair stands 10 and 13 m along the kerb from the point nearest (0, -60); where a kerb return or a crossing takes that spot (the Boulevard at w 20 brings the circus mouth's return to it), the pair steps back along the kerb, away from the circus, a metre at a time, to the first spot where both pass every test (the walk, the tram's space, crossings, doors)
     const at = (d: number): V => [circ.q[0] + Math.cos(circ.yaw) * d, circ.q[1] + Math.sin(circ.yaw) * d];

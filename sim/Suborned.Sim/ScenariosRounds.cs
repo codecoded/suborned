@@ -27,14 +27,14 @@ namespace Suborned.Sim
 
         static void RoundsCases()
         {
-            Add("N130", "—", "A Listen while she serves is taken (engine 0.23.0, rulebook cell.approach; Sky 2026-10-22: \"we shouldn't block actions whilst Inez is moving about\"): Inez's round takes her to a table out of the Scout's reach. The Scout at beside-inez (her routine known from the briefing) is 3 m from her post: a Listen a third into her serving there is taken, not refused too-far. The card shows the walk first (WalkInS; the HUD's RoundNext still says when she is back at her post); the Scout walks to her (a walk; the activity says listen), the Listen starts in reach, never later than the card said (and no sooner than its look-ahead step and its whole seconds allow), and from then she is held where she is, at the table, until it lands plus the linger. Engine 0.48.0: the table is her round's (the first she serves out of the Scout's reach), not table 3 at 0:34; the round was baked anew on today's clock.", r =>
+            Add("N130", "—", "A Listen while she serves is taken (engine 0.23.0, rulebook cell.approach; Sky 2026-10-22: \"we shouldn't block actions whilst Inez is moving about\"): Inez's round takes her to a table out of the Scout's reach. The Scout at beside-inez (her routine known from the briefing) is 3 m from her post: a Listen a third into her serving there is taken, not refused too-far. The card shows the walk first (WalkInS; the HUD's RoundNext still says when she is back at her post); the Scout walks to her (a walk; the activity says listen), the Listen starts in reach, never later than the card said (and no sooner than its look-ahead step and its whole seconds allow), and from then she is held where she is, at the table, until it lands plus the linger. Engine 0.48.0: the table is her round's (the first she serves out of the Scout's reach), not table 3 at 0:34; the round was baked anew on today's clock. Brief 101: the Tech loops the square's mast first, which watches her round now.", r =>
             {
                 var g = r.G;
                 r.Is(g.RoundsOn, "the mission's data plays her round");
                 var sv = g.S.Rounds!.Servers[g.Inez.Id]; var beside = g.S.Stand("beside-inez");
                 var ex = sv.Exc.FirstOrDefault(x => !G.Within(beside, x.At, g.R.ListenReachCm) && x.Serve >= 6);
                 if (!r.Is(ex != null, "her round serves a table out of the Scout's reach")) return;
-                r.To(r.Send(Scout, "beside-inez"));
+                r.Send(Scout, "beside-inez"); LoopMast(r); // brief 101: the square's mast watches her round now, and a Listen's spot is out of every cone
                 r.To(Math.Max(g.Tick, T(sv.Origin + ex!.Start + ex.Out) + T(ex.Serve) / 3));
                 r.Eq(PhaseOf(g), "serving", $"at {Report.Clock(g.Tick)} she serves {ex.Table}");
                 int n = g.RoundNext(g.Inez); r.Is(n > 0 && n < T(60), $"the HUD's read: back at her post in {n / Game.Hz} s");
@@ -162,10 +162,10 @@ namespace Suborned.Sim
                 r.Is(G.Within(gp.pos, want, 5), $"he stands at {want}, the stop farthest from all four (at {gp.pos}, {best} cm clear)");
             }, Turned(Inez));
 
-            Add("N178", "—", "A Listen while she walks (engine 0.23.0, rulebook cell.approach): at 0:58 Inez walks home from table 3 (from table, 0:57 to 1:05). The Scout at beside-inez, out of reach, is given a Listen: taken. His walk aims at where her round will have her when he gets there, so they meet on her path; the Listen starts the first tick he is within 3 m, while she is still walking, and holds her there, mid-walk, short of her post. After it lands plus the linger her round goes on from where it stopped: she walks the rest of the way home.", r =>
+            Add("N178", "—", "A Listen while she walks (engine 0.23.0, rulebook cell.approach): at 0:58 Inez walks home from table 3 (from table, 0:57 to 1:05). The Scout at beside-inez, out of reach, is given a Listen: taken. His walk aims at where her round will have her when he gets there, so they meet on her path; the Listen starts the first tick he is within 3 m, while she is still walking, and holds her there, mid-walk, short of her post. After it lands plus the linger her round goes on from where it stopped: she walks the rest of the way home. Brief 101: the Tech loops the square's mast first, which watches her walk now.", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Scout, "beside-inez"));
+                r.Send(Scout, "beside-inez"); LoopMast(r); // brief 101: the square's mast watches her walk home now, and a Listen's spot is out of every cone
                 r.To(T(58));
                 r.Eq(PhaseOf(g), "from table", "at 0:58 she walks home from her table");
                 var was = g.PersonPos(g.Inez)!.Value; var post = g.S.Stand(g.Inez.Place); int reach = g.R.ListenReachCm;

@@ -39,5 +39,6 @@ const passes = pass.length ? [pass] : [['--only', [...readOrders().pieces.map(o 
 for (const a of passes) { const c = run(a); if (c) process.exit(c); }
 // The fit table for every generated piece in this run's manifest, each held to its order: the live plan's, or its re-homed one (orders.ts REHOMED).
 const manifest = JSON.parse(readFileSync(resolve(out, 'decokit_manifest.json'), 'utf8')).assets as { name: string; order?: { hash: string }; built?: Built }[];
-const orderSet = allOrders(), rows = manifest.filter(a => a.order && a.built).map(a => fitRow(orderSet, a.name, a.order!, a.built!));
+// brief 101 (Vela's notes): the manifest merges and never shrinks, so a row whose piece kit.json has rejected (the eleven towers of 2026-11-08) is no longer held to an order
+const rejected = new Set((JSON.parse(readFileSync(resolve(repo, 'contracts/world/kit.json'), 'utf8')).assets as { id: string; status: string }[]).filter(a => a.status === 'rejected').map(a => a.id)), orderSet = allOrders(), rows = manifest.filter(a => a.order && a.built && !rejected.has(a.name)).map(a => fitRow(orderSet, a.name, a.order!, a.built!));
 if (rows.length) { console.log('\n' + printTable(rows)); if (rows.some(r => !r.fits)) process.exit(1); }

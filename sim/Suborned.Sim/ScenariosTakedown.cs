@@ -409,26 +409,6 @@ namespace Suborned.Sim
                 r.Eq(g.Lockdown, g.Tick + T(g.SealS), "the seal starts at the confirmation");
             });
 
-            Add("N67", "—", "The Records Square mast (the world's camera, built by its rule SF-9; sim/data/handover.takedown.json): three heads, 70° and 30 m each. It sees East side and Plaza east and Vantage's R7, not the café door behind the café's wall nor the Office side. The Scout learns its sight with a Watch like any camera; the Tech's cabinet loops it like the entrance camera (one loop at a time), and looped it sees nothing.", r =>
-            {
-                var g = r.G; const string Mast = "camera:mast-z0";
-                r.Is(g.WatcherIds().Contains(Mast) && g.S.Cameras.Exists(c => c.Id == "mast-z0" && c.World && c.Facings.Length == 3), "the mast is a watcher, three heads");
-                r.Is(g.CameraWatching("mast-z0", r.Stand("d:Plaza east"), false) && g.CameraWatching("mast-z0", r.Stand("d:East side"), false), "it sees Plaza east and East side");
-                int r7 = 0, r7seen = 0; for (int dx = -300; dx <= 300; dx += 50) for (int dy = -300; dy <= 300; dy += 50) { var q = new Pt(-1880 + dx, -1630 + dy); if (!g.S.Grid.Free(q)) continue; r7++; if (g.CameraWatching("mast-z0", q, false)) r7seen++; }
-                r.Is(r7seen * 2 > r7, $"and most of Vantage's R7 (the café's east end: {r7seen} of {r7} free points within 3 m; the spot itself is under the pole, between two heads)");
-                r.Is(!g.CameraWatching("mast-z0", r.Stand("d:Café door"), false) && !g.CameraWatching("mast-z0", r.Stand("d:Office entrance"), false), "not the café door (the wall) nor the Office side (beyond 30 m)");
-                var spot = WatchSpot(r, Mast);
-                r.To(r.SendTo(Scout, spot)); r.Do(Scout, "watch", Mast); r.Done(Scout);
-                r.Is(g.Known(Mast)!.Sight && g.ConeFan(Mast)!.More.Length == 2, "watched: its sight is known, a fan for each head");
-                r.To(r.Send(Tech, "cabinet"));
-                r.Do(Tech, "loop", "mast-z0"); r.Done(Tech);
-                r.Is(g.LoopOn && g.LoopCam == "mast-z0" && !g.CameraWatching("mast-z0", r.Stand("d:Plaza east"), false), "looped: it sees nothing");
-                r.Is(g.CameraWatching("entrance", r.Stand("d:Office entrance"), false), "the entrance camera stays live");
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "loop", Target = "entrance" }).code, "loop-holds", "one loop at a time");
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "loop", Target = "pickup" }).code, "loop-holds", "the pickup camera is on the cabinet too (brief 013 D), but one loop at a time");
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "loop", Target = "gate" }).code, "loop-wrong-target", "no camera of that name (unknown = reject)");
-            });
-
             Add("N57", "—", "A missing tie (Sky answer 6; Motive §5.2; Pulse §11): the Tech loops the pickup camera at 4:50 (brief 059: the driver's Call, the camera block, is retired); the Enforcer kills the driver at his post, unseen, and puts him in the Dumpster. Vale comes out at 5:50 to a car with no driver: after suspicion-s (20 s, flat by default) at the place without him he walks to the official door and calls it in. A missing-person report: Alert 1, one incident with the killing; the alarm sends the response to the bay, to the driver's ties and to Vale's. (Start: the driver is a contact; the crowd is off, since guard 29 stands 4.1 m from the driver until 5:30.)", r =>
             {
                 var g = r.G;

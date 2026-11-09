@@ -47,10 +47,10 @@ namespace Suborned.Sim
                 r.Is(g.Driver.Turned && g.Cash == 40000L, "turned on the one visit, $40,000 left");
             });
 
-            Add("096-HELP-9", "096", "The purse (Motive H7 with Q1 (b)): Help on Inez $40,000 + Help on the driver $50,000 = $90,000 fits the $100,000 purse, $10,000 left.", r =>
+            Add("096-HELP-9", "096", "The purse (Motive H7 with Q1 (b)): Help on Inez $40,000 + Help on the driver $50,000 = $90,000 fits the $100,000 purse, $10,000 left. Brief 101: the Tech loops the square's mast while the cell works at Inez's post.", r =>
             {
                 var g = r.G;
-                ListenToInez(r);
+                r.Send(Tech, "cabinet"); ListenToInez(r, loopMast: true);
                 r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
                 ListenToDriver(r);
                 r.To(r.Send(Fixer, "d:Boarding pavilion")); r.Do(Fixer, "turn", Driver, "help"); r.Done(Fixer);
@@ -58,11 +58,11 @@ namespace Suborned.Sim
                 r.Eq(g.Cash, 10000L, "$90,000 spent, $10,000 left");
             });
 
-            Add("096-HELP-9b", "096", "The purse, tight: a refused small offer on Inez first makes her Help $50,000, and the driver's $50,000 takes the purse to $0, exactly; it still fits.", r =>
+            Add("096-HELP-9b", "096", "The purse, tight: a refused small offer on Inez first makes her Help $50,000, and the driver's $50,000 takes the purse to $0, exactly; it still fits. Brief 101: the Tech loops the square's mast while the cell works at Inez's post.", r =>
             {
                 var g = r.G;
-                SmallOffer(r, Inez, g.Inez, "d:Courtyard");
-                ListenToInez(r);
+                r.Send(Tech, "cabinet"); SmallOffer(r, Inez, g.Inez, "d:Courtyard");
+                ListenToInez(r, loopMast: true);
                 r.Do(Fixer, "turn", Inez, "help"); ListenToDriver(r); r.Done(Fixer); // the Scout walks to the car while the Fixer helps Inez
                 r.Eq(g.Cash, 50000L, "Inez at $50,000 after her refusal");
                 r.To(r.Send(Fixer, "d:Boarding pavilion")); r.Do(Fixer, "turn", Driver, "help"); r.Done(Fixer);

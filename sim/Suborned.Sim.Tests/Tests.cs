@@ -259,6 +259,18 @@ public class RulesTests
     }
 
     [Fact]
+    public void KnowsDownReadsWhatTheyWereToldToo()
+    {
+        // brief 102 (Keel's read for the host, engine 0.52.0): Game.KnowsDown reads the act's sightings and its told set. Nothing in the Handover tells
+        // Inez in play (C102-KNOWS-CARRY plays a sighting), so the tell is written here as GameTakedown.Tell writes it: the act's Told gets her id
+        var g = Scenarios.Run(Repo.Inputs, Scenarios.Find("C102-UNSEEN")!).G;
+        Assert.True(g.GuardDown && !g.KnowsDown("waitress", "guard"));          // down, out of her sight
+        g.Acts.Find(a => a.P == g.GuardP)!.Told.Add(g.Inez.Id);
+        Assert.True(g.KnowsDown("waitress", "guard"));                           // told by a tie: she knows
+        Assert.False(g.KnowsDown("guard", "waitress") || g.KnowsDown("waitress", "waitress") || g.KnowsDown("rival-1", "guard")); // she isn't down; nobody is told of themselves; no role
+    }
+
+    [Fact]
     public void ArmsDecideWhoCarriesASidearm()
     {
         var none = new Start { Arms = 0 };
