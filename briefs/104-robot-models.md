@@ -80,3 +80,10 @@ Vela, then Sky, then Latch.
   - `P3-lineup-1`: six designs. 2 (light bar) and 5 (three beacons) read most as security.
   - `P3-plate-1`: on the square, it hands a printed ticket and holds a stamp; close to lineup 2.
 - **Next, Sky's call:** refine a pick, push another sheet, or a turnaround of the pick for the 3D piece.
+
+**Pass 4 (Aster, "show me more concepts").** All $0 Codex, in the security livery:
+- `P4-lineup-objects`: six designs built on 1950s street objects (parking meter, petrol pump, jukebox, fire-alarm call box, locomotive nose, traffic signal). The call box reports by handset, which fits how information moves in the city.
+- `P4-lineup-vehicles`: robot riders on hover-scooters and tiny patrol cars. They read as traffic police; 2 and 4 are close to real car and scooter designs.
+- `P4-plate-dusk`: two petrol-pump patrol robots answering an alarm at dusk outside the Records Office, light bars on.
+
+Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3-plate-1`. 11 images in all, $0.
