@@ -237,11 +237,13 @@ def main():
         if src.get("dk_volumes"):  # volumes the builder declared (geo.Shape.solid), builder frame -> kit frame
             row["collide"] = [dict(shape="box", min=[round(-v["max"][0], 4), round(v["min"][2], 4), round(-v["max"][1], 4)], max=[round(-v["min"][0], 4), round(v["max"][2], 4), round(-v["min"][1], 4)],
                                    **({"stand": True} if v["stand"] else {})) for v in json.loads(src["dk_volumes"])]
+            row["collide_by"] = "builder"  # who declared it (brief 103, Splice): tools/decokit/collide_law.ts never takes an older export's 097 pin, kept by a partial run's merge, for a builder's
         if n in collide097.AS:  # brief 097: the catalogue size of what the piece replaced, so the fit scale is the same (engine 0.49.0 keeps it: the piece stays where it is drawn)
             row["size"] = collide097.AS[n].get("size", row["size"])
         cv = collide097.volumes(n, d.z)  # brief 097's collision of what the piece replaced; engine 0.49.0: None, measured from the mesh as built (collide097.py PINNED)
         if cv is not None:
             row["collide"] = cv
+            row["collide_by"] = "097"
         if n in regen.ORDERS:  # a regen order's piece: which order, and what was built (fit table)
             row.update(source="generated", order=dict(id=n, hash=regen.ORDERS[n]["hash"]), built=regen.measure(n, src))
         if kit.REGISTRY[n].get("retired"):  # brief 061: marked for retirement (kit.asset retired=); the builder stays until Splice has re-cut the export
