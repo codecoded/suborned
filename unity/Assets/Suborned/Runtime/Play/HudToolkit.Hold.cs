@@ -22,8 +22,8 @@ namespace Suborned.Play
         /// <summary>The proof reads it: the stack tab's dots now ("2/3": the active one and the count), "" hidden.</summary>
         public static string StackShown { get; private set; } = "";
         /// <summary>Brief 067 F9 (Glyph): with two or more things under the cursor, a plate_dark 16 px seated on the pill's top edge (overlapping its
-        /// chrome 6 px), one dot a candidate (6 px, 9 px pitch), the active one filled cream, the others a 1.4 px cream ring; and a dashed cream ring
-        /// (0.5 m, 1.8 px over ink-deep, 60 %) at each other candidate's feet. Z, Shift+Z, Tab and the wheel (rested 0.3 s) step.</summary>
+        /// chrome 6 px), one dot a candidate (6 px, 9 px pitch), the active one filled cream, the others a 1.4 px cream ring. Z, Shift+Z, Tab and the
+        /// wheel (rested 0.3 s) step; the hover outline moves with each step (brief 101: no dashed rings at the others' feet any more, HostOutline).</summary>
         void StackTabFrame(string state)
         {
             var h = host; int n = h.HoverStackCount; bool on = n >= 2 && state is "offer" or "lock" or "fire" && vpill != null && vpill.resolvedStyle.display != DisplayStyle.None;
@@ -34,7 +34,6 @@ namespace Suborned.Play
             for (int i = 0; i < stackDots.Count; i++) { bool has = i < shown; Show(stackDots[i], has); if (!has) continue; bool a = i == act; stackDots[i].style.backgroundColor = a ? Cream : Color.clear; Border(stackDots[i], a ? 0f : 1.4f, Cream); }
             float pw = float.IsNaN(vpill.resolvedStyle.width) ? 300f : vpill.resolvedStyle.width, tw = shown * 9f + 12f;
             stackTab.style.left = vpill.style.left.value.value + pw / 2f - tw / 2f; stackTab.style.top = vpill.style.top.value.value - 16f + 6f; stackTab.BringToFront();
-            var list = h.HoverStack; for (int i = 0; i < list.Count; i++) if (i != act && h.TargetWorld(list[i]) is Vector3 w) Circle(w, 0.5f, new Color(Cream.r, Cream.g, Cream.b, 0.6f), 1.8f, true);
             StackShown = $"{act + 1}/{n}";
         }
 
@@ -68,6 +67,8 @@ namespace Suborned.Play
 
         /// <summary>The proof reads it: the pill's words now ("" hidden) are PillWords; and what it is about.</summary>
         public static string PillState { get; private set; } = "";
+        /// <summary>The proof reads it (brief 101, the hover outline's row): what the pill is about now ("kind/key", or the fire's anchor id), "" hidden.</summary>
+        public static string PillOn { get; private set; } = "";
 
         /// <summary>Per frame (the hold preset): what the pill says and where. A charge first, then the live words (fire, then the orders on
         /// the thing under the cursor or the focus), then the offer of the hovered thing's main act; a lock; a passing car's state (brief 098).</summary>
@@ -133,7 +134,7 @@ namespace Suborned.Play
             // that element, so the order reads pill, marker or disc, camera head (it covered "1:59", the desk's "14" and the disc)
             if (show) { string camKey = t?.Kind == "camera" ? "camera/" + t.Key : anchorId.StartsWith("camera/") ? anchorId : anchorId.StartsWith("camera:") ? "camera/" + anchorId[7..] : null; if (camKey != null) q.y = Mathf.Min(q.y, CameraMarkTop(camKey) - 6f); }
             if (show) q.y = Mathf.Min(q.y, ReticleTop(anchorId.Length > 0 ? anchorId : h.FireIdFor(t)) - 6f); // brief 067 D (Glyph): the pill's tail 6 px above a lock reticle
-            Show(vpill, show); Show(vpillTail, show); PillState = show ? state : ""; if (!show) { Show(loudRow, false); CancelTagFrame("", null, false); PipShown = false; SweepShownNow = -1f; StackTabFrame(""); pillWas = ("", null); pillQWas = null; return; }
+            Show(vpill, show); Show(vpillTail, show); PillState = show ? state : ""; PillOn = !show ? "" : t != null ? t.Kind + "/" + t.Key : anchorId; if (!show) { Show(loudRow, false); CancelTagFrame("", null, false); PipShown = false; SweepShownNow = -1f; StackTabFrame(""); pillWas = ("", null); pillQWas = null; return; }
             PillLook(text, icon, harm, faces, seen, fill, state);
             // Glyph 067 E3: a lock that lapses under the cursor turns the locked pill into the offer with a 0.15 s cross-fade (the new pill comes
             // up from the locked one's dimness); F9: a step through the stack (the wheel, Z, Tab) glides the pill's tail to the next thing in 0.12 s
@@ -149,7 +150,7 @@ namespace Suborned.Play
             float glide = Mathf.Clamp01((nowP - glideAt) / 0.12f); if (glide < 1f) q = Vector2.Lerp(glideFrom, q, 1f - (1f - glide) * (1f - glide));
             pillQWas = q;
             PillPlace(q, out _);
-            StackTabFrame(state); // brief 067 F9 (Glyph): two or more under the cursor: the stack tab on the pill, a dashed ring at the others' feet
+            StackTabFrame(state); // brief 067 F9 (Glyph): two or more under the cursor: the stack tab on the pill (brief 101: the outline marks the one a click hits)
             // brief 043: the cancel tag over the pill, and the lit pip of an act that just opened
             bool fireish = state == "fire" || h.Charge is { Fire: true } || state == "offer" && h.HoverFire;
             CancelTagFrame(state, faces, fireish);

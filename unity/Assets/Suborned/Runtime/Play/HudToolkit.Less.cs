@@ -648,10 +648,8 @@ namespace Suborned.Play
         {
             paints.Clear(); actPaints.Clear(); eyesAt.Clear(); var g = host.Game; if (g == null || !cam) return;
             float px = 14f / cam.orthographicSize; float now = Time.unscaledTime;
-            // the hover ring and the hint's ring at the feet; pulses where an order lands
+            // the hint's ring at the feet; pulses where an order lands (brief 101: the hover outline is the hover's mark now, HostOutline: no ring at the feet)
             void Ground(Vector3 w, float d, Color c, float width, bool dashed = false) { if (!host.Following) GroundRing(w, d * px / 2f * GroundPxM, c, width, dashed); } // the follow view keeps its own two rings only // brief 046: on the ground, depth-tested (HudToolkit.Ground)
-            bool carMarked = host.Hover?.Kind == "car" && host.Hover.Key == "getaway" && (carMark?.resolvedStyle.display == DisplayStyle.Flex || heldMark?.resolvedStyle.display == DisplayStyle.Flex);
-            if (m.HoverRing.HasValue && !carMarked && (!host.controls.Modern || host.Hover?.Kind is "person" or "patrol" or "security" or "unit" or "rivals" or "hostile" or "crowd" && !(host.HoverIntent is { Actionable: true } or { Locked: true }) && !host.TargetRings.Exists(r => r.Hover))) Ground(m.HoverRing.Value, 64, Cream, 2.2f); // brief 041: the pill alone; brief 085: a person with no pill to show (the Tech on the driver), the ring, so nobody under the pointer is without a cue (Fable A6, A7) // Glyph fight r1 B: the car's marker is its one mark
             // the Next Step's ring: only while its line shows, fading with it, in its noun's colour, with the verb's glyph at the centre ("do this here")
             if (host.HintNow?.Ring is Vector3 hr && !m.Ended && hintAlpha > 0f)
             {
@@ -924,7 +922,7 @@ namespace Suborned.Play
         // (HudToolkit.Fire ShotFx, both views) and the shooter faces its target (HandoverHost.AimTargets).
 
         VisualElement nameChip; Label nameText; readonly List<VisualElement> targetEls = new();
-        /// <summary>The hovered thing's soft rim (a cream circle round its pick anchor) and a one-word name chip over it; in target mode, a
+        /// <summary>The hovered thing's one-word name chip (brief 101: its ground ring and ellipse are the hover outline now); in target mode, a
         /// marker over every valid target in view (the verb's glyph in a disc over a dashed ring, the hint ring's grammar; the Tab focus ringed
         /// solid), each a click that gives the picked verb there.</summary>
         void PickMarks(float now)
@@ -940,9 +938,6 @@ namespace Suborned.Play
             }
             else if (live && !host.controls.Modern && host.HoverAnchor is Vector3 ha && host.HoverName.Length > 0 && Proj(ha, out var hq)) // brief 041: no name tag
             {
-                // Glyph 016 r2 E: one ellipse on the ground (the hover ring when the thing is actionable, else this one, the same size)
-                if (m.HoverRing == null && host.Hover != null && !(host.Hover.Kind == "car" && host.Hover.Key == "getaway" && (host.CarRingOn || carMark?.resolvedStyle.display == DisplayStyle.Flex || heldMark?.resolvedStyle.display == DisplayStyle.Flex)) && host.TargetWorld(host.Hover) is Vector3 gw && Proj(gw, out var gq)) // the fight ring is the car's one marker
-                { float rx = 64 * (cam ? 14f / cam.orthographicSize : 1f) / 2, ry = rx * 0.62f; var c = gq; paints.Add(pp => { pp.strokeColor = Cream; pp.lineWidth = 2.2f; pp.BeginPath(); for (int s2 = 0; s2 <= 32; s2++) { float a = Mathf.PI * 2 * s2 / 32; var v = c + new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry); if (s2 == 0) pp.MoveTo(v); else pp.LineTo(v); } pp.Stroke(); }); }
                 // a known person is named by their pip's tag; anything else by the chip
                 bool pip = host.Hover?.Kind == "person" && Array.IndexOf(Cast, host.Hover.Key) >= 0 && KnownOf(host.Hover.Key);
                 // Glyph fight r1 #1 and A: a holder's lock already says rival (the chip's violet diamond names it), and the car's own marker names

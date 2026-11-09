@@ -30,7 +30,7 @@ namespace Suborned.Play
         static IEnumerator Shoot(string dir, string name, List<string> log) { while (HudToolkit.ShotBusy) yield return null; log.Add($"{name}: " + HudToolkit.Shoot(Path.Combine(dir, name), "rest")); yield return null; while (HudToolkit.ShotBusy) yield return null; }
         static string Sel(HandoverHost h) { var s = ""; for (int k = 0; k < 4; k++) s += h.Selected[k] ? "1" : "0"; return s; }
         /// <summary>Run the clock until the guard stands at his post in the door's box (his café stop over), up to the mission's first minutes; true when he does.</summary>
-        static bool GuardAtPost(HandoverHost h)
+        internal static bool GuardAtPost(HandoverHost h)
         {
             var g = h.Game; var post = g.S.At(g.S.GuardPost);
             for (int t = 0; t < 400 && !g.Over; t++) { if (g.GuardPose()?.pos is Pt p && G.Dist(p, post) < 40) return true; h.RunTo(g.Tick + 5); }
@@ -83,6 +83,7 @@ namespace Suborned.Play
             if (h.Driving) h.DriveLetGoToMap(); yield return Frames(2); Keys(); Mouse2(new Vector2(Screen.width * .5f, Screen.height * .5f)); yield return Frames(2);
             yield return Proof085Squad.Run(h, row); // Sky on 0.2.212: the ring's Fire and the ring in third person
             yield return Proof085Scenes.Run(h, dir, log, row); // whole conversations, bystanders, the pressed call, the insets, the capture clip, the Door price
+            yield return Proof085Outline.Run(h, dir, log, row); // brief 101: the hover outline (the guard, the door, one of the cell, the mast's head), no focus needed
         }
     }
 }
