@@ -28,6 +28,7 @@
 //   free:op · left<=:op:s (the op's act has s or less to run: its ring) · drawn:op · up:op · down:op · hp<=:op:n · alert>=:n · near:a:b:m (a, b: an op, a person's id or role, a rival, "x,y" cm, or a place id, % for its colon) · seen:who · hostiles>=:n ·
 //   hostilesnear:a:m:n · blocker · loopleft>=:s · nobody:who:m (no passer-by on the street within m) · clear:who:how (the takedown card shows nobody who'd see it)
 //   brief 096: boxed (the car's ring: Boxed in) · posted:rival-n (he stands still at a post) · temper:rival-n:mercenary|loyal (his ring after a Listen)
+//   brief 101: taped:rival-n:pay (his Pay card shows a camera's eye: "yes" for a watched camera, "?" for one not watched; CrewQuote's tape mark)
 // Targets "$blocker" (the hostile the car's mark names) and "$nearest:op" (the nearest hostile up) are resolved when the order is given.
 using System;
 using System.Collections.Concurrent;
@@ -141,6 +142,7 @@ static class Adaptive
             case "blocker": return k => k.Blocker() != null;
             case "boxed": return k => k.G.GetawayBoxers().Count > 0; // brief 096: the car's ring says Boxed in
             case "posted": { var id = A(1); return k => k.G.CrewOf(id) is CrewMember m && m.Mode == CrewMode.Posted && !m.Fight && !m.Gun.Down; } // brief 096: he stands still at a post (the map shows him)
+            case "taped": { var id = A(1); if (!id.StartsWith("rival-", StringComparison.Ordinal) || A(2) != "pay") throw new FormatException($"{where}: taped:rival-n:pay (unknown = reject)"); return k => k.G.CrewOf(id) is CrewMember m && !m.Gun.Down && k.G.CrewQuote(new Order { Op = "fixer", Do = "turn", Target = id, Approach = "pay" }, m).Recorded != "no"; } // brief 101 (Motive's ask): the Pay card's camera mark, as the player reads it before the click
             case "temper": { var id = A(1); var kind = A(2); return k => k.G.CrewTemperament(id) == kind; } // brief 096: his ring after a Listen
             case "nobody": { var x = Where(null, A(1)); long m = N(2) * 100L; return k => { if (!(x(k) is Pt p)) return false; foreach (var w in k.G.Walkers) if (k.G.CrowdPos(w) is Pt wp && G.D2(p, wp) <= m * m) return false; return true; }; } // the map shows them
             case "clear": { var who = A(1); var how = A(2); return k => { var q = k.G.QuoteTakedown(who, how); if (q.Aware == "yes") return false; foreach (var w in q.People) if (w.verb == "radio") return false; foreach (var w in q.Coming) if (w.verb == "radio") return false; return true; }; } // the takedown's card: nobody it names sees it (GDD T15 "will they see it?")

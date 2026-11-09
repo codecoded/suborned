@@ -49,10 +49,13 @@ describe('the bake', () => {
     // once Keel moves the addendum's file (guard.stops) the engine's copy is held to the same bytes; until then it is the file before the addendum and the engine still reads that one
     if (existsSync(live) && JSON.parse(read(ROUNDS_ENGINE)).guard.stops) expect(read(ROUNDS_ENGINE)).toBe(text);
   });
-  test('the plain grid walk comes short of the drawn solids on the live world, and the baked legs do not (the invisible ledge: tables 1, 2 and 5)', () => {
+  test('the plain grid walk keeps clear of the drawn solids on the live world, so the baked legs are the grid\'s own (the invisible ledge: rules.rounds.clear\'s walker retired)', () => {
+    // brief 101: this read the other way (the plain walk came short on tables 1, 2 and 5, and "if the grid ever keeps clear by itself, this rule has nothing left to do: retire it"). Since
+    // engine 0.49.0's walk law the grid keeps a body clear by itself, and with the square's mast on the terrace's west lamp no leg comes short, so the walker is retired (rounds.ts). The
+    // measure stays: should a leg come short again, this fails, and the walker comes back.
     const plain = servicePoints(g, sv.at, inp.tables, inp.people.places, rules.rounds, 'cafe-table-'), anchor = rules.rounds.clear.anchorCm;
     const short = plain.filter((x) => inp.clear!.pathShortfall(x.path.points, anchor) > 0).map((x) => x.table);
-    expect(short.length).toBeGreaterThan(0); // if the grid ever keeps clear by itself, this rule has nothing left to do: retire it
+    expect(short).toEqual([]);
     for (const e of sp.excursions) expect(inp.clear!.pathShortfall(e.path, anchor)).toBe(0);
     // a service point moved out is moved a few centimetres, not to another ring
     for (const x of plain) { const e = sp.excursions.find((q) => q.table === x.table); if (e) expect(Math.hypot(e.at[0] - x.at[0], e.at[1] - x.at[1])).toBeLessThanOrEqual(rules.rounds.servicePoint.outToCm); }

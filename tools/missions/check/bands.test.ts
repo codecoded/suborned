@@ -37,6 +37,18 @@ describe('the bands, judged', () => {
     const L = rigidFromRows([row({ outcome: 'none' }), row({ outcome: 'failure', fail: 'x' })], [{ id: 'p#9', error: 'boom' }]);
     expect(L.filter(x => !x.ok).map(x => x.id)).toEqual(['R-1', 'R-2', 'R-3']);
   });
+  test('R-8 (brief 101): a loiterer reported on any seed of a prepared quiet plan fails it; the other styles are not read', () => {
+    const rows = [row({ seed: 1, plan: 'qa' }), row({ seed: 2, plan: 'qa', marks: { 'attention.reporting': 410 } }), row({ seed: 1, plan: 'tq', style: 'thin-quiet', marks: { 'attention.reporting': 300 } })];
+    expect(rigidFromRows(rows, []).find(x => x.id === 'R-8')).toMatchObject({ ok: false, value: 'qa 1/2', note: 'qa seeds 2' });
+    expect(rigidFromRows([rows[0]!, rows[2]!], []).find(x => x.id === 'R-8')).toMatchObject({ ok: true, value: 'qa 0/1' });
+  });
+  test("brief 101's report lines never miss: thin quiet's taped Pressure, the thinned plan's tape shown and looped first", () => {
+    const rows = [row({ seed: 1, plan: 'thin-quiet', style: 'thin-quiet', marks: { 'camera.recorded': 900 } }), row({ seed: 2, plan: 'thin-quiet', style: 'thin-quiet' }),
+      row({ seed: 1, plan: 'quiet-b-thinned', style: 'variant', given: { 'loop-mast': 2700, 'pay-rival2': 2900 } }), row({ seed: 2, plan: 'quiet-b-thinned', style: 'variant', given: { 'pay-rival2': 2900 } })];
+    const L = bands(['thin-quiet', 'quiet-b-thinned'].map(p => summarize(rows.filter(r => r.plan === p), 3)), rows);
+    expect(L.find(x => x.id === 'M101 thin-quiet')).toMatchObject({ ok: true, value: '50 % (1/2)' });
+    expect(L.find(x => x.id === 'M101 quiet-b-thinned')).toMatchObject({ ok: true, value: 'the tape shown on 50 % (1/2), looped first on 1, taped 0' });
+  });
   test('every playing style has a plan', () => {
     const styles = new Set(readdirSync(DIR).map(f => (JSON.parse(readFileSync(join(DIR, f), 'utf8')) as { style: string }).style));
     expect([...styles].sort()).toEqual(['careless', 'prepared-loud', 'prepared-quiet', 'thin-quiet', 'twin', 'unprepared-loud', 'variant']); // brief 096: the one-mistake twins; the rivals round's variants (thinned, the lookout ignored, the drive-round, the veteran's shot)

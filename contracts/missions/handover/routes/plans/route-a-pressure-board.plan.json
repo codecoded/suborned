@@ -1,28 +1,15 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Board and go (brief 018 §5), the twin of route-a-pressure: the same route to the ambush (Pressure for Help, no Reroute, the Enforcer at the door from 2:40 so Vale comes out to the posted crew, c038); then the Enforcer holds Vale 19.5 m out while the three fire, walks him in once the box is gone (car.unboxed: the crew broken and its car gone, brief 096) (Motive briefs/067/motive-square.md §7), boards, the three board after him, and the car leaves with the whole cell. Pressure brings no warning from Inez, so the five fire at once. The three lock rival-2 then rival-1 as the ambush springs (focus fire, as route G).",
+ "note": "Board and go (brief 018 §5), the twin of route-a-pressure: the same route to the ambush (Pressure for Help, the square's mast looped across it, no Reroute); then the Enforcer holds Vale 19.5 m out while the three fire, walks him in once the box is gone (car.unboxed: the crew broken and its car gone, brief 096) (Motive briefs/067/motive-square.md §7), boards, the three board after him, and the car leaves with the whole cell. Pressure brings no warning from Inez, so the five fire at once. The three lock rival-2 then rival-1 as the ambush springs (focus fire, as route G). Brief 101 (engine 0.52.0, the square's mast on the terrace's west lamp, Sky's pick B; Motive briefs/101/motive/mast-pressure.md §1): the Pressure card shows the mast would tape it at her post (+1 T, Alert 1 at the desk's next scan + 3 s, the dial's robots to her, the Fixer's face on file). A player reading it loops the mast first: the loop is the same +1 T and buys silence (no Alert, no robots, no face, and no log of the Fixer beside the turned Inez, so her job stays unexposed); its price is time. So the Tech loops the mast from the cabinet (live about 0:45 to 2:45), the Scout watches Inez from her start and listens beside her inside the loop, the Fixer walks in from her wait behind the mast for the Pressure and back out before the loop runs out, the call goes when the rival car is seen coming, and the entrance loop follows the mast's (one at a time: live about 3:05 to 5:05), so the Enter starts about 3:05, inside the pressed guard's window (Motive: a call at 2:35 keeps him away to about 4:14).",
  "start": {},
  "until": 4900,
  "steps": [
-  {
-   "op": "scout",
-   "do": "move",
-   "to": "beside-inez",
-   "why": "to Inez on the café terrace, at a run",
-   "run": true
-  },
   {
    "op": "tech",
    "do": "move",
    "to": "cabinet",
    "why": "to the control cabinet",
-   "run": true
-  },
-  {
-   "op": "fixer",
-   "do": "move",
-   "to": "d:Courtyard",
    "run": true
   },
   {
@@ -38,21 +25,76 @@
    "op": "scout",
    "do": "watch",
    "target": "waitress",
-   "gap": 9,
-   "why": "brief 031: once beside her (the run is about 7 s; 2 s to spare): the Scout's Watch reaches 30 m, so given at once it would start from the car and leave the walk to her after it; nobody who keeps a clock sees the terrace"
+   "why": "brief 101 (Sky's pick B, the square's mast on the terrace's west lamp; Motive briefs/101/motive/mast-pressure.md §3): from her start, 17 m on a clear line, behind the mast's lenses: beside Inez the Watch's 20 s ran on the mast's clock (brief 031: the Scout's Watch reaches 30 m)"
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "mast-z0",
+   "label": "mastloop",
+   "why": "brief 101 (Motive §1, the fair counter): the Pressure card shows the square's mast would tape it at her post; looped first from the cabinet (about 0:25, live 0:45 to 2:45: 20 s to land, 2:00 from the landing), it covers the Listen and the whole Pressure, for the same +1 T as the tape and none of its Alert, robots or face"
   },
   {
    "op": "scout",
    "do": "listen",
-   "target": "waitress"
+   "target": "waitress",
+   "after": [
+    "scout",
+    "mastloop"
+   ],
+   "when": "loop.on",
+   "why": "brief 101: once the mast is looped, so the Listen's discreet spot is beside her (N40: a step, not the 37 s walk out of its cones)"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    1175,
+    -4825
+   ],
+   "why": "brief 101: the Listen done, to her post by the getaway car before the mast's loop runs out (she listened beside Inez inside it). tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the scout fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "waitress",
+   "approach": "pressure",
+   "label": "turned",
+   "why": "the Pressure, which the card says turns her, from her wait behind the mast (she walks in): inside the mast's loop the card shows no tape, and no camera records it (unless camera.recorded, 40 s: the walk in and the 25 s act)",
+   "when": "scout.listen.heard",
+   "unless": [
+    "camera.recorded"
+   ],
+   "clear": 40
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "crew:fixer",
+   "after": [
+    "turned"
+   ],
+   "label": "back",
+   "why": "brief 101: the Pressure done, back behind the mast, where the cell starts, before its loop runs out at about 2:45"
+  },
+  {
+   "op": "fixer",
+   "do": "call",
+   "target": "waitress",
+   "label": "call",
+   "when": "rivals.coming",
+   "why": "once the rival car is seen coming (about 2:35 on this start), as route-a does: pressed, the guard is away about 1:37 from the call, so it covers an Enter from about 3:05, when the entrance loop lands; brief 101 (Motive): made from her wait behind the mast: a Call has no reach (GameCall.cs checks no distance), so no walk in and no log of her beside a turned Inez"
   },
   {
    "op": "tech",
    "do": "loop",
    "target": "entrance",
    "label": "loop",
-   "at": "1:25",
-   "why": "brief 058 (Loop v2): the loop lands 20 s after it is ordered and runs 2:00 from the landing on its own, so it is planted at 1:25 (live 1:45 to 3:45), over the Enter with room for a late player; planted as soon as the Tech reaches the cabinet it is live 0:33 to 2:33, which only a prompt call beats. No Reroute follows it: the patrol sweeps the service yard, not the door (brief 067 A), and informed play doesn't pay 1 T for nothing"
+   "after": [
+    "mastloop"
+   ],
+   "when": "loop.ends",
+   "why": "brief 101: one loop at a time (rulebook cell.loop): the entrance camera's, given once the mast's runs out (about 2:45; live about 3:05 to 5:05), over the Enter and the exit"
   },
   {
    "op": "enforcer",
@@ -64,33 +106,20 @@
    "after": [
     "loop"
    ],
-   "when": "loop.on",
-   "why": "once the loop has landed, from the forecourt to wait by the service end of the west face, 5.4 m south of the public door (brief 055: the free cell beside cyp-office-w's body clearance; street level), out of the guard's cone and more than 3 m from him: nobody who keeps a clock sees him there (the entrance camera is looped by then; brief 067 A: the patrol sweeps the service yard)"
-  },
-  {
-   "op": "fixer",
-   "do": "turn",
-   "target": "waitress",
-   "approach": "pressure",
-   "label": "turned",
-   "why": "the Pressure, which the card says turns her"
-  },
-  {
-   "op": "fixer",
-   "do": "call",
-   "target": "waitress",
-   "label": "call"
+   "why": "once the entrance loop has landed (20 s after it is given), from the forecourt to wait by the service end of the west face, 5.4 m south of the public door (brief 055: the free cell beside cyp-office-w's body clearance; street level), out of the guard's cone and more than 3 m from him (brief 067 A: the patrol sweeps the service yard)",
+   "gap": 20
   },
   {
    "op": "enforcer",
    "do": "move",
    "to": "d:Office entrance",
    "after": [
-    "call"
+    "call",
+    "loop"
    ],
    "run": true,
-   "at": "2:40",
-   "why": "Pressure turns her in one order and she calls the guard at about 1:25; the Enforcer runs for the door only from 2:40 (in at about 2:42, about 20 s before the guard, warned, is back at about 3:02; out at about 3:20), so Vale comes out to the posted crew. Later than about 3:00 the guard sees the Enter: a pressed Inez's window (engine 0.38.0)"
+   "why": "brief 101: once the call has gone and the entrance loop has landed (20 s after it is given): the door unwatched by the guard and the camera",
+   "gap": 20
   },
   {
    "op": "enforcer",
@@ -110,19 +139,6 @@
     "call"
    ],
    "why": "back to the getaway car to cover the extraction; tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the fixer fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"
-  },
-  {
-   "op": "scout",
-   "do": "move",
-   "to": [
-    1175,
-    -4825
-   ],
-   "after": [
-    "scout",
-    "call"
-   ],
-   "why": "tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the scout fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"
   },
   {
    "op": "tech",

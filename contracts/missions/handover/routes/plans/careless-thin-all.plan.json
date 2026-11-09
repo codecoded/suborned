@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Careless violence (brief 059 S1; Motive's s1-rulings careless-thin-all), the twin of route-b: the Enforcer sets out to take down all three posted rivals on the square before the pickup. The lone one by the café terrace goes down unseen (as route-b-thin), but the pair on its east side cannot be thinned quietly (M059-S1.6): the one who sees his mate taken down draws, the Enforcer shoots him, and the run is loud from then on. Brief 098 (Waymark): rebuilt on route B as brief 096 has it (engine 0.42.0, the lend): the Scout listens to the driver, the Tech loops the pickup camera and the Fixer pays the driver off tape, the Scout misleads the lookout (rival-4) once he posts, the Tech reroutes the patrol, the Enforcer takes Popovic in the back seat and the Take lends Popovic's car: its Go is the win, and the three break the posted crew at our car, board and Go before the police close in. The plan it replaces tipped the rival car off at 3:10 (retired by brief 096: the car boxes ours in on arrival and the Mislead is for a man on foot) and drove our car round to the service drive at 5:53 (refused: ours is boxed in at the square from 2:53).",
+ "note": "Careless violence (brief 059 S1; Motive's s1-rulings careless-thin-all), the twin of route-b: the Enforcer sets out to take down all three posted rivals on the square before the pickup. The lone one by the café terrace goes down unseen (as route-b-thin), but the pair on its east side cannot be thinned quietly (M059-S1.6): the one who sees his mate taken down draws, the Enforcer shoots him, and the run is loud from then on. Brief 098 (Waymark): rebuilt on route B as brief 096 has it (engine 0.42.0, the lend): the Scout listens to the driver, the Tech loops the pickup camera and the Fixer pays the driver off tape, the Scout misleads the lookout (rival-4) once he posts, the Tech reroutes the patrol, the Enforcer takes Popovic in the back seat and the Take lends Popovic's car: its Go is the win, and the three break the posted crew at our car, board and Go before the police close in. The plan it replaces tipped the rival car off at 3:10 (retired by brief 096: the car boxes ours in on arrival and the Mislead is for a man on foot) and drove our car round to the service drive at 5:53 (refused: ours is boxed in at the square from 2:53). Brief 101 (engine 0.52.0, the square's mast on the terrace's west lamp): careless, it takes no loop, so the mast sees the knockout at rival-3's post (Alert 3: lockdown, the seal starts), on top of the pair that cannot be thinned quietly.",
  "start": {},
  "until": 4900,
  "steps": [
@@ -9,11 +9,11 @@
    "op": "enforcer",
    "do": "move",
    "to": [
-    -700,
-    -3600
+    -595,
+    -3690
    ],
    "at": "4:55",
-   "why": "behind rival-3 at his lone post by the café terrace (-5.75, -36.25), 1.3 m off his back (he faces our car), out of his cone and 28 m from the pair on the square's east side, beyond their pistols' 16 m"
+   "why": "behind rival-3 at his lone post by the café terrace's west wall (engine 0.52.0: ambush-2, (-5.75, -37.75); he faces our car), 0.9 m off his back on the free ground north of him, out of his cone and 28 m from the pair on the square (the old point, 2.1 m off, was out of the takedown's 1.5 m reach)"
   },
   {
    "op": "enforcer",
