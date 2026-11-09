@@ -1,0 +1,188 @@
+{
+ "today": {
+  "call": {
+   "pct": 4.53,
+   "footprint": 8.6,
+   "state": "rest",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "fight": {
+   "pct": 5.11,
+   "footprint": 11.1,
+   "state": "rest",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "inset": {
+   "pct": 4.13,
+   "footprint": 8.6,
+   "state": "rest",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "line": {
+   "pct": 4.51,
+   "footprint": 9.2,
+   "state": "rest",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "plate": {
+   "pct": 3.68,
+   "footprint": 7.8,
+   "state": "active",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "seed": {
+   "pct": 3.63,
+   "footprint": 8.1,
+   "state": "alt",
+   "pass_": false,
+   "failures": [
+    "the order pill \"Hold \u00b7 Watch the guard\" shows in a alt frame (a pill is active only)"
+   ],
+   "warnings": []
+  },
+  "strip": {
+   "pct": 3.05,
+   "footprint": 5.5,
+   "state": "active",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  }
+ },
+ "mock": {
+  "call-one": {
+   "pct": 4.89,
+   "footprint": 9.7,
+   "state": "rest",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "call-wrap": {
+   "pct": 4.87,
+   "footprint": 9.1,
+   "state": "rest",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "fight": {
+   "pct": 4.45,
+   "footprint": 8.7,
+   "state": "rest",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "inset": {
+   "pct": 4.31,
+   "footprint": 10.1,
+   "state": "rest",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "line-one": {
+   "pct": 4.58,
+   "footprint": 9.2,
+   "state": "rest",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "line-wrap": {
+   "pct": 4.46,
+   "footprint": 8.2,
+   "state": "rest",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "plate": {
+   "pct": 2.94,
+   "footprint": 6.5,
+   "state": "active",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  },
+  "seed": {
+   "pct": 2.93,
+   "footprint": 7.5,
+   "state": "alt",
+   "pass_": false,
+   "failures": [
+    "the order pill \"Hold \u00b7 Watch the guard\" shows in a alt frame (a pill is active only)"
+   ],
+   "warnings": []
+  },
+  "strip": {
+   "pct": 2.81,
+   "footprint": 5.4,
+   "state": "active",
+   "pass_": true,
+   "failures": [],
+   "warnings": []
+  }
+ },
+ "speech": {
+  "fight": 2,
+  "inset": 1,
+  "plate": 0,
+  "seed": 0,
+  "strip": 0,
+  "line-one": 1,
+  "line-wrap": 1,
+  "call-one": 2,
+  "call-wrap": 2
+ },
+ "speech_today": {
+  "fight": 3,
+  "inset": 1,
+  "plate": 0,
+  "seed": 0,
+  "strip": 0,
+  "line": 1,
+  "call": 2
+ },
+ "moments": {
+  "fight": {
+   "build": "0.2.290",
+   "moment": "4:15 at the square (r123's fight proof): two bubbles and the guard's docked line"
+  },
+  "inset": {
+   "build": "0.2.290",
+   "moment": "2:39 (r085's proof): Inez's line said off screen, docked at the left edge"
+  },
+  "plate": {
+   "build": "0.2.290",
+   "moment": "the Action plate on (r29 proof): the Enforcer with Knock out armed"
+  },
+  "seed": {
+   "build": "0.2.290",
+   "moment": "the Action plate on, Alt held (the seed proof): the Enforcer, nothing armed"
+  },
+  "strip": {
+   "build": "0.2.290",
+   "moment": "the strip after Shift (the hold proof): the Scout's three verbs"
+  },
+  "line": {
+   "build": "0.2.290",
+   "moment": "4:27 (r123's proof): the Fixer's 21-word line of the Help, 712 px on one row"
+  },
+  "call": {
+   "build": "0.2.290",
+   "moment": "route A's call, 2:59: the Fixer's 17-word line, 590 px, ran to x 2120"
+  }
+ }
+}

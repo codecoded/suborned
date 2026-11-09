@@ -1,0 +1,23 @@
+today (the 0.2.290 captures as they are):
+PASS  call.png                           rest   HUD   4.5% of the screen (limit 15%, footprint 9%)  running text 0 lines, 0 blocks; speech 3, beats 0  [hud mask]
+PASS  fight.png                          rest   HUD   5.1% of the screen (limit 15%, footprint 11%)  running text 0 lines, 0 blocks; speech 5, beats 0  [hud mask]
+PASS  inset.png                          rest   HUD   4.1% of the screen (limit 15%, footprint 9%)  running text 0 lines, 0 blocks; speech 4, beats 0  [hud mask]
+PASS  line.png                           rest   HUD   4.5% of the screen (limit 15%, footprint 9%)  running text 0 lines, 0 blocks; speech 5, beats 0  [hud mask]
+PASS  plate.png                          active HUD   3.7% of the screen (limit 22%, footprint 8%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+FAIL  seed.png                           alt    HUD   3.6% of the screen (limit 30%, footprint 8%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+      - the order pill "Hold · Watch the guard" shows in a alt frame (a pill is active only)
+PASS  strip.png                          active HUD   3.0% of the screen (limit 22%, footprint 5%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+6/7 within budget
+
+round 4 (the mocks):
+PASS  call-one.png                       rest   HUD   4.9% of the screen (limit 15%, footprint 10%)  running text 0 lines, 0 blocks; speech 4, beats 0  [hud mask]
+PASS  call-wrap.png                      rest   HUD   4.9% of the screen (limit 15%, footprint 9%)  running text 0 lines, 0 blocks; speech 4, beats 0  [hud mask]
+PASS  fight.png                          rest   HUD   4.4% of the screen (limit 15%, footprint 9%)  running text 0 lines, 0 blocks; speech 2, beats 0  [hud mask]
+PASS  inset.png                          rest   HUD   4.3% of the screen (limit 15%, footprint 10%)  running text 0 lines, 0 blocks; speech 1, beats 0  [hud mask]
+PASS  line-one.png                       rest   HUD   4.6% of the screen (limit 15%, footprint 9%)  running text 0 lines, 0 blocks; speech 4, beats 0  [hud mask]
+PASS  line-wrap.png                      rest   HUD   4.5% of the screen (limit 15%, footprint 8%)  running text 0 lines, 0 blocks; speech 6, beats 0  [hud mask]
+PASS  plate.png                          active HUD   2.9% of the screen (limit 22%, footprint 6%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+FAIL  seed.png                           alt    HUD   2.9% of the screen (limit 30%, footprint 8%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+      - the order pill "Hold · Watch the guard" shows in a alt frame (a pill is active only)
+PASS  strip.png                          active HUD   2.8% of the screen (limit 22%, footprint 5%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+8/9 within budget
