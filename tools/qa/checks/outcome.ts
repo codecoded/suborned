@@ -70,6 +70,7 @@ export const CLAIMS: Record<string, { why: string; backed: (p: Play) => boolean 
   'vale-taken-through-office': { why: 'enter.out (always with the councillor)', backed: p => has(p, 'enter.out') },
   'vale-intercepted-outside': { why: 'take.done', backed: p => has(p, 'take.done') },
   'waitress-pulls-guard-away': { why: 'guard.at-cafe', backed: p => has(p, 'guard.at-cafe') },
+  'guard-goes-to-waitress': { why: 'call.guard, then guard.at-cafe', backed: p => has(p, 'call.guard') && has(p, 'guard.at-cafe') }, // engine 0.51.0 (brief 102, option 1): the turned guard's own call
   'entrance-camera-looped': { why: 'loop.on', backed: p => has(p, 'loop.on') },
   'patrol-diverted': { why: 'patrol.rerouted', backed: p => has(p, 'patrol.rerouted') },
   'entry-timed-between-sweeps': { why: 'enter.in', backed: p => has(p, 'enter.in') },
