@@ -210,7 +210,7 @@ public class RulesTests
     {
         // every scenario's call orders, and a call on every role at every 10 s of a few runs: the query before the click is Issue's answer
         int checkedCalls = 0;
-        foreach (var id in new[] { "S10", "N39", "N39c", "N39d", "S21", "N39b", "S07" })
+        foreach (var id in new[] { "S10", "N39", "N39c", "N39d", "S21", "N39b", "S07", "C102-ONCE", "C102-GUARD-SAW" }) // brief 102: both ends, and the one called's own memory
         {
             var sc = Scenarios.Find(id)!;
             var played = Scenarios.Run(Repo.Inputs, sc).G;
@@ -222,7 +222,10 @@ public class RulesTests
                     {
                         var copy = g.Tick == 0 ? Engine.New(Repo.Inputs, sc.Start) : Engine.Play(Repo.Inputs, sc.Start, played.Orders.Take(k).Select(x => x.order).ToList(), g.Tick);
                         var q = copy.CallQuery(role); ulong before = Hash.State(copy);
+                        bool can = copy.CanCall(role), offered = copy.CallOffered(role);
                         Assert.Equal(before, Hash.State(copy)); // read-only
+                        Assert.True(can == q.ok, $"{id} {Report.Clock(g.Tick)} call {role}: CanCall {can} vs query {q.code}"); // brief 102: the card's CanCall is the query's answer
+                        Assert.True(offered ? q.code is not ("nothing-to-call" or "summon-no-visit" or "not-a-contact") : !q.ok, $"{id} {Report.Clock(g.Tick)} call {role}: offered {offered}, query {q.code}"); // an offered Call is never refused for what it is; an absent one is never ready
                         var a = copy.Issue(new Order { Tick = copy.Tick, Op = "fixer", Do = "call", Target = role });
                         Assert.True(q.ok == a.ok && q.code == a.code && q.tick == a.tick, $"{id} {Report.Clock(g.Tick)} call {role}: query {q.code} vs issue {a.code}");
                         checkedCalls++;
@@ -232,6 +235,27 @@ public class RulesTests
             }
         }
         Assert.True(checkedCalls > 40, $"calls checked ({checkedCalls})");
+    }
+
+    [Fact]
+    public void AToldEntryIsNoMemoryOfViolence()
+    {
+        // brief 102 (step 4; Motive briefs/102/motive/turned-guard.md §1.4): only a memory of the cell's violence stops the one called, read as the
+        // lover's test reads it. A told entry, as GameTakedown.Tell writes it, is none, and neither is fear. Nothing in the Handover tells Inez in
+        // play and a scenario replays from its start and orders, so the entries are written here, as TheSummonsIsRefusedForEachReasonAtNoCost does.
+        Start Inez() { var s = new Start(); s.Turned.Add("waitress"); return s; }
+        string Call(Game g) => g.Issue(new Order { Tick = g.Tick, Op = "fixer", Do = "call", Target = "waitress" }).code;
+        Mem Told(Game g) => new Mem { Act = "told", By = "p-cafe-05", Place = g.Inez.Place, Tick = g.Tick, Witnessed = false, Told = "place-time|enforcer-face" };
+        var told = New(Inez()); told.Inez.Memory.Add(Told(told));
+        Assert.Equal("", Call(told));                                                      // told, not seen: she makes the call
+        var down = New(Inez()); down.Inez.Memory.Add(Told(down)); down.GuardDown = true; down.GuardP.Down = true;
+        Assert.Equal("summon-busy", Call(down));                                           // told he's down: she tries, and nobody comes
+        var saw = New(Inez()); saw.Inez.Memory.Add(new Mem { Act = "saw-takedown", By = "enforcer", Place = saw.Inez.Place, Witnessed = true });
+        Assert.Equal("call-saw-violence", Call(saw));                                      // the act seen: she won't
+        var fear = New(Inez()); fear.Inez.Sc[Rules.Fear] = 3;
+        Assert.Equal("", Call(fear));                                                      // fear alone doesn't stop her
+        var stranger = New(Inez()); stranger.Inez.Memory.Add(new Mem { Act = "saw-gunfire", By = "rivals", Place = stranger.Inez.Place, Witnessed = true });
+        Assert.Equal("", Call(stranger));                                                  // violence that isn't the cell's
     }
 
     [Fact]

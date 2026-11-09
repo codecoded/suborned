@@ -1,0 +1,27 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "MC-13 (brief 059, Motive M059-5.3), the square's loud-wait twin: loud's opening (the guard shot just after his 2:30 mark, the Enter at Alert 2), but the cell waits in the car: the Scout, Fixer and Tech board while the Enforcer is inside, and nobody fights the response unit or the rivals drawn by the gunfire. He walks Vale out toward the car alone and is shot down on the way (Enforcer down before Vale is in the car): the square opens no unfought loud exit.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750],"run":true},
+  {"tick":600,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":800,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1100,"op":"enforcer","do":"move","to":[6925,-4250]},
+  {"tick":1510,"op":"enforcer","do":"fire","target":"guard"},
+  {"tick":1510,"op":"scout","do":"move","to":[975,-4625],"run":true},
+  {"tick":1510,"op":"fixer","do":"move","to":[1175,-4825],"run":true},
+  {"tick":1550,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1610,"op":"enforcer","do":"enter"},
+  {"tick":1610,"op":"tech","do":"move","to":[725,-4625]},
+  {"tick":1610,"op":"scout","do":"move","to":"d:Getaway bay"},
+  {"tick":1610,"op":"fixer","do":"move","to":"d:Getaway bay"},
+  {"tick":1610,"op":"fixer","do":"board","target":"car"},
+  {"tick":1610,"op":"tech","do":"move","to":"d:Getaway bay"},
+  {"tick":1611,"op":"scout","do":"board","target":"car"},
+  {"tick":1809,"op":"tech","do":"board","target":"car"},
+  {"tick":2290,"op":"enforcer","do":"move","to":"d:Getaway bay"}
+ ],
+ "until": 4900
+}
