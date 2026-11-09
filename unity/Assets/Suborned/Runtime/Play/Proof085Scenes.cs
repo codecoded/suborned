@@ -22,6 +22,24 @@ namespace Suborned.Play
         static IEnumerator Shoot(string dir, string name, List<string> log) { while (HudToolkit.ShotBusy) yield return null; log.Add($"{name}: " + HudToolkit.Shoot(Path.Combine(dir, name), "rest")); yield return null; while (HudToolkit.ShotBusy) yield return null; }
         static List<Order> Route(string name) { var path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(FightLab.Dir(""))), "contracts", "missions", "handover", "routes", name + ".json"); var sc = Suborned.Sim.Script.Parse(File.ReadAllText(path)); var l = new List<(Order o, int i)>(); for (int i = 0; i < sc.Orders.Count; i++) l.Add((sc.Orders[i], i)); l.Sort((a, b) => a.o.Tick != b.o.Tick ? a.o.Tick.CompareTo(b.o.Tick) : a.i.CompareTo(b.i)); var r = new List<Order>(); foreach (var (o, _) in l) r.Add(o); return r; }
         sealed class RouteRun { public List<Order> Orders; public int I; }
+        /// <summary>A point on `who` the pointer reaches, moved there by the mouse: on its figure (chest, head or waist height; its middle or 0.12 m to a side), none of the
+        /// cell under it (your own agent within reach of the pointer always wins a click) and the hover reading `want` there; the view turned a quarter at a time when this yaw
+        /// shows none. got[0] null when no yaw does.</summary>
+        static IEnumerator Reachable(HandoverHost h, Transform who, string want, Vector2?[] got)
+        {
+            got[0] = null;
+            for (int turn = 0; turn < 4; turn++)
+            {
+                if (turn > 0) { h.TurnSnap((h.YawIndex + 1) % 4); h.LookAt(who.position); yield return Frames(4); }
+                foreach (float up in new[] { 1.1f, 1.4f, 0.8f, 1.6f }) foreach (float side in new[] { 0f, -0.12f, 0.12f })
+                {
+                    var sp = h.View.WorldToScreenPoint(who.position + Vector3.up * up + h.View.transform.right * side); var p = new Vector2(sp.x, sp.y);
+                    if (sp.z <= 0f || h.AgentNear(p) != null) continue;
+                    Btn(p); yield return Frames(3);
+                    if (h.Hover != null && h.Hover.Kind + "/" + h.Hover.Key == want) { got[0] = p; yield break; }
+                }
+            }
+        }
 
         static IEnumerator Fresh(HandoverHost h, ConversationScenes mode, bool sameSeed = false)
         {
@@ -208,9 +226,9 @@ namespace Suborned.Play
             // ---- the pressed route: the Door price, then Pressure, the Call, the arrival off screen
             yield return Fresh(h, ConversationScenes.Always); g = h.Game; var rp = new RouteRun { Orders = Route("route-a-pressure") };
             yield return ToScene(h, rp, 900, got); yield return EndScene(h); // Listen
-            h.Select(OpId.Fixer, false); h.CloseRing(); var inez = h.Views.Find("waitress"); h.LookAt(inez.position); yield return Frames(3); var isp = cam.WorldToScreenPoint(inez.position + Vector3.up); var iv = new Vector2(isp.x, isp.y);
-            yield return Click(iv); yield return new WaitForSecondsRealtime(0.25f); string doorFields = ""; bool doorOk = false; if (h.Ring != null) foreach (var s in h.Ring.Segs) if (s.Row?.I?.Order is { Approach: "pressure" }) { foreach (var f in HudModel.PriceLine(h, s.Row.I)) doorFields += f.Kind + "=" + f.Text + " "; doorOk = doorFields.Contains("door=Door 1:"); }
-            yield return Shoot(dir, "r085-door-price", log); row("r085doorPrice", doorOk, $"ring {h.Ring != null}: {doorFields}"); if (h.Ring != null) h.CloseRing(); Btn(new Vector2(Screen.width * .5f, 40f)); yield return Frames(3);
+            h.Select(OpId.Fixer, false); h.CloseRing(); var inez = h.Views.Find("waitress"); h.LookAt(inez.position); yield return Frames(3); int yaw0 = h.YawIndex; var reach = new Vector2?[1]; yield return Reachable(h, inez, "person/waitress", reach); // the pressed route stands the Fixer at her side, and your own agent under the pointer always wins a click: a part of her the pointer reaches
+            if (reach[0] is Vector2 iv) yield return Click(iv); yield return new WaitForSecondsRealtime(0.25f); string doorFields = ""; bool doorOk = false; if (h.Ring != null) foreach (var s in h.Ring.Segs) if (s.Row?.I?.Order is { Approach: "pressure" }) { foreach (var f in HudModel.PriceLine(h, s.Row.I)) doorFields += f.Kind + "=" + f.Text + " "; doorOk = doorFields.Contains("door=Door 1:"); }
+            yield return Shoot(dir, "r085-door-price", log); row("r085doorPrice", doorOk, $"ring {h.Ring != null} on {h.Ring?.Plan?.T?.Kind}/{h.Ring?.Plan?.T?.Key}, clicked at {(reach[0] is Vector2 rp0 ? $"{rp0.x:0},{rp0.y:0}" : "no point on her the pointer reaches")} at yaw {30 + 90 * h.YawIndex}: {doorFields}"); if (h.Ring != null) h.CloseRing(); Btn(new Vector2(Screen.width * .5f, 40f)); h.TurnSnap(yaw0); yield return Frames(3);
             yield return ToScene(h, rp, 1300, got); string wp = Words(h, "pressure-inez"); row("r085pressureWhole", got[0] && wp.Length == 0, $"{h.ConvoLast}; {wp}"); yield return Shoot(dir, "r085-pressure", log); yield return EndScene(h);
             string pressDoor = h.DoorClock(new Order { Op = "fixer", Do = "call", Target = "waitress" }); row("r085doorAfterPressure", pressDoor != null && pressDoor.StartsWith("1:"), $"the Call way after Pressure: Door {pressDoor ?? "hidden"}");
             Step(h, rp, 1300); yield return ToScene(h, rp, 1600, got); string wc = Words(h, "call-inez-pressure"); row("r085pressedCall", got[0] && wc.Length == 0 && g.GuardCallPressed, $"{h.ConvoLast}; {wc}; pressed {g.GuardCallPressed}"); yield return EndScene(h);

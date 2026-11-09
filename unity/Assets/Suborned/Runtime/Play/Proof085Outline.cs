@@ -77,8 +77,56 @@ namespace Suborned.Play
                 yield return Shoot(dir, "r085-outline-mast", log);
             }
             row("r085outlineMast", mastOk, $"the pointer on the pods: {mast}");
+            yield return Officers(h, dir, log, row);
             HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null; yield return Frames(2);
         }
+
+        /// <summary>Brief 101, each officer his own target: a route played headless until the response unit's two officers stand on the street outside a fight (the views
+        /// security/0 and /1; in a fight they are hostiles, each by his id already), an armed agent on the street selected, the pointer on each in turn. Row r085outlineOfficer:
+        /// the hover, the line (its box round him), the pill and Fire's order are that officer's, and the ring's anchor is his figure, not the first's (r085-outline-officer).</summary>
+        static readonly string[] OfficerRoutes = { "careless-guard-left-door-held", "loud", "careless-body-found" }; // a body held as a scene; a loud entry before the fight takes them
+        static IEnumerator Officers(HandoverHost h, string dir, List<string> log, System.Action<string, bool, string> row)
+        {
+            var g = h.Game; string via = "";
+            bool Up(int i) => i < g.SecGuns.Length && g.SecOfficerPose(i).HasValue && !g.Hostiles.Exists(x => x.Id == g.SecGuns[i].Id);
+            bool Both() => Up(0) && Up(1) && Suborned.Sim.G.D2(g.SecOfficerPose(0).Value.pos, g.SecOfficerPose(1).Value.pos) > 60L * 60L; // two figures, not one on the other
+            foreach (var name in OfficerRoutes) // whichever seed this game rolled: the first route that puts the two on the street outside a fight
+            {
+                yield return Proof085.Fresh(h); g = h.Game; var orders = ProofBook.Route(name); int oi = 0;
+                while (!g.Over && g.Tick < 3300 && !Both()) { while (oi < orders.Count && orders[oi].Tick <= g.Tick) { var o = orders[oi++]; h.Issue(new Suborned.Sim.Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); } h.RunTo(g.Tick + 2); }
+                if (Both()) { via = $"{name}, seed {g.Seed}"; break; }
+            }
+            if (via.Length == 0) { row("r085outlineOfficer", false, $"no route of {string.Join(", ", OfficerRoutes)} put the two officers on the street outside a fight"); yield break; }
+            int armed = 0; for (int k = 3; k >= 0; k--) if (!g.Ops[k].Down && !g.Ops[k].Inside && !g.Ops[k].InCar && g.Ops[k].Gun.W != null) armed = k; // the first armed agent on the street: a click on an officer is his Fire
+            h.Select((OpId)armed, false); h.LookAt(h.Views.Find("security/0").position); yield return new WaitForSecondsRealtime(1f); // the figures ease to where the engine put them
+            var said = new List<string>(); bool ok = true; int yaw0 = h.YawIndex;
+            for (int i = 0; i < 2; i++)
+            {
+                var v = h.Views.Find("security/" + i); var other = h.Views.Find("security/" + (1 - i)); string id = g.SecGuns[i].Id;
+                if (!v || !v.gameObject.activeInHierarchy) { ok = false; said.Add($"{id} not drawn"); continue; }
+                h.LookAt(v.position); yield return Frames(3); Vector3? on = null;
+                for (int turn = 0; turn < 4 && on == null; turn++) // a point on him the pointer reaches: where one stands in front of the other the nearer is under the pointer (the pick's own law), so a side or his head, else the view a quarter round
+                {
+                    if (turn > 0) { h.TurnSnap((h.YawIndex + 1) % 4); h.LookAt(v.position); yield return Frames(4); }
+                    foreach (float up in Ups) foreach (float side in Sides)
+                    {
+                        if (on != null) break;
+                        var q = v.position + Vector3.up * up + h.View.transform.right * side; HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = q; yield return Frames(3);
+                        if (h.Hover?.Kind == "security" && h.Hover.Key == id) on = q;
+                    }
+                }
+                var at = on ?? v.position + Vector3.up; yield return Point(at);
+                var t = h.Hover; var (lineOk, line) = Now(h, "security/" + id); var anchor = t != null ? h.TargetWorld(t) : null; var sp = h.View.WorldToScreenPoint(at);
+                bool onHim = anchor is Vector3 a && Vector3.Distance(a, v.position) < 0.3f && (!other || Vector3.Distance(a, other.position) > Vector3.Distance(a, v.position) + 0.3f);
+                var px = new Vector2Int((int)(sp.x * HoverOutlinePass.DrawnTarget.x / (float)h.View.pixelWidth), (int)(sp.y * HoverOutlinePass.DrawnTarget.y / (float)h.View.pixelHeight)); bool boxHim = HoverOutlinePass.DrawnBox.Contains(px);
+                string fire = t == null ? "" : h.ContextFor(t, new Vector2(sp.x, sp.y)).Pn.Rows.Find(r => r.I?.Order?.Do == "fire")?.I.Order.Target ?? "";
+                ok &= t?.Kind == "security" && t.Key == id && lineOk && boxHim && onHim && (HudToolkit.PillOn.Length == 0 || HudToolkit.PillOn == "security/" + id) && fire == id; // a pill, if any, is his
+                said.Add($"{id} ({via}, {HandoverHost.MissionClock(g.Tick)}, {(OpId)armed} selected, yaw {30 + 90 * h.YawIndex}, {(on != null ? "a point on him the pointer reaches" : "no point on him the pointer reaches")}): hover {t?.Kind}/{t?.Key}; {line}; the line's box round him {boxHim}; the ring's anchor on him {onHim}; Fire's target '{fire}'");
+                if (i == 1) yield return Shoot(dir, "r085-outline-officer", log);
+            }
+            h.TurnSnap(yaw0); row("r085outlineOfficer", ok, string.Join(" | ", said));
+        }
+        static readonly float[] Ups = { 1.0f, 1.5f, 0.6f }, Sides = { 0f, -0.15f, 0.15f };
 
         /// <summary>A 2x crop (nearest pixel) of the line's box and 40 px round it, beside the picture; what it wrote.</summary>
         static string Crop2x(string png)

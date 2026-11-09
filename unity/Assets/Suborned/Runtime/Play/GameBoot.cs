@@ -149,7 +149,7 @@ namespace Suborned.Play
             if (Only("drive")) yield return DriveSpot(h, Dir, log, drive, session);
             // Latch 2026-10-21: the input checks (a ground click while driven, WASD taking the stick back; a fire order stopping a walk)
             var driveClick = new string[] { "null" }; var fireStop = new string[] { "null" };
-            ProofInput.Focusless(true); log.Add($"input checks: focused {Application.isFocused}, background {UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior}");
+            ProofInput.Focusless(true); log.Add($"input checks: focused {Application.isFocused}, background {UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior}; {ProofDevices.Said}"); // brief 101: the Input System's virtual devices, no OS focus needed
             if (Only("driveClick")) yield return ProofInput.DriveClick(h, log, driveClick);
             if (Only("fireStop")) yield return ProofInput.FireStop(h, log, fireStop);
             // brief 041: the ring-on-press and hold-ring checks are the Built scheme's (0.2.34 as it was); the Double click scheme (the default) has its own (dblClick)
@@ -176,7 +176,7 @@ namespace Suborned.Play
             var fire = new string[] { "null" }; var fireSession = new string[1]; if (Only("fire")) yield return ProofFire.Fire(h, Dir, log, fire, drive, fireSession);
             var cars = new string[] { "null" }; if (Only("cars")) yield return ProofFire.Cars(h, Dir, log, cars);
             var hudClick = new string[] { "null" }; if (Only("hudClick")) yield return ProofInput.HudClick(h, log, hudClick); // Sky on 0.2.34: a HUD click never reaches the street (the range's half runs last, below)
-            ProofInput.Focusless(false);
+            ProofInput.Focusless(false); log.Add("input checks end: " + ProofDevices.Last);
             // brief 020: what the people cost: the opening (the square and its crowd) with the figures, then with capsules only, the same moment
             var people = new List<string>();
             if (Spots) yield return PeopleCost(h, log, people, 6f, Dir);
@@ -195,7 +195,7 @@ namespace Suborned.Play
                 while ((Only("leash") || Only("holdRange") || Only("hudClick")) && ((rh = FindAnyObjectByType<HandoverHost>()) == null || !rh.rangeMode || rh.Game == null) && Time.realtimeSinceStartup - r0 < 60f) yield return null;
                 if (rh != null && rh.rangeMode && rh.Game != null) { yield return new WaitForSecondsRealtime(1.5f); yield return ProofInput.RangePanelClick(rh, log, rangeClick); yield return ProofInput.Leash(rh, Dir, log, leash); rh.controls.preset = ControlPreset.HoldActs; rh.ControlsChanged(); yield return ProofHold.Range(rh, Dir, log, holdRange); } // brief 041: the hold preset on the range // brief 041: the leash on the range's open floor
                 else log.Add("rangePanelClick: no range host after 60 s");
-                ProofInput.Focusless(false);
+                ProofInput.Focusless(false); log.Add("range input checks end: " + ProofDevices.Last);
             }
             Stamp("end"); frames = frames.Replace("__SECTIONAT__", "{" + string.Join(", ", stamps.ConvertAll(x => $"\"{x.name}\": {F(x.at)}")) + "}");
             frames = frames.Replace("__LEASH__", leash[0]).Replace("__HOLDRANGE__", holdRange[0]);

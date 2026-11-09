@@ -84,9 +84,15 @@ namespace Suborned.Play
             var names = new List<string> { h.ValeWord }; foreach (var r in new[] { "waitress", "driver", "guard", "councillor" }) { var pp = g.PersonByRole(r); if (pp?.Name?.Length > 0) names.Add(pp.Name); var tn = h.Text?.TargetName(r, ""); if (tn?.Length > 0) names.Add(tn.Replace("The ", "").Replace("the ", "")); }
             var shapes = new string[4]; int rowsMoved = 0, namedBad = 0; var nsaid = new List<string>(); h.BookOpenNow("cell", 0); yield return Frames(1);
             for (int k = 0; k < 4; k++) { shapes[k] = Shape(k); if (h.BookPageNow.Ways.Count > 0) namedBad++; foreach (var c in h.BookPageNow.Can) if (c.Id != "car") foreach (var nm in names) if ((c.Word + " " + c.Line).Contains(nm)) { namedBad++; nsaid.Add($"{(OpId)k} {c.Word}: {nm}"); } }
-            h.BookClose(); yield return Frames(1); var ras = Route(); var seenTick = new List<int>();
-            foreach (var o in ras) { if (o.Tick >= 1400) break; h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); if (o.Tick > 0 && o.Tick % 3 == 0 || o.Tick == 1195) { seenTick.Add(o.Tick); h.BookOpenNow("cell", 0); yield return Frames(1); for (int k = 0; k < 4; k++) if (Shape(k) != shapes[k]) { rowsMoved++; nsaid.Add($"{(OpId)k} at {o.Tick}: {Shape(k)}"); } h.BookClose(); yield return Frames(1); } }
-            h.RunTo(1400); h.BookOpenNow("cell", 0); yield return Frames(1); for (int k = 0; k < 4; k++) if (Shape(k) != shapes[k]) rowsMoved++; var counts = new int[4]; for (int k = 0; k < 4; k++) { h.BookShow("cell", k); counts[k] = h.BookPageNow.Can.FindAll(c => c.Id != "car").Count; } h.BookClose(); yield return Frames(1);
+            h.BookClose(); yield return Frames(1); var ras = Route(); var seenTick = new List<int>(); int ri = 0;
+            void IssueTo(int tick) { while (ri < ras.Count && ras[ri].Tick <= tick && ras[ri].Tick < 1400) { var o = ras[ri++]; h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); } }
+            for (int at = 150; at < 1400 && !g.Over; at += 150) // the law at any time and place: a fixed grid along the route, whatever ticks its orders fall on (route A's re-plans move them)
+            {
+                IssueTo(at); h.RunTo(at); seenTick.Add(at); h.BookOpenNow("cell", 0); yield return Frames(1);
+                for (int k = 0; k < 4; k++) if (Shape(k) != shapes[k]) { rowsMoved++; nsaid.Add($"{(OpId)k} at {at}: {Shape(k)}"); }
+                h.BookClose(); yield return Frames(1);
+            }
+            IssueTo(1399); h.RunTo(1400); h.BookOpenNow("cell", 0); yield return Frames(1); for (int k = 0; k < 4; k++) if (Shape(k) != shapes[k]) rowsMoved++; var counts = new int[4]; for (int k = 0; k < 4; k++) { h.BookShow("cell", k); counts[k] = h.BookPageNow.Can.FindAll(c => c.Id != "car").Count; } h.BookClose(); yield return Frames(1);
             Row("bookAgentRows", rowsMoved == 0 && namedBad == 0 && seenTick.Count >= 2 && counts[0] == h.BookCanOf(0).Count && counts[1] == HandoverHost.Slots[1].Length, $"rows {string.Join(" ", counts)} at tick 0, {string.Join(" ", seenTick)} and 1400; moved {rowsMoved}, named a person {namedBad}, {string.Join("; ", nsaid)}");
             UnityEngine.Debug.Log("ProofBook: the weapon block's pips are the data scale applied"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- the weapon block's pips are the data scale applied to the engine's own values, for each agent's weapon and a test weapon by data

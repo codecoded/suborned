@@ -12,7 +12,7 @@ const UNITY = join(ROOT, 'unity');
 export function unityVersion(): string { return readFileSync(join(UNITY, 'ProjectSettings/ProjectVersion.txt'), 'utf8').match(/m_EditorVersion: (\S+)/)?.[1] ?? ''; }
 /** The reference assemblies of the Editor the project opens in (the mono player variation's UnityEngine modules). */
 export const managedDir = (ver = unityVersion()) => `/Applications/Unity/Hub/Editor/${ver}/PlaybackEngines/MacStandaloneSupport/Variations/mono/Managed`;
-const PACKAGES = ['Unity.InputSystem', 'Unity.RenderPipelines.Core.Runtime', 'Unity.RenderPipelines.Universal.Runtime', 'Unity.RenderPipelines.GPUDriven.Runtime'];
+const PACKAGES = ['Unity.InputSystem', 'UnityEngine.UI', 'Unity.RenderPipelines.Core.Runtime', 'Unity.RenderPipelines.Universal.Runtime', 'Unity.RenderPipelines.GPUDriven.Runtime']; // UnityEngine.UI: the proof's EventSystem (ProofDevices.cs, brief 101)
 
 export type Compiled = { ok: boolean; errors: string[]; warnings: number; seconds: number; missing?: string };
 

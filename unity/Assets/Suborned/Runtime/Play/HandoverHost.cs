@@ -774,7 +774,7 @@ namespace Suborned.Play
                     return new Target { Kind = md == "fight" ? "hostile" : "rivals", Key = n, Id = n, Label = Text?.HoldersPhrase(n) ?? "a rival" };
                 }
                 if (n == "car/rivals") return new Target { Kind = "rivals", Key = "car:rivals", Id = "car:rivals", Label = Name("rivals") }; // the rival car: Watch, the false tip, Fire
-                if (n.StartsWith("security/")) return new Target { Kind = "security", Key = "security", Label = Name("security") }; // Fable 067 (the glossary): "the police"
+                if (n.StartsWith("security/")) return new Target { Kind = "security", Key = OfficerOfView(n), Label = Name("security") }; // Fable 067 (the glossary): "the police"; brief 101: each officer by his own id (HostPolice)
                 if (n.StartsWith("hostile/"))
                 {
                     int i = int.Parse(n[8..]); if (i >= Game.Hostiles.Count || Game.Hostiles[i].Down) return null;
@@ -927,7 +927,7 @@ namespace Suborned.Play
                         // engine 0.15.0 (tuning.md §9.1): anyone can be shot: every person (Vale too: the hold card says the mission fails), forced
                         // (a civilian), a unit by its own id, a camera, a car (0.16.0); each a harmful wedge with the 0.5 s hold (HoldWedge)
                         if (t.Kind == "bystander" && !controls.HoldActs && !controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) return null; // engine 0.18: a range bystander is fired on only with Ctrl held (the goal line says so)
-                        string target = t.Kind is "person" or "hostile" or "unit" or "bystander" or "rivals" ? t.Key : t.Kind is "patrol" or "security" ? t.Kind : t.Kind == "camera" ? "camera:" + t.Key : t.Kind == "car" ? "car:" + t.Key : ""; // brief 059: a member by his id, the rival car as car:rivals
+                        string target = t.Kind is "person" or "hostile" or "unit" or "bystander" or "rivals" ? t.Key : t.Kind == "patrol" ? t.Kind : t.Kind == "security" ? OfficerTarget(t) : t.Kind == "camera" ? "camera:" + t.Key : t.Kind == "car" ? "car:" + t.Key : ""; // brief 059: a member by his id, the rival car as car:rivals; brief 101: an officer by his
                         if (target.Length == 0) return null;
                         if ((t.Kind is "camera" or "car" || target == "car:rivals") && NoFireTarget(by, target)) return null; /* the 0.2.115 bot row (Q-OFFER no-target x9): a camera already shot dark (or none the engine knows) is never offered */
                         var i = I("fire", target, "", $"Fire at {t.Label}"); i.Order.Force = t.Kind == "person" && t.Key != "guard" || t.Kind == "bystander"; i.Time = "until down"; i.Trail = t.Kind is "camera" or "car" || target == "car:rivals" ? $"T {FireTrail(by, target)}" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i; // brief 058: property costs the shooting once (the panel's Trail line)
@@ -942,7 +942,7 @@ namespace Suborned.Play
         /// <summary>Fire on a fight target for any armed agent (the Enforcer's knob intent, for an agent with no Fire knob).</summary>
         Intent FireIntent(OpId by, Target t)
         {
-            var R = Game.R; string target = t.Kind is "patrol" or "security" ? t.Kind : t.Kind is "hostile" or "unit" or "rivals" ? t.Key : ""; // brief 059: a member by his id, the car as car:rivals
+            var R = Game.R; string target = t.Kind == "patrol" ? t.Kind : t.Kind == "security" ? OfficerTarget(t) : t.Kind is "hostile" or "unit" or "rivals" ? t.Key : ""; // brief 059: a member by his id, the car as car:rivals; brief 101: an officer by his
             if (Game.Range && t.Kind == "car") target = "car:" + t.Key; // engine 0.18: the range's cars, by every armed agent
             if (t.Kind == "camera") target = "camera:" + t.Key; // brief 058 (Motive's probes): every armed agent fires on a camera, not only the Enforcer
             if (Game.Range && t.Kind == "bystander" && (controls.HoldActs || controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force))) target = t.Key; // brief 041: no Ctrl in the hold preset // and a bystander, only with Ctrl held
@@ -960,7 +960,7 @@ namespace Suborned.Play
             string place = t.Kind switch { "door" => s.GuardPost, "cabinet" => "cabinet", "car" when t.Key == "getaway" => g.CurStand.Car, _ => "" }; // brief 059 K6: the car's current stand
             Pt? to = place.Length > 0 ? s.Stand(place) : t.Kind switch
             {
-                "person" => CastOf(t.Key) is Person cp ? g.PersonPos(cp) : null, "patrol" => g.PatrolPose()?.pos, "rivals" => RivalPos(t), "security" => g.SecurityPose()?.pos,
+                "person" => CastOf(t.Key) is Person cp ? g.PersonPos(cp) : null, "patrol" => g.PatrolPose()?.pos, "rivals" => RivalPos(t), "security" => OfficerPos(t),
                 "car" => IsTrafficCar(t) ? g.CarAt("car:" + t.Key) : g.CarPos(), "camera" => CameraAt(t.Key), _ => null, // brief 098 step 1: a passing car where it is
             };
             if (!to.HasValue) return null;
@@ -1383,7 +1383,7 @@ namespace Suborned.Play
         Pt? PosOf(Target t) => t.Kind switch
         {
             "person" => CastOf(t.Key) is Person pp ? Game.PersonPos(pp) : null, "patrol" => Game.PatrolPose()?.pos, "rivals" => RivalPos(t),
-            "security" => Game.SecurityPose()?.pos, "hostile" => Game.PosOf(t.Key), "op" => Game.Ops[(int)Op.Parse(t.Key)].Pos, "camera" => CameraAt(t.Key),
+            "security" => OfficerPos(t), "hostile" => Game.PosOf(t.Key), "op" => Game.Ops[(int)Op.Parse(t.Key)].Pos, "camera" => CameraAt(t.Key),
             "crowd" => Game.PersonById(t.Id) is Person cp ? Game.PosOfPerson(cp) : null, "body" => Game.BodyById(t.Key) is Body b ? Game.BodyPos(b) : null,
             "stash" => Game.S.Stashes.Find(x => x.Id == t.Key)?.Stand, "bystander" => Game.PosOf(t.Key), "car" when Game.Range || IsTrafficCar(t) => Game.CarAt("car:" + t.Key), _ => null, // brief 098 step 1: a passing car where it drives
         };
@@ -1497,7 +1497,7 @@ namespace Suborned.Play
 
         public Vector3? TargetWorld(Target t)
         {
-            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => t.Key == "car:rivals" ? "car/rivals" : t.Key, "stand" => "stand/" + t.Key, "security" => "security/0", "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, "bystander" => views.BystanderKey(Game, t.Key), _ => null };
+            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => t.Key == "car:rivals" ? "car/rivals" : t.Key, "stand" => "stand/" + t.Key, "security" => OfficerView(t.Key), "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, "bystander" => views.BystanderKey(Game, t.Key), _ => null };
             if (t.Kind == "stand") return StandWorld(t.Key);
             var tr = key != null ? views.Find(key) : null; return tr ? tr.position : (Vector3?)null;
         }

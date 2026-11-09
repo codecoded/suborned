@@ -26,7 +26,7 @@ import { usageGate } from '../gen/flags';
 import { INPUTS, fingerprint, ignoredFiles } from './fingerprint';
 import { GATED, judgeGates } from './proofgates';
 import { aloneLine, gateFile, ledgerFile, loadMap, planLines, planProof, ranIn, readLedger, readPlan, recordProof, writeLedger, type Plan, type Replays, type Snapshot } from './proofdelta';
-import { appShips } from './ships';
+import { appShips } from './ships'; import { launchArgs, stopBehind } from './launch';
 
 const ROOT = join(import.meta.dir, '..', '..');
 const UNITY = join(ROOT, 'unity');
@@ -252,7 +252,7 @@ function proof(sub = 'proof', extra: string[] = []): { pj: any; status: number |
   run('mkdir', ['-p', out]);
   if (existsSync(join(out, 'proof.json'))) run('rm', ['-f', join(out, 'proof.json')]);
   const proofT0 = Date.now();
-  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--spots') ? ['-proofSpots'] : []), ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') && !isDelta() ? ['-frames-size', AIR] : []), ...onlyArgs(), ...(isDelta() ? ['-fastExit'] : []), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 1200000 }); // brief 098 (Latch, 0.2.267): the full one-pass proof ran past 900 s (killed in holdRange, its last section): about 190 pictures, each with the ~1 s window resize round it, and r083's block (r085's scenes, r087, r088) 303 s against the map's 150; 1200 s until it is sped up (brief 042: over 10 minutes is said and sped up); brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
+  const pa = ['-gameProof', out, '-novsync', ...(has('--spots') ? ['-proofSpots'] : []), ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') && !isDelta() ? ['-frames-size', AIR] : []), ...onlyArgs(), ...(isDelta() ? ['-fastExit'] : []), ...extra, '-logFile', join(out, 'player.log')], [pc, pv] = launchArgs(bin, APP, pa), p = spawnSync(pc, pv, { encoding: 'utf8', timeout: 1200000 }); stopBehind(pa, p, spawnSync); // brief 098 (Latch, 0.2.267): the full one-pass proof ran past 900 s (killed in holdRange, its last section): about 190 pictures, each with the ~1 s window resize round it, and r083's block (r085's scenes, r087, r088) 303 s against the map's 150; 1200 s until it is sped up (brief 042: over 10 minutes is said and sped up); brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
   const pj = existsSync(join(out, 'proof.json')) ? JSON.parse(readFileSync(join(out, 'proof.json'), 'utf8')) : null;
   console.log(`game: proof took ${Math.round((Date.now() - proofT0) / 1000)} s`);
   if (pj?.frames?.sectionAt) console.log(`game: seconds by section: ${sectionSeconds(pj.frames.sectionAt, (Date.now() - proofT0) / 1000)}`);
@@ -326,7 +326,7 @@ function drawCheck(): { status: string; seconds: number } {
   run('mkdir', ['-p', out]);
   run('rm', ['-f', join(out, 'proof.json')]);
   const t0 = Date.now();
-  spawnSync(bin, ['-drawCheck', out, '-windowed', '-novsync', '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 90000 });
+  const da = ['-drawCheck', out, '-windowed', '-novsync', '-logFile', join(out, 'player.log')], [dc, dv] = launchArgs(bin, APP, da); stopBehind(da, spawnSync(dc, dv, { encoding: 'utf8', timeout: 90000 }), spawnSync); // behind: under the front window (launch.ts)
   const f = join(out, 'proof.json');
   return { status: existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')).status : 'no result', seconds: Math.round((Date.now() - t0) / 100) / 10 };
 }

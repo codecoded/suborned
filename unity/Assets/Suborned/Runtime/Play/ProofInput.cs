@@ -20,12 +20,12 @@ namespace Suborned.Play
     public static class ProofInput
     {
         /// <summary>The proof's player is launched in the background (not focused): the Input System then drops device events. For the checks,
-        /// input is read whatever the focus, and the devices are on; restored after.</summary>
+        /// input is read whatever the focus, on the Input System's virtual devices with the OS's off, the HUD's clicks through a UI event system (ProofDevices); restored after.</summary>
         static InputSettings.BackgroundBehavior? bgKeep;
         public static void Focusless(bool on)
         {
-            if (on) { bgKeep ??= InputSystem.settings.backgroundBehavior; InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus; foreach (var d in new InputDevice[] { Keyboard.current, Mouse.current }) if (d != null && !d.enabled) InputSystem.EnableDevice(d); }
-            else if (bgKeep.HasValue) { InputSystem.settings.backgroundBehavior = bgKeep.Value; bgKeep = null; }
+            if (on) { bgKeep ??= InputSystem.settings.backgroundBehavior; InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus; ProofDevices.Install(); }
+            else { ProofDevices.Remove(); if (bgKeep.HasValue) { InputSystem.settings.backgroundBehavior = bgKeep.Value; bgKeep = null; } }
         }
 
         static string F(float v) => v.ToString("0.###", CultureInfo.InvariantCulture);

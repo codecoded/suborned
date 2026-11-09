@@ -40,19 +40,14 @@ namespace Suborned.Play
             var mid = (a + b) / 2f; var perp = new Vector3(-dir.z, 0f, dir.x);
             if (ConvoForceShot != "high")
             {   // (1) the profile two-shot
-                float fit = Mathf.Clamp(ConvoFitPerM * sep, ConvoDist, ConvoFitMaxM);
                 var here = cam.transform.position - mid; here.y = 0f; float sd = Vector3.Dot(perp, here);
                 if (Mathf.Abs(sd) < 0.05f * Mathf.Max(0.01f, here.magnitude) && FigureFacing(c.KeyB) is Vector3 fb) sd = Vector3.Dot(perp, fb); // the camera on the pair's line: the side the subject's face is toward
-                var sides = sd >= 0f ? new[] { perp, -perp } : new[] { -perp, perp };
                 foreach (bool avoid in c.LivePartner ? new[] { true, false } : new[] { false })
-                foreach (float dist in new[] { fit, Mathf.Max(0.8f * fit, ConvoNearM) })
-                    foreach (int deg in ConvoAngles)
-                        foreach (var s0 in sides)
-                        {
-                            var s = Quaternion.Euler(0f, deg, 0f) * s0; var from = mid + s * dist; from.y = mid.y + ConvoHeight;
-                            if (!TwoShotClear(a, b, dir, from) || avoid && ListenerInWay(c, from, a, b)) continue;
-                            c.Shot = "profile"; c.Side = s; c.Dist = dist; c.From = from; c.Look = mid + Vector3.up * ConvoHeight + Vector3.down * Mathf.Tan(ConvoPitch * Mathf.Deg2Rad) * dist; return true;
-                        }
+                    foreach (var (from, s, dist) in ProfileLenses(a, b, sd >= 0f ? perp : -perp))
+                    {
+                        if (!TwoShotClear(a, b, dir, from) || avoid && ListenerInWay(c, from, a, b)) continue;
+                        c.Shot = "profile"; c.Side = s; c.Dist = dist; c.From = from; c.Look = mid + Vector3.up * ConvoHeight + Vector3.down * Mathf.Tan(ConvoPitch * Mathf.Deg2Rad) * dist; return true;
+                    }
             }
             // (2) the high two-shot: no lens on the ground holds both clear (the café door, the Office front)
             float yaw = cam.transform.eulerAngles.y; var hr = Quaternion.Euler(ConvoHighPitch, yaw, 0f); var fwd = hr * Vector3.forward;
@@ -62,6 +57,28 @@ namespace Suborned.Play
             var d = b - a; float hx = Mathf.Abs(Vector3.Dot(d, hr * Vector3.right)) / 2f + 1.0f, hy = (Mathf.Abs(Vector3.Dot(d, hr * Vector3.up)) / 2f + 1.3f) / 0.88f;
             c.Ortho = Mathf.Max(ConvoHighM * Mathf.Tan(ConvoFov * 0.5f * Mathf.Deg2Rad), hy, hx / Mathf.Max(1f, cam.aspect));
             return true;
+        }
+
+        /// <summary>The profile two-shot's lenses in the ladder's order: at fit, then 0.8 × fit (never under 2.8 m); the perpendicular, ±12°, ±25°; each on the
+        /// first side, then the other.</summary>
+        static IEnumerable<(Vector3 from, Vector3 side, float dist)> ProfileLenses(Vector3 a, Vector3 b, Vector3 firstSide)
+        {
+            var ab = b - a; ab.y = 0f; var mid = (a + b) / 2f; float fit = Mathf.Clamp(ConvoFitPerM * ab.magnitude, ConvoDist, ConvoFitMaxM);
+            foreach (float dist in new[] { fit, Mathf.Max(0.8f * fit, ConvoNearM) })
+                foreach (int deg in ConvoAngles)
+                    foreach (var s0 in new[] { firstSide, -firstSide })
+                    { var s = Quaternion.Euler(0f, deg, 0f) * s0; var from = mid + s * dist; from.y = mid.y + ConvoHeight; yield return (from, s, dist); }
+        }
+
+        /// <summary>For checks, GDD §10's rule read on the geometry as it stands: how many of the profile two-shot's lenses hold the scene's pair clear (either
+        /// side, either distance, wherever the listener stands), and how many there are. None clear: the rule's shot for a pair within 6 m is the high two-shot.</summary>
+        public (int clear, int of) ConvoProfileClear(Convo c)
+        {
+            var tb = c == null ? null : ConvoView(c.KeyB); var ta = c == null ? null : ConvoView(c.KeyA); if (!tb) return (0, 0);
+            Vector3 b = tb.position, a = ta && ta.gameObject.activeInHierarchy ? ta.position : b; var ab = b - a; ab.y = 0f; if (ab.magnitude < 0.2f) return (0, 0);
+            var dir = ab.normalized; int clear = 0, of = 0;
+            foreach (var (from, _, _) in ProfileLenses(a, b, new Vector3(-dir.z, 0f, dir.x))) { of++; if (TwoShotClear(a, b, dir, from)) clear++; }
+            return (clear, of);
         }
 
         /// <summary>A person's drawn facing (world, flat), else null.</summary>

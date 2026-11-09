@@ -200,7 +200,7 @@ namespace Suborned.Play
             {
                 case "hostile": id = t.Key; return true;
                 case "bystander": if (!ctrl) return false; id = t.Key; force = true; return true; // engine 0.18: a range bystander, only with Ctrl held
-                case "patrol": case "rivals": case "security": if (!(drawn || ctrl)) return false; id = t.Kind == "rivals" ? t.Key : t.Kind; return true; // brief 059: a member by his id, the car as car:rivals
+                case "patrol": case "rivals": case "security": if (!(drawn || ctrl)) return false; id = t.Kind == "rivals" ? t.Key : t.Kind == "security" ? OfficerTarget(t) : t.Kind; return true; // brief 059: a member by his id, the car as car:rivals; brief 101: an officer by his
                 case "unit": if (!(drawn || ctrl || Game.FightOn)) return false; id = t.Key; return true; // Keel 0.15.0 host notes: a unit is fired on by its own id (police-1, robot-1, …)
                 case "person":
                     if (t.Key == "councillor") return false;

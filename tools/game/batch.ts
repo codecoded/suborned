@@ -715,7 +715,7 @@ if (import.meta.main) {
   }
   try { takeGuardFlags(args); } catch (e) { console.error((e as Error).message); process.exit(2); }
   const from = flag('--from'), only = flag('--only')?.split(','), skipArg = flag('--skip')?.split(','), shotsFile = resolve(flag('--shots') ?? DEFAULT_FILE), shotsOut = resolve(flag('--shots-out') ?? join(OUT, 'shots'));
-  const dry = bool('--dry-run'), noShots = bool('--no-shots'), forceEditor = bool('--editor'), forceBatch = bool('--batchmode'), rebuild = bool('--rebuild'), perf064 = bool('--perf064') || !!only?.includes('perf064'), rowsArg = flag('--rows')?.split(','), behind = bool('--behind'), full = bool('--full'), submission = bool('--submission'), restart = bool('--restart'), spots = bool('--spots');
+  const dry = bool('--dry-run'), noShots = bool('--no-shots'), forceEditor = bool('--editor'), forceBatch = bool('--batchmode'), rebuild = bool('--rebuild'), perf064 = bool('--perf064') || !!only?.includes('perf064'), rowsArg = flag('--rows')?.split(','), behind = bool('--behind'), full = bool('--full'), submission = bool('--submission'), restart = bool('--restart'), spots = bool('--spots'); if (behind) Object.assign(env, { SUBORNED_BEHIND: '1' }); // the proof's own launch too (cli.ts through launch.ts)
   if (args.length || (forceEditor && forceBatch)) { console.error(`unknown or conflicting argument ${args.join(' ') || '--editor --batchmode'}; see the usage line at the top of tools/game/batch.ts`); process.exit(2); }
   const skip = [...(skipArg ?? []), ...(noShots ? ['shots', 'budget'] : [])];
   // a bare run after a failure goes on from the failed step on the same player, while the sources are the ones it failed on (brief 078)

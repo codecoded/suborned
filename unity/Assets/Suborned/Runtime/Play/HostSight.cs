@@ -44,7 +44,7 @@ namespace Suborned.Play
                 case "patrol": return "patrol";
                 case "rivals": return HostViews.IsCrewId(t.Key) ? t.Key : null; // brief 067 F7 (Glyph): a member is his own watcher (engine 0.32: the crew member by member); the car itself sees nothing
                 case "person": return t.Key == "guard" ? "guard" : null;
-                case "security": foreach (var w in Game.WatcherIds()) if (w.StartsWith("security-", StringComparison.Ordinal)) return w; return null;
+                case "security": { string first = null; foreach (var w in Game.WatcherIds()) if (w.StartsWith("security-", StringComparison.Ordinal)) { if (w == t.Key) return w; first ??= w; } return first; } // brief 101: the officer himself, else the first
                 case "unit": return Game.WatcherKind(t.Key).Length > 0 ? t.Key : null; // brief 067 F7: a response officer or robot, by its own id (view unit/<id>)
                 case "hostile": return Game.WatcherKind(t.Key).Length > 0 ? t.Key : null;
             }
