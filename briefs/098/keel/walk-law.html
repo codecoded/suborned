@@ -24,6 +24,25 @@ td.n{text-align:right;font-variant-numeric:tabular-nums}.good{color:#1d6b3a}.bad
 <p>A walker keeps the rulebook's <code>bodies.radius</code> (30 cm) plus <code>bodies.margin</code> (5 cm) from every solid, a building's face included. Both values are read from the rulebook. The margin is one raster cell: the walk is tested on 5 cm samples, so between two samples a body's centre can come up to half a cell nearer a face. Five centimetres keeps its disc off every face with room to spare. Before, the walk kept the plan's design r (65 cm) on 50 cm cells, a face 30 cm, with no corner cutting.</p>
 <p>How it's represented: the site carries a 5 cm walk raster (<code>grid.fine</code>, written by <code>tools/sim/walkfine.ts</code>). The engine keeps the 50 cm cells as route topology (the drive, takedowns and lanes are untouched). A cell's nodes are its pieces of free raster, 46,115 nodes and 357,152 edges for the zone. Neighbours join wherever the true line between them clears. Routes are string-pulled on the raster (<code>GridFine.cs</code>).</p>
 <p>The solids are the pieces as built. The 097 pins are gone and the volumes come from <code>kit.collide.json</code>: 14 builder-declared, 31 measured from their meshes. The plan's design widths and W-rules are untouched (<code>tools/plan</code> has no change this round).</p>
+<p><b>How it was measured</b> (Keel, recorded 2026-11-10; worktree t3-48e18061, 2026-11-08 08:43&ndash;08:45). The worktree has no Kit copy, so <code>out/decokit/Models</code> was linked to the main tree's shipped Kit meshes (<code>fbxOf</code> reads <code>unity/Assets/Suborned/Kit</code>, then <code>out/decokit</code>), and the hashes are the shipped meshes'. The declarations came from a scratch export with PINNED off:</p>
+<ol>
+<li><code>sed 's/,ShrubMound_TB//' out/scratch/keel/walk/pinned.txt &gt; out/scratch/keel/walk/pinned-dk.txt</code> (the 45 pinned ids &rarr; the 44 generated ones).</li>
+<li><code>D=out/scratch/keel/decokit-098 &amp;&amp; rm -rf $D &amp;&amp; mkdir -p $D &amp;&amp; cp -R ~/Projects/suborned/out/decokit/Materials ~/Projects/suborned/out/decokit/Data $D/ &amp;&amp; cp ~/Projects/suborned/out/decokit/*.json $D/ &amp;&amp; bun run guard bun run decokit --only "$(cat out/scratch/keel/walk/pinned-dk.txt)" --no-ao --no-lods --out $D</code>
+  <ul>
+  <li>Result: 44 assets, of which 14 rows declare and 30 don't.</li>
+  <li>After the export, run.ts exits 1 on its fit table (five towers: "no such order in the plan").</li>
+  </ul></li>
+<li><code>mkdir -p out/decokit &amp;&amp; ln -sfn ~/Projects/suborned/unity/Assets/Suborned/Kit/Models out/decokit/Models &amp;&amp; git show HEAD:contracts/world/kit.collide.json &gt; contracts/world/kit.collide.json &amp;&amp; DECOKIT_OUT=$PWD/out/scratch/keel/decokit-098 bun run guard bun run collide --only "$(cat out/scratch/keel/walk/pinned.txt)"; rm out/decokit/Models &amp;&amp; rmdir out/decokit</code>
+  <ul>
+  <li>Result: 465 pieces and 5,250 volumes, 45 measured now: 14 declared, 31 measured.</li>
+  <li>ShrubMound_TB was measured, because the worktree has no <code>out/decokit-097-extra</code>.</li>
+  </ul></li>
+</ol>
+<p><b>Earlier passes:</b></p>
+<ul>
+<li>3ae542690's "45 measured" came from an earlier pass at 07:29 with no manifest at all. It dropped the builders' own volumes, and 1c646793f replaced it.</li>
+<li>Since 5f4f10d93 (Splice, brief 103), <code>tools/decokit/collide_law.ts</code> holds this rule. Today's tool repeats step 3's result only from an export by today's <code>export_kit</code>, which writes <code>collide_by</code>. From the 11-08 rows, the two entrances read as pins and would be measured.</li>
+</ul>
 
 <h2>Zone-wide gap check</h2>
 <p><code>sim/data/handover.gaps.json</code> (<code>tools/sim/gaps.ts</code>) lists every gap of 80 to 300 cm between two of the walk's solids with no third solid in it, found on the solids' own geometry. 80 cm is two clearances plus two raster cells. Each gap must be crossed both ways by the engine's own route, passing between the two solids, at most 1 m longer than the straight line (<code>suborned-sim gaps</code>, test <code>Gaps.cs</code>).</p>

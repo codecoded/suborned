@@ -68,3 +68,13 @@ Glint's probe fix wasn't picked, so it's not started.
 - **A plain `bun run collide` regresses the walk law.** It also re-declared 43 other pieces from `collide097.json`, which undoes engine 0.49.0's solids-as-built (31 measured pieces went back to declared). That part was left out. Splice is fixing the tool and adding a test.
 - **Next:** Latch's full batch with the new ball, then one build for Sky.
 
+**Splice's fix (5f4f10d93), confirmed by Keel.**
+- `collide_law.ts` states 0.49.0's rule: a builder's row or an extra root's row declares, everything else is measured, and 097 pins count only when `PINNED` is on (and a test fails if it is).
+- A plain run's plan keeps all 466 records.
+- Keel's measuring command is now recorded in `briefs/098/keel/walk-law.html`.
+- **For Vela's next kit round (cleanup, not urgent):**
+  - re-export the 42 stale-manifest pieces and the two entrances with pins off (a normal `bun run decokit --only`, with AO and LODs; ShrubMound through `shrub097_extra.py` after `vertex_ao_extra.py`), to scratch first;
+  - compare each FBX's sha256 with `kit.json`;
+  - done when `bun run kit` copies nothing, `collide --plan` shows nothing to do, and neither contract changes.
+  - If a hash moves, it's a kit change.
+
