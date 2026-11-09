@@ -25,6 +25,11 @@ export const CLOCK = (() => { let best = ''; for (let m = 0; m < 10; m++) for (l
 
 /** The causes the host shows with no place after the short (HostWhy.cs NoPlace). */
 export const NO_PLACE = new Set(['start', 'more', 'cordon', 'loud', 'split', 'seal', 'gang', 'staff', 'let-go', 'cut']);
+/** Guide /24 (brief 102, Sky on the loitering card, 2026-11-09: "why is that a bad thing? What was the agent doing?"): a loiterer's report names who saw whom, and a camera
+ *  names its own place as a cut one does, so the host adds no place after it (HostWhy.cs NoPlace). /19 to /23 measure it with a place, as they ran. */
+export const NO_PLACE_24 = new Set([...NO_PLACE, 'loiter']);
+/** Whether the host adds no place after a cause's short under guide `v`. */
+export const noPlace = (key: string, v: number) => (v >= 24 ? NO_PLACE_24 : NO_PLACE).has(key);
 /** The why causes a lozenge card shows (HostCrucial TakeWhy): every Alert rise but the start (no card: the Alert was already up), every police call but the seal
  *  (never a card); `report` and `robots` show their cause's short and place ({cause}), so they are held through the Alert causes. */
 export const onLozenge = (group: 'alert' | 'police', k: string) => group === 'alert' ? k !== 'start' : !['seal', 'report', 'robots'].includes(k);
@@ -60,9 +65,10 @@ export function widestFill(words: Words, group: 'alert' | 'police', key: string,
   if (!set) throw new Error(`${group}.${key}: no words for {${fill}} on the lozenge`);
   return words[set].reduce((a, b) => (lozengePx(b) > lozengePx(a) ? b : a));
 }
-/** A short as the lozenge draws it at its widest: the short with each fill at its widest, the place (`place` px of room, none for a cause with no place), the clock. */
-export function lozengeWidth(words: Words, group: 'alert' | 'police', key: string, short: string, place: number) {
+/** A short as the lozenge draws it at its widest: the short with each fill at its widest, the place (`place` px of room, none for a cause with no place: `none`, /19's
+ *  set unless the caller passes its guide's, noPlace), the clock. */
+export function lozengeWidth(words: Words, group: 'alert' | 'police', key: string, short: string, place: number, none = NO_PLACE.has(key)) {
   const filled = short.replace(/\{([a-z]+)\}/g, (_, f: string) => widestFill(words, group, key, f));
-  const px = lozengePx(filled) + (NO_PLACE.has(key) ? 0 : lozengePx(' ') + place) + lozengePx(CLOCK);
+  const px = lozengePx(filled) + (none ? 0 : lozengePx(' ') + place) + lozengePx(CLOCK);
   return { filled, px: Math.round(px * 10) / 10 };
 }

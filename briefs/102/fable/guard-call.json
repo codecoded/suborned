@@ -1,0 +1,591 @@
+{
+ "schema": "suborned.guard-call/1",
+ "status": "In text.json (Fable, 2026-11-09), for Sky's read on briefs/102/fable/guard-call.html before Latch builds them in. The rows carry `hand` (no run of the style loop replaces them); not scored (a judge run needs Sky's approval). Each line was read in every case `cases` lists, and each row before and after the other speaker's lines.",
+ "by": "Fable (dialogue designer), by hand",
+ "why": "Brief 102, Sky's calls on the guard (2026-11-09): option 1, the turned guard leaves his door when called, and step 4, nobody acts on a call after the cell's violence. Engine 0.51.0 (Keel, briefs/102/keel/report-turned-guard-call.md); Motive's spec, briefs/102/motive/turned-guard.md §1.3, §1.4, §2.2.",
+ "keys": "A row or scene `about` the guard is his own call (the one called is the one who leaves: HostCall.SummonAbout, Game.LureCalled); rows without `about` stay Inez's call's. The he-warns scene is keyed by `outcome`, since who warns on a pressed visit is not who called.",
+ "rows": [
+  {
+   "event": "confirm",
+   "speaker": "guard",
+   "temperament": "mercenary",
+   "lines": [
+    "Fine. My break starts now.",
+    "All right. The door can do without me."
+   ],
+   "cases": "Paid, helped or pressured (a Mercenary takes all three): business-like or grudging, never thanks for money that may not have been paid.",
+   "where": "His yes to the Fixer at his door; he is on his feet there whenever a call works."
+  },
+  {
+   "event": "confirm",
+   "speaker": "guard",
+   "temperament": "loyal",
+   "lines": [
+    "Against my better judgement. All right.",
+    "For you, then. I'll step away."
+   ],
+   "cases": "A Loyal guard is turned only by Help (people.rules: his Pay and Pressure replies are suspicious), so he owes the Fixer a kindness and bends his duty.",
+   "where": "His yes, reluctant."
+  },
+  {
+   "event": "guard-at-cafe",
+   "speaker": "waitress",
+   "about": "guard",
+   "lines": [
+    "You? In the middle of your shift?",
+    "Well, this is a surprise."
+   ],
+   "cases": "She never sent for him (his own call) and may know nothing of the cell: surprise, warm.",
+   "where": "At her post, where the visit meets her (brief 022)."
+  },
+  {
+   "event": "guard-at-cafe",
+   "speaker": "guard",
+   "about": "guard",
+   "lines": [
+    "Thought I'd come and see you.",
+    "Just looking in on you."
+   ],
+   "cases": "He came on the Fixer's word and gives her his own reason.",
+   "where": "Unpressed only: a pressed visit plays a warning."
+  },
+  {
+   "event": "summon-refused",
+   "speaker": "guard",
+   "outcome": "summon-busy",
+   "about": "guard",
+   "lines": [
+    "Now's no good. Leave it.",
+    "That'll have to keep."
+   ],
+   "cases": "summon-busy from his end: Inez down (knocked out, tied or dead, and he may not know it), or he isn't free (just come round and walking back, in a fight, or away from his door on an earlier visit: walking over, with her, walking back). No reason given, so nothing is untrue when he doesn't know she's down; said to the Fixer.",
+   "where": "Read before and after each of Inez's two lines, and alone."
+  },
+  {
+   "event": "summon-refused",
+   "speaker": "guard",
+   "outcome": "summon-came-once",
+   "about": "guard",
+   "lines": [
+    "I've been away once. I'm not pushing my luck.",
+    "Not again. I'm staying on this door."
+   ],
+   "cases": "He is back at his door, been away once on either call.",
+   "where": "busy comes first, so he is at the door."
+  },
+  {
+   "event": "summon-refused",
+   "speaker": "guard",
+   "outcome": "summon-alert",
+   "about": "guard",
+   "lines": [
+    "With the alarm up? I'm going nowhere.",
+    "Not while they're out searching."
+   ],
+   "cases": "Alert is checked after busy: he is at his door and on his feet.",
+   "where": "To the Fixer."
+  },
+  {
+   "event": "summon-refused",
+   "speaker": "guard",
+   "outcome": "summon-too-far",
+   "about": "guard",
+   "lines": [
+    "Too far to go on a break.",
+    "I'd never get there and back in time."
+   ],
+   "cases": "At his door; her post is too long a walk.",
+   "where": "Unreached in the Handover."
+  },
+  {
+   "event": "summon-refused",
+   "speaker": "guard",
+   "outcome": "summon-off-street",
+   "about": "guard",
+   "lines": [
+    "Inez isn't out. There's no sense going over.",
+    "With her indoors? I'd only be standing about."
+   ],
+   "cases": "Off the street from his end is hers (his pose is null only when he is down, which is person-down on his call): she is indoors with no post. He watches her café, so he knows she isn't out; the briefing names her.",
+   "where": "Unreached in the Handover: Inez always has her post."
+  },
+  {
+   "event": "summon-refused",
+   "speaker": "waitress",
+   "outcome": "summon-busy",
+   "about": "guard",
+   "lines": [
+    "Who was that, love?",
+    "Who's that on at you?"
+   ],
+   "cases": "Only within earshot of him (HostCall.TieHears from his end; never when she is down): she hears his side of a call she knows nothing of.",
+   "where": "Beside him on a visit, or near him dazed or fighting."
+  },
+  {
+   "event": "summon-refused",
+   "speaker": "waitress",
+   "outcome": "summon-came-once",
+   "about": "guard",
+   "lines": [
+    "Who wants you off that door again?",
+    "You've done enough running about, love."
+   ],
+   "cases": "Near him at his door; she knows he has been off it once, to see her.",
+   "where": "Within earshot only."
+  },
+  {
+   "event": "summon-refused",
+   "speaker": "waitress",
+   "outcome": "summon-alert",
+   "about": "guard",
+   "lines": [
+    "Quite right. Stay where you are, love.",
+    "Good. Don't you move from there."
+   ],
+   "cases": "Near his door with the alarm up: she agrees he should stay.",
+   "where": "Within earshot only."
+  },
+  {
+   "event": "summon-refused",
+   "speaker": "waitress",
+   "outcome": "summon-too-far",
+   "about": "guard",
+   "lines": [
+    "Who's sending you all that way?",
+    "Tell them no, love."
+   ],
+   "cases": "She hears him say it's too far; she doesn't know who asked.",
+   "where": "Within earshot only; unreached in the Handover."
+  },
+  {
+   "event": "summon-unanswered",
+   "speaker": "waitress",
+   "lines": [
+    "He's not answering.",
+    "No answer. That's not like him."
+   ],
+   "cases": "Inez's call, the guard down (knocked out, tied or dead) and she doesn't know it: she tries him and nobody answers. Untrue if she found him, saw him carried or was told: the host's pick, and Keel's read if those can happen.",
+   "where": "In place of her summon-busy line; he says nothing."
+  }
+ ],
+ "scenes": [
+  {
+   "kind": "call",
+   "verb": "call",
+   "about": "guard",
+   "temperament": "mercenary",
+   "result": "The guard took the call. He has left the door.",
+   "variants": [
+    {
+     "beats": [
+      {
+       "speaker": "fixer",
+       "line": "It's time, officer. Take your break now."
+      },
+      {
+       "speaker": "guard",
+       "ref": "confirm"
+      },
+      {
+       "speaker": "fixer",
+       "line": "Good man."
+      }
+     ]
+    },
+    {
+     "beats": [
+      {
+       "speaker": "fixer",
+       "line": "Officer? Now would suit us. Off you go."
+      },
+      {
+       "speaker": "guard",
+       "ref": "confirm"
+      },
+      {
+       "speaker": "fixer",
+       "line": "Thank you, officer."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "call",
+   "verb": "call",
+   "about": "guard",
+   "temperament": "loyal",
+   "result": "The guard took the call. He has left the door.",
+   "variants": [
+    {
+     "beats": [
+      {
+       "speaker": "fixer",
+       "line": "Officer, it's time. Could you step away from the door?"
+      },
+      {
+       "speaker": "guard",
+       "ref": "confirm"
+      },
+      {
+       "speaker": "fixer",
+       "line": "Thank you. I know what it costs you."
+      }
+     ]
+    },
+    {
+     "beats": [
+      {
+       "speaker": "fixer",
+       "line": "We're ready, officer. I'm sorry to ask it of you."
+      },
+      {
+       "speaker": "guard",
+       "ref": "confirm"
+      },
+      {
+       "speaker": "fixer",
+       "line": "You're a good man. Thank you."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "city",
+   "title": "The guard is at the café",
+   "about": "guard",
+   "event": "guard-at-cafe",
+   "sight": "in-sight",
+   "result": "The guard is at the café, away from the door.",
+   "variants": [
+    {
+     "beats": [
+      {
+       "speaker": "waitress",
+       "line": "Look who's left his door."
+      },
+      {
+       "speaker": "guard",
+       "line": "Thought you could do with some company."
+      },
+      {
+       "speaker": "waitress",
+       "line": "On a working day? You'll set tongues wagging."
+      },
+      {
+       "speaker": "guard",
+       "line": "Let them wag."
+      }
+     ]
+    },
+    {
+     "beats": [
+      {
+       "speaker": "guard",
+       "line": "Got a moment for me?"
+      },
+      {
+       "speaker": "waitress",
+       "line": "For you? Always. What's brought you over?"
+      },
+      {
+       "speaker": "guard",
+       "line": "Nothing much. I wanted to see you."
+      },
+      {
+       "speaker": "waitress",
+       "line": "Then stay a little."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "city",
+   "title": "The guard warns Inez",
+   "outcome": "he-warns",
+   "event": "guard-at-cafe",
+   "sight": "in-sight",
+   "result": "The guard warned Inez, and is hurrying back to his door.",
+   "variants": [
+    {
+     "beats": [
+      {
+       "speaker": "guard",
+       "line": "Somebody knows about us, Inez. I can't stop."
+      },
+      {
+       "speaker": "waitress",
+       "line": "Knows? What do you mean, knows?"
+      },
+      {
+       "speaker": "guard",
+       "line": "Keep your head down. I have to go."
+      }
+     ]
+    },
+    {
+     "beats": [
+      {
+       "speaker": "guard",
+       "line": "Someone's found out about us. I have to get back."
+      },
+      {
+       "speaker": "waitress",
+       "line": "Found out? Who has, love?"
+      },
+      {
+       "speaker": "guard",
+       "line": "Not now. Mind how you go."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "turnedResult": {
+  "before": "{who} is turned. There is nothing to call {who} for yet.",
+  "after": "{who} is turned. Call {who} off the door.",
+  "scenes": 4,
+  "why": "The guard's four turned approach scenes (Pay, Help, Pressure as a Mercenary, Help as a Loyal): under option 1 his call has a use."
+ },
+ "edits": [
+  {
+   "path": "names|targets|camera-mast-z0",
+   "after": "the mast camera",
+   "why": "Vantage may move the camera into the opening view: \"the square's\" would then be false, and the Intel already calls it \"Mast camera\". By its mount it is true wherever it stands, and 52 px narrower, which is what lets the loitering card name it (hand-whys-3.json).",
+   "before": "the square's mast camera"
+  },
+  {
+   "path": "actions|call|onTarget|guard",
+   "after": "The guard leaves his door for a while, then comes back.",
+   "why": "The Call card on the turned guard (offered under option 1). The base line, \"Call Inez to draw the guard off the door\", is wrong on him. It says what the order does and names nobody he'd go to (Motive §1.3: no name of who would come or where he'd go before the tie is known)."
+  },
+  {
+   "path": "locks|summon-busy|line",
+   "after": "Inez or the guard is down, or he's busy or away from the door.",
+   "why": "Under option 1 summon-busy is also \"she's down\" when the guard is called (GameCall.cs SummonRefusal). The old line said only the guard. Inez down never reaches this code on her own call (person-down comes first), nor the guard down on his, so \"Inez or the guard is down\" is always the partner. The Handover's briefing names the pair, so its base line may.",
+   "before": "The guard is down, busy or away from the door."
+  },
+  {
+   "path": "locks|summon-busy|byTarget|tie-unknown",
+   "after": {
+    "line": "Calling {who} won't work just now.",
+    "short": "Not now"
+   },
+   "why": "The general form (Motive §1.3): before a Listen on either of the pair, and with no briefing that names it, a shut way reads only as \"not now\". It names only {who}, the one called."
+  },
+  {
+   "path": "locks|summon-came-once|byTarget|tie-unknown",
+   "after": {
+    "line": "Calling {who} won't work for the rest of this shift.",
+    "short": "Not this shift"
+   },
+   "why": "General form. Not \"again\": once a shift is counted on the one who leaves, so Inez's call can shut the guard's own, which never worked before."
+  },
+  {
+   "path": "locks|summon-alert|byTarget|tie-unknown",
+   "after": {
+    "line": "Security is searching. Calling {who} won't work while the alarm is up.",
+    "short": "Alarm up"
+   },
+   "why": "General form: the alarm is the city's, so it may stay; nobody else is named."
+  },
+  {
+   "path": "locks|summon-saw-violence|line",
+   "after": "The guard saw what the cell did.",
+   "why": "Step 4's own law, read at both ends: the shut lock is a fact, never a rule (Motive §1.4: \"won't help you after that\" fails), so \"and won't come now\" goes, as call-saw-violence has none.",
+   "before": "The guard saw what the cell did and won't come now."
+  },
+  {
+   "path": "locks|summon-saw-violence|short",
+   "after": "Guard saw violence",
+   "why": "Step 4 put call-saw-violence (\"Saw violence\", the one called saw it) on the same row: on Inez's Call the old short read as if she saw it. Here the guard saw it, and the Handover may name him.",
+   "before": "Saw violence"
+  },
+  {
+   "path": "locks|summon-saw-violence|byTarget|tie-unknown",
+   "after": {
+    "line": "Calling {who} won't work now: someone saw what the cell did.",
+    "short": "Violence seen"
+   },
+   "why": "General form: someone the call needs saw it, unnamed; the short is passive, so it never reads as the one called."
+  },
+  {
+   "path": "locks|summon-too-far|byTarget|tie-unknown",
+   "after": {
+    "line": "Too far: the walk this call needs would take {tick}.",
+    "short": "Walk takes {tick}"
+   },
+   "why": "General form: the walk, named by nobody; the engine's number stays."
+  },
+  {
+   "path": "locks|summon-off-street|byTarget|tie-unknown",
+   "after": {
+    "line": "Calling {who} won't work while someone it needs is off the street.",
+    "short": "Off the street"
+   },
+   "why": "General form: someone it needs, unnamed."
+  },
+  {
+   "path": "debrief|route|guard-goes-to-waitress",
+   "after": "The Fixer called the guard, and he left the door to see Inez.",
+   "why": "Keel's placeholder said where he went. The end card says the real cause too (Sky's end-card rule), beside \"Inez drew the guard off the door.\"",
+   "before": "The guard left the door to see Inez."
+  },
+  {
+   "path": "debrief|page|how|answered",
+   "after": "on the Fixer's call",
+   "why": "The debrief page's note beside \"The guard is off the door\" on his own call. \"called\" is \"Inez called him over\", untrue on his call: Latch's HowCodes should map call.guard here, not to `called`."
+  },
+  {
+   "path": "debrief|page|trail|rows|call|row",
+   "after": "The Fixer's call to {who}",
+   "why": "The Trail row for a call read \"{who} called the guard over\": on his own call, \"the guard called the guard over\". The Fixer makes both calls, so this is true from either end.",
+   "before": "{who} called the guard over"
+  },
+  {
+   "path": "scenes|rules|kinds|call",
+   "after": "The Fixer calls a turned contact: Inez calls the guard over and he leaves his post for her, to hear what she has to say; or the turned guard takes the call himself and leaves his door to see her (brief 102, option 1). The driver has no call (brief 059): he acts on his own once turned.",
+   "why": "The rule's call kind gains the guard's own call.",
+   "before": "The Fixer calls a turned contact: Inez calls the guard over and he leaves his post for her, to hear what she has to say. The driver has no call (brief 059): he acts on his own once turned."
+  },
+  {
+   "path": "events|confirm",
+   "after": {
+    "kind": "reply",
+    "trigger": "the Fixer calls a turned contact: the contact confirms aloud (Chime voices it). Inez says she will call the guard over; the turned guard, called himself (brief 102, option 1), says he is leaving his door",
+    "speakers": [
+     "waitress",
+     "guard"
+    ],
+    "log": [
+     "call.waitress",
+     "call.guard"
+    ],
+    "verbs": [
+     "call"
+    ]
+   },
+   "why": "The guard's yes is a confirm (speaker guard, log call.guard), as Inez's is; the host's Beat(\"confirm\", \"call\", role) already reads it by speaker.",
+   "before": {
+    "kind": "reply",
+    "trigger": "the Fixer calls a turned contact: the contact confirms aloud (Chime voices it)",
+    "speakers": [
+     "waitress"
+    ],
+    "log": [
+     "call.waitress"
+    ],
+    "verbs": [
+     "call"
+    ]
+   }
+  },
+  {
+   "path": "events|guard-at-cafe",
+   "after": {
+    "kind": "world",
+    "trigger": "the guard reaches Inez: she keeps him talking (the payoff cut). Brief 102 (option 1): on his own call (`about` guard: Game.LureCalled) she never sent for him, so his rows and scene `about` guard play. On a pressed visit the one who remembers the Pressure warns the other (Inez first, if both: GameCall.cs visitWarner): when she does, the street lines of call-inez-pressure play instead; when he does, the city scene with outcome he-warns",
+    "speakers": [
+     "waitress",
+     "guard",
+     "scout"
+    ],
+    "log": [
+     "guard.at-cafe"
+    ]
+   },
+   "why": "His own call's arrival and his warning, and who warns on a pressed visit (Inez first, if both: GameCall.cs visitWarner), for Latch's pick.",
+   "before": {
+    "kind": "world",
+    "trigger": "the guard reaches Inez: she keeps him talking (the payoff cut). On a pressed call the street lines of call-inez-pressure play instead",
+    "speakers": [
+     "waitress",
+     "guard",
+     "scout"
+    ],
+    "log": [
+     "guard.at-cafe"
+    ]
+   }
+  },
+  {
+   "path": "events|summon-refused",
+   "after": {
+    "kind": "world",
+    "trigger": "the call is refused for a summon-* reason: the contact says why. On Inez's call she answers the Fixer, and the guard if he hears her (TieHears); when he is down she gets no answer (summon-unanswered). On the guard's own call (brief 102, option 1: rows `about` guard) he answers the Fixer, and Inez only if she is within earshot. call-saw-violence plays nothing: no card, no line",
+    "speakers": [
+     "waitress",
+     "guard"
+    ],
+    "note": "outcome is the refusal code; refused at no cost; `about` is the one the Fixer called, when the call is the leaver's own (HostCall.SummonAbout)"
+   },
+   "why": "`about` is the one the Fixer called, read as HostCall.SummonAbout reads it; call-saw-violence plays nothing.",
+   "before": {
+    "kind": "world",
+    "trigger": "the call is refused for a summon-* reason: the contact says why (Inez answers the Fixer; the guard, if he is within earshot)",
+    "speakers": [
+     "waitress",
+     "guard"
+    ],
+    "note": "outcome is the refusal code; refused at no cost"
+   }
+  },
+  {
+   "path": "events|summon-unanswered",
+   "after": {
+    "kind": "world",
+    "trigger": "Inez's call finds the guard down (summon-busy, he's down) and she doesn't know it: she tries him and nobody answers. Only she speaks, to the Fixer, in place of her summon-busy line (brief 102, Motive turned-guard.md §1.4)",
+    "speakers": [
+     "waitress"
+    ],
+    "note": "no log code: the host speaks it on the refused call's card (FeedSummonRefused) when the one who'd leave is down and the one called holds no memory of it; if she found him, saw him carried or was told, she knows, and these words are untrue"
+   },
+   "why": "New: Motive §1.4's case next to step 4. The host already knows he is down (TieHears), so no engine code."
+  },
+  {
+   "path": "less|price|fields|door",
+   "after": {
+    "text": "Door {clock}",
+    "shows": "how long a pressed call clears the public door, in text only, no icon: {clock} is Game.GuardCallWindows(role).pressed, in ticks, rounded to the nearest 10 s (989 ticks reads 1:40). On the Pressure way on either of the pair (Inez, and the guard since engine 0.51.0), and on the Call way once the visit would be the short one (Game.CallWouldBePressed: either of them remembers a Pressure)",
+    "hiddenWhen": "GuardCallWindows is null (nobody to call, the guard is down, busy, already called, or will not come, or the one called saw the cell's violence), or a Call that would not be the short visit"
+   },
+   "why": "A host note: Latch's DoorClock reads either of the pair since 0.51.0, and step 4 nulls the window.",
+   "before": {
+    "text": "Door {clock}",
+    "shows": "how long a pressed call clears the public door, in text only, no icon: {clock} is Game.GuardCallWindows(role).pressed, in ticks, rounded to the nearest 10 s (989 ticks reads 1:40). On the Pressure way on Inez, and on the Call way on Inez once a Pressure is remembered",
+    "hiddenWhen": "GuardCallWindows is null (nobody to call, the guard is down, busy, already called, or will not come), or a Call with no Pressure remembered"
+   }
+  }
+ ],
+ "kept": [
+  {
+   "path": "locks|call-saw-violence",
+   "words": {
+    "line": "{who} saw what the cell did.",
+    "short": "Saw violence",
+    "verbs": [
+     "call"
+    ]
+   },
+   "why": "Keel's placeholder kept: a fact in HUD words, no rule; {who} is the one called, so it names no partner. Its short is the one called's own row."
+  },
+  {
+   "path": "debrief|assets|guard-may-identify-fixer",
+   "words": "The guard, who could identify the Fixer.",
+   "why": "Keel's placeholder kept: Inez's line's twin, true when he remembers a Pressure (the Talker test)."
+  },
+  {
+   "path": "debrief|assets|guard-may-be-questioned",
+   "words": "The guard, though investigators may question him.",
+   "why": "Keel's placeholder kept: his trip is traced as staged, as hers is."
+  },
+  {
+   "path": "debrief|assets|guard-leaves-door-when-called",
+   "words": "The guard, who can step away from his door.",
+   "why": "Keel's placeholder kept: what he can do next time, as the driver's \"who can change a pickup\"."
+  }
+ ]
+}

@@ -457,9 +457,9 @@ describe('verbs and refusals', () => {
         for (const m of src.matchAll(/Note\("([a-z.\-]+)"/g)) codes.add(m[1]!);
         for (const m of src.matchAll(/Note\([^"()]*\?\s*"([a-z.\-]+)"\s*:\s*"([a-z.\-]+)"/g)) { codes.add(m[1]!); codes.add(m[2]!); } // Note(hit ? "shot.hit" : "shot.miss", …)
       }
-    // Note("call." + p.Role, …) builds the lovers' call code: expand it to the roles whose call can succeed. Brief 059 (engine 0.32.0): the driver's Call is retired (CallRefusal: nothing-to-call), so only Inez's call logs
+    // Note("call." + p.Role, …) builds the lovers' call code: expand it to the roles whose call can succeed. Brief 059 (engine 0.32.0): the driver's Call is retired (CallRefusal: nothing-to-call); brief 102 (engine 0.51.0, option 1): the turned guard's own call logs too
     expect(simAll().join('\n')).toContain('Note("call." + p.Role');
-    if (codes.delete('call.')) for (const r of ['waitress']) codes.add('call.' + r);
+    if (codes.delete('call.')) for (const r of ['waitress', 'guard']) codes.add('call.' + r);
     for (const c of ['scout.watch.watched', 'tech.watch.watched', 'fixer.watch.watched', 'enforcer.watch.watched', 'scout.listen.heard', 'scout.down', 'fixer.down', 'tech.down', 'enforcer.down']) codes.add(c);
     const spoken = new Set(Object.values(t.events).flatMap((e) => e.log ?? []));
     const covers = (code: string, set: Iterable<string>) => [...set].some((p) => (p.endsWith('.') ? code.startsWith(p) : code === p));
@@ -600,7 +600,7 @@ describe('scenes', () => {
       expect(sc.result).toMatch(/guard/);
       for (const v of sc.variants) { const who = new Set(v.beats.map((b) => b.speaker)); expect(who.has('waitress') && who.has('guard')).toBe(true); }
     }
-    expect(items.filter((x) => x.kind === 'call' && x.about !== 'waitress').map(sceneKey)).toEqual([]);
+    expect(items.filter((x) => x.kind === 'call' && !['waitress', 'guard'].includes(x.about ?? '')).map(sceneKey)).toEqual([]); // brief 102: the guard's own call (call.test.ts)
     expect(lookupScene(t, { kind: 'call', verb: 'call', about: 'driver', temperament: 'loyal' })?.about).not.toBe('driver');
     expect(JSON.stringify(t.actions.call)).not.toMatch(/driver|camera/);
     // a turned driver is told what he does now, not that the Fixer can call him to blind a camera
@@ -817,7 +817,7 @@ describe('the dialogue', () => {
     for (const role of ['waitress']) for (const temp of TEMPERAMENTS) if (lookup(t, { event: 'confirm', verb: 'call', speaker: role, temperament: temp })?.temperament !== temp) bad.push(`confirm ${role} ${temp}`);
     // brief 059: the driver confirms no call (he has none): no line, and the event does not list him
     expect(t.dialogue.filter((e) => e.event === 'confirm' && e.speaker === 'driver')).toEqual([]);
-    expect(t.events.confirm!.speakers).toEqual(['waitress']); expect(t.events.confirm!.log).toEqual(['call.waitress']);
+    expect(t.events.confirm!.speakers).toEqual(['waitress', 'guard']); expect(t.events.confirm!.log).toEqual(['call.waitress', 'call.guard']); // brief 102: the guard's yes (call.test.ts)
     for (const verb of ['take', 'enter']) for (const temp of allowedTemperaments(people, 'councillor')!) if (lookup(t, { event: 'taken', verb, speaker: 'councillor', temperament: temp })?.temperament !== temp) bad.push(`taken ${verb} ${temp}`);
     expect(bad).toEqual([]);
   });

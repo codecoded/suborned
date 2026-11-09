@@ -1,0 +1,35 @@
+{
+ "schema": "suborned.hand-barks/1",
+ "status": "In text.json as Fable's hand edit: the cause carries `hand` (why.schema.ts WHY_HAND), so no writer run has it and `apply` never writes it (guide /22). Not scored: a judge run needs Sky's approval. Measured on the news lozenge at guide /24 (no place after it): \"the entrance camera saw the Enforcer idling\" is 252.2 px of 255.6 at the widest fills; Sky's case, \"the mast camera saw the Fixer idling · 2:46\", is 247.8 px of the 296 px box.",
+ "by": "Fable (dialogue designer), by hand",
+ "why": "Aster, 2026-11-09, from Sky's question on the loitering card: say who was seen and who saw, in plain words, within the lozenge's fit, no rule-explaining, and true wherever Vantage stands the mast camera.",
+ "edits": [
+  {
+   "family": "why/reported",
+   "key": "alert.loiter",
+   "field": "title",
+   "before": "In sight too long",
+   "after": "Seen hanging about",
+   "kind": "PLAIN",
+   "why": "\"In sight too long\" read out the rule (a time limit). The title says what happened, in the line's words."
+  },
+  {
+   "family": "why/reported",
+   "key": "alert.loiter",
+   "field": "short",
+   "before": "an agent stayed too long",
+   "after": "{who} saw {agent} idling",
+   "kind": "TRUE",
+   "why": "Sky, on \"Robots coming / an agent stayed too long beside the café · 2:46\": \"why is that a bad thing? What was the agent doing?\" The short now says who saw, who was seen and what they seemed to do. A watcher's clock counts while an agent stands still, idle or Watching (GameAttention.cs), so \"idling\" is what any watcher sees; \"waiting\" was 5 px over at the widest pair, the entrance camera and the Enforcer, and untrue for a Watch. No place follows it from guide /24 (a camera names its own, as a cut one does): Latch adds loiter to HostWhy.cs NoPlace."
+  },
+  {
+   "family": "why/reported",
+   "key": "alert.loiter",
+   "field": "line",
+   "before": "{who} reported {agent} for staying in sight too long.",
+   "after": "{who} saw {agent} hanging about {where}.",
+   "kind": "PLAIN",
+   "why": "\"reported {agent} for staying in sight too long\" explained the rule. The line is what the watcher saw, where (the agent's place, so it holds wherever the camera stands); the host adds what the Alert set off."
+  }
+ ]
+}

@@ -3,6 +3,7 @@ import { VoiceSheet, type Field, type Pattern, type ShortBrief, type ShortGuideV
 import { FAMILIES_13, GONE_13, REACTS_13, reply13, scene13, WORLD_13 } from './short-natural';
 import { ANSWER_14, family14, MISLEAD_14, scene14 } from './short-natural14';
 import { GUARD_BUSY_18, RADIO_18, SUMMON_18 } from './short-hand18';
+import { guard102 } from './short-guard102';
 import { speech12, VOICE_SHEET } from './short-voice';
 
 /** The bark table (text.json `dialogue`) as families, one run each: what each bark must tell the player, from the event's own trigger,
@@ -23,7 +24,7 @@ export const BARK_FAMILIES: { id: string; title: string; pick: (r: Row) => boole
   { id: 'bark/reply-driver-ask-pay', title: 'The driver answers Ask and Pay', pick: r => r.event === 'reply' && r.speaker === 'driver' && ['ask', 'pay'].includes(r.verb!) },
   { id: 'bark/reply-driver-help-pressure', title: 'The driver answers Help and Pressure', pick: r => r.event === 'reply' && r.speaker === 'driver' && ['help', 'pressure'].includes(r.verb!) },
   { id: 'bark/reply-guard-popovic', title: 'The guard answers; Popovic is taken', pick: r => (r.event === 'reply' && r.speaker === 'guard') || r.event === 'taken' },
-  { id: 'bark/summons', title: 'The call refused; questioned later', pick: any('summon-refused', 'questioned') },
+  { id: 'bark/summons', title: 'The call refused; questioned later', pick: any('summon-refused', 'summon-unanswered', 'questioned') }, // brief 102: nobody answers her call
   { id: 'bark/clock', title: 'The mission\'s clock: the chime, Popovic, the rival car, the driver', pick: any('chime', 'last-turn', 'vale-exits', 'vale-at-car', 'rivals-coming', 'rivals-arrive', 'rivals-follow-car', 'car-parks', 'car-leaves', 'driver-tail', 'close-warning') },
   { id: 'bark/guard-call', title: 'The guard off his door and back', pick: any('guard-lured', 'guard-at-cafe', 'guard-leaves-cafe', 'guard-back', 'guard-recalled', 'guard-woken', 'guard-stands-down') },
   { id: 'bark/machines', title: 'Cameras, the loop and the patrol', pick: any('camera-shot', 'camera-reported', 'loop-ends', 'patrol-rerouted', 'patrol-returns', 'patrol-breaks', 'patrol-alarm', 'patrol-stands-down', 'patrol-resumes', 'patrol-sweep', 'post-missed') },
@@ -245,6 +246,7 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
     const sc = v >= 13 ? sceneAt(v)(r, text.actions[r.verb!]?.does ?? '') : null; // guide /13: the cell's scene lines, said to the person
     if (sc) return sc.tells;
     if (v >= 14 && r.event === 'rivals-misled') return ANSWER_14.tells; // guide /14: the rival answers the Scout's tip, to her face
+    const g102 = guard102(r, temp); if (g102) return g102; // brief 102: the guard's end of the call, rows no older run's text has
     switch (r.event) {
       case 'ack': if (v >= 12) return `Say what only ${who} would say as they take this order, now: how they take the job, a feeling or a detail the card can't give; never the order read back. Facts, on the order's card already and not to be read out: "${text.actions[r.verb!]?.does ?? ''}" ${ORDER[`${r.verb}/${r.outcome}`] ?? ORDER[r.verb!] ?? ''}`.trim();
         return v >= 4

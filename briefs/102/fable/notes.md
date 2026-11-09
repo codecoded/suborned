@@ -335,3 +335,57 @@ Aster: the judge's 26 findings on `bark/witnesses-crowd` and `bark/summons` incl
 - **New:** `briefs/102/fable/hand-barks-2.json`, `tools/style-agent/short-hand18.ts`, the 2 runs in `runs/style-agent/short/`.
 - **Changed:** `contracts/missions/handover/text.json` (23 rows, each marked `hand`; no key moved); `tools/style-agent`: `short-types.ts`, `short-barks.ts`, `short-briefs.ts`, `short-evidence.ts`, `cli.ts`, `hand.test.ts`, `README.md`; `briefs/102/fable/sweep.html` (the new section, a line in "For your read") and these notes.
 - **Scratch:** `out/scratch/fable/102d/` (check-hand, apply-hand, sheet, verify-all, peek18, the judge, test and export logs).
+
+
+## The guard's end of the call, and the loitering card (Fable, 2026-11-09)
+
+Sky's calls on the guard (option 1: he leaves his door when called; step 4: nobody acts on a call after the cell's violence), built in engine 0.51.0 (Keel, `briefs/102/keel/report-turned-guard-call.md`; Motive `briefs/102/motive/turned-guard.md` §1.3, §1.4, §2.2). Then Aster's question from Sky on the loitering card. **Sky's read:** `briefs/102/fable/guard-call.html` (self-contained, Jost Medium embedded so the lozenge draws at its real width). **Record:** `guard-call.json` (14 rows, 4 scenes, 20 edits, 4 of Keel's placeholders kept) and `hand-whys-3.json` (the loiter cause). Every row marked `hand`; not scored (a judge run needs Sky's approval).
+
+### The keys (Latch reads them)
+- **`about` is the one the Fixer called**, on rows and scenes where the words differ by end, as Latch's `HostCall.SummonAbout` already reads it. A row with no `about` stays Inez's call's, so her lines don't move.
+- **The call scene:** `scenes.items` `kind call, about guard`, Mercenary and Loyal (a guard is never Idealist or Fearful). The Fixer's ask is a literal beat, since a `ref: ack` would play Inez's ack row ("Inez, we're counting on you…"); his yes is `confirm/call/guard/<temperament>` (`events.confirm` now lists the guard and `call.guard`).
+- **Refused, his end:** `summon-refused/guard/<code>/guard` for busy, came-once, alert, too-far and off-street: what the engine can give from his end (the one called is the one who leaves, so his memory of violence is `call-saw-violence`, and no-visit never comes from his end). Inez's `…/waitress/<code>/guard` for what she can overhear: busy, came-once, alert, too-far; off the street she can't hear.
+- **`summon-unanswered`** (new event, no log code): Inez's call to a guard who is down and she doesn't know it. Latch plays it in place of her summon-busy line when the one who'd leave is down.
+- **The café, his own call:** `guard-at-cafe/<speaker>/guard` rows and a city scene `about guard`, after Inez's scene so today's host still plays hers first. **His warning on a pressed visit:** a city scene `outcome he-warns`. The street lines are picked by who remembers the Pressure (Inez first, as `GameCall.cs` `visitWarner`), not by who called. Latch's `StreetFor(LureCalled)` would show "she warns him" on his pressured call, and nothing when he was the one pressured on hers.
+- **Locks:** `byTarget.tie-unknown`, a new lock variant (`text.schema.ts` `LOCK_VARIANTS`): the general form before a Listen (Motive §1.3), naming only `{who}`. The host passes it as `ctx.variant`. The Handover's briefing names the pair, so its base lines stay.
+- **Debrief:** `debrief.page.how.answered` ("on the Fixer's call") for `call.guard`. Latch's working tree maps `call.guard` to `called`, which is "Inez called him over".
+
+### What changed beyond the brief, and why
+- **The guard's four turned results** said "There is nothing to call {who} for yet." Now: "{who} is turned. Call {who} off the door."
+- **`actions.call.onTarget.guard`:** the base line ("Call Inez to draw the guard off the door") was wrong on his Call card. It names nobody he'd go to.
+- **The Trail row** read "the guard called the guard over" on his call. Now: "The Fixer's call to {who}".
+- **`summon-saw-violence`:** its short was "Saw violence", the same as step 4's `call-saw-violence`, so on Inez's row it read as if she saw it. Now "Guard saw violence", and the line drops "and won't come now" (a rule in a shut lock, Motive §1.4).
+- **`names.targets.camera-mast-z0`:** "the square's mast camera" became "the mast camera". It is true wherever Vantage stands it, and the Intel already says "Mast camera". It is also what lets the loitering card name it.
+
+### The loitering card (`why.alert.loiter`, guide /24)
+- Title "Seen hanging about"; short "{who} saw {agent} idling"; line "{who} saw {agent} hanging about {where}."
+- The lozenge's short has 142.9 px with a place, and "the square's mast camera" alone is 144.8. So the short drops the place (guide /24, `NO_PLACE_24`; Latch adds `loiter` to `HostWhy.cs` `NoPlace`), and the camera's name is shorter.
+- At the widest pair, "the entrance camera saw the Enforcer idling", the short is 252.2 px of 255.6. Sky's case, "the mast camera saw the Fixer idling · 2:46", is 247.8 px of the 296 px box. "Waiting" was 5 px over and wrong for a Watch.
+- /19 to /23 keep a place after it, so their runs rebuild with their room.
+
+### Open
+- **Keel:** "He's not answering" is untrue if Inez found the guard down, saw him carried or was told. Those memories aren't in the violence list, so her Call isn't shut. The host needs a read of whether she knows.
+- **Latch:** the keys above. Also: HostWhy `NoPlace` + `loiter`; HowCodes `call.guard` → `answered`; StreetFor by who warns; `About` on the café's WorldBeat and CityScene (LookupScene, as `witness-reacts` does).
+- **Hint H5** ("Inez acts on a call. Click her…") rings only for Inez today. If it rings for the guard, its line needs `{who}`.
+- **Vantage:** the mast camera's Intel lines say "over the square" and "covers the square". They need its new place if it moves.
+- **No feed beat for his call.** None of the eleven fits ("Inez called the guard." is hers), and the cap is Sky's. His call shows as bubbles and in the history.
+- **Not run:** the export to the player (Latch is in `unity/Assets`) and `bun run hostlogic`.
+
+### Checks
+- `bun test contracts/missions/handover`: 213/213 (the new `call.test.ts` 10).
+- `bun test tools/style-agent`: 101/101 (the new `hand-whys-3.test.ts` 3).
+- Every saved style-agent run rebuilds exactly (`out/scratch/fable/102e/verify-all.ts`).
+- `bun tools/lint/comments.ts`: 0 hits.
+- `bun run typecheck`: clean (exit 0). An earlier run caught 7 errors in `tools/hud-budget/budget.ts` while someone else was mid-edit there; not this round, and gone once their edit landed.
+- **The dialogue objective:** the two schema edits (and 101's `why.schema.ts`) moved its hash. Declared with `bun tools/drift-auto/cli.ts --objective dialogue --base d7d83de8c`: 3/3 runs replay OK.
+
+### Files
+- **New:**
+  - `contracts/missions/handover/call.test.ts`;
+  - `tools/style-agent/short-guard102.ts`, `hand-whys-3.test.ts`;
+  - `briefs/102/fable/guard-call.html`, `guard-call.json`, `hand-whys-3.json`.
+- **Changed:**
+  - `contracts/missions/handover/text.json`, `text.schema.ts` (`tie-unknown`; same lines), `speech.schema.ts` (`HAND_WORDS` takes any date), `text.test.ts` (in place: `call.guard`, the guard's call scenes, the confirm pins);
+  - `tools/style-agent/short-barks.ts`, `short-lozenge.ts`, `short-whys19.ts`, `short-types.ts` (/24), `lozenge.test.ts`, `short.test.ts` (the row count 492 → 506), `README.md`;
+  - `tools/levels/dialogue/drift.json`.
+- **Scratch:** `out/scratch/fable/102e/` (apply, record, page, the loiter fits, verify-all).

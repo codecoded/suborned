@@ -7,7 +7,7 @@ import { TEXT_FILE } from './guide';
 import { loadShortBriefs } from './short-briefs';
 import { checkShort, mergeWhy } from './short-checks';
 import { loadShortGuide } from './short-guide';
-import { ADVANCE, CLOCK, fillWords, LOZENGE, lozengePx, lozengeWidth, NO_PLACE, onLozenge, placeRoom } from './short-lozenge';
+import { ADVANCE, CLOCK, fillWords, LOZENGE, lozengePx, lozengeWidth, NO_PLACE, noPlace, onLozenge, placeRoom } from './short-lozenge';
 import { shortPrompt } from './short-prompts';
 import { sameRubric, SHORT_NOW, type ShortBrief, type ShortSet } from './short-types';
 import { room } from './short-whys19';
@@ -63,7 +63,7 @@ describe('guides /19 to /21: the news lozenge\'s line (brief 101)', () => {
       expect(i.tells, i.key).toContain('stays as it is');
     }
     expect(room('loiter', V)).toBeLessThan(room('cut', V)); expect(NO_PLACE.has('cut')).toBe(true); // a cause with no place has the place's room too
-    expect(SHORT_NOW).toBeGreaterThanOrEqual(V); expect(room('loiter', 19)).toBe(146.7); expect(room('loiter', 20)).toBe(142.9); expect(room('loiter', 21)).toBe(142.9); // /19's runs rebuild with /19's room
+    expect(SHORT_NOW).toBeGreaterThanOrEqual(V); expect(room('loiter', 19)).toBe(146.7); expect(room('loiter', 20)).toBe(142.9); expect(room('loiter', 21)).toBe(142.9); expect(room('loiter', 23)).toBe(142.9); expect(room('loiter', 24)).toBe(255.6); // /19's runs rebuild with /19's room; from /24 no place follows a loiterer's report
     expect(sameRubric(loadShortGuide(root, 20), guide)).toBe(true); // /21 changes the places' facts only, so a /20 run continues under it
     expect(family('why/places').items.find(i => i.key === 'places.cabinet')!.tells).toContain('"the cabinet" on the label of an act there');
     expect(placeRoom(20)).toBe(lozengePx('at the service drive')); expect(lozengePx('at the square\'s bay')).toBeLessThanOrEqual(placeRoom(20)); // the HUD's stand names fit from /20
@@ -81,7 +81,7 @@ describe('guides /19 to /21: the news lozenge\'s line (brief 101)', () => {
   test('the code measures each short at its widest on the lozenge: over its room it fails, within it passes; an AI-sounding word fails a why', () => {
     const b = family('why/reported'), words = fillWords(text), base = today(b);
     const long = issues(b, edit(base, 'alert.loiter', '{who} saw {agent} stay too long'));
-    expect(long.some(x => x.startsWith('SHORT alert.loiter.short:') && x.includes('the square\'s mast camera saw the Enforcer stay too long') && x.includes(`has ${room('loiter', V)} px`))).toBe(true);
+    expect(long.some(x => x.startsWith('SHORT alert.loiter.short:') && x.includes('the entrance camera saw the Enforcer stay too long') && x.includes(`has ${room('loiter', V)} px`))).toBe(true);
     const fits = issues(b, edit(base, 'alert.loiter', '{agent} hung about'));
     expect(fits.filter(x => x.includes('alert.loiter'))).toEqual([]);
     expect(lozengeWidth(words, 'alert', 'loiter', '{agent} hung about', PLACE).px).toBeLessThanOrEqual(LOZENGE.box);
@@ -98,14 +98,15 @@ describe('guides /19 to /21: the news lozenge\'s line (brief 101)', () => {
     expect(guide.sources.find(s => s.id === 'lozenge')!.excerpt).toContain('the news lozenge\'s why lines must fit the box');
   });
   test('today\'s why lines pass the current guide\'s code checks, every family', () => {
-    for (const b of briefs.filter(x => x.kind === 'why')) expect(issues(b, today(b)), b.id).toEqual([]);
+    const now = loadShortGuide(root, SHORT_NOW); // every cause as it plays (a hand run's families), held to today's guide: from /24 no place follows a loiterer's report
+    for (const b of loadShortBriefs(root, SHORT_NOW, true).filter(x => x.kind === 'why')) expect(checkShort(b, today(b), now, { why: text.why }).map(i => `${i.rule} ${i.reason}`), b.id).toEqual([]);
   });
   test('today\'s text fits the lozenge: every why it shows at its widest fills, every place within its room, every card line', () => {
     const words = fillWords(text), over: string[] = [];
     for (const g of ['alert', 'police'] as const) for (const [k, c] of Object.entries(text.why[g] as Record<string, { short: string; variants?: Record<string, { short?: string }> }>)) {
       if (!onLozenge(g, k)) continue;
       for (const s of [c.short, ...Object.values(c.variants ?? {}).map(v => v.short).filter((x): x is string => !!x)]) {
-        const { filled, px } = lozengeWidth(words, g, k, s, PLACE); if (px > LOZENGE.box) over.push(`${g}.${k}: ${px} px "${filled}"`);
+        const { filled, px } = lozengeWidth(words, g, k, s, PLACE, noPlace(k, SHORT_NOW)); if (px > LOZENGE.box) over.push(`${g}.${k}: ${px} px "${filled}"`);
       }
     }
     for (const [k, p] of Object.entries(text.why.places as Record<string, string>)) if (lozengePx(p) > PLACE) over.push(`places.${k}: ${lozengePx(p)} px "${p}"`);

@@ -1,4 +1,4 @@
-import { CLOCK, fillWords, LOZENGE, lozengePx, lozengeWidth, NO_PLACE, onLozenge, placeRoom, widestFill } from './short-lozenge';
+import { CLOCK, fillWords, LOZENGE, lozengePx, lozengeWidth, noPlace, onLozenge, placeRoom, widestFill } from './short-lozenge';
 import type { Field, ShortBrief, ShortGuideVersion, ShortItem, ShortKindRules } from './short-types';
 
 /** Guide /19 (brief 101, Latch's r4, 2026-11-09): the why texts the news lozenge shows, held to its box. The lozenge draws a card's title over one line, "{short}
@@ -9,7 +9,7 @@ type Facts = { FILL: Record<string, string>; FILL_BY: Record<string, Record<stri
 type W = { title?: string; short?: string; line?: string; variants?: Record<string, W> };
 
 /** The px a cause's short may take under guide `v`: the box less the clock, and less a space and a place where the host adds one. */
-export const room = (key: string, v: number) => Math.floor((LOZENGE.box - lozengePx(CLOCK) - (NO_PLACE.has(key) ? 0 : lozengePx(' ') + placeRoom(v))) * 10 + 1e-9) / 10; // 1e-9: 142.9 is 142.8999… in floats
+export const room = (key: string, v: number) => Math.floor((LOZENGE.box - lozengePx(CLOCK) - (noPlace(key, v) ? 0 : lozengePx(' ') + placeRoom(v))) * 10 + 1e-9) / 10; // 1e-9: 142.9 is 142.8999… in floats
 /** About how many characters `px` holds at the lozenge's mean (5.8 px a character at 13 px: Latch's line, 74 characters in 430 px). */
 export const aboutChars = (px: number) => Math.floor(px / 5.8);
 /** A short a host test reads, kept word for word (brief 100's HUD tests: the meter's "More police" row). */
@@ -58,14 +58,14 @@ export function whyBriefs19(text: any, b18: ShortBrief[], f: Facts, v: ShortGuid
   const item = (group: Group, k: string, path: string, x: W, base: W, label: string): ShortItem => {
     const [told, ids] = (group === 'alert' ? f.ALERT : f.POLICE)[k]!, tells = (v >= 23 && group === 'alert' ? ALERT_23[k] : undefined) ?? told;
     const short = x.short ?? base.short!, title = x.title ?? base.title!, line = x.line ?? base.line!;
-    const { filled, px } = lozengeWidth(words, group, k, short, place), where = NO_PLACE.has(k) ? '' : v >= 20 ? ' at the service drive' : ' at the official door';
+    const none = noPlace(k, v), { filled, px } = lozengeWidth(words, group, k, short, place, none), where = none ? '' : v >= 20 ? ' at the service drive' : ' at the official door';
     const field: Field = { id: 'short', form: 'short', words: 6, chars: 56, count: 1, keep: KEEP[`${group}.${k}`] ? [KEEP[`${group}.${k}`]!] : [], patterns: [], lozenge: room(k, v),
       fills: ids.filter(id => !['where', 'clock', 'cause'].includes(id)).map(id => ({ id, means: means(k, id), widest: widestFill(words, group, k, id) })) };
     const old = all23 ? items18.get(path) : undefined, more = (id: 'title' | 'line') => old?.fields.filter(g => g.id === id).map(g => ({ ...g, fills: g.fills.map(y => ({ ...y, means: means(k, y.id) })) })) ?? [];
     const fields = all23 ? [...more('title'), field, ...more('line')] : [field], said = (id: 'title' | 'line') => fields.some(g => g.id === id) ? { [id]: [x[id]!] } : {};
     return { key: path, where: all23 ? SHOWN + SHOWN_23[group] : SHOWN, speaker: null, fields, current: { ...said('title'), short: [short], ...said('line') }, stays: 'The host reads it for every rise of this cause (why.schema.ts).',
-      tells: `${label}: ${tells} On the lozenge the card's title over it reads "${group === 'alert' ? alertTitle : title}". ${NO_PLACE.has(k)
-        ? 'The host adds no place after this short: the line is the short and the clock.' : `The host adds the place after it ("…${where}", any place up to ${place} px), then the clock.`} ${all23 ? 'Its line says it in full, on hover and in the Journal.' : `Its line stays as it is and says it in full, on hover and in the Journal: "${line}"`} Today at its widest the lozenge reads "${filled}${NO_PLACE.has(k) ? '' : ' [place]'}${CLOCK}", ${px} px of ${LOZENGE.box}${px > LOZENGE.box ? ', cut off' : ''}.` };
+      tells: `${label}: ${tells} On the lozenge the card's title over it reads "${group === 'alert' ? alertTitle : title}". ${none
+        ? 'The host adds no place after this short: the line is the short and the clock.' : `The host adds the place after it ("…${where}", any place up to ${place} px), then the clock.`} ${all23 ? 'Its line says it in full, on hover and in the Journal.' : `Its line stays as it is and says it in full, on hover and in the Journal: "${line}"`} Today at its widest the lozenge reads "${filled}${none ? '' : ' [place]'}${CLOCK}", ${px} px of ${LOZENGE.box}${px > LOZENGE.box ? ', cut off' : ''}.` };
   };
   const causes = (group: Group, keys: string[]) => keys.filter(k => onLozenge(group, k) && !byHand(group, k)).flatMap(k => {
     const c = w[group][k] as W, label = `${group === 'alert' ? 'Alert' : 'Police'} cause "${k}"`;
