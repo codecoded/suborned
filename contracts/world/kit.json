@@ -96131,19 +96131,20 @@
    "pivot": "origin-ground",
    "pivotOffset": [
     0,
-    1.55
+    1.585
    ],
    "front": "+Z",
-   "tris": 8450,
+   "tris": 10188,
    "materials": [
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam",
     "DK_Enamel_Mint",
     "DK_Brass_Civic",
     "DK_Lamp_Deco",
-    "DK_Chrome",
+    "DK_Nickel_Satin",
     "DK_GlassDark",
     "DK_Enamel_Charcoal",
+    "DK_Chrome",
     "DK_Limestone",
     "DK_Cloth_Seafoam",
     "DK_Banner_Comet_Seafoam",
@@ -96153,12 +96154,12 @@
    "lods": [
     {
      "file": "Models/Plaza/DK_RecordsEntrance_L1.fbx",
-     "tris": 1815,
+     "tris": 2192,
      "screen": 0.008
     },
     {
      "file": "Models/Plaza/DK_RecordsEntrance_L2.fbx",
-     "tris": 430,
+     "tris": 516,
      "screen": 0.003
     }
    ],
@@ -96168,8 +96169,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Plaza/DK_RecordsEntrance.fbx",
-     "sha256": "7a054df8dcb4c63fc0c717e299584d47fba8a599c1935b6db68fd266d31fbae5",
-     "bytes": 229516
+     "sha256": "49d84b6d76b4e6ed62d7891a67b7cbc9937b203116b51caea999e6957a4e2f20",
+     "bytes": 255388
     },
     {
      "root": "generated",
@@ -96244,15 +96245,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Chrome.mat",
-     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
-     "bytes": 4084
+     "path": "Materials/DK_Nickel_Satin.mat",
+     "sha256": "ba67db0aa43ba834b024360eb8362ad2626ddc9d3c1a4e0089cfd0e5f63aeba1",
+     "bytes": 4043
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Chrome.mat.meta",
-     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "path": "Materials/DK_Nickel_Satin.mat.meta",
+     "sha256": "b2389957ed9e24219e3e893200164803ed705389ddf1f1121a6da314aaf7a625",
      "bytes": 188
     },
     {
@@ -96281,6 +96282,20 @@
      "role": "material-meta",
      "path": "Materials/DK_Enamel_Charcoal.mat.meta",
      "sha256": "ce702950c476b32bd295b298169282db67ad3c1dbfe1a6f85b698a657d1a906b",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
      "bytes": 188
     },
     {
@@ -96455,15 +96470,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_RecordsEntrance_L1.fbx",
-     "sha256": "005778b922b19caa9608463a1b0e5b7479abe210037068d2749aeca993c84a99",
-     "bytes": 99260
+     "sha256": "aec908c4cb117e12f879bc31ed63405304202ddaf8171737f1af9bfda31864ff",
+     "bytes": 110444
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_RecordsEntrance_L2.fbx",
-     "sha256": "143ba43b712a453ef1820c3abf5ac18257b24e38bc632862bb5ef5559f3ff57d",
-     "bytes": 49452
+     "sha256": "f7e791284d73f95fcdf7fa573da6d2fcd40a15cacb2a2e144a9676d3eb77ec0d",
+     "bytes": 54172
     }
    ],
    "tags": {
@@ -96501,9 +96516,10 @@
     "DK_Enamel_Mint",
     "DK_Brass_Civic",
     "DK_Lamp_Deco",
-    "DK_Chrome",
+    "DK_Nickel_Satin",
     "DK_GlassDark",
     "DK_Enamel_Charcoal",
+    "DK_Chrome",
     "DK_Limestone",
     "DK_Cloth_Seafoam",
     "DK_Banner_Comet_Seafoam"
@@ -96526,8 +96542,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Plaza/DK_RecordsEntrance_Official.fbx",
-     "sha256": "42cdb54f13ba1aa6a37dc567b7fae7c72244954f0c8c2bc12e61f58c05ca38d1",
-     "bytes": 77036
+     "sha256": "4af9497dbd77cd18aad1ceb0f99718484d1597b9e2616b3ad38199d5cb683152",
+     "bytes": 78124
     },
     {
      "root": "generated",
@@ -96602,15 +96618,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Chrome.mat",
-     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
-     "bytes": 4084
+     "path": "Materials/DK_Nickel_Satin.mat",
+     "sha256": "ba67db0aa43ba834b024360eb8362ad2626ddc9d3c1a4e0089cfd0e5f63aeba1",
+     "bytes": 4043
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Chrome.mat.meta",
-     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "path": "Materials/DK_Nickel_Satin.mat.meta",
+     "sha256": "b2389957ed9e24219e3e893200164803ed705389ddf1f1121a6da314aaf7a625",
      "bytes": 188
     },
     {
@@ -96639,6 +96655,20 @@
      "role": "material-meta",
      "path": "Materials/DK_Enamel_Charcoal.mat.meta",
      "sha256": "ce702950c476b32bd295b298169282db67ad3c1dbfe1a6f85b698a657d1a906b",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
      "bytes": 188
     },
     {
@@ -96785,15 +96815,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_RecordsEntrance_Official_L1.fbx",
-     "sha256": "c1a38aed3eeae2eba048d237c61ad981e4a564f7d73a4379aba97ba2d53461b0",
-     "bytes": 46108
+     "sha256": "27a62a6e26e90a83becd00ae484597b43f6b62d3f603f6f68f63d10c75976dea",
+     "bytes": 47196
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_RecordsEntrance_Official_L2.fbx",
-     "sha256": "70332fe1039a79899661208ce65c702399f7f9027dfd4f4bd80ee9b59988f850",
-     "bytes": 32268
+     "sha256": "eb57f28f1d165db94b8cd0946830630dff8d46f754de2015d335b0be21ee70e1",
+     "bytes": 33356
     }
    ],
    "tags": {
