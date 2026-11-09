@@ -248,3 +248,14 @@ Sky: "when you move mouse over an item that has an action ring, maybe outline it
   - a door stand-in the size of the Office's public doorway;
   - captures `r085-outline-guard` and `r085-outline-door`, driven by the simulated pointer so they don't need window focus.
 - **Then:** Redline checks the frame cost on the Air (needs Sky's OK), and the §10 line goes into the GDD v0.40.0 catch-up (brief 098).
+
+**Built (0.2.301, 4b0693ca8).** Latch's report: `briefs/101/latch/outline.md`; pictures in `briefs/101/latch/outline/`.
+- The guard, the door, a cell member and the mast's head all draw the line.
+- r085outline checks that the line is on the thing the pill names. It, Cell and Mast all pass, with no window focus needed.
+- Studio GPU time is the same with the outline on or off.
+- **Next round (Latch, with the globe's full batch):**
+  - `bookAgentRows` samples every third tick, so it breaks on a re-plan. Make it a law.
+  - `r085listenApart` asserts GDD §10's shot rule (profile when a side angle is clear, else the high shot), not always profile. Aster's ruling from the GDD.
+  - Both police officers share one target key, so the line always lands on the first. Each gets its own.
+- **Still open:** r083's `r085doorPrice` needs a focused player while the Studio is free.
+
