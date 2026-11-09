@@ -73,6 +73,9 @@ const NEAR: Record<string, number> = { tree: 16, 'tub-palm': 12, 'tub-palm:plant
 export const kerbZone = (ctx: Ctx): number => Math.min(...Object.values<any>(ctx.S.sections).map(s => s?.kerb).filter((k): k is number => typeof k === 'number'));
 
 /** The slot an item offers a kit piece, or null where the kit has nothing for the kind. */
+/** Brief 101: the square's mast on its lamp standard (gen/street/mast.ts) is the variant `lamp`, which takes the pieces tagged `mast-camera:lamp` (Vela's MastCamera_Lamp) in a slot
+ *  of their own: the tag keeps the piece off every other mast, and the slot fits the piece's crown, cameras and banner. */
+export const LAMP_MAST = { variant: 'lamp', use: 'mast-camera:lamp' } as const;
 export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'> & { id?: string }): Slot | null {
   const [w, d, h] = s.size, kerb = kerbZone(ctx);
   if (s.id?.startsWith('street/old/')) return { h: s.size[2], hTol: 0.01, along: s.size[0] + 0.001, depth: s.size[1] + 0.001 }; // brief 075 remap (oldtown/props.ts): the old prop at its own size, as the old builder put it: the slot is the item
@@ -87,7 +90,8 @@ export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'
     case 'ticket-machine': return { h, along: 1.1, depth: 0.8 };
     // brief 097 (Vela, civic_props097.py): pieces built to the item's own size, so the slot is about the item
     case 'police-post': return { h, hTol: 0.05, along: w * 1.05, depth: d * 1.05 }; // quiet.ts QUIET.size 1.0 x 1.0 x 2.8: PolicePost 0.98 x 0.98 x 2.80
-    case 'mast-camera': return { h, hTol: 0.1, along: 1.2, depth: 1.2 }; // the 0.4 m mast's footprint; its camera pod (1.15 m long) turns above head height
+    case 'mast-camera': if (s.variant === LAMP_MAST.variant) return { h, hTol: 0.05, along: 1.8, depth: 1.3 }; // brief 101: the square's lamp mast (MastCamera_Lamp 1.77 x 8.2 x 1.25 m: the crown, cameras and banner overhead; on the ground its 0.58 m plinth, the item's size)
+      return { h, hTol: 0.1, along: 1.2, depth: 1.2 }; // the 0.4 m mast's footprint; its camera pod (1.15 m long) turns above head height
     case 'civic-robot-dock': return { h, hTol: 0.1, along: w * 1.05, depth: d * 1.12 }; // 1.2 x 1.2 x 2.6: the hood's lip and light strip stand 6 cm proud of the front
     case 'pole-camera': return { h, along: 0.8, depth: kerb };
     case 'canopy-camera': return { h, hTol: 0.5, along: 0.6, depth: 0.6 };
@@ -167,7 +171,7 @@ export function streetKit(ctx: Ctx, items: StreetItem[], log?: PinLog): StreetIt
   if (log) Object.assign(log, { zone, file: pinsFile && pins.size ? zonePinFile(String(ctx.plan.id)) : undefined, used: 0, unmatched: [], unpinned: [], refit: [], chosen: [] });
   const one = (it: StreetItem): StreetItem => {
     if (it.kit) return { ...it, source: 'kit' as const }; // already named by its programme (street/capstone.ts)
-    const slot = slotOf(ctx, it), use = it.kind === 'tub-palm' && planted.has(`${it.at[0].toFixed(1)},${it.at[1].toFixed(1)}`) ? 'tub-palm:planted' : it.kind === 'planter' && palmAt.has(`${it.at[0].toFixed(1)},${it.at[1].toFixed(1)}`) ? 'planter:planted' : it.kind === 'phone-booth' && it.variant === 'twin' ? 'phone-booth:twin' : it.kind === 'tree' && it.variant && it.variant !== 'phoenix' ? `tree:${it.variant}` : it.kind; // an avenue palm names its species slot (tree:coconut, tree:coconut-median); the phoenix slots take any `tree` piece
+    const slot = slotOf(ctx, it), use = it.kind === 'tub-palm' && planted.has(`${it.at[0].toFixed(1)},${it.at[1].toFixed(1)}`) ? 'tub-palm:planted' : it.kind === 'planter' && palmAt.has(`${it.at[0].toFixed(1)},${it.at[1].toFixed(1)}`) ? 'planter:planted' : it.kind === 'phone-booth' && it.variant === 'twin' ? 'phone-booth:twin' : it.kind === 'mast-camera' && it.variant === LAMP_MAST.variant ? LAMP_MAST.use : it.kind === 'tree' && it.variant && it.variant !== 'phoenix' ? `tree:${it.variant}` : it.kind; // an avenue palm names its species slot (tree:coconut, tree:coconut-median); the phoenix slots take any `tree` piece
     const g = grids.get(use) ?? grids.set(use, new Grid(8, o => o.at)).get(use)!, near = g.near(it.at, NEAR[use] ?? 20).filter(o => Math.hypot(o.at[0] - it.at[0], o.at[1] - it.at[1]) < (NEAR[use] ?? 20));
     const gap = (o: { at: V }) => Math.hypot(o.at[0] - it.at[0], o.at[1] - it.at[1]);
     near.sort((a, b) => gap(a) - gap(b));

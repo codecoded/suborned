@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "531823938bb2306fd1c56785d4ea6939c45546032d8c36f9e4b35f326e8247c4",
+  "sha256": "6cb01444cc4f0d84be4656a133ad35b382a80813c90f9d5fa31ed96f8a1a1a78",
   "owner": "Vantage",
   "applied": [
    {
@@ -2050,15 +2050,13 @@
     {
      "table": "cafe-table-6",
      "at": [-14.8, -15.1]
-    }
-   ],
-   "open": [
+    },
     {
      "table": "cafe-table-7",
-     "reason": "The generator's mast-camera at (-18.5, -15.5) stands 1.17 m from the table centre, inside the disc."
+     "at": [-19.6, -15.1]
     }
    ],
-   "reason": "Seven of eight. Table 2 carries one (lead's ruling, 2026-10-14, B2 follow-up): 'Under parasol' (-7.92, -23.88) is named for standing under it. The 1.2 m rule is for what stands on the ground, not a canopy overhead; the pole stands through the table top (1.16 m from the point), inside a table set whose edge was already 0.12 m from it, so nothing new takes ground. As the play camera sees it the canopy (R 1.305, rim 2.07 m) cuts a person on the point from 0.21 m to 1.79 m: this parasol has to ghost with the fade when someone stands there (Latch, Keel). Elsewhere the nearest Handover point to a disc is 'Between tables', 2.15 m from the poles of tables 0 and 1 (0.85 m outside each disc)."
+   "reason": "All eight. Table 7's came back with brief 101 (Sky's pick B, 2026-11-09): it stood open while the generator's mast-camera stood at (-18.5, -15.5), 1.17 m from the table centre, inside the disc; the square's mast now stands on lamp-terrace-w. Its canopy covers no Handover point: the nearest, 'East side' (-11.4, -15), is 8.2 m off. Table 2 carries one (lead's ruling, 2026-10-14, B2 follow-up): 'Under parasol' (-7.92, -23.88) is named for standing under it. The 1.2 m rule is for what stands on the ground, not a canopy overhead; the pole stands through the table top (1.16 m from the point), inside a table set whose edge was already 0.12 m from it, so nothing new takes ground. As the play camera sees it the canopy (R 1.305, rim 2.07 m) cuts a person on the point from 0.21 m to 1.79 m: this parasol has to ghost with the fade when someone stands there (Latch, Keel). Elsewhere the nearest Handover point to a disc is 'Between tables', 2.15 m from the poles of tables 0 and 1 (0.85 m outside each disc)."
   },
   "lamps": {
    "piece": "PlazaSphereLamp_Play",
@@ -2067,10 +2065,15 @@
    "at": [
     {
      "id": "lamp-terrace-w",
-     "at": [-3.7, -42.4],
+     "at": [-3.85, -42.55],
      "yawDeg": 240,
      "ring": false,
-     "reason": "Outside the terrace wall's west arc (2.2 m off its outer face as built), lights the way to 'West side'. No ring: Vela has four (16 arcs) and here one would run 0.2 m off the terrace wall and touch the corner of crew-line-getaway."
+     "mast": {
+      "site": "square",
+      "headDeg": 60,
+      "reason": "The square's mast (streetscape.watchers.sites.square; brief 101, Sky's pick B, 2026-11-09; briefs/101/vantage/square-camera.md): 2.8 to 8 m from the four at 0:00, in the middle of the opening view. headDeg is the first head's facing in this file's frame (degrees from +x, south, toward +y, east); each next head turns the plan's head step for a square (60) further the same way, so the heads face block yaw 60, 120 and 180: compass 120 (ESE) over the fountain plaza, 60 (ENE) over the terrace to the café door, 0 (N) along the terrace's west arc. Watched: compass 325 round through north to 155. Its back (WSW) is to Rocket Lane, the boarding pavilion and the car. Behind the lenses on every seed: every point within 2 m of the four marks (the loose stance, GDD §07) and the start zone with the car and the holds behind it (x -2..18, y -53..-44). The nearest is the Scout's stance at (-1.6, -42.3), 2.26 m off, 18.7° outside the ESE head's ±35° cone; the car's waits and holds are 39.7° outside. Turned 18.6° clockwise (seen from above), the ESE head would reach the Scout's stance; turned the other way, nothing of them is seen within 60°. Measured by the engine's cone (Geo.InCone, integer) and sight rules (lens 7.68 m, the head or the chest), no crowd: briefs/101/vantage/proof/proof.py, output in proof.txt."
+     },
+     "reason": "The square's lamp mast (brief 101, Sky's pick B): this lamp is the square's mast, drawn as one piece. The world's street/records-square/mast-camera-z0 stands here with Vela's MastCamera_Lamp (adopted 2026-11-09). It keeps this lamp's sleeve, arms, banner and globe at their heights and carries the column on to a crown at 7.4-8.2 m with the three cameras. The dressing no longer draws PlazaSphereLamp_Play here; a kit without the piece draws both, as before. Moved 0.15 m north and 0.15 m west of its old spot (-3.7, -42.4), away from police-3. On the ground, the piece's 0.58 m plinth (as turned) is 1.52 m from the police stand police-3 (-2, -42) and its sleeve 1.60 m. Overhead, the banner (2.4-3.8 m), the crown and the cameras (7.4-8.2 m) come within 1.09 m of it. Nearest Handover point: the Scout's mark, 2.54 m from the plinth. The plan walks the site as this lamp's 0.52 m plinth (civic.groundPieces); the engine's site walks it as the piece's declared volumes. Outside the terrace wall's west arc (2.45 m off its solid), lights the way to 'West side'. No ring: Vela has four (16 arcs) and here one would run 0.2 m off the terrace wall and touch the corner of crew-line-getaway."
     },
     {
      "id": "lamp-terrace-e",

@@ -260,7 +260,7 @@
  ],
  "coverage": {
   "report": {
-   "samples": 2858,
+   "samples": 2857,
    "worstM": 36.2,
    "medianM": 16.6,
    "within": 1000,
@@ -268,7 +268,7 @@
    "baselineWorstM": 67.2
   },
   "origin": {
-   "samples": 2858,
+   "samples": 2857,
    "worstM": 39,
    "medianM": 17,
    "within": 1000,
@@ -363,8 +363,8 @@
   {
    "id": "street/records-square/mast-camera-z0",
    "kind": "mast-camera",
-   "at": [-1850,-1550],
-   "facings": [[0,1000],[-866,-500],[866,-500]],
+   "at": [-385,-4255],
+   "facings": [[500,866],[-500,866],[-1000,0]],
    "range": 3000,
    "coneDeg": 70,
    "inSim": false
