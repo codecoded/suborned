@@ -19,7 +19,7 @@ namespace Suborned.Sim
                 return;
             }
             if (guardRunning) { if (Tick == GuardAwayUntil) { guardRunning = false; Note("guard.back", "The guard is back at the office entrance."); } return; }
-            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", GuardCallPressed ? $"The guard reaches {InezName} at the café. She tells him someone knows about them." : $"The guard reaches {InezName} at the café. She keeps him talking, away from the door."); }
+            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", GuardCallPressed ? $"The guard reaches {InezName} at the café. {(visitWarner == "guard" ? "He tells her" : "She tells him")} someone knows about them." : $"The guard reaches {InezName} at the café. She keeps him talking, away from the door."); }
             if (Tick == LureTick + walkT + stayT) Note("guard.leaves-cafe", GuardCallPressed ? "The guard leaves the café and runs back toward his post." : "The guard leaves the café and walks back toward his post.");
             if (Tick == GuardAwayUntil) Note("guard.back", "The guard returns to the office entrance.");
         }

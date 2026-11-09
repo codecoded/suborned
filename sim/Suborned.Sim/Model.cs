@@ -274,7 +274,7 @@ namespace Suborned.Sim
             "fire-carrying", "no-target", "fire-on-cell", "target-unknown", "civilian-target", "out-of-range", "no-clear-line", "carry-vale",
             "already-carrying", "carry-names-downed", "carry-self", "not-down", "already-carried", "nothing-to-cancel", "keeps-vale", "holstering",
             "stand-beside-op",
-            "no-leverage", "summon-off-street", "summon-busy", "summon-too-far", "summon-alert", "summon-saw-violence", "summon-came-once", "summon-no-visit",
+            "no-leverage", "summon-off-street", "summon-busy", "summon-too-far", "summon-alert", "summon-saw-violence", "summon-came-once", "summon-no-visit", "call-saw-violence", /* brief 102 (step 4): the one called holds a memory of the cell's violence */
             "needs-tier", "needs-reach", "needs-need-is", "needs-standing", "needs-fit", "needs-scale", "needs-trail",
             // brief 013: takedowns, bodies and stashes, the doors at lockdown
             "takedown-how", "takedown-vale", "no-body", "body-stashed", "not-carrying", "stand-at-stash", "stash-full", "body-dead", "already-restrained", "stand-beside-body", "doors-locked", "door-held",

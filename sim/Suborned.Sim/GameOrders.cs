@@ -1,6 +1,6 @@
 // Orders: each is checked when given (a rejected order changes nothing and is logged with its reason), takes its time, and lands at
 // its end. Turn, Watch and Listen run from the rulebook's events (needs, price lines, outcomes, also, witnesses); the other verbs
-// read their numbers from the rulebook's `cell` section and the mission's from the site.
+// read their numbers from the rulebook's `cell` section and the mission's from the site. The Call is GameCall.cs's (brief 102).
 using System;
 using System.Collections.Generic;
 
@@ -610,99 +610,6 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- the other verbs
 
-        /// <summary>Whether the Fixer could call this contact now (the action card's Call), without calling.</summary>
-        public bool CanCall(string role)
-        {
-            if (!IsPersonRoleName(role)) return false; // engine 0.30.0: a crowd person or an unknown id is no contact
-            var p = PersonByRole(role); var f = OpOf(OpId.Fixer);
-            if (Over || f.Busy != null || p.Down || !p.Turned) return false;
-            if (p == Driver) return Vale != ValeAt.Car && (BlockMove == INF || Tick >= BlockedUntil + blockMoveT) && Tick < T(driverLastS) - blockMoveT;
-            return p.Lover != null && SummonRefusal(p, out _).code == null;
-        }
-
-        /// <summary>Why the contact's lover won't come to a call now (rulebook summon), or code null; walkTicks: his walk to the caller.</summary>
-        (string? code, string why) SummonRefusal(Person caller, out int walkTicks)
-        {
-            walkTicks = 0;
-            var lover = caller.Lover!;
-            if (lover != GuardP) return ("summon-no-visit", $"{lover.Role} has no post to leave (only a lover with a post is modelled)");
-            if (GuardDown || lover.Down) return ("summon-busy", "he's down");
-            var at = GuardPose(); if (!at.HasValue) return ("summon-off-street", "he isn't on the street");
-            if (GuardHeld || GuardEngaged || !GuardAtDoor) return ("summon-busy", "he's busy");
-            if (Alert > R.SummonAlertMax) return ("summon-alert", "security is searching: he won't leave");
-            foreach (var m in lover.Memory)
-                if ((m.Act == "saw-gunfire" || m.Act == "saw-violence" || m.Act == "saw-weapon-drawn") && (m.By == "scout" || m.By == "fixer" || m.By == "tech" || m.By == "enforcer"))
-                    return ("summon-saw-violence", "he saw what you did");
-            if (lover.Summoned >= R.SummonsPerShift) return ("summon-came-once", "he came once already");
-            var to = ServerOf(caller) is RoundsData.Server csv && !caller.Down ? csv.At : PersonPos(caller); if (!to.HasValue) return ("summon-off-street", "she isn't on the street"); // brief 022: the summons reads her post, never her pose
-            var route = Walk.Route(Walk.NearestFree(at.Value.pos) ?? at.Value.pos, Walk.NearestFree(to.Value) ?? to.Value);
-            if (route == null) return ("summon-too-far", "no walk between them");
-            long len = new Path(route).Length; walkTicks = (int)((len + peopleWalk - 1) / peopleWalk); // at the city's walking pace (crowd.walk; engine 0.34.0: cell.speed before)
-            if (walkTicks > T(R.SummonWalkMaxS)) return ("summon-too-far", $"too far: {walkTicks / Hz} s away");
-            return (null, "");
-        }
-
-        /// <summary>The call card, before the click (Latch): would the Fixer's call on this role be taken now, and if not, its refusal code,
-        /// words and numbers, exactly as Issue would answer it. Read-only: it changes nothing.</summary>
-        public Answer CallQuery(string role)
-        {
-            var saved = refusal; refusal = default; string why;
-            try
-            {
-                var op = OpOf(OpId.Fixer);
-                why = Over ? No("mission-over", "the mission is over")
-                    : op.Down ? No("agent-down", "the fixer is down")
-                    : op.Busy != null ? No("agent-busy", $"fixer is busy until {op.BusyEnd}", tick: op.BusyEnd)
-                    : CallRefusal(op, role);
-            }
-            catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
-            var a = AnswerOf(why);
-            refusal = saved;
-            return a;
-        }
-
-        /// <summary>Why the Fixer's call on a role is refused now, or "" (the checks of Call, without its effects).</summary>
-        string CallRefusal(Op op, string role)
-        {
-            if (op.Id != OpId.Fixer) return No("only-fixer", "only the Fixer calls contacts (§03)");
-            if (!IsPersonRoleName(role)) return No("not-a-contact", $"'{role}' is not a contact"); // engine 0.30.0 (Suture's bot pass): refused, not thrown
-            var p = PersonByRole(role);
-            if (p.Down) return No("person-down", $"{p.Role} is down");
-            if (!p.Turned) return No("not-a-contact", $"{p.Role} is not a contact");
-            if (p == Driver) return No("nothing-to-call", "the driver has nothing to do on a call: his camera block is retired (brief 059, Motive M059-6.1)");
-            if (p.Lover != null)
-            {
-                var (code, why) = SummonRefusal(p, out int walk);
-                return code != null ? No(code, why, tick: code == "summon-too-far" ? walk : -1) : "";
-            }
-            return No("nothing-to-call", $"{p.Role} has nothing to do on a call");
-        }
-
-        string Call(Op op, Order o)
-        {
-            var no = CallRefusal(op, o.Target); if (no.Length > 0) return no;
-            var p = PersonByRole(o.Target);
-            return Summon(p); // CallRefusal let it through: the lover comes
-        }
-
-        /// <summary>The summons (rulebook summon; Motive, motive-lovers.md §1.3): a turned contact's call sends for their lover, read from the
-        /// city's ties. He walks the grid to her at walking pace, stays summon.stay and walks back (a pressed call: GamePressedCall.cs); refused at no cost, with its code.</summary>
-        string Summon(Person p)
-        {
-            SummonRefusal(p, out int walk);
-            var lover = p.Lover!;
-            var sv = ServerOf(p);
-            bool pressed = CallIsPressed(p);
-            var v = VisitRoute(p, lover, walk); guardOut = v.outWalk; guardBack = v.backWalk; walkT = v.walkT; cafeFace = v.face;
-            stayT = T(pressed ? R.SummonPressedStayS : R.SummonStayS); backT = pressed ? RunTicks(guardBack) : walkT; guardRunning = false; GuardCallPressed = pressed;
-            if (sv != null) RoundCall(p, Tick + walkT, Tick + walkT + stayT, guardOut.End); // brief 022: they stand together while he stays
-            LureTick = Tick; GuardAwayUntil = Tick + walkT + stayT + backT; lover.Summoned++;
-            AddTrail(R.CallTrail, "call:" + p.Role); Remember(p, "job", "fixer", false);
-            Actions.Add("call:" + p.Role); Chain.Add($"{p.Role}-calls-{lover.Role}");
-            Note("call." + p.Role, $"{p.Name} calls {lover.Name}. He leaves his post and walks over to her ({walkT / Hz} s), to stay {stayT / Hz} s.");
-            return "";
-        }
-
         /// <summary>A camera the cabinet loops (rulebook cell.loop.targets): a site camera named in the list, or any of the city's own
         /// cameras when the list holds "world". One loop at a time.</summary>
         bool LoopTarget(string id)
@@ -742,7 +649,7 @@ namespace Suborned.Sim
             }
             RouteKind = "front"; RouteGuard = BodyOf(GuardP) is Body gb ? (gb.Dead ? "killed" : "knocked-out") : GuardDown ? "shot" : "waitress"; RouteBot = SweepSeesEntrance(Tick) ? "rerouted" : SweepCoversEntrance ? "gap" : ""; // a takedown is no shooting (brief 013 E4); engine 0.34.0: no sweep at the door, no patrol in the front route (brief 067 A)
             EntryInProgress = true; op.Inside = true; Chain.Add("enforcer-reaches-vale");
-            AtEntry = new RouteFacts { Lured = LureTick >= 0 && !GuardHeld, Looped = LoopOn && LoopCam == "entrance", PatrolAway = !PatrolDown && PatrolAwayUntil > Tick,
+            AtEntry = new RouteFacts { Lured = LureTick >= 0 && !GuardHeld, LuredBy = LureCalled, Looped = LoopOn && LoopCam == "entrance", PatrolAway = !PatrolDown && PatrolAwayUntil > Tick,
                 PatrolSweeping = !PatrolDown && PatrolAwayUntil <= Tick && !PatrolChasing && PatrolUnit() == null }; // engine 0.30.0 (brief 060 #8): the debrief's route lines, output only
             bool alarm = Alert >= 2; // Sky 2026-10-15 Q5 (rulebook cell.enter.alarm): once Alert ≥ 2 the Office staff hide Vale
             op.Gun.Order = ""; op.Gun.Target = "";
