@@ -1,0 +1,406 @@
+{
+ "note": "Sums only, from the WAVs. Chime cannot hear: Sky's ears decide. Under = street_bed_even + this robot's roll and hum at -3 dB (min distance). Gunfire = the cell's pistol and the robot's shot alternating every 0.75 s on the fight bus (-3 dB).",
+ "bed_lufs_i": -38.0,
+ "under_lufs_i": -33.3,
+ "drafts": {
+  "robot_beat_preview": {
+   "seconds": 17.0,
+   "sha256": "4881f2b8ee7bb87252e187caae87143f8c913604fb4aae33ccd6c0fe6414fb30",
+   "sample_peak_dbfs": -5.3,
+   "true_peak_dbtp": -2.4,
+   "lufs_momentary_max": -18.2,
+   "small_speaker_lufs_m": -19.5,
+   "centroid_hz": 2065,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -3.9,
+    -8.1,
+    -4.8,
+    -9.5
+   ],
+   "clipped_samples": 0,
+   "use": "listening aid only (the demo timeline at the drafts' levels), not a cue"
+  },
+  "robot_chirp_alert": {
+   "seconds": 0.46,
+   "sha256": "67fd393d3f1540e761aec30e283f2f89d16a6cbf3be46bcc7992832712dd4b4a",
+   "sample_peak_dbfs": -18.8,
+   "true_peak_dbtp": -18.8,
+   "lufs_momentary_max": -27.0,
+   "small_speaker_lufs_m": -27.0,
+   "centroid_hz": 1617,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -64.1,
+    -30.4,
+    -0.1,
+    -17.3
+   ],
+   "clipped_samples": 0,
+   "bus_db": 0,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     1270,
+     2540,
+     3200
+    ],
+    "margin_top3_db": 20.5,
+    "bands_clear_6db": 9,
+    "loudness_margin_lu": 6.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     1270,
+     2540,
+     3200
+    ],
+    "margin_top3_db": -0.1,
+    "bands_clear_6db": 1,
+    "loudness_margin_lu": null
+   }
+  },
+  "robot_chirp_curious": {
+   "seconds": 0.36,
+   "sha256": "694236f498571b64b0c3c0af13413e7d0dffc45957fe75d773feb5616c7041d3",
+   "sample_peak_dbfs": -19.7,
+   "true_peak_dbtp": -19.6,
+   "lufs_momentary_max": -28.0,
+   "small_speaker_lufs_m": -28.0,
+   "centroid_hz": 1544,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -90.5,
+    -7.8,
+    -0.9,
+    -16.5
+   ],
+   "clipped_samples": 0,
+   "bus_db": 0,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     1270,
+     1600,
+     2540
+    ],
+    "margin_top3_db": 22.8,
+    "bands_clear_6db": 9,
+    "loudness_margin_lu": 5.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     1270,
+     1600,
+     2540
+    ],
+    "margin_top3_db": 2.7,
+    "bands_clear_6db": 2,
+    "loudness_margin_lu": null
+   }
+  },
+  "robot_draw": {
+   "seconds": 1.96,
+   "sha256": "e89f7b46df60c1df42bfcabb085bdaec77d971a8c1f4ac28bbe18da9605e9b56",
+   "sample_peak_dbfs": -3.9,
+   "true_peak_dbtp": -3.9,
+   "lufs_momentary_max": -20.0,
+   "small_speaker_lufs_m": -20.5,
+   "centroid_hz": 1588,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -10.6,
+    -5.1,
+    -2.9,
+    -10.7
+   ],
+   "clipped_samples": 0,
+   "bus_db": 0,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     100,
+     200,
+     504
+    ],
+    "margin_top3_db": 19.7,
+    "bands_clear_6db": 18,
+    "loudness_margin_lu": 13.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     100,
+     200,
+     504
+    ],
+    "margin_top3_db": 11.5,
+    "bands_clear_6db": 10,
+    "loudness_margin_lu": null
+   }
+  },
+  "robot_hum": {
+   "seconds": 4.0,
+   "sha256": "6d4b7cd04efea288fe1c0ad55faa22cfad241f355b2f2e518f0b3d14fb2787fe",
+   "sample_peak_dbfs": -35.3,
+   "true_peak_dbtp": -35.2,
+   "lufs_momentary_max": -41.5,
+   "small_speaker_lufs_m": -50.0,
+   "centroid_hz": 144,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -0.6,
+    -8.7,
+    -26.3,
+    -36.1
+   ],
+   "clipped_samples": 0,
+   "bus_db": -3,
+   "lufs_integrated": -42.0,
+   "seam": {
+    "step_percentile": 6.1,
+    "step_ratio": 0.25,
+    "level_jump_db": 0.07,
+    "typical_jump_db_p95": 0.76
+   },
+   "over_bed_lu": -7.0
+  },
+  "robot_roll": {
+   "seconds": 4.0,
+   "sha256": "30dcb70572856331da3ab10cb1626d6b2bb7bfe02e9cf21706768a204aeac027",
+   "sample_peak_dbfs": -22.5,
+   "true_peak_dbtp": -22.5,
+   "lufs_momentary_max": -34.6,
+   "small_speaker_lufs_m": -41.2,
+   "centroid_hz": 280,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -0.5,
+    -12.3,
+    -13.8,
+    -18.4
+   ],
+   "clipped_samples": 0,
+   "bus_db": -3,
+   "lufs_integrated": -36.0,
+   "seam": {
+    "step_percentile": 2.0,
+    "step_ratio": 0.05,
+    "level_jump_db": 2.27,
+    "typical_jump_db_p95": 5.08
+   },
+   "over_bed_lu": -1.0
+  },
+  "robot_shot": {
+   "seconds": 1.11,
+   "sha256": "fbd2764d7988015a0d95b60f4c974485cc90bb0b33c1299975b980c694314587",
+   "sample_peak_dbfs": -4.8,
+   "true_peak_dbtp": -1.0,
+   "lufs_momentary_max": -18.9,
+   "small_speaker_lufs_m": -21.0,
+   "centroid_hz": 3305,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -1.9,
+    -13.5,
+    -10.0,
+    -6.7
+   ],
+   "clipped_samples": 0,
+   "bus_db": -3,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     79,
+     100,
+     126
+    ],
+    "margin_top3_db": 17.0,
+    "bands_clear_6db": 24,
+    "loudness_margin_lu": 11.4
+   }
+  },
+  "robot_siren": {
+   "seconds": 2.37,
+   "sha256": "318cdce5d92dd1ee6b161d4bdb7d064fb93bbec077994f0feed87e8288e38b6b",
+   "sample_peak_dbfs": -15.5,
+   "true_peak_dbtp": -15.5,
+   "lufs_momentary_max": -22.0,
+   "small_speaker_lufs_m": -22.0,
+   "centroid_hz": 1199,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -22.0,
+    -5.3,
+    -1.6,
+    -24.0
+   ],
+   "clipped_samples": 0,
+   "bus_db": 0,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     1008,
+     1270,
+     2540
+    ],
+    "margin_top3_db": 12.7,
+    "bands_clear_6db": 10,
+    "loudness_margin_lu": 11.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     1008,
+     1270,
+     2540
+    ],
+    "margin_top3_db": 2.8,
+    "bands_clear_6db": 2,
+    "loudness_margin_lu": null
+   }
+  }
+ },
+ "draw_ready_tones": {
+  "lufs_m": -22.9,
+  "over_bed": {
+   "top_bands_hz": [
+    1008,
+    1270,
+    2540
+   ],
+   "margin_top3_db": 25.2,
+   "bands_clear_6db": 15,
+   "loudness_margin_lu": null
+  },
+  "over_gunfire": {
+   "top_bands_hz": [
+    1008,
+    1270,
+    2540
+   ],
+   "margin_top3_db": 12.3,
+   "bands_clear_6db": 5,
+   "loudness_margin_lu": null
+  }
+ },
+ "robot_shot_vs_weapons": {
+  "shape_distance_db": {
+   "fire_pistol": 11.2,
+   "fire_carbine": 7.3,
+   "fire_police": 8.7,
+   "fire_rival": 11.5,
+   "fire_robot": 6.4
+  },
+  "decay_20db_s": {
+   "robot_shot": 0.128,
+   "fire_pistol": 0.194,
+   "fire_carbine": 0.474,
+   "fire_police": 0.118,
+   "fire_rival": 0.154,
+   "fire_robot": 0.292
+  },
+  "lufs_m": {
+   "robot_shot": -18.9,
+   "fire_pistol": -18.5,
+   "fire_carbine": -15.0,
+   "fire_police": -19.2,
+   "fire_rival": -17.0,
+   "fire_robot": -18.0
+  },
+  "note": "The pack's closest existing pair is fire_pistol / fire_rival at 4.8 dB (briefs/087/mix.json)."
+ },
+ "apart_from_existing": {
+  "robot_siren / police_siren": {
+   "shape_distance_db": 13.1,
+   "centroid_hz": [
+    1199,
+    783
+   ],
+   "seconds": [
+    2.37,
+    6.8
+   ]
+  },
+  "robot_siren / patrol_break": {
+   "shape_distance_db": 14.5,
+   "centroid_hz": [
+    1199,
+    2380
+   ],
+   "seconds": [
+    2.37,
+    1.25
+   ]
+  },
+  "robot_draw / patrol_break": {
+   "shape_distance_db": 8.4,
+   "centroid_hz": [
+    1588,
+    2380
+   ],
+   "seconds": [
+    1.96,
+    1.25
+   ]
+  },
+  "robot_draw / camera_click": {
+   "shape_distance_db": 21.0,
+   "centroid_hz": [
+    1588,
+    7124
+   ],
+   "seconds": [
+    1.96,
+    0.22
+   ]
+  },
+  "robot_chirp_alert / notice_1": {
+   "shape_distance_db": 20.1,
+   "centroid_hz": [
+    1617,
+    6170
+   ],
+   "seconds": [
+    0.46,
+    0.45
+   ]
+  },
+  "robot_chirp_alert / notice_3": {
+   "shape_distance_db": 14.1,
+   "centroid_hz": [
+    1617,
+    4936
+   ],
+   "seconds": [
+    0.46,
+    1.25
+   ]
+  },
+  "robot_chirp_curious / notice_1": {
+   "shape_distance_db": 22.9,
+   "centroid_hz": [
+    1544,
+    6170
+   ],
+   "seconds": [
+    0.36,
+    0.45
+   ]
+  },
+  "robot_chirp_alert / card_new": {
+   "shape_distance_db": 12.3,
+   "centroid_hz": [
+    1617,
+    1213
+   ],
+   "seconds": [
+    0.46,
+    1.08
+   ]
+  }
+ },
+ "siren_sweeps": {
+  "robot_siren": {
+   "min_hz": 499,
+   "max_hz": 1254,
+   "span_octaves": 1.33
+  },
+  "police_siren": {
+   "min_hz": 551,
+   "max_hz": 820,
+   "span_octaves": 0.57
+  }
+ },
+ "roll_vs_patrol_loop": {
+  "patrol_loop_lufs_i": -33.0,
+  "patrol_loop_centroid_hz": 203,
+  "robot_roll_lufs_i": -36.0,
+  "robot_roll_centroid_hz": 280
+ }
+}

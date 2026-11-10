@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patrol Robot Sound</title>
+<style>
+:root{--bg:#f6f1e7;--card:#fffdf8;--ink:#1f1d1a;--dim:#6b655c;--line:#e2d9c8;--sage:#5f7046;--sage-bg:#e9eedf;--red:#b0281c;--red-bg:#f7e3df;--amber:#9a6a12;--amber-bg:#f6ecd6;--code:#efe8da}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171614;--card:#201f1c;--ink:#ece6da;--dim:#a39b8e;--line:#37342e;--sage:#a9bd88;--sage-bg:#26301e;--red:#ef8a7e;--red-bg:#3a1f1b;--amber:#e3b45c;--amber-bg:#352a16;--code:#2b2925}}
+:root[data-theme="dark"]{--bg:#171614;--card:#201f1c;--ink:#ece6da;--dim:#a39b8e;--line:#37342e;--sage:#a9bd88;--sage-bg:#26301e;--red:#ef8a7e;--red-bg:#3a1f1b;--amber:#e3b45c;--amber-bg:#352a16;--code:#2b2925}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+main{max-width:1040px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:30px;line-height:1.2;margin:0 0 6px}
+h2{font-size:21px;margin:44px 0 12px;padding-top:8px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:0 0 4px}
+p{margin:8px 0}
+.sub{color:var(--dim);margin:0 0 18px}
+.pill{display:inline-block;font-size:12.5px;padding:2px 9px;border-radius:99px;margin:0 6px 6px 0;background:var(--code);color:var(--dim)}
+.pill.sage{background:var(--sage-bg);color:var(--sage)}.pill.red{background:var(--red-bg);color:var(--red)}.pill.amber{background:var(--amber-bg);color:var(--amber)}
+.rec{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--sage);border-radius:10px;padding:16px 18px}
+.rec ol{margin:6px 0 0 20px;padding:0}.rec li{margin:5px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card.key{border-color:var(--red)}
+.card p{font-size:14.5px}
+audio{width:100%;height:36px;margin:8px 0 4px}
+.ref{font-size:13px;color:var(--dim);margin-top:6px}
+.ref audio{height:30px;margin:2px 0}
+.meta{font-size:13px;color:var(--dim)}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:13px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{font-size:12.5px;color:var(--dim);font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+table.cues td:first-child{font-weight:600;white-space:nowrap}
+table.num td,table.num th{white-space:nowrap;font-variant-numeric:tabular-nums}
+.note{font-size:14px;color:var(--dim)}
+ul.tight{margin:6px 0 0 18px;padding:0}.tight li{margin:4px 0}
+</style>
+</head>
+<body>
+<main>
+<h1>Patrol robot sound</h1>
+<p class="sub">Chime · brief 104 · 2026-11-10 · the ball-balancing patrol robot (DK_PatrolBot104) · a proposal with drafts, nothing wired</p>
+<span class="pill sage">$0 spent · all synthesis</span><span class="pill">7 drafts + one listening aid</span><span class="pill amber">Not in Unity: hooks come after Sky listens</span><span class="pill red">I can't hear these: the numbers only rule things out. Sky's ears decide.</span>
+
+<h2 style="border:0;margin-top:22px">Recommendation</h2>
+<div class="rec">
+<p><b>Make the robot's whole voice by synthesis, from parts it shares: one grille speaker, one tin shell, one gyro hum.</b> That way every sound reads as the same little machine. It's deterministic and free, the licence is our own code, and a tweak is a number change.</p>
+<ol>
+<li><b>The draw is the cue that matters most.</b> At 38° the hatch hardly shows (Vela's demo notes), so the player has to <i>hear</i> a robot draw. The rulebook gives a hostile 2 s from first sight to first shot (<code>react-s</code>), so the draw is the warning: "about a second until it fires". The draft ends on two rising "ready" tones, because those still carry over gunfire (12.3 dB clear) and on a laptop speaker.</li>
+<li><b>For this robot, replace four of the pack's sounds:</b> the walking footfalls (<code>patrol_loop</code>, <code>patrol_chase</code>) become the roll and hum, because a ball has no feet. The relay clunk (<code>patrol_break</code>) becomes the siren. The bolt gun (<code>fire_robot</code>) becomes a pistol with the shell ringing. <code>down_robot</code> gets a gyro spin-down on top of its crash.</li>
+<li><b>The siren sounds once, when the robot leaves its route. After that, only the beacon's light stays on.</b> Five robots wailing non-stop would bury the clock cues and the police siren.</li>
+<li><b>Before the draw can be wired, the sim needs one read-only hook:</b> the tick a robot takes a target it has cause to fire on. Keel and Latch can do it; sound reads the sim and changes nothing.</li>
+<li><b>No paid pass now.</b> If Sky wants more real-world texture in the hatch or the down, there's a tiny Seed Audio pass at the end (about $0.15, capped at $0.50).</li>
+</ol>
+</div>
+
+<h2>Listen</h2>
+<div class="card" style="margin-bottom:14px">
+<h3>The demo's beat, at the drafts' own levels</h3>
+<p class="meta">A listening aid, not a cue, and no street bed under it. It runs on <code>make/demo_motion.py</code>'s timeline: the roll, stop at 5.0 s, curious at 5.9, alert and the siren at 8.6, panel opens 10.5, first shot 11.67, two more 1.5 s apart (the rulebook's rate; the demo's 0.4 s is the render's), then the roll away. Play it next to <code>briefs/104/vela/patrolbot/demo/patrolbot-demo.mp4</code>.</p>
+<audio data-clip="robot_beat_preview"></audio>
+</div>
+<div class="grid">
+<div class="card key"><h3>Draw · <code>robot_draw</code></h3>
+<p>The latch lets go with a click. A small geared motor whirrs up as the panel swings (0 to 0.45 s), and the panel thunks on its stop. The sidearm scrapes out on its rail, the ratchet speeding up (0.5 to 0.9 s), then locks home with a hard double clack. Last come two rising tones, C6 then F6: "ready".</p>
+<audio data-clip="robot_draw"></audio>
+<p class="meta">-20.0 LUFS-M · peak -3.9 dBTP · 13.3 LU over the bed with the robot rolling near · 11.5 dB over gunfire</p></div>
+<div class="card"><h3>Siren · <code>robot_siren</code></h3>
+<p>A 1950s motor siren in miniature: a rotor chopping air through a horn. Two quick whoops from 380 up to 1,240 Hz, then a wind-down, with a short street echo. Cute because it's small and quick; still unmistakably a siren because it's the classic shape.</p>
+<audio data-clip="robot_siren"></audio>
+<p class="meta">-22.0 LUFS-M · sweeps 1.33 octaves (police: 0.57) · shape 13.1 dB from the police siren</p>
+<div class="ref">Compare: the pack's police siren (far, panned, from where they come in)<audio data-clip="police_siren"></audio>and the clunk it would replace for robots<audio data-clip="patrol_break"></audio></div></div>
+<div class="card"><h3>Roll · <code>robot_roll</code> (loop)</h3>
+<p>The ball on stone: a low rumble and a grit band that ride the ball's turn, and a soft thump once a turn where the band's seam meets the ground. Recorded at 1 turn a second (1.26 m/s); the host scales pitch and volume with speed.</p>
+<audio data-clip="robot_roll" loop></audio>
+<p class="meta">-36.0 LUFS-I · seamless 4 s loop (seam step 0.05 of a typical step)</p>
+<div class="ref">The pack's walking loop it would replace<audio data-clip="patrol_loop" loop></audio></div></div>
+<div class="card"><h3>Idle hum · <code>robot_hum</code> (loop)</h3>
+<p>The atomic gyroscope that keeps it upright: a soft 118 Hz hum that sways twice a loop as it corrects its balance, a faint high whine beating slowly, and a clockwork escapement ticking six times a second. It plays always, under the roll.</p>
+<audio data-clip="robot_hum" loop></audio>
+<p class="meta">-42.0 LUFS-I · 7 LU under the bed · nearly nothing on a small speaker (-50): felt close up, not heard far off</p></div>
+<div class="card"><h3>Curious · <code>robot_chirp_curious</code></h3>
+<p>A question from the grille, "hm?": a low note, then a higher one bending up at its end. It plays when the face goes curious.</p>
+<audio data-clip="robot_chirp_curious"></audio>
+<p class="meta">-28.0 LUFS-M · 22.8 dB over the bed · 22.9 dB in shape from the notice ting</p></div>
+<div class="card"><h3>Alert · <code>robot_chirp_alert</code></h3>
+<p>"Hey!": two quick high notes and a held lower one, with a buzzer's rasp in it. Firmer than curious, but not a scream. It plays when the face goes alert.</p>
+<audio data-clip="robot_chirp_alert"></audio>
+<p class="meta">-27.0 LUFS-M · 20.5 dB over the bed · <b>buried under gunfire (-0.1 dB)</b>, which is fine: it comes before a fight</p>
+<div class="ref">The 2D stage cues it sits under<audio data-clip="notice_1"></audio><audio data-clip="notice_3"></audio></div></div>
+<div class="card"><h3>Shot · <code>robot_shot</code></h3>
+<p>A small, hard, dry crack with a pneumatic push and a drop in pitch. Then what no person's gun has: the robot's tin shell rings for about a fifth of a second, and the sidearm's 18 mm recoil clacks back on its rail.</p>
+<audio data-clip="robot_shot"></audio>
+<p class="meta">-18.9 LUFS-M (cell pistol -18.5) · at least 6.4 dB in shape from every other gun; the pack's closest pair is 4.8</p>
+<div class="ref">The guns it sits among: the old robot bolt gun, the cell pistol, the police revolver<audio data-clip="fire_robot"></audio><audio data-clip="fire_pistol"></audio><audio data-clip="fire_police"></audio></div></div>
+</div>
+
+<h2>Every cue</h2>
+<p class="note">"Tells the player" follows GDD §10's <i>audio = clock</i>: each sound is a fact you can act on. Priority: lower plays first (the pack's scale: clock cues 30–40, guns 60–65, loops 90–100). Levels are the clip's own; buses as in <code>briefs/087/cues.json</code>.</p>
+<div class="scroll"><table class="cues">
+<tr><th>Cue</th><th>Sounds like, and why</th><th>Tells the player</th><th>Priority · voices</th><th>Level</th><th>How it's made</th></tr>
+<tr><td>Idle hum</td><td>The gyro hum, a faint whine and clockwork ticks. A ball-balancer is never still inside: it is always working to stay up. "Clockwork-smart" gets its tick.</td><td>A watcher is close, and it's switched on. Silence means it's down.</td><td>110 · loop, 2 nearest robots</td><td>-42 LUFS-I, vehicles bus (-3): about 7 LU under the bed</td><td>Synthesis, drafted</td></tr>
+<tr><td>Roll</td><td>The ball on stone, following its turn. Pitch 0.85 to 1.15 and volume 0.5 to 1 between 0.5 and 1.6 m/s, as the rival car's engine does. When it chases, the same loop plays higher and the hum's ticks double, so the patrol still "sounds different when it breaks route" without a second loop.</td><td>Where it is, and whether it's moving, even off screen at the edge. You hear it halt.</td><td>100 · loop, 2 nearest</td><td>-36 LUFS-I, vehicles: about the bed's level at 8 m, gone by 45 m</td><td>Synthesis, drafted</td></tr>
+<tr><td>Stop and settle</td><td>A soft brake hiss, the hum wobbling three times and dying away (the spring settle in the demo at 5.0 s), and one small tick.</td><td>It has stopped, and a robot standing still is a robot looking.</td><td>100 · 2</td><td>-32 LUFS-M, 3D near</td><td>Synthesis from the hum and roll parts (next round)</td></tr>
+<tr><td>Curious</td><td>A rising question from the grille. Its register (1.2 to 2.5 kHz) sits below the notice ting (3 to 8 kHz), so the two don't merge.</td><td>Which watcher noticed: this robot. The 2D <code>notice_1</code> stays the stage cue; the chirp is the 3D "who", on the same tick and a little under it.</td><td>50 · 1 per robot, 2 in all, 0.5 s cooldown</td><td>-28 LUFS-M, danger bus, 3D near</td><td>Synthesis, drafted</td></tr>
+<tr><td>Alert</td><td>Two quick high notes and a low held one, with a rasp.</td><td>This robot is wary or reporting (with <code>notice_2</code> or <code>_3</code>). Its report is on the way.</td><td>50 · as curious</td><td>-27 LUFS-M, danger, 3D near</td><td>Synthesis, drafted</td></tr>
+<tr><td>Siren</td><td>A small motor siren: two whoops and a wind-down, about 1.8 s, once. The light then keeps spinning in silence.</td><td>A robot has left its route for the alarm, and here it comes, from that direction. It answers the "Robots coming" card when a dispatch sends robots only. Never mistaken for the police: they're far, slow and panned; this is near, quick and placed.</td><td>35 · 1 in all, 6 s cooldown, the nearest robot</td><td>-22 LUFS-M (police -21), danger, 3D far. While it rings, fight bus -4 dB (the rule the police siren already has)</td><td>Synthesis, drafted. Replaces <code>patrol_break</code> for robots</td></tr>
+<tr><td><b>Draw</b></td><td>Latch, motor, panel stop, rail, lock, "ready". A mechanism you can follow: it lasts as long as the animation (about 1 s), so the ear knows when it has finished.</td><td><b>A robot has drawn on someone. About a second to its first shot:</b> get to cover, break its line, or down it. Two robots drawing are heard as two.</td><td><b>20 · 2, never stolen</b>; a second draw in the same 0.5 s is delayed 80 ms by hash</td><td>-20 LUFS-M (over notice -26, under guns -18.5), danger, 3D far so it carries across the screen with its direction. Fight bus -4 dB for 1 s</td><td>Synthesis, drafted</td></tr>
+<tr><td>Shot</td><td>A small dry crack, then the shell's ring and the rail's recoil clack. It's a pistol (1 damage), so it has a pistol's weight, not the carbine's.</td><td>Who's firing (one voice per weapon), and the rhythm: one every 1.5 s, so you can count to its next shot.</td><td>60 · inside the fight group's 6 live shots; ±3 % pitch by hash</td><td>-18.9 LUFS-M, fight bus (-3), 3D fight</td><td>Synthesis, drafted. Replaces <code>fire_robot</code></td></tr>
+<tr><td>Hit</td><td>The pack's <code>hit_metal</code> clank, plus a short glitch from the grille (the face goes dazed) and a dip in the hum. As its health drops, the hum gets a flutter: rough at 2 left, worse at 1.</td><td>You hit it, and roughly how close it is to going down (4 health), without reading a bar.</td><td>70 · 2</td><td>Glitch -26 LUFS-M; the flutter lives inside the hum's level</td><td>Synthesis for the glitch and flutter (next round); the clank is paid for already</td></tr>
+<tr><td>Down</td><td>The gyro losing it: the hum falls from 118 Hz to almost nothing over about 1.2 s, the body tips off its ball with a tin crash, the ball rolls a little way off, and the face goes out with a blip.</td><td>It's down. Its distress call is already out (the sim's own words), so expect more.</td><td>40 · 2</td><td>-19 LUFS-M, fight, 3D fight</td><td>Synthesis for the spin-down, layered on the pack's <code>down_robot</code> crash</td></tr>
+<tr><td>Stand-down</td><td>The draw run backwards and lighter: the sidearm slides in, the panel closes on its latch, a falling "all clear" note pair and the beacon relay's click.</td><td>That robot has stopped being a threat (<code>patrol.stands-down</code>).</td><td>70 · 1</td><td>-26 LUFS-M, danger, 3D near</td><td>Synthesis from the draw's parts (next round)</td></tr>
+</table></div>
+<div class="grid" style="margin-top:14px">
+<div class="card"><h3>For comparison: the pack's old robot sounds</h3><p class="meta">The crash the down would build on, and the clank the hit keeps.</p><audio data-clip="down_robot"></audio><audio data-clip="hit_metal"></audio></div>
+</div>
+
+<h2>Many robots on screen</h2>
+<ul class="tight">
+<li><b>How many:</b> the Handover runs at S2: the patrol and up to 2 response robots. At S4 ("swarm") it's the patrol and 4.</li>
+<li><b>Loops:</b> the hum and roll play for the <b>2 nearest robots</b> to the camera's ground focus, on 4 sources of their own outside the 16-voice pool, as the burning car has. Past those two, robots make no loop sound, and at 45 m the 3D-near rolloff has faded them out anyway. If 3 or more ran at min distance, the sum would rise by about 4.8 dB, a muddle rather than information.</li>
+<li><b>Danger before guns:</b> the draw (priority 20) is never stolen. The siren is one voice for the whole response, so a dispatch of four robots sounds once, from the nearest. Chirps get 2 voices in all, so a crowd of faces changing at once doesn't turn into chatter.</li>
+<li><b>Guns:</b> the robot's shots join the fight group's 6 live gunshots, each delayed 0–40 ms and pitched ±3 % by hash, as the pack already does for volleys.</li>
+<li><b>Replays:</b> nothing here reads a random stream or writes to the sim. Variation comes from <code>Fnv1a32(id|tick)</code>, as in the pack's wiring (<code>briefs/087/wiring.md</code> §1).</li>
+</ul>
+
+<h2>What the hooks need (for later, not now)</h2>
+<ul class="tight">
+<li><b>Draw:</b> the tick a robot takes a target it has cause to fire on. That's the start of its <code>react-s</code> window, 2 s before the first shot outside a fight. The sim draws hostiles' guns in its own way, so this wants a read-only field or a log line from Keel, which Latch plays. This is the one hook the design depends on.</li>
+<li><b>Siren:</b> <code>patrol.alarm</code> and <code>patrol.breaks</code>, and a dispatch that sends robots only. These are the codes <code>patrol_break</code> uses today.</li>
+<li><b>Chirps:</b> the face changes that <code>RobotFace</code> already makes from the attention stages: curious on noticed, alert on wary and reporting.</li>
+<li><b>Roll and hum:</b> the robot's pose speed, as the rival car's engine reads it. Stop and settle plays when the speed drops under 0.1 m/s.</li>
+<li><b>Hit, down, stand-down:</b> <code>patrol.hit</code>, <code>patrol.down</code>, <code>response.hit</code>, <code>response.down</code> with a <code>robot-*</code> id, and <code>patrol.stands-down</code>. The flutter reads the robot's health.</li>
+</ul>
+
+<h2>Measures</h2>
+<p class="note">From the WAVs, by <code>make/robot_measure.py</code>, with brief 087's own sums (<code>briefs/087/chime/audiolib.py</code>: BS.1770 loudness, 4× true peak, third-octave masking margins). <b>Bed + roll</b> is <code>street_bed_even</code> (-38.0 LUFS-I) with this robot's roll and hum at min distance. <b>Gunfire</b> is the cell pistol and the robot shot alternating every 0.75 s on the fight bus. That's twice as dense as brief 087's test, so it's the harder case. Margins are dB in the cue's three strongest bands. These numbers rule out masking and clipping. They say nothing about whether a sound is good.</p>
+<!--measures-->
+<ul class="tight note">
+<li>The ceiling holds: no draft peaks above -1.0 dBTP, and none clips. The shot sits at the ceiling. I soft-clipped it, so it reaches the pistols' loudness without going over.</li>
+<li>The draw's "ready" tones alone come to -22.9 LUFS-M and stay 12.3 dB clear of gunfire in their bands (1.0–2.5 kHz). The clacks don't: they carry the character, the tones carry the warning.</li>
+<li>The siren is only 2.8 dB clear of dense gunfire (the police siren measured 0.0 in brief 087's test), so it needs the fight-bus dip while it rings, the rule that already exists.</li>
+<li>The loops' seams are clean as WAV (step ratios 0.05 and 0.25 against the checker's limit of 2). After Vorbis, Latch should listen to them at the loop point, as with the bed.</li>
+<li>Running the script twice writes the same bytes; the sha256 of each file is in <code>measures.json</code>.</li>
+</ul>
+
+<h2>Sources and licences</h2>
+<ul class="tight">
+<li><b>All 7 drafts:</b> synthesised by our own code, <code>briefs/104/chime/make/robot_synth.py</code> (numpy and scipy, fixed seeds). No samples, no library clip, no model, no third-party audio. They are the project's own work, with no licence to carry and no attribution.</li>
+<li><b>The comparison clips</b> on this page are the pack's own (<code>unity/Assets/Suborned/Resources/Audio/087/</code>). They were generated with Seed Audio 1.0 via Runware in brief 087; their licence record is <code>briefs/087/licences/generated.md</code>. They're only here to compare against.</li>
+<li><b>Free libraries looked at, not used:</b> Kenney's packs are CC0 (read at kenney.nl/support for brief 087). A Kenney clip for the hatch latch could stand in for the synth's click. Its licence would be read from that pack's own page first and kept with the clip. Sonniss stays out: this repo is public, and its licence bars handing out the raw sounds (brief 087).</li>
+</ul>
+
+<h2>A paid pass, if wanted (not run)</h2>
+<p>Synthesis covers every cue, and I'd start there. If Sky hears the mechanics as too clean or "electronic", a small <b>Seed Audio 1.0</b> pass through <code>tools/paid/paid.py</code> could add real-world texture for layering: the latch and rail, the shell ringing, the tip-over crash and the ball rolling off. That's <b>4 sounds × 3 takes = 12 calls</b>. At the ledger's prices for one-second effects (about $0.0066–0.012 a call), it comes to <b>about $0.15</b>. I'd set the budget at <b>$0.50</b>. It would only be layered under the synth, never replace the draw's tones, and it carries brief 087's inference that Seed Audio counts as a commercial Partner Model on Runware.</p>
+
+<h2>Files</h2>
+<ul class="tight">
+<li>Drafts: <code>briefs/104/chime/drafts/</code>: <code>robot_draw</code>, <code>robot_siren</code>, <code>robot_roll</code>, <code>robot_hum</code>, <code>robot_chirp_curious</code>, <code>robot_chirp_alert</code>, <code>robot_shot</code>, plus <code>robot_beat_preview</code> (48 kHz, 16-bit, mono WAV)</li>
+<li>Measures: <code>briefs/104/chime/measures.json</code></li>
+<li>Scripts: <code>briefs/104/chime/make/robot_synth.py</code> → <code>robot_measure.py</code> → <code>report.py</code>, run with <code>out/scratch/chime/venv/bin/python -I</code> from the repo root</li>
+<li>Next: Sky listens. Then Chime makes stop and settle, the hit glitch and flutter, the down and the stand-down, and moves the set into the 087 cue pack. Latch hooks it up after the robot install, with Keel's draw hook.</li>
+</ul>
+</main>
+</body>
+</html>
