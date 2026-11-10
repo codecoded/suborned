@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unguarded Car Proposal</title>
+<style>
+:root{--bg:#faf7f1;--fg:#1f2328;--mute:#5d6470;--line:#ddd6c8;--card:#fff;--accent:#1d7f74;--warn:#a2461b;--ok:#2d7a3a;--chip:#eef4f2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16191d;--fg:#e8e6e1;--mute:#9aa2ad;--line:#2f353d;--card:#1e2227;--accent:#5cc2b5;--warn:#e38a5c;--ok:#7fc98b;--chip:#20302d}}
+:root[data-theme="dark"]{--bg:#16191d;--fg:#e8e6e1;--mute:#9aa2ad;--line:#2f353d;--card:#1e2227;--accent:#5cc2b5;--warn:#e38a5c;--ok:#7fc98b;--chip:#20302d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:860px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:32px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+h3{font-size:15px;margin:18px 0 4px}
+.sub{color:var(--mute);margin:0 0 18px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:10px 0}
+.rec{border-left:4px solid var(--accent)}.old{border-left:4px solid var(--warn)}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:600}td.n{text-align:right;font-variant-numeric:tabular-nums}
+code{font:13px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--chip);padding:1px 4px;border-radius:4px;overflow-wrap:anywhere}
+.q{font-weight:600}.r{color:var(--accent);font-weight:600}
+ul{padding-left:20px}li{margin:3px 0}
+.scroll{overflow-x:auto}
+small{color:var(--mute)}
+</style>
+</head>
+<body><main>
+<h1>The unguarded car</h1>
+<p class="sub">Brief 105 · Motive (systems) · 2026-11-10 · a proposal for Sky, not yet in the GDD or the rulebook</p>
+
+<div class="box rec"><b>In one line:</b> rivals never take Popovic out of a car. They only shoot at it, and only when nobody of the cell is outside. Anyone standing at the car counts, gun drawn or not. If everyone hides inside, the rivals shoot the car until it can't drive. That is the existing "getaway car wrecked" loss, with seconds of visible warning and a one-click answer: step out.</div>
+
+<h2>Sky's rulings (2026-11-10, build 0.2.310)</h2>
+<ul>
+<li>"They can't take Popovic from the car. They can only shoot at the car."</li>
+<li>"Everyone was around the car, can't just make me lose for that." The whole cell stood round the car, no guns drawn, and the game still lost Popovic.</li>
+<li>The car's step-out button reads "Move" when it should say "Get out". That's a wording bug for Glyph and Fable, and nothing below depends on it.</li>
+</ul>
+
+<h2>The current rule (what loses today)</h2>
+<div class="box old">
+<p>Two rules let rivals take Popovic from a car. Both fail as <code>rivals-reach-vale</code>, cause <code>reached-car</code>:</p>
+<ol>
+<li><b>The walk-in</b> (<code>fight.unguarded (a)</code>, engine 0.34.0/0.35.2). In the safe fight, with Popovic in our held car and no <i>drawn</i> agent outside, every rival but the blocker walks to the car, firing, and takes no cover. When an agent outside draws, they go back to cover. Code: <code>GameUnguarded.cs</code>.</li>
+<li><b>The reach</b> (brief 018 §1). Any rival who gets within 1 m of the car's body while no drawn agent stands within reach of it takes Popovic. This also covers <b>Popovic's own car once it is lent to us</b> (route B, the Enforcer at the wheel). Code: <code>RivalReachesVale</code> and <code>RivalReachesLent</code>, called from <code>GameFight.cs:122</code>.</li>
+</ol>
+<p>Both count only a drawn agent as a guard (Sky's yes of 2026-10-27). That is why the undrawn cell standing round the car in 0.2.310 lost.</p>
+</div>
+
+<h2>The proposed rule</h2>
+<div class="box rec">
+<h3>1 · Nobody takes anyone out of a car</h3>
+<p>Delete both takes: the walk-in's take and the brief 018 reach, for our car and for Popovic's lent car. A rival at a car's door is just a man by a car. While Popovic is inside, he can't be reached.</p>
+<h3>2 · People in a car aren't targets; the car is (as in Syndicate)</h3>
+<p>A shot at someone sitting in a car is a shot at the car. The riders, Popovic included, are hurt only if the car explodes. Today a rider can be shot through the car under cover, which is how the Enforcer went down inside in BAL-YARD-AT-WILL. The car's own law is unchanged: 10 HP (<code>HealthCar</code>), it stops for good at 5 (<code>CarDisabledAt</code>), it burns at 0 and explodes <code>CarBurnS</code> 6 s later, hitting everyone within 5 m (<code>CarBlastCm</code>) for 3 damage (<code>CarBlastDamage</code>).</p>
+<h3>3 · Who the rivals shoot: people first, then the car</h3>
+<p>One target rule for the rival crew. A rival fires at an agent he can see within his reach, as today, drawn or not. A rival with no agent in reach, while Popovic is in a car we hold, fires at that car. He fights from where he stands, under the cover law (<code>fight.cover</code>). If the car is beyond his pistol's effective reach (15 m), he uses the existing advance and stops at that reach. He never walks to the door. The blocker keeps his lane and shoots too. Once Popovic is out of the car, the car is no target. Police never shoot a car with the Councillor in it: the loud fight already has the seal.</p>
+<h3>4 · Anyone at the car counts</h3>
+<p>An agent standing outside the car, drawn or not, is a person in the fight. The rivals shoot at him, not at the car. Nothing ends the mission because the cell is standing there undrawn. Undrawn agents are shot at and can't fire back until they draw, and that is the whole price.</p>
+<h3>5 · What a shot-up car does</h3>
+<ul>
+<li><b>Our car disabled with Popovic aboard:</b> <code>getaway-lost</code>, as today ("the getaway car is wrecked"), with a new cause, <code>shot-out</code>. The mission ends at the disable point, before any fire or blast, so Popovic and the riders are never hurt.</li>
+<li><b>Popovic's lent car disabled:</b> as today (<code>LentDisabled</code>). The Enforcer gets out with him and the fight goes on on foot. With Popovic out of the car, the car stops being a target. On foot the old laws hold: a downed Enforcer still leaves Popovic to the rivals.</li>
+<li><b>Go:</b> unchanged. It's refused while the car is held or boxed, and a disabled car never drives.</li>
+</ul>
+<p><small>No new values. The walk to the car (<code>rivals.for-car</code>) and the back-to-cover walk (<code>rivals.back-to-cover</code>) go away, because the rivals never leave cover. In their place a log line, <code>rivals.fire-car</code>, records the first shot at the car.</small></p>
+</div>
+
+<h2>Questions for Sky</h2>
+<table>
+<tr><th>#</th><th>Question</th><th>My recommendation</th></tr>
+<tr><td>Q1</td><td class="q">Does "they can't take Popovic from the car" also cover <b>Popovic's own car once his driver lends it to us</b> (route B, the Enforcer driving)?</td><td><span class="r">Yes.</span> One law for every car we hold. It is the bigger of the two takes: 81 of drive-round's 86 losses.</td></tr>
+<tr><td>Q2</td><td class="q">Are people sitting in a car safe from gunfire, with shots hitting the car instead (Syndicate)? This applies to every car, so Keel lists what else it changes, for example shots at the rival wheelman.</td><td><span class="r">Yes.</span> It is what "only shoot at the car" says. Without it, rivals could still kill the cell inside, which is a take by another name.</td></tr>
+<tr><td>Q3</td><td class="q">If everyone hides in the car and the rivals shoot it until it can't drive, is the mission lost (the existing "getaway car wrecked")? The alternative is that everyone gets out stranded and fights on with no car.</td><td><span class="r">Lost, as today's law has it.</span> Stranded with no car leaves nothing to win, only waiting. This is not a new way to lose Popovic, because he is never hurt.</td></tr>
+<tr><td>Q4</td><td class="q">Agents at the car but not drawn: do they fully count (the rivals shoot at them, not the car), or is some guard condition still needed?</td><td><span class="r">They fully count, with no extra guard condition.</span> Being shot at undrawn and not firing back is pressure the player can see and answer by drawing. No instant loss.</td></tr>
+<tr><td>Q5</td><td class="q">Is there enough time to answer? From the first shot, at the rivals' 65 % from cover at effective range, one pistol hit every 1.5 s each, a car needs 5 hits to stop. With 1 rival shooting it lasts about 12 s, with 2 about 6 s, with 3 about 4 s. Stepping out takes 1 s and drawing 1 s.</td><td><span class="r">Keep the weapons sheet as it is.</span> Make the threat loud instead: a card at the first hit, plus the car's health on its ring. Look at the numbers again only if playtests show players can't answer in time. Any change should be a law, never a value tuned for this one case.</td></tr>
+<tr><td>Q6</td><td class="q">The lookout catches Popovic at <b>his own car while his own driver still has him</b>, before it's ours. Should that stay?</td><td><span class="r">It stays.</span> That isn't our car, and it is the lookout's whole point on route B. One note: it resolves 0.1 s after he starts running (5:53.0 → 5:53.1 on every seed), which reads as instant. That's a separate brief.</td></tr>
+</table>
+
+<h2>What the player can do about it</h2>
+<ul>
+<li><b>Step out</b>, any agent, drawn or not. The rivals switch to him at once. Drawing lets him fire back.</li>
+<li><b>Keep someone outside</b> until the block breaks. Board last, then press Go.</li>
+<li><b>Break the crew or blow the rival car</b> before boarding (existing). Then the gate opens and Go works.</li>
+<li><b>Thin the crew early</b> with the Mislead, Pay or a takedown. Fewer shooters means a car that lasts longer.</li>
+<li><b>Fair and readable:</b> the threat is guns turned on the car, hits on its health, and a card. The time to answer is 4–12 s against a 1 s answer. Nobody loses for standing next to their own car.</li>
+</ul>
+
+<h2>Downstream</h2>
+<h3>Engine and rulebook (Keel). An engine round, in its own worktree</h3>
+<ul>
+<li><code>contracts/rules/rulebook.json</code>: rewrite <code>fight.unguarded (a)</code> as the target rule; (b) cell-down and (c) needs-a-driver stay. Drop the take from <code>fight.holdRule</code>'s exception list. In <code>car.target.rule</code>, "hostiles never choose a car as a target" becomes the rule in §3. Add the <code>shot-out</code> cause to <code>getaway-lost</code>.</li>
+<li>Code: <code>GameUnguarded.cs</code> (walk-in becomes the target rule; <code>Guards</code> drops "drawn"), <code>GameGetaway.cs</code> <code>RivalReachesVale</code>, <code>GameLend.cs</code> <code>RivalReachesLent</code>, <code>GameFight.cs:122</code>, <code>GameCombat.cs</code> (in-car targets, <code>:166</code>), <code>GameCars.cs</code> (the cause), <code>FailCause.cs</code>, <code>Debrief.cs</code>, <code>GameOrders.cs</code>, <code>GameRivalBlock.cs</code>.</li>
+<li>Scenarios and tests naming the take: K3-PRESS / K3-BACK / K3-UNDRAWN (<code>ScenariosPace067.cs</code>), <code>ScenariosFights.cs</code>, <code>ScenariosFightLab.cs</code>, <code>ScenariosFailCause.cs</code>, <code>ScenariosAlways059.cs</code>, <code>ScenariosSealCar.cs</code>, <code>ScenariosLend096.cs</code>, and in tests <code>GateC037.cs</code>, <code>FinalIntent.cs</code>, <code>SeedTests.cs</code>, <code>FailCauseTests.cs</code>, <code>CoverHold.cs</code>. The lookout scenarios (RIV-6, RIV-6b, N122) stay.</li>
+</ul>
+<h3>Words (Fable). Drafts only; the words are Fable's</h3>
+<table>
+<tr><th>Where (<code>text.json</code>)</th><th>Now</th><th>Draft</th></tr>
+<tr><td>end card, cause <code>reached-car</code></td><td>Rivals took Popovic from the car</td><td>Removed. New cause <code>getaway-lost / shot-out</code>: "The rivals shot up our car" · "Everyone was inside, so nobody fought back, and they shot it until it couldn't drive."</td></tr>
+<tr><td>Next time, <code>reached-car</code></td><td>Without someone outside with a gun drawn, rivals can take Popovic from the car.</td><td>"If everyone hides in the car while it's blocked, the rivals shoot the car. Keep someone outside until it's clear."</td></tr>
+<tr><td>story <code>unguarded</code></td><td>Nobody stood guard outside it with a gun drawn, so the rivals took him.</td><td>"Everyone was in the car, so they shot the car."</td></tr>
+<tr><td>hint <code>reached-car</code></td><td>Draw a gun by the car.</td><td>"Keep someone outside the car."</td></tr>
+<tr><td>needs <code>guarded</code> / check <code>car-guarded</code></td><td>someone guards the car outside, gun drawn</td><td>"someone stays outside the car" (the check drops "gun drawn")</td></tr>
+<tr><td>fail barks, <code>rivals-reach-vale</code></td><td>"They got him first." / "Got him. Let's go."</td><td>Keep these for the lookout and downed-Enforcer causes. Add rival barks for a shot-out car.</td></tr>
+</table>
+<h3>HUD cards (Glyph with Fable)</h3>
+<ul>
+<li><code>rivals.for-car</code> "Rivals moving on the car / Nobody outside the car has a gun drawn…" becomes <b>"Rivals shooting our car"</b> · "Everyone's inside. Get someone out." with a Step out fix. It shows at the first hit, with the car's health on its ring.</li>
+<li>"Rivals after our car" (<code>rivals-follow</code>, the rivals chasing our car after Go) doesn't change, but its words must not promise a take.</li>
+<li><code>heldGo.fix</code> "Step out and draw · or down them" becomes "Step out · or down them".</li>
+<li>Out of this brief: the "Move" label on the step-out (Glyph and Fable's wording fix).</li>
+</ul>
+<h3>Plans and bots (Waymark)</h3>
+<ul>
+<li><code>routes/fight-safe-unguarded.json</code> and its plan expect <code>rivals-reach-vale</code>. Retarget them to <code>getaway-lost / shot-out</code> (everyone boarded, never steps out).</li>
+<li>Add two plans, because no bot today stands round the car undrawn: every adaptive plan gives <code>draw-all</code> before boarding. <b>undrawn-at-car</b> is Sky's 0.2.310 case; the check is no loss while the cell stands there, and the fight goes on. <b>answer-the-shots</b> has everyone board, then steps one out at the first hit; the check is that the car survives.</li>
+<li><code>tools/missions/check/bands.ts</code>, <code>check.test.ts</code>, <code>sim/cli/Adaptive.cs</code> (the Enforcer-down text match), <code>tools/qa/checks/warn.ts</code>, the host's debrief and end card (<code>HostLogic.Debrief099.cs</code>, <code>HostLogic.EndCard.cs</code>), <code>tools/simview</code>, <code>tools/style-agent/short-debrief.ts</code>, and in Unity <code>PlayText.cs</code> and <code>DebriefShots.cs</code>: each reads the cause list.</li>
+</ul>
+
+<h2>Balance estimate</h2>
+<p>Sweep: <code>suborned-sim batch</code>, all 15 adaptive plans × 100 seeds, one process, about 20 s, on HEAD's engine. The probe is a scratch copy of the engine with both takes switched off and nothing in their place, so it is an <b>upper bound</b> on what removing the take frees up. The car-shooting rule isn't built yet, so the last column is my estimate. Data: <code>briefs/105/motive/sweep.json</code>.</p>
+<div class="scroll"><table>
+<tr><th>Plan</th><th class="n">Wins today</th><th class="n">Lost "from the car" today</th><th class="n">Wins, takes off (probe)</th><th>With the proposal (estimate)</th></tr>
+<tr><td>drive-round</td><td class="n">14</td><td class="n">81 (lent car)</td><td class="n">30</td><td>14–30. In the probe, 69 of the freed runs sat boxed in until the close. Shooting the lent car (1 rival, about 12 s) turns that wait into a fight on foot.</td></tr>
+<tr><td>prepared-loud</td><td class="n">62</td><td class="n">6</td><td class="n">62</td><td>About 62, inside its 50–75 band. The 6 become a quick shot-out instead of a 47 s wait.</td></tr>
+<tr><td>quiet A / B / B-thinned / G, thin-quiet, veteran, lend, careless, unprepared</td><td class="n">unchanged</td><td class="n">0</td><td class="n">unchanged</td><td>Unchanged. None of these ever lose from the car (quiet-g's 4 and thin-quiet's 6 are a downed Enforcer, on foot).</td></tr>
+<tr><td>quiet-b-taped, -lookout-ignored, drive-early</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td>Unchanged. They lose to the lookout at Popovic's own car (Q6).</td></tr>
+</table></div>
+<p>In the probe, the freed runs waited a median 47 s (25–204 s) for the close: the idle that Sky's "no waiting" rules out. That is why the take needs a replacement and can't simply be deleted. Every banded plan stays where it is, because bots draw before boarding and never hide. The rule matters for human play, which is why Waymark's two new plans are the real check.</p>
+
+<p><small>Motive · brief 105 · nothing committed, the GDD and the rulebook untouched. Scratch: <code>out/scratch/motive/</code> (the sweep lines, the probe engine copy).</small></p>
+</main></body>
+</html>

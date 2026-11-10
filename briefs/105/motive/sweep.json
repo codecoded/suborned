@@ -1,0 +1,172 @@
+{
+ "schema": "motive.sweep/1",
+ "brief": "105",
+ "engine": "HEAD 64ad99725 (sim built from the tree, Release)",
+ "run": "suborned-sim batch contracts/missions/handover/adaptive (15 plans) --seeds 100 (1..100) --no-replay, one process, 18 threads, ~20 s",
+ "today": {
+  "careless": {
+   "entry-seen-camera/seen": 97,
+   "vale-leaves/driven-away": 3
+  },
+  "drive-early": {
+   "rivals-reach-vale/lookout": 100
+  },
+  "drive-round": {
+   "rivals-reach-vale/reached-car": 81,
+   "win": 14,
+   "closed-in/boxed": 5
+  },
+  "prepared-loud": {
+   "win": 62,
+   "sealed/sealed": 20,
+   "rivals-reach-vale/reached-car": 6,
+   "closed-in/on-foot": 2,
+   "enforcer-down/shot": 5,
+   "closed-in/car-held": 1,
+   "closed-in/no-go": 3,
+   "vale-leaves/driven-away": 1
+  },
+  "prepared-loud-lend": {
+   "closed-in/car-held": 74,
+   "win": 25,
+   "closed-in/no-go": 1
+  },
+  "quiet-a": {
+   "win": 100
+  },
+  "quiet-b": {
+   "win": 100
+  },
+  "quiet-b-lookout-ignored": {
+   "rivals-reach-vale/lookout": 100
+  },
+  "quiet-b-taped": {
+   "rivals-reach-vale/lookout": 100
+  },
+  "quiet-b-thinned": {
+   "win": 100
+  },
+  "quiet-g": {
+   "win": 95,
+   "rivals-reach-vale/downed-enforcer": 4,
+   "closed-in/no-driver": 1
+  },
+  "thin-quiet": {
+   "win": 91,
+   "rivals-reach-vale/downed-enforcer": 6,
+   "vale-leaves/driven-away": 2,
+   "entry-seen-camera/seen": 1
+  },
+  "unprepared-loud": {
+   "entry-seen-camera/seen": 95,
+   "sealed/sealed": 5
+  },
+  "veteran": {
+   "win": 47,
+   "enforcer-down/shot": 45,
+   "closed-in/car-held": 1,
+   "sealed/sealed": 6,
+   "closed-in/no-go": 1
+  },
+  "veteran-drive": {
+   "win": 8,
+   "sealed/sealed": 51,
+   "closed-in/car-held": 12,
+   "vale-leaves/too-late": 17,
+   "enforcer-down/shot": 7,
+   "cell-down/shot": 2,
+   "closed-in/no-go": 1,
+   "closed-in/no-driver": 1,
+   "rivals-reach-vale/lookout": 1
+  }
+ },
+ "probe": {
+  "what": "scratch copy with both takes off (RivalReachesVale/RivalReachesLent false, fight.unguarded (a) walk off) and nothing in their place: an upper bound",
+  "result": {
+   "careless": {
+    "entry-seen-camera/seen": 97,
+    "vale-leaves/driven-away": 3
+   },
+   "drive-early": {
+    "rivals-reach-vale/lookout": 100
+   },
+   "drive-round": {
+    "closed-in/boxed": 69,
+    "win": 30,
+    "closed-in/no-go": 1
+   },
+   "prepared-loud": {
+    "win": 62,
+    "sealed/sealed": 20,
+    "closed-in/boxed": 6,
+    "closed-in/on-foot": 2,
+    "enforcer-down/shot": 5,
+    "closed-in/car-held": 1,
+    "closed-in/no-go": 3,
+    "vale-leaves/driven-away": 1
+   },
+   "prepared-loud-lend": {
+    "closed-in/car-held": 74,
+    "win": 25,
+    "closed-in/no-go": 1
+   },
+   "quiet-a": {
+    "win": 100
+   },
+   "quiet-b": {
+    "win": 100
+   },
+   "quiet-b-lookout-ignored": {
+    "rivals-reach-vale/lookout": 100
+   },
+   "quiet-b-taped": {
+    "rivals-reach-vale/lookout": 100
+   },
+   "quiet-b-thinned": {
+    "win": 100
+   },
+   "quiet-g": {
+    "win": 95,
+    "rivals-reach-vale/downed-enforcer": 4,
+    "closed-in/no-driver": 1
+   },
+   "thin-quiet": {
+    "win": 91,
+    "rivals-reach-vale/downed-enforcer": 6,
+    "vale-leaves/driven-away": 2,
+    "entry-seen-camera/seen": 1
+   },
+   "unprepared-loud": {
+    "entry-seen-camera/seen": 95,
+    "sealed/sealed": 5
+   },
+   "veteran": {
+    "win": 47,
+    "enforcer-down/shot": 45,
+    "closed-in/car-held": 1,
+    "sealed/sealed": 6,
+    "closed-in/no-go": 1
+   },
+   "veteran-drive": {
+    "win": 8,
+    "sealed/sealed": 51,
+    "closed-in/car-held": 12,
+    "vale-leaves/too-late": 17,
+    "enforcer-down/shot": 7,
+    "cell-down/shot": 2,
+    "closed-in/no-go": 1,
+    "closed-in/no-driver": 1,
+    "rivals-reach-vale/lookout": 1
+   }
+  }
+ },
+ "freedRuns": {
+  "n": 87,
+  "idleToEndS": {
+   "median": 47.2,
+   "min": 25.2,
+   "max": 203.5
+  },
+  "wonAfterWait": 16
+ }
+}
