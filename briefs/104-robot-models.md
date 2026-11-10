@@ -106,3 +106,15 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
   - Aster's notes:
     - The smile is a dot display, so it can change: a calm smile on patrol and a flat line at Alert 3, with no new mesh.
     - The big heads are about 1.6–1.9 m tall next to the scale figure, so a pick needs shrinking to the 1.3 m brief.
+
+**Sky: "need something more simplistic I think - do a new sheet. don't guide too much in terms of color scheme or reference images".**
+- **Pass 7** used a short prompt with no reference images and no palette. It gave only the world, "cute but deadly", simple iconic shapes readable from above, the gun built in, warning lights and a display face.
+  - `P7-lineup-simple`, six designs:
+    1. a cone on two wheels with a chest gun;
+    2. a capsule on three legs with an arm gun;
+    3. a ball on treads with a belly gun;
+    4. an egg on two legs with an arm gun;
+    5. a little car with its display on a stalk;
+    6. a tall cabinet on treads with a side gun.
+  - The faces are display slits whose glyphs change.
+  - The finish is slightly worn painted enamel.
