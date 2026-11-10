@@ -169,3 +169,15 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
   - **1 (rim arm)** changes the silhouette at the side.
   - **2 (forearm)** is the smallest change and hard to read at about 80 px.
   - **4 (under the saucer)** is hidden by the saucer from the play camera.
+
+**Sky picks the ball-balancer (P10, row 2, middle): "I think I like this one - and gun comes from middle panel perhaps?"**
+- Sky's crop is saved as `refs/ref-sky-pick-ball.png`.
+- **Pass 12**, `P12-ball-chest`: the holster is gone. The gadget sits behind the chest panel with the three slats. Three frames:
+  1. **closed:** the robot smiles;
+  2. **opening:** the panel hinges up and the gadget slides out;
+  3. **open:** the gadget points forward, the eyes narrow and the mouth goes flat.
+- Rig, as Aster reads it:
+  - **Rigid parts:** the ball, the body, the panel (one hinge), the gadget (one slide) and the arms.
+  - **Ball:** its roll comes from ground speed, in code.
+  - **Body:** it leans into travel in code, and aims by turning, since the gadget is fixed to the chest.
+  - **Face:** the LED face is a shader setting.
