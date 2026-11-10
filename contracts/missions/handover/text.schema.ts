@@ -52,7 +52,7 @@ export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-z0', 'p
 export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'disable', 'reroute', 'enter', 'take',
-  'board', 'go', 'drive-car', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'end', 'volley', 'field',
+  'board', 'take-car', 'go', 'drive-car', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'end', 'volley', 'field',
   'mark', 'talk-down', 'steam', 'covering-fire'] as const; // brief 039 (engine 0.35.0): one move each (Keel's draft words in text.json, Fable to confirm); parked from engine 0.35.1 (MOVE_VERBS)
 /** Engine 0.35.1 (Sky 2026-10-26): the four moves are out of play (rulebook weapons.moves.on false; their orders are refused unknown-verb). Their words stay, each
  *  marked `parked` with the reason (PARKED), so turning the switch back on needs no new copy. While parked the host offers none of them (the engine refuses each unknown-verb). */
@@ -444,7 +444,7 @@ export const TextFile = z.strictObject({
   hints: z.strictObject({ rules: z.record(z.string(), z.string()), items: z.record(z.string().regex(/^H\d+$/), Hint) }),
   toasts: z.record(code, z.strictObject({ trigger: z.string().min(1), line: HintLine })),
   goingLoud: z.strictObject({ captured: Line, fails: z.record(code, Line).describe('the hold card\'s line when the shot would fail the mission, by fail code (vale-dead, driver-shot, getaway-lost): what dies, then "The mission fails."') }).describe('lines on the going-loud card beyond its numbers'),
-  actions: z.record(z.union([z.enum([...VERBS, ...CONTROL_VERBS, ...HOST_WAYS]), z.string().regex(/^ring-[a-z]+$/)]), Action).describe('the verbs, brief 030\'s `ring-<verb>` entries: the one word on a wedge of the action ring (opened by a left click on a thing) (label, at most 8 characters), and brief 096\'s HOST_WAYS (a way the host builds from an engine verb: `step-out` is a move)'),
+  actions: z.record(z.union([z.enum([...VERBS, ...CONTROL_VERBS, ...HOST_WAYS]), z.string().regex(/^ring-[a-z]+(-[a-z]+)?$/)]), Action).describe('the verbs, brief 030\'s `ring-<verb>` entries: the one word on a wedge of the action ring (opened by a left click on a thing) (label, at most 8 characters), and brief 096\'s HOST_WAYS (a way the host builds from an engine verb: `step-out` is a move)'),
   cancelCosts: z.record(code, Line).describe('what a cancel order costs or keeps, by the rulebook `cancel` line id (and the engine\'s: quiet, keeps-vale, nothing, down, none)'),
   activity: Activity,
   locks: z.record(code, Lock).describe('keyed by the engine\'s refusal code (Answer.Codes, `suborned-sim codes`)'),

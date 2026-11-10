@@ -618,7 +618,7 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
     expect(rb.attention?.run).toMatchObject({ at: 'notice', counts: 'still' });
     expect(n(rb.weapons.mod.running!)).toBe(375); // three-eighths: stand 1000 > walk 500 > run 375 > run away 125
     expect(n(rb.weapons.mod.moving)).toBeGreaterThan(n(rb.weapons.mod.running!)); expect(n(rb.weapons.mod.running!)).toBeGreaterThan(n(rb.weapons.mod.runningAway!));
-    expect(rb.fight.unguarded).toMatch(/car-no-driver/); expect(rb.fight.unguarded).toMatch(/cell-down/); expect(rb.fight.unguarded).toMatch(/the car held/); // M067-K3, amended: a held car only
+    expect(rb.fight.unguarded).toMatch(/car-no-driver/); expect(rb.fight.unguarded).toMatch(/cell-down/); expect(rb.fight.unguarded).toMatch(/Nobody takes anyone out of a car/); // M067-K3, amended: a held car only; engine 0.53.0 (brief 105): no take from a car at all
     expect(rb.fight.holdRule).toMatch(/only on purpose/); expect(rb.ai.noStall).toMatch(/can't stall/); // M067-SQ1, SQ2
     const old = structuredClone(raw); old.cell.runAlert = 'v:op-speed-cm-s';
     expect(Rulebook.safeParse(old).success).toBe(true); // a rulebook pinned before 0.34.0 still parses (the engine of today refuses it)

@@ -526,7 +526,7 @@ describe('keys named in the words are the game\'s (briefs/011/play/HOW-TO-PLAY.m
     N: { action: 'next event', where: ['hints.H7'] },
     Q: { action: 'turn the view left', where: ['hints.H13'] },
     E: { action: 'turn the view right', where: ['hints.H13'] },
-    F: { action: 'draw or holster', where: ['locks.not-drawn', 'hints.H21', 'cards.rivals.for-car'] }, // engine 0.35 one input: F's holster is the only way to stop firing (H21); 0.35.2: only a drawn op guards a held car
+    F: { action: 'draw or holster', where: ['locks.not-drawn', 'hints.H21'] }, // engine 0.35 one input: F's holster is the only way to stop firing (H21); brief 105 (engine 0.53.0): the walk on the car and its card are retired
     Ctrl: { action: 'force fire', where: ['locks.civilian-target'] },
     Return: { action: 'play again', where: ['locks.mission-over'] },
   };
@@ -886,7 +886,7 @@ describe('feed cards for engine events no scene covers', () => {
     expect(codes.length).toBeGreaterThan(15);
     // brief 059 (engine 0.32.0): car.blocks is retired with the driver's Call (Motive M059-6.1). The host keeps its fallback until Latch's port;
     // it may list only codes that have words here or are retired in the engine too, so a retired code that comes back fails here, with no words for it.
-    const RETIRED = ['car.blocks', 'rivals.arrive', 'rivals.drop', 'rivals.follows', 'rivals.warned', 'rivals.no-warning', 'rivals.at-vale']; // brief 096 (engine 0.41.0): the park, the drop, the tail, the driver's word and the wheelman at Vale's door are retired
+    const RETIRED = ['car.blocks', 'rivals.arrive', 'rivals.drop', 'rivals.follows', 'rivals.warned', 'rivals.no-warning', 'rivals.at-vale', 'rivals.for-car', 'rivals.back-to-cover']; // brief 105 (engine 0.53.0): the walk on a held car is retired // brief 096 (engine 0.41.0): the park, the drop, the tail, the driver's word and the wheelman at Vale's door are retired
     expect(codes.filter((c) => !(c in items) && !RETIRED.includes(c))).toEqual([]);
     for (const c of RETIRED) { expect(c in items, `${c} has no card`).toBe(false); if (haveSim) expect(logCodes().has(c), `${c} is still logged by the engine`).toBe(false); expect(c in t.silentLogs, `${c} is not a silent log`).toBe(false); }
   });
@@ -1347,7 +1347,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const F = L.failcam;
     const ways: Record<string, string[]> = {
       'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'abduction-seen-camera': ['seen'],
-      'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car', 'lookout'], 'vale-leaves': ['driven-away', 'too-late'], 'vale-dead': ['killed', 'shot'],
+      'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'lookout'], 'vale-leaves': ['driven-away', 'too-late'], 'vale-dead': ['killed', 'shot'],
       'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'closed-in': ['no-driver', 'car-held', 'boxed', 'on-foot', 'no-go'], 'engine-error': ['error'] }; // brief 096 (engine 0.40.0): closed-in, boxed
     expect(Object.keys(F.caption).sort()).toEqual(Object.keys(ways).sort());
     for (const [f, ws] of Object.entries(ways)) expect(Object.keys(F.caption[f]!).sort(), f).toEqual([...ws].sort());
@@ -1388,7 +1388,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
-    expect(Object.keys(t.cards.items).length).toBe(104); // brief 100 (Fable 2026-11-07): plus eight for a report on its way and an Alert's cause (attention.reporting, attention.landed, attention.stopped, car.reported, car.report-stopped, camera.recorded, drawn.seen, witness.weapon-drawn); 96 in brief 096 (engine 0.43.0, Fable 2026-11-05): plus go.missed (a waiting Go that didn't land); 95 (engines 0.40.0-0.42.0, Fable 2026-11-05): plus nineteen for the new codes (camera.record-lands, car.kerbside, car.boxed-in, car.report-lands; rivals.block, car.unboxed, rivals.drives-off, rivals.lookout-posted, rivals.lookout-follows, security.gang, security.gang-claimed; lend.lent, vale.out, split.police, lend.spring, lent.seen, car.leaves-split, car.lost, lend.goes-on); 76 in engine 0.41.0: less the six of the retired routine (rivals.arrive, drop, follows, warned, no-warning, at-vale); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
+    expect(Object.keys(t.cards.items).length).toBe(108); // brief 105 (engine 0.53.0, Fable 2026-11-11): less rivals.for-car and rivals.back-to-cover (the walk on the car is retired), plus six (rivals.fire-car, car.health, car.shot-out, car.taken, take-car.wheelman, take-car.missed); 104 in brief 100 (Fable 2026-11-07): plus eight for a report on its way and an Alert's cause (attention.reporting, attention.landed, attention.stopped, car.reported, car.report-stopped, camera.recorded, drawn.seen, witness.weapon-drawn); 96 in brief 096 (engine 0.43.0, Fable 2026-11-05): plus go.missed (a waiting Go that didn't land); 95 (engines 0.40.0-0.42.0, Fable 2026-11-05): plus nineteen for the new codes (camera.record-lands, car.kerbside, car.boxed-in, car.report-lands; rivals.block, car.unboxed, rivals.drives-off, rivals.lookout-posted, rivals.lookout-follows, security.gang, security.gang-claimed; lend.lent, vale.out, split.police, lend.spring, lent.seen, car.leaves-split, car.lost, lend.goes-on); 76 in engine 0.41.0: less the six of the retired routine (rivals.arrive, drop, follows, warned, no-warning, at-vale); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/noticed/);
   });
@@ -1820,26 +1820,11 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
     for (const sp of ['fixer', 'scout'] as const) expect(lookup(t, { event: 'fail', speaker: sp, outcome: 'cell-down' })?.outcome, sp).toBe('cell-down');
     if (haveSim) expect(simAll().join('\n')).toContain('Fail("cell-down"');
   });
-  test('the rivals walk to a held car with nobody outside it, go back to cover when someone is, and a rival with nobody in reach advances: each log code is an event, the rival and the Scout speak, and no line names the Alert', () => {
-    for (const [log, id] of [['rivals.for-car', 'rivals-for-car'], ['rivals.back-to-cover', 'rivals-back-to-cover'], ['ai.advance', 'ai-advance']] as const) {
-      const ev = t.events[id]!;
-      expect(ev.log, id).toEqual([log]); expect(ev.speakers, id).toEqual(['rivals', 'scout']);
-      for (const sp of ev.speakers) {
-        const e = lookup(t, { event: id, speaker: sp });
-        expect(e?.event, `${id}/${sp}`).toBe(id); expect(e!.lines.length, `${id}/${sp}`).toBeGreaterThanOrEqual(2);
-        for (const l of e!.lines) expect(l, l).not.toMatch(/alert/i);
-      }
-      if (haveSim) expect(simAll().join('\n'), log).toContain(`Note("${log}"`);
-    }
-    // the Scout says what is wrong when the rivals come: nobody is outside the car
-    for (const l of lookup(t, { event: 'rivals-for-car', speaker: 'scout' })!.lines) expect(l, l).toMatch(/outside|unguarded/i);
-    // the host already makes a fallback card of both codes (HostFeed.FeedEvents), so the text carries their words: what, why and the fix, no sight rule (the cell is in the car), no beat (the feed is at its ten)
-    const fc = t.cards.items['rivals.for-car']!, bc = t.cards.items['rivals.back-to-cover']!;
-    expect(fc.title).toBe('Rivals moving on the car'); expect(fc.kind).toBe('warning'); expect(fc.fate).toBe('icon'); // brief 096: the crucial feed card (objective 5) takes it once the feed has one
-    expect(fc.result).toBe('Nobody outside the car has a gun drawn. Step out and draw, or down them.'); // engine 0.35.2 (GDD v0.30.2 section 06): only a drawn op guards a held car; brief 096: the fix in words, no key (Sky: no key-only features)
-    expect(bc.title).toBe('Rivals back in cover'); expect(bc.fate).toBe('alt');
-    expect(bc.result).toBe('They fall back to cover: a gun is drawn by the car, or nothing blocks it.'); // "blocks", never "held" (GDD section 10)
-    for (const c of [fc, bc]) { expect(c.sight).toBeUndefined(); expect(c.beat).toBeUndefined(); expect(JSON.stringify(c)).not.toMatch(/\bheld\b/i); }
+  test('a rival with nobody in reach advances: the log code is an event, the rival and the Scout speak, and no line names the Alert (brief 105: the walk on a held car and back to cover are retired)', () => {
+    const ev = t.events['ai-advance']!;
+    expect(ev.log).toEqual(['ai.advance']); expect(ev.speakers).toEqual(['rivals', 'scout']);
+    for (const sp of ev.speakers) { const e = lookup(t, { event: 'ai-advance', speaker: sp }); expect(e!.lines.length, sp).toBeGreaterThanOrEqual(2); for (const l of e!.lines) expect(l, l).not.toMatch(/alert/i); }
+    if (haveSim) expect(simAll().join('\n')).toContain('Note("ai.advance"');
   });
   test('car.held.<how> is log only: one silent prefix with its reason, spoken by no event and no card', () => {
     expect(t.silentLogs['car.held.']).toMatch(/log only/);
@@ -1974,13 +1959,12 @@ describe('brief 096: the end card says what really happened (debrief.cause, by t
         const m = line.match(/\bFail\("([a-z-]+)"/); if (!m || line.includes('void Fail(')) continue;
         const f = m[1]!; if ((RETIRED_FAILS as readonly string[]).includes(f) || f === 'sealed') continue;
         const ws = [...line.matchAll(/\b(?:Because|ShotDown)\("([a-z-]+)"/g)].map((x) => x[1]!);
-        if (line.includes('RivalsAtCar')) ws.push('reached-car');
         if (line.includes('Because(why')) for (const w of ['on-foot', 'no-driver', 'boxed', 'car-held', 'no-go']) ws.push(w); // GameSeed.CloseStep's why (brief 096: boxed)
         expect(ws.length, line.trim()).toBeGreaterThan(0);
         for (const w of ws) add(f, w);
       }
       const seed = simFile('GameSeed.cs'); for (const w of ['on-foot', 'no-driver', 'boxed', 'car-held', 'no-go']) expect(seed.includes(`"${w}"`), w).toBe(true);
-      expect(want['rivals-reach-vale']).toEqual(new Set(['beat-to-pickup', 'lookout', 'downed-enforcer', 'reached-car'])); // brief 096: the lookout follows on foot (the tail is retired)
+      expect(want['rivals-reach-vale']).toEqual(new Set(['beat-to-pickup', 'lookout', 'downed-enforcer'])); // brief 096: the lookout follows on foot (the tail is retired); brief 105 (engine 0.53.0): nobody takes Popovic from a car (reached-car retired)
     }
     add('engine-error', 'error');
     const missing: string[] = [];
@@ -2002,15 +1986,33 @@ describe('brief 096: the end card says what really happened (debrief.cause, by t
     for (const [k, x] of Object.entries(ST)) if (!/\.$/.test(x)) bad.push(`story.${k}: no full stop`);
     expect(bad).toEqual([]);
   });
-  test('the held car the way Sky met it: the rivals took Popovic from the car because nobody guarded it, and the story says Go was blocked and nobody guarded it', () => {
-    const rc = C['rivals-reach-vale']!['reached-car']!;
-    expect(rc.head).toMatch(/car/); expect(rc.line).toMatch(/guard/); expect(rc.line).toMatch(/drawn/);
-    expect(rc.story).toEqual(['blocked', 'unguarded']);
-    expect(ST.blocked).toContain('{holders}'); expect(ST.blocked).toMatch(/Go/); expect(ST.unguarded).toMatch(/guard/);
-    expect(rc.head + rc.line).not.toMatch(/first/); // the old line ("got to Popovic first") blamed the wrong thing
+  test('brief 105 (engine 0.53.0; Sky 2026-11-10: "they can\'t take popovic from the car - they can only shoot at the car"): no take from the car anywhere in the words, a shot-out car is no end, and getaway-lost is our own fire', () => {
+    expect(C['rivals-reach-vale']!['reached-car']).toBeUndefined(); expect('unguarded' in ST).toBe(false);
+    expect(t.debrief.page!.next.by['rivals-reach-vale']?.['reached-car']).toBeUndefined();
+    expect(L.failcam.caption['rivals-reach-vale']?.['reached-car']).toBeUndefined(); expect(L.failcam.tip['rivals-reach-vale']?.['reached-car']).toBeUndefined();
+    expect(ST.blocked).toContain('{holders}'); expect(ST.blocked).toMatch(/Go/);
+    const lost = C['getaway-lost']!.wrecked!; expect(lost.head + lost.line).toMatch(/our own/i); // the one cause left: the cell's own fire
+    expect(t.debrief.page!.next.by['getaway-lost']!.wrecked!.line).toMatch(/our own/i); expect(t.briefing.fails['getaway-lost']).toMatch(/our own/i);
+    // nothing the player reads says a gun must be drawn to guard the car (agents at the car count, drawn or not)
+    expect(JSON.stringify(t).match(/[^"]*gun drawn[^"]*/gi)?.filter((x) => /guard|outside the car|by the car/i.test(x)) ?? []).toEqual([]);
     // the words the ring uses: "blocked", never "held", in what the player reads (locks.car-held: "The car is blocked by {holders}")
     const said = [...Object.values(C).flatMap((m) => Object.values(m).flatMap((c) => [c.head, c.line])), ...Object.values(ST)];
     expect(said.filter((x) => /\bheld\b/.test(x))).toEqual([]);
+  });
+  test('brief 105 (engine 0.53.0): the shot car, the shot-out car and Take car have their words, each code card only, and every Take car refusal a line and a short', () => {
+    const I = t.cards.items;
+    expect(I['rivals.fire-car']!.title).toMatch(/shooting at our car/); expect(I['rivals.fire-car']!.result).toMatch(/Popovic/);
+    expect(I['car.health']!.result).toContain('{n}'); expect(I['car.health']!.fate).toBe('icon'); // the car's ring shows the bar: no feed line a hit
+    expect(I['car.shot-out']!.result).toMatch(/take another car/); expect(I['car.shot-out']!.fate).toBe('icon'); // the feed's beats stay at eleven
+    for (const c of ['rivals.fire-car', 'car.health', 'car.shot-out', 'car.taken', 'take-car.wheelman', 'take-car.missed']) { expect(I[c], c).toBeTruthy(); expect(t.silentLogs[c], c).toMatch(/card only/); if (haveSim) expect(simAll().join('\n'), c).toContain(`Note("${c}"`); }
+    for (const c of ['rivals.for-car', 'rivals.back-to-cover']) { expect(c in I, c).toBe(false); expect(c in t.silentLogs, c).toBe(false); if (haveSim) expect(simAll().join('\n'), c).not.toContain(`Note("${c}"`); }
+    for (const e of ['rivals-for-car', 'rivals-back-to-cover']) { expect(e in t.events, e).toBe(false); expect(t.dialogue.filter((d) => d.event === e)).toEqual([]); }
+    expect(t.actions['take-car']!.label).toBe('Take car'); expect(t.actions['ring-take-car']!.label).toBe('Take car');
+    for (const c of ['car-ours', 'car-taken', 'car-moving', 'car-full', 'car-driver', 'car-crewed', 'car-wheelman', 'draw-first', 'car-unknown', 'car-disabled']) {
+      const l = t.locks[c]!; expect(l, c).toBeTruthy(); expect(l.verbs, c).toContain('take-car'); expect(l.line, c).toMatch(/\.$/); expect(l.short.length, c).toBeLessThanOrEqual(20);
+    }
+    expect(t.locks['draw-first']!.short).toBe('Draw first'); expect(t.locks['car-wheelman']!.line).toMatch(/Enforcer/); // Motive's ring fixes
+    const cars = t.book!.cars!; expect(cars.shotOut).toMatch(/fought on/); expect(cars.takenWinLine).toContain('{car}');
   });
   test('the end card and the sealed and closed-in lines it replaces once wired say the same', () => {
     expect(C.sealed!.held!.line).toBe(L.sealed.line.held);

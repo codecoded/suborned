@@ -17,3 +17,10 @@ export const CarLend = ground({
   refuse: z.strictObject({ board: z.literal('board-lent-full'), drive: z.literal('drive-lent'), gone: z.literal('car-left') }),
   rule: text,
 });
+
+/** Take car (engine 0.53.0, brief 105 round 2): any standing car with nobody at its wheel becomes the second cell car; seats by kind and the refusal codes. */
+export const CarTake = ground({
+  seats: z.strictObject({ sedan: Ref, van: Ref, scooter: Ref, rivals: Ref }),
+  refuse: z.strictObject({ full: z.literal('car-full'), draw: z.literal('draw-first'), wheelman: z.literal('car-wheelman'), taken: z.literal('car-taken'), driver: z.literal('car-driver'), moving: z.literal('car-moving'), crewed: z.literal('car-crewed'), unknown: z.literal('car-unknown') }),
+  rule: text,
+});
