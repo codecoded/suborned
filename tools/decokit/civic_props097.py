@@ -110,14 +110,15 @@ MAST, HEAD = 7.4, 7.68       # pole top, the pod's axis height (the pod's top at
 
 def pod(s):
     """The camera pod along local +Z (forward), axis at the origin."""
-    prof = [(0.0, -0.46), (0.05, -0.44), (0.085, -0.38), (0.11, -0.26), (0.125, -0.1), (0.128, 0.08), (0.12, 0.2), (0.105, 0.27)]
-    s.lathe(prof, pal.Enamel_Ivory, seg=20, cap_top=False, cap_bottom=False)
+    prof = [(0.0, -0.46), (0.03, -0.455), (0.05, -0.44), (0.07, -0.415), (0.085, -0.38), (0.1, -0.33), (0.11, -0.26), (0.125, -0.1), (0.128, 0.08),
+            (0.12, 0.2), (0.105, 0.27)]                                                                                             # brief 104: a rounder tail
+    s.lathe(prof, pal.Enamel_Ivory, seg=28, cap_top=False, cap_bottom=False)
     s.lathe([(0.105, 0.27), (0.112, 0.29), (0.108, 0.31), (0.09, 0.315)], pal.Chrome, seg=20, cap_bottom=False, cap_top=False)   # the bezel
     s.lathe([(0.09, 0.312)] + dome(0.09, 0.312, 0.035, n=3)[1:], pal.GlassDark, seg=20, cap_bottom=False)                         # the lens
     s.lathe(ring_prof(0.129, 0.135, -0.06, 0.0), pal.Enamel_Teal__boulevard, seg=20, cap_bottom=False, cap_top=False)            # the coral band
     for a in (0, 120, 240):                                                                                                         # three tail fins
-        with s.at((0, 0, 0), (0, 0, a + 90)):
-            s.extrude([(0.06, -0.46), (0.17, -0.5), (0.2, -0.47), (0.1, -0.3)], -0.008, 0.008, pal.Enamel_Teal__boulevard)
+        with s.at((0, 0, 0), (90, 0, a + 90)):   # brief 104: the fin's plane holds the pod's axis (it was drawn across it, so the fins floated half a metre off the tail)
+            s.extrude([(0.03, -0.45), (0.17, -0.5), (0.2, -0.47), (0.1, -0.3)], -0.008, 0.008, pal.Enamel_Teal__boulevard)
 
 
 def ring_prof(r0, r1, z0, z1):

@@ -37,7 +37,7 @@ LENS_R, LENS_Z = 0.197, NOSE + 0.03       # lens dome radius; where its base sit
 LAMP_Y = -0.03                            # the tally lamp's centre along y (3 cm forward of the turn centre)
 PAD_Y, PAD_R = 0.06, 0.18                 # the belly pad's centre along y (6 cm behind the turn centre, clear of the rim) and radius
 PAD = -0.328                              # the lowest point: the light ring's bottom
-U = [0, .012, .035, .07, .12, .19, .28, .38, .48, .58, .68, .78, .87, .94, 1.0]   # rings along the body, dense at the tail tip
+U = [0, .012, .035, .07, .12, .19, .235, .28, .33, .38, .43, .48, .53, .58, .63, .68, .73, .78, .825, .87, .905, .94, .97, 1.0]   # rings along the body, dense at the tail tip (brief 104: twice as many, the flanks were faceted)
 
 
 def rad(z):
@@ -76,18 +76,19 @@ def head(s):
     zs = [-TAIL + (TAIL + NOSE) * u for u in U]
     lo, hi = (lambda z: edges(z)[0]), (lambda z: edges(z)[1])
     with s.at((0, 0, 0), FRONT):   # the forward frame: local +Z = forward (-Y), local +Y = up
-        bv = _region(s, zs, lo, hi, 4, pal.Eye_Seafoam)                                                      # right flank swoosh
-        bv += _region(s, zs, hi, lambda z: math.pi - hi(z), 9, pal.Eye_Ivory)                               # the back
-        bv += _region(s, zs, lambda z: math.pi - hi(z), lambda z: math.pi - lo(z), 4, pal.Eye_Seafoam)       # left flank swoosh
-        bv += _region(s, zs, lambda z: math.pi - lo(z), lambda z: 2 * math.pi + lo(z), 9, pal.Eye_Ivory)    # the belly
+        # Brief 104 (Sky on the mast's heads, "this ugly is poorly done"): the brass hairlines on the swoosh's edges were 3-sided tubes laid chord to chord over
+        # the curved skin, so they sank in and out of it and the baked AO drew dark teeth beside them. They are now 12 mm strips of the skin itself (w), crisp.
+        w = lambda z: min(0.012 / max(rad(z), 0.02), 0.25 * (hi(z) - lo(z)))  # noqa: E731
+        bands = [(lo, lambda z: lo(z) + w(z), 1, pal.Brass_Civic), (lambda z: lo(z) + w(z), lambda z: hi(z) - w(z), 6, pal.Eye_Seafoam),
+                 (lambda z: hi(z) - w(z), hi, 1, pal.Brass_Civic), (hi, lambda z: math.pi - hi(z), 16, pal.Eye_Ivory),                      # right flank, the back
+                 (lambda z: math.pi - hi(z), lambda z: math.pi - hi(z) + w(z), 1, pal.Brass_Civic),
+                 (lambda z: math.pi - hi(z) + w(z), lambda z: math.pi - lo(z) - w(z), 6, pal.Eye_Seafoam),
+                 (lambda z: math.pi - lo(z) - w(z), lambda z: math.pi - lo(z), 1, pal.Brass_Civic),
+                 (lambda z: math.pi - lo(z), lambda z: 2 * math.pi + lo(z), 16, pal.Eye_Ivory)]                                            # left flank, the belly
+        bv = []
+        for a0, a1, n, mat in bands:
+            bv += _region(s, zs, a0, a1, n, mat)
         bmesh.ops.remove_doubles(s.bm, verts=bv, dist=1e-6)   # one smooth skin: the panels share their seams and the tail pole
-        for side in (1, -1):   # brass hairlines on both swoosh edges, from near the tail point to the rim
-            for k in (0, 1):
-                pts = []
-                for z in [zs[3] + (NOSE - 0.004 - zs[3]) * i / 8 for i in range(9)]:
-                    a = edges(z)[k] if side == 1 else math.pi - edges(z)[k]
-                    pts.append(((rad(z) + 0.002) * math.cos(a), (rad(z) + 0.002) * math.sin(a), z))
-                s.sweep(pts, 0.0045, pal.Brass_Civic, seg=3, caps=False)
         for side in (1, -1):   # two chrome screws on each flank, in the swoosh
             for z in (-0.42, 0.04):
                 a = sum(edges(z)) / 2

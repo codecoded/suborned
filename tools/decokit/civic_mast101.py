@@ -51,59 +51,91 @@ HUB_Z, DRUM_R = round(7.68 + LENS_D * math.sin(math.radians(TILT)), 3), 0.175   
 PODS = [(k, 180.0 + STEP * k) for k in range(3)]   # head k, its Blender angle
 
 
-def body_r(t):
-    """The camera body's radius t metres in front of its tail: tapered round the spoke at the back (0.034), full 0.131 at t 0.3, 0.128 under the hood."""
-    return 0.131 - 0.097 * max(0.0, (0.3 - t) / 0.32) ** 2.5 - 0.003 * max(0.0, (t - 0.3) / 0.16) ** 2
+# ----------------------------------------------------------------------------- the heads (brief 104: Sky, "this ugly is poorly done"; was a tapered ivory petal under a flared hood)
+# Camera frame, before CAM_S: +Z forward along the look from the crown's centre, +Y up. A streamline housing of a rounded-box section (a superellipse, so it
+# reads as a housing, not a bulb), a rounded back with a chrome trim ring, a deep teal sunshade visor riding above it and overhanging the lens, a deep teal
+# hood round the lens (straight, no flare) with a brass hairline where it meets the body. Every coloured edge is an edge of its own solid, never a seam in
+# the skin, so the enamel stays crisp at play zoom.
+HA, HB, HP, HN = 0.140, 0.134, 2.7, 32        # the housing's half-width and half-height, the superellipse's power, points round it
+BACK, FRONT_Z = TAIL0 + 0.005, TAIL0 + 0.42   # the housing's back (just behind the spoke's tail collar) and where the hood takes over
+MOUTH = TAIL0 + 0.545                         # the hood's mouth (the lens sits 7 cm inside it)
+VIS = (TAIL0 + 0.05, TAIL0 + 0.615, 0.016, 0.011, math.radians(41))   # the visor: from, to (its overhang), its underside over the housing, thickness, half-angle
 
 
-def stripe(t):
-    """Half-width (radians) of the deep teal stripe along the top: narrow at the tail, wide at the hood, an arrow the way the lens looks."""
-    return math.radians(12 + 30 * min(1.0, max(0.0, t / 0.44)) ** 1.3)
+def sect(sx, sy=None, dy=0.0, n=HN):
+    """The housing's section scaled by sx (and sy), lifted dy: a superellipse, CCW from the right flank."""
+    sy = sx if sy is None else sy
+    out = []
+    for k in range(n):
+        a = 2 * math.pi * k / n
+        c, s_ = math.cos(a), math.sin(a)
+        out.append((sx * HA * math.copysign(abs(c) ** (2 / HP), c), sy * HB * math.copysign(abs(s_) ** (2 / HP), s_) + dy))
+    return out
 
 
-def _skin(s, ts, a0, a1, n, mat):
-    """One panel of the body between angle functions a0(t) < a1(t) (CCW about local +Z, 0 = local +X, pi/2 = up), rings at ts (open ends)."""
-    verts, rings = [], []
-    for t in ts:
-        lo, hi, r = a0(t), a1(t), body_r(t)
-        rings.append(list(range(len(verts), len(verts) + n + 1)))
-        verts += [(r * math.cos(lo + (hi - lo) * k / n), r * math.sin(lo + (hi - lo) * k / n), TAIL0 + t) for k in range(n + 1)]
-    return s._add(verts, [[a[k], a[k + 1], b[k + 1], b[k]] for a, b in zip(rings, rings[1:]) for k in range(n)], mat, True)
+def grown(d, n=HN):
+    """The section grown d metres all round (near enough a normal offset on this round box)."""
+    return sect((HA + d) / HA, (HB + d) / HB, n=n)
 
 
-def _hood(s, n=26):
-    """The lens hood: a tube from under the body's front to a lip that reaches further at the top (a sunshade), flaring a little; deep teal outside,
-    charcoal inside so its mouth reads as one dark eye round the lens. Quads only; the two skins share the lip ring (merged)."""
-    zb, us = TAIL0 + 0.43, (0.0, 0.35, 0.75, 1.0)
-    lip = lambda a: TAIL0 + 0.56 + 0.03 * math.sin(a)  # noqa: E731
-    ro = lambda u: 0.133 + 0.015 * u ** 1.5             # noqa: E731
-    ring = lambda r, u, dz=0.0: [(r * math.cos(2 * math.pi * k / n), r * math.sin(2 * math.pi * k / n), zb + u * (lip(2 * math.pi * k / n) - zb) + dz) for k in range(n)]  # noqa: E731
-    quads = lambda rings: [[i * n + k, i * n + (k + 1) % n, (i + 1) * n + (k + 1) % n, (i + 1) * n + k] for i in range(rings - 1) for k in range(n)]  # noqa: E731
-    outer = [v for u in us for v in ring(ro(u), u)] + ring(ro(1.0) - 0.007, 1.0, 0.006)                  # back to lip, then the lip's soft crest
-    inner = ring(ro(1.0) - 0.007, 1.0, 0.006) + [v for u in reversed(us) for v in ring(ro(u) - 0.014, u)]  # the crest, then lip to back
-    inner += ring(ro(0.0), 0.0)                                                                           # back face to the outer skin's first ring
-    bv = s._add(outer, quads(len(outer) // n), pal.Enamel_Teal, True)
-    bv += s._add(inner, quads(len(inner) // n), pal.Enamel_Charcoal, True)
+def arcband(lo, hi, a, n=12):
+    """A slice of the section grown lo..hi over the top, half-angle a either side of up: a curved plate's section, CCW (outer right to left, inner back)."""
+    def pt(d, t):
+        c, s_ = math.cos(t), math.sin(t)
+        return ((HA + d) * math.copysign(abs(c) ** (2 / HP), c), (HB + d) * math.copysign(abs(s_) ** (2 / HP), s_))
+    ts = [math.pi / 2 - a + 2 * a * k / n for k in range(n + 1)]
+    return [pt(hi, t) for t in ts] + [pt(lo, t) for t in reversed(ts)]
+
+
+def housing(s):
+    """The ivory housing, its rounded back and the chrome trim ring behind its middle."""
+    back = [(0.46, 0.0), (0.62, 0.006), (0.75, 0.018), (0.86, 0.038), (0.94, 0.066), (0.985, 0.1), (1.0, 0.135)]                     # a streamlined back
+    secs = [(sect(k), BACK + dz) for k, dz in back] + [(sect(1.0), BACK + z) for z in (0.25, 0.34)] + [(sect(1.0), FRONT_Z + 0.012)]
+    s.loft(secs, pal.Enamel_Ivory, cap_top=False)
+    trim = BACK + 0.16
+    s.loft([(grown(-0.001), trim - 0.008), (grown(0.005), trim - 0.005), (grown(0.005), trim + 0.005), (grown(-0.001), trim + 0.008)], pal.Chrome,
+           cap_bottom=False, cap_top=False)                                                                                           # chrome trim ring
+
+
+def hood(s):
+    """The deep teal hood: out of the housing at the brass hairline, straight to a rounded lip; charcoal inside, down to the lens's chrome bezel."""
+    z0 = FRONT_Z
+    s.loft([(grown(0.003), z0 - 0.012), (grown(0.007), z0 - 0.008), (grown(0.007), z0 + 0.002), (grown(0.003), z0 + 0.006)], pal.Brass_Civic,
+           cap_bottom=False, cap_top=False)                                                                                           # brass hairline
+    outer = [(grown(0.0), z0), (grown(0.010), z0 + 0.012), (grown(0.012), MOUTH - 0.018), (grown(0.010), MOUTH - 0.005), (grown(0.004), MOUTH)]
+    inner = [(grown(0.004), MOUTH), (grown(-0.004), MOUTH - 0.004), (grown(-0.006), MOUTH - 0.016), (grown(-0.006), TAIL0 + 0.482)]
+    bv = s.loft(outer, pal.Enamel_Teal, cap_bottom=False, cap_top=False)
+    bv += s.loft(inner, pal.Enamel_Charcoal, cap_bottom=False, cap_top=False)
+    bv += s.loft([(grown(-0.006), TAIL0 + 0.482), ([(0.124 * math.cos(2 * math.pi * k / HN), 0.124 * math.sin(2 * math.pi * k / HN)) for k in range(HN)],
+                  TAIL0 + 0.478)], pal.Enamel_Charcoal, cap_bottom=False, cap_top=False)                                              # the well's face
     bmesh.ops.remove_doubles(s.bm, verts=bv, dist=1e-6)
+
+
+def visor(s):
+    """The sunshade: a deep teal enamel plate riding the housing's top, its back rounded off, overhanging the hood's mouth by 7 cm."""
+    z0, z1, lo, th, a = VIS                                                                                                            # lo clears the hood's crown (+12 mm)
+    plan = [(z0, 0.16), (z0 + 0.03, 0.42), (z0 + 0.07, 0.68), (z0 + 0.12, 0.88), (z0 + 0.18, 1.0), (z1 - 0.024, 1.0), (z1 - 0.008, 0.9), (z1, 0.74)]   # a swept tail
+    secs = [(arcband(lo, lo + th, a * w), z) for z, w in plan]
+    s.loft(secs, pal.Enamel_Teal, cap_bottom=False, cap_top=False)
+    m = len(secs[0][0])                                                                                                                # its ends as quads (a curved n-gon
+    for (sec, z), back in ((secs[0], True), (secs[-1], False)):                                                                        # can triangulate badly in Unity)
+        for i in range(m // 2 - 1):
+            q = [(*sec[i], z), (*sec[i + 1], z), (*sec[m - 2 - i], z), (*sec[m - 1 - i], z)]
+            s.face(q[::-1] if back else q, pal.Enamel_Teal, smooth=False)
 
 
 def camera(s, k):
     """Head k's camera in its own frame: local +Z forward along the look (tilted), +Y up, the origin at the crown's centre."""
-    s.sweep([(0, 0, 0.1), (0, 0, TAIL0 + 0.02)], 0.028, pal.Chrome, seg=10)                                                        # the chrome spoke
+    s.sweep([(0, 0, 0.1), (0, 0, BACK + 0.004)], 0.03, pal.Chrome, seg=14)                                                          # the chrome spoke
     wall = DRUM_R / math.cos(math.radians(TILT)) / CAM_S                                                                             # the drum's wall on the axis
-    s.lathe(ring_prof(0.026, 0.044, wall - 0.008, wall + 0.026), pal.Chrome, seg=12, cap_bottom=False, cap_top=False)                # its collar at the drum
-    s.lathe(ring_prof(0.027, 0.05, TAIL0 - 0.035, TAIL0 + 0.005), pal.Chrome, seg=14, cap_bottom=False, cap_top=False)             # and at the tail
-    up, ts = math.pi / 2, (-0.02, 0.01, 0.05, 0.1, 0.16, 0.23, 0.3, 0.37, 0.42, 0.45, 0.47)
-    bv = _skin(s, ts, lambda t: up - stripe(t), lambda t: up + stripe(t), 4, pal.Enamel_Teal)                                       # the deep teal stripe
-    bv += _skin(s, ts, lambda t: up + stripe(t), lambda t: 2 * math.pi + up - stripe(t), 16, pal.Enamel_Ivory)                     # the ivory body
-    bmesh.ops.remove_doubles(s.bm, verts=bv, dist=1e-6)                                                                              # one smooth skin
-    for side in (-1, 1):                                                                                                             # brass hairlines on its edges
-        pts = [(t, up + side * stripe(t)) for t in [0.04 + 0.39 * i / 7 for i in range(8)]]
-        s.sweep([((body_r(t) + 0.002) * math.cos(a), (body_r(t) + 0.002) * math.sin(a), TAIL0 + t) for t, a in pts], 0.004, pal.Brass_Civic, seg=3, caps=False)
-    s.lathe(ring_prof(0.132, 0.137, TAIL0 + 0.426, TAIL0 + 0.438), pal.Brass_Civic, seg=20, cap_bottom=False, cap_top=False)       # brass hairline at the hood
-    _hood(s)
-    s.lathe([(0.125, TAIL0 + 0.462), (0.0, TAIL0 + 0.478)], pal.Enamel_Charcoal, seg=16, cap_bottom=False, cap_top=False)           # the lens well
-    s.lathe([(0.121, TAIL0 + 0.466), (0.121, TAIL0 + 0.484), (0.116, TAIL0 + 0.492), (0.109, TAIL0 + 0.488)], pal.Chrome, seg=24,
+    s.lathe(ring_prof(0.028, 0.048, wall - 0.008, wall + 0.03), pal.Chrome, seg=16, cap_bottom=False, cap_top=False)                # its collar at the drum
+    s.lathe([(0.03, BACK - 0.034), (0.052, BACK - 0.028), (0.064, BACK - 0.014), (0.067, BACK + 0.006)], pal.Chrome, seg=20,
+            cap_bottom=False, cap_top=False)                                                                                         # the chrome tail cap
+    housing(s)
+    hood(s)
+    visor(s)
+    s.lathe([(0.124, TAIL0 + 0.462), (0.0, TAIL0 + 0.478)], pal.Enamel_Charcoal, seg=24, cap_bottom=False, cap_top=False)           # the lens well
+    s.lathe([(0.121, TAIL0 + 0.466), (0.121, TAIL0 + 0.484), (0.116, TAIL0 + 0.492), (0.109, TAIL0 + 0.488)], pal.Chrome, seg=32,
             cap_bottom=False, cap_top=False)                                                                                         # the chrome bezel
     with s.part(f"Lens{k}") as p:
         p.lathe(dome(0.112, TAIL0 + 0.476, 0.05, n=4), pal.Eye_Lens, seg=24, cap_bottom=False)                                     # the dark lens
@@ -148,13 +180,20 @@ def column(s):
 
 
 def crown(s):
-    """The chrome crown the cameras' spokes leave from: a flared bowl, a seafoam band, the drum, a brass hairline, a domed cap and a ball finial."""
-    s.lathe([(0.056, 7.44), (0.064, 7.52), (0.08, 7.6), (0.115, 7.68), (0.155, 7.75), (0.172, 7.8), (DRUM_R, 7.83), (DRUM_R, 7.95), (0.168, 7.985),
-             (0.15, 8.0)] + dome(0.15, 8.0, 0.07, n=4)[1:], pal.Chrome, seg=32, cap_bottom=False)
-    s.lathe(ring_prof(0.158, 0.172, 7.755, 7.79), pal.Enamel_Seafoam, seg=32, cap_bottom=False, cap_top=False)                    # seafoam band on the bowl
-    s.lathe(ring_prof(DRUM_R - 0.001, DRUM_R + 0.004, 7.952, 7.962), pal.Brass_Civic, seg=32, cap_bottom=False, cap_top=False)    # brass hairline
-    s.lathe(puck(0.02, 8.06, 8.12, 0.007, n=1), pal.Chrome, seg=12)                                                                  # finial stem
-    ball(s, 0.04, pal.Chrome, seg=16, n=8, z=8.16)                                                                                   # finial ball
+    """The chrome crown the cameras' spokes leave from: a flared bowl with a seafoam band, the drum, a brass hairline and a chrome bead, a seafoam enamel
+    cap sloping to a brass ring, a chrome dome and a ball finial (brief 104: the cap was a bare chrome dome that read as glass from the play camera)."""
+    s.lathe([(0.056, 7.44), (0.064, 7.52), (0.08, 7.6), (0.115, 7.68), (0.155, 7.75), (0.172, 7.8), (DRUM_R, 7.83), (DRUM_R, 7.955)], pal.Chrome, seg=40,
+            cap_bottom=False, cap_top=False)
+    s.lathe(ring_prof(0.158, 0.172, 7.755, 7.79), pal.Enamel_Seafoam, seg=40, cap_bottom=False, cap_top=False)                    # seafoam band on the bowl
+    s.lathe(ring_prof(DRUM_R - 0.001, DRUM_R + 0.004, 7.932, 7.942), pal.Brass_Civic, seg=40, cap_bottom=False, cap_top=False)    # brass hairline
+    s.lathe([(DRUM_R, 7.955), (DRUM_R + 0.007, 7.96), (DRUM_R + 0.007, 7.972), (DRUM_R - 0.004, 7.98)], pal.Chrome, seg=40,
+            cap_bottom=False, cap_top=False)                                                                                         # the chrome bead
+    s.lathe([(DRUM_R - 0.004, 7.98), (0.15, 7.995), (0.125, 8.012)], pal.Enamel_Seafoam, seg=40, cap_bottom=False, cap_top=False)  # the seafoam cap
+    s.lathe(ring_prof(0.118, 0.128, 8.008, 8.022), pal.Brass_Civic, seg=32, cap_bottom=False, cap_top=False)                      # its brass ring
+    s.lathe([(0.12, 8.012)] + dome(0.12, 8.018, 0.062, n=6)[1:], pal.Chrome, seg=32, cap_bottom=False)                              # the chrome dome
+    s.lathe(puck(0.026, 8.07, 8.085, 0.006, n=1), pal.Chrome, seg=16)                                                                # finial collar
+    s.lathe([(0.016, 8.08), (0.014, 8.12)], pal.Chrome, seg=12, cap_bottom=False, cap_top=False)                                     # finial stem
+    ball(s, 0.04, pal.Chrome, seg=20, n=10, z=8.155)                                                                                 # finial ball
 
 
 @asset("MastCamera_Lamp", "Signals", bevel=0.0)
