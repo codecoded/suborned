@@ -1,0 +1,1624 @@
+{
+ "note": "Sums only, from the WAVs. Chime cannot hear: Sky's ears decide. Mastered as briefs/087/chime/build.py; measured as make/robot_measure.py (bed + roll = street_bed_even with the robot rolling near; gunfire = the cell pistol every 0.75 s on the fight bus). vs_pack: third-octave shape distance (dB) of the loudest 250 ms; the pack's closest gun pair is 4.8.",
+ "clips": {
+  "siren_yelp_t1": {
+   "seconds": 1.84,
+   "true_peak_dbtp": -11.7,
+   "lufs_momentary_max": -22.0,
+   "small_speaker_lufs_m": -22.0,
+   "centroid_hz": 1174,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -43.4,
+    -4.3,
+    -2.1,
+    -20.3
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -91.1,
+   "tail_20ms_db": -107.9,
+   "floor_p10_db": -50.4,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     1008,
+     1270,
+     3200
+    ],
+    "margin_top3_db": 24.1,
+    "bands_clear_6db": 13,
+    "loudness_margin_lu": 11.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     1008,
+     1270,
+     3200
+    ],
+    "margin_top3_db": 6.8,
+    "bands_clear_6db": 3,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "police_siren": {
+     "shape_distance_db": 8.0,
+     "lufs": -21.0,
+     "centroid_hz": 783
+    },
+    "patrol_break": {
+     "shape_distance_db": 14.4,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    }
+   },
+   "sweep": {
+    "min_hz": 382,
+    "max_hz": 1125,
+    "span_octaves": 1.56
+   },
+   "shaping": {},
+   "cue": "siren",
+   "take": "paid/104-robot-sfx/takes/siren_yelp_t1.wav",
+   "ledger_id": 37,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.005267,
+   "sha256": "8c98cc33eb039bdb406909f25a92a3c725aeb83be3ab8bb0bf1f3de3bed2e213"
+  },
+  "siren_wooo_t1": {
+   "seconds": 1.79,
+   "true_peak_dbtp": -10.4,
+   "lufs_momentary_max": -22.0,
+   "small_speaker_lufs_m": -22.0,
+   "centroid_hz": 2373,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -47.6,
+    -10.4,
+    -1.4,
+    -7.5
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -85.1,
+   "tail_20ms_db": -107.8,
+   "floor_p10_db": -30.8,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     1008,
+     2016,
+     5080
+    ],
+    "margin_top3_db": 26.7,
+    "bands_clear_6db": 10,
+    "loudness_margin_lu": 11.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     1008,
+     2016,
+     5080
+    ],
+    "margin_top3_db": 6.7,
+    "bands_clear_6db": 3,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "police_siren": {
+     "shape_distance_db": 11.5,
+     "lufs": -21.0,
+     "centroid_hz": 783
+    },
+    "patrol_break": {
+     "shape_distance_db": 16.2,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    }
+   },
+   "sweep": {
+    "min_hz": 643,
+    "max_hz": 2005,
+    "span_octaves": 1.64
+   },
+   "shaping": {},
+   "cue": "siren",
+   "take": "paid/104-robot-sfx/takes/siren_wooo_t1.wav",
+   "ledger_id": 43,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.009217,
+   "sha256": "96afd11e1fcd17702a30d2e12324ab281f0d37ab80034573ceddb97c98e0fb52"
+  },
+  "siren_yelp_t3": {
+   "seconds": 1.42,
+   "true_peak_dbtp": -11.5,
+   "lufs_momentary_max": -22.0,
+   "small_speaker_lufs_m": -22.0,
+   "centroid_hz": 1739,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -58.3,
+    -14.0,
+    -0.2,
+    -19.2
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -107.7,
+   "tail_20ms_db": -93.0,
+   "floor_p10_db": -54.9,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     1270,
+     1600,
+     2016
+    ],
+    "margin_top3_db": 26.5,
+    "bands_clear_6db": 12,
+    "loudness_margin_lu": 11.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     1270,
+     1600,
+     2016
+    ],
+    "margin_top3_db": 13.1,
+    "bands_clear_6db": 3,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "police_siren": {
+     "shape_distance_db": 12.8,
+     "lufs": -21.0,
+     "centroid_hz": 783
+    },
+    "patrol_break": {
+     "shape_distance_db": 22.7,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    }
+   },
+   "sweep": {
+    "min_hz": 966,
+    "max_hz": 2149,
+    "span_octaves": 1.15
+   },
+   "shaping": {},
+   "cue": "siren",
+   "take": "paid/104-robot-sfx/takes/siren_yelp_t3.wav",
+   "ledger_id": 39,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.008637,
+   "sha256": "7c06031b4da93966a6bb9b4d97acf1e36107e75eececebba7c649148f98a3c8d"
+  },
+  "siren_whoop_t1": {
+   "seconds": 2.95,
+   "true_peak_dbtp": -12.4,
+   "lufs_momentary_max": -22.0,
+   "small_speaker_lufs_m": -22.0,
+   "centroid_hz": 1459,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -41.9,
+    -4.6,
+    -1.9,
+    -20.0
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -82.8,
+   "tail_20ms_db": -93.9,
+   "floor_p10_db": -30.0,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     800,
+     1008,
+     2540
+    ],
+    "margin_top3_db": 20.8,
+    "bands_clear_6db": 13,
+    "loudness_margin_lu": 11.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     800,
+     1008,
+     2540
+    ],
+    "margin_top3_db": 8.6,
+    "bands_clear_6db": 4,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "police_siren": {
+     "shape_distance_db": 8.6,
+     "lufs": -21.0,
+     "centroid_hz": 783
+    },
+    "patrol_break": {
+     "shape_distance_db": 17.0,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    }
+   },
+   "sweep": {
+    "min_hz": 585,
+    "max_hz": 1454,
+    "span_octaves": 1.31
+   },
+   "shaping": {},
+   "cue": "siren",
+   "take": "paid/104-robot-sfx/takes/siren_whoop_t1.wav",
+   "ledger_id": 3,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.009217,
+   "sha256": "4520fa4cbe69c94418869a20922fbbc5fc009b9cb95eb3c5bf4143f27c467daf"
+  },
+  "siren_hilo_t1": {
+   "seconds": 1.2,
+   "true_peak_dbtp": -12.6,
+   "lufs_momentary_max": -22.0,
+   "small_speaker_lufs_m": -22.0,
+   "centroid_hz": 1027,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -64.8,
+    -2.5,
+    -3.6,
+    -36.8
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -56.2,
+   "tail_20ms_db": -90.2,
+   "floor_p10_db": -46.4,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     800,
+     1008,
+     2540
+    ],
+    "margin_top3_db": 26.4,
+    "bands_clear_6db": 10,
+    "loudness_margin_lu": 11.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     800,
+     1008,
+     2540
+    ],
+    "margin_top3_db": 6.1,
+    "bands_clear_6db": 3,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "police_siren": {
+     "shape_distance_db": 8.6,
+     "lufs": -21.0,
+     "centroid_hz": 783
+    },
+    "patrol_break": {
+     "shape_distance_db": 17.9,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    }
+   },
+   "sweep": {
+    "min_hz": 574,
+    "max_hz": 1266,
+    "span_octaves": 1.14
+   },
+   "shaping": {},
+   "cue": "siren",
+   "take": "paid/104-robot-sfx/takes/siren_hilo_t1.wav",
+   "ledger_id": 40,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.009217,
+   "sha256": "5ad3bd452708b73adb3c465440e6868ade46e427f29a8a95df0e30da16814f27"
+  },
+  "siren_wooo_t3": {
+   "seconds": 1.54,
+   "true_peak_dbtp": -11.9,
+   "lufs_momentary_max": -22.0,
+   "small_speaker_lufs_m": -22.0,
+   "centroid_hz": 2006,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -52.3,
+    -7.4,
+    -1.5,
+    -9.3
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -93.5,
+   "tail_20ms_db": -88.4,
+   "floor_p10_db": -23.8,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     1008,
+     1270,
+     4032
+    ],
+    "margin_top3_db": 21.6,
+    "bands_clear_6db": 13,
+    "loudness_margin_lu": 11.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     1008,
+     1270,
+     4032
+    ],
+    "margin_top3_db": 5.1,
+    "bands_clear_6db": 2,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "police_siren": {
+     "shape_distance_db": 10.9,
+     "lufs": -21.0,
+     "centroid_hz": 783
+    },
+    "patrol_break": {
+     "shape_distance_db": 17.6,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    }
+   },
+   "sweep": {
+    "min_hz": 738,
+    "max_hz": 1652,
+    "span_octaves": 1.16
+   },
+   "shaping": {},
+   "cue": "siren",
+   "take": "paid/104-robot-sfx/takes/siren_wooo_t3.wav",
+   "ledger_id": 46,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.009217,
+   "sha256": "f81fe45d2f63292d56bb53b4f825f1875d87359a24335df3bb61740621c74ac7"
+  },
+  "siren_crank_t1": {
+   "seconds": 1.4,
+   "true_peak_dbtp": -11.5,
+   "lufs_momentary_max": -22.0,
+   "small_speaker_lufs_m": -22.0,
+   "centroid_hz": 2681,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -53.9,
+    -40.3,
+    -0.5,
+    -9.6
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -58.7,
+   "tail_20ms_db": -146.2,
+   "floor_p10_db": -51.0,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     2016,
+     2540,
+     5080
+    ],
+    "margin_top3_db": 23.3,
+    "bands_clear_6db": 9,
+    "loudness_margin_lu": 11.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     2016,
+     2540,
+     5080
+    ],
+    "margin_top3_db": 3.3,
+    "bands_clear_6db": 3,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "police_siren": {
+     "shape_distance_db": 18.0,
+     "lufs": -21.0,
+     "centroid_hz": 783
+    },
+    "patrol_break": {
+     "shape_distance_db": 19.3,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    }
+   },
+   "sweep": {
+    "min_hz": 1032,
+    "max_hz": 2479,
+    "span_octaves": 1.26
+   },
+   "shaping": {},
+   "cue": "siren",
+   "take": "paid/104-robot-sfx/takes/siren_crank_t1.wav",
+   "ledger_id": 13,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.00395,
+   "sha256": "66a7317ce7f2fe25282f69982f61bc8957a34485d520ec9154233fb19ae970e5"
+  },
+  "siren_twotone_t3": {
+   "seconds": 1.44,
+   "true_peak_dbtp": -12.0,
+   "lufs_momentary_max": -22.0,
+   "small_speaker_lufs_m": -22.0,
+   "centroid_hz": 1223,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -63.7,
+    -4.1,
+    -2.2,
+    -23.3
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -91.9,
+   "tail_20ms_db": -105.5,
+   "floor_p10_db": -48.5,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     800,
+     1008,
+     2016
+    ],
+    "margin_top3_db": 24.1,
+    "bands_clear_6db": 14,
+    "loudness_margin_lu": 11.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     800,
+     1008,
+     2016
+    ],
+    "margin_top3_db": 9.4,
+    "bands_clear_6db": 3,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "police_siren": {
+     "shape_distance_db": 10.0,
+     "lufs": -21.0,
+     "centroid_hz": 783
+    },
+    "patrol_break": {
+     "shape_distance_db": 19.4,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    }
+   },
+   "sweep": {
+    "min_hz": 657,
+    "max_hz": 1148,
+    "span_octaves": 0.81
+   },
+   "shaping": {},
+   "cue": "siren",
+   "take": "paid/104-robot-sfx/takes/siren_twotone_t3.wav",
+   "ledger_id": 8,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.004687,
+   "sha256": "23f00faf865316df82587fbe25499f80171aa8efc788c68c7a5103bf01f27239"
+  },
+  "shot_slide_t1": {
+   "seconds": 1.352,
+   "true_peak_dbtp": -1.5,
+   "lufs_momentary_max": -18.5,
+   "small_speaker_lufs_m": -18.6,
+   "centroid_hz": 1919,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -15.1,
+    -4.2,
+    -3.1,
+    -10.1
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -13.6,
+   "tail_20ms_db": -107.5,
+   "floor_p10_db": -52.7,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     504,
+     635,
+     2540
+    ],
+    "margin_top3_db": 23.9,
+    "bands_clear_6db": 21,
+    "loudness_margin_lu": 11.8
+   },
+   "vs_pack": {
+    "fire_pistol": {
+     "shape_distance_db": 3.5,
+     "lufs": -18.5,
+     "centroid_hz": 2321
+    },
+    "fire_police": {
+     "shape_distance_db": 6.6,
+     "lufs": -19.2,
+     "centroid_hz": 847
+    },
+    "fire_rival": {
+     "shape_distance_db": 4.8,
+     "lufs": -17.0,
+     "centroid_hz": 1625
+    },
+    "fire_robot": {
+     "shape_distance_db": 7.4,
+     "lufs": -18.0,
+     "centroid_hz": 2922
+    },
+    "fire_carbine": {
+     "shape_distance_db": 8.3,
+     "lufs": -15.0,
+     "centroid_hz": 833
+    }
+   },
+   "decay_20db_s": 0.052,
+   "shaping": {
+    "drive": 6
+   },
+   "cue": "shot",
+   "take": "paid/104-robot-sfx/takes/shot_slide_t1.wav",
+   "ledger_id": 20,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.010533,
+   "sha256": "088c770eb917db49dbe029394ac8eda7382de5cc667887cd38a0c24ee78790b5"
+  },
+  "shot_slide_t1_up": {
+   "seconds": 1.205,
+   "true_peak_dbtp": -1.0,
+   "lufs_momentary_max": -18.5,
+   "small_speaker_lufs_m": -18.6,
+   "centroid_hz": 2133,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -15.3,
+    -4.4,
+    -3.2,
+    -9.1
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -13.4,
+   "tail_20ms_db": -108.5,
+   "floor_p10_db": -52.6,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     635,
+     2540,
+     3200
+    ],
+    "margin_top3_db": 24.5,
+    "bands_clear_6db": 20,
+    "loudness_margin_lu": 11.8
+   },
+   "vs_pack": {
+    "fire_pistol": {
+     "shape_distance_db": 3.2,
+     "lufs": -18.5,
+     "centroid_hz": 2321
+    },
+    "fire_police": {
+     "shape_distance_db": 7.1,
+     "lufs": -19.2,
+     "centroid_hz": 847
+    },
+    "fire_rival": {
+     "shape_distance_db": 4.4,
+     "lufs": -17.0,
+     "centroid_hz": 1625
+    },
+    "fire_robot": {
+     "shape_distance_db": 7.4,
+     "lufs": -18.0,
+     "centroid_hz": 2922
+    },
+    "fire_carbine": {
+     "shape_distance_db": 9.0,
+     "lufs": -15.0,
+     "centroid_hz": 833
+    }
+   },
+   "decay_20db_s": 0.046,
+   "shaping": {
+    "drive": 6,
+    "pitch": 2
+   },
+   "cue": "shot",
+   "take": "paid/104-robot-sfx/takes/shot_slide_t1.wav",
+   "ledger_id": 20,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.010533,
+   "sha256": "968298935e5b32684c5de80b972e09b7683958b08590afec758a15eceeab7e77"
+  },
+  "shot_tin_t3": {
+   "seconds": 1.212,
+   "true_peak_dbtp": -3.5,
+   "lufs_momentary_max": -18.5,
+   "small_speaker_lufs_m": -18.5,
+   "centroid_hz": 2897,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -19.7,
+    -4.7,
+    -3.9,
+    -6.1
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -17.0,
+   "tail_20ms_db": -94.0,
+   "floor_p10_db": -45.1,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     635,
+     1008,
+     3200
+    ],
+    "margin_top3_db": 22.7,
+    "bands_clear_6db": 19,
+    "loudness_margin_lu": 11.8
+   },
+   "vs_pack": {
+    "fire_pistol": {
+     "shape_distance_db": 3.7,
+     "lufs": -18.5,
+     "centroid_hz": 2321
+    },
+    "fire_police": {
+     "shape_distance_db": 9.3,
+     "lufs": -19.2,
+     "centroid_hz": 847
+    },
+    "fire_rival": {
+     "shape_distance_db": 4.7,
+     "lufs": -17.0,
+     "centroid_hz": 1625
+    },
+    "fire_robot": {
+     "shape_distance_db": 7.5,
+     "lufs": -18.0,
+     "centroid_hz": 2922
+    },
+    "fire_carbine": {
+     "shape_distance_db": 9.9,
+     "lufs": -15.0,
+     "centroid_hz": 833
+    }
+   },
+   "decay_20db_s": 0.307,
+   "shaping": {
+    "drive": 4
+   },
+   "cue": "shot",
+   "take": "paid/104-robot-sfx/takes/shot_tin_t3.wav",
+   "ledger_id": 18,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.009217,
+   "sha256": "48985e458cbf3cab0fa05c710b45582c1274756eabb12f62a3804374e5cacfab"
+  },
+  "shot_pack_t1": {
+   "seconds": 1.353,
+   "true_peak_dbtp": -4.4,
+   "lufs_momentary_max": -18.5,
+   "small_speaker_lufs_m": -18.6,
+   "centroid_hz": 2200,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -14.3,
+    -3.3,
+    -5.2,
+    -7.3
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -19.0,
+   "tail_20ms_db": -100.8,
+   "floor_p10_db": -44.4,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     400,
+     504,
+     1008
+    ],
+    "margin_top3_db": 21.0,
+    "bands_clear_6db": 19,
+    "loudness_margin_lu": 11.8
+   },
+   "vs_pack": {
+    "fire_pistol": {
+     "shape_distance_db": 3.6,
+     "lufs": -18.5,
+     "centroid_hz": 2321
+    },
+    "fire_police": {
+     "shape_distance_db": 6.1,
+     "lufs": -19.2,
+     "centroid_hz": 847
+    },
+    "fire_rival": {
+     "shape_distance_db": 3.3,
+     "lufs": -17.0,
+     "centroid_hz": 1625
+    },
+    "fire_robot": {
+     "shape_distance_db": 4.7,
+     "lufs": -18.0,
+     "centroid_hz": 2922
+    },
+    "fire_carbine": {
+     "shape_distance_db": 6.8,
+     "lufs": -15.0,
+     "centroid_hz": 833
+    }
+   },
+   "decay_20db_s": 0.44,
+   "shaping": {},
+   "cue": "shot",
+   "take": "paid/104-robot-sfx/takes/shot_pack_t1.wav",
+   "ledger_id": 23,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.017117,
+   "sha256": "c6d77da8c5150698d56e693ac3d6e9510ec9580b53593bc807a73a7389a5650a"
+  },
+  "shot_slide_t3": {
+   "seconds": 1.353,
+   "true_peak_dbtp": -4.2,
+   "lufs_momentary_max": -18.5,
+   "small_speaker_lufs_m": -18.6,
+   "centroid_hz": 1503,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -17.7,
+    -1.7,
+    -6.7,
+    -10.5
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -16.6,
+   "tail_20ms_db": -103.9,
+   "floor_p10_db": -51.8,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     400,
+     504,
+     635
+    ],
+    "margin_top3_db": 24.4,
+    "bands_clear_6db": 19,
+    "loudness_margin_lu": 11.8
+   },
+   "vs_pack": {
+    "fire_pistol": {
+     "shape_distance_db": 4.1,
+     "lufs": -18.5,
+     "centroid_hz": 2321
+    },
+    "fire_police": {
+     "shape_distance_db": 7.1,
+     "lufs": -19.2,
+     "centroid_hz": 847
+    },
+    "fire_rival": {
+     "shape_distance_db": 3.2,
+     "lufs": -17.0,
+     "centroid_hz": 1625
+    },
+    "fire_robot": {
+     "shape_distance_db": 7.0,
+     "lufs": -18.0,
+     "centroid_hz": 2922
+    },
+    "fire_carbine": {
+     "shape_distance_db": 8.0,
+     "lufs": -15.0,
+     "centroid_hz": 833
+    }
+   },
+   "decay_20db_s": 0.122,
+   "shaping": {
+    "drive": 4
+   },
+   "cue": "shot",
+   "take": "paid/104-robot-sfx/takes/shot_slide_t3.wav",
+   "ledger_id": 21,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.017117,
+   "sha256": "27446cfbf610f7a23455aab6ce1d67ea297e51d8469b3012c288637746d70a5b"
+  },
+  "draw_hatch_t1": {
+   "seconds": 1.42,
+   "true_peak_dbtp": -1.0,
+   "lufs_momentary_max": -20.8,
+   "small_speaker_lufs_m": -20.9,
+   "centroid_hz": 3303,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -13.5,
+    -6.0,
+    -4.2,
+    -4.9
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -99.7,
+   "tail_20ms_db": -126.9,
+   "floor_p10_db": -49.6,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     2540,
+     4032,
+     5080
+    ],
+    "margin_top3_db": 31.3,
+    "bands_clear_6db": 21,
+    "loudness_margin_lu": 12.5
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     2540,
+     4032,
+     5080
+    ],
+    "margin_top3_db": 8.0,
+    "bands_clear_6db": 22,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "patrol_break": {
+     "shape_distance_db": 5.0,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    },
+    "camera_click": {
+     "shape_distance_db": 17.2,
+     "lufs": -30.0,
+     "centroid_hz": 7124
+    }
+   },
+   "shaping": {},
+   "cue": "draw",
+   "take": "paid/104-robot-sfx/takes/draw_hatch_t1.wav",
+   "ledger_id": 24,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.00395,
+   "sha256": "e2e5f263ba82a5c57e27504da29315491ef31a20b0cc85fa2cf938a89b6b6000"
+  },
+  "draw_hatch_t2": {
+   "seconds": 2.1,
+   "true_peak_dbtp": -1.0,
+   "lufs_momentary_max": -21.3,
+   "small_speaker_lufs_m": -21.4,
+   "centroid_hz": 3375,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -6.0,
+    -9.5,
+    -5.5,
+    -4.5
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -96.9,
+   "tail_20ms_db": -128.6,
+   "floor_p10_db": -45.6,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     4032,
+     6400,
+     10160
+    ],
+    "margin_top3_db": 33.7,
+    "bands_clear_6db": 12,
+    "loudness_margin_lu": 12.0
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     4032,
+     6400,
+     10160
+    ],
+    "margin_top3_db": 10.3,
+    "bands_clear_6db": 10,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "patrol_break": {
+     "shape_distance_db": 4.2,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    },
+    "camera_click": {
+     "shape_distance_db": 22.2,
+     "lufs": -30.0,
+     "centroid_hz": 7124
+    }
+   },
+   "shaping": {},
+   "cue": "draw",
+   "take": "paid/104-robot-sfx/takes/draw_hatch_t2.wav",
+   "ledger_id": 25,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.005793,
+   "sha256": "43dc80066588b8f675b39335494abe44943b7cf704a89e20c0c0d266a874fee5"
+  },
+  "draw_servo_t1": {
+   "seconds": 2.4,
+   "true_peak_dbtp": -2.1,
+   "lufs_momentary_max": -20.0,
+   "small_speaker_lufs_m": -21.2,
+   "centroid_hz": 1928,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -5.3,
+    -5.0,
+    -6.6,
+    -7.6
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -89.4,
+   "tail_20ms_db": -120.4,
+   "floor_p10_db": -45.9,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     63,
+     126,
+     800
+    ],
+    "margin_top3_db": 17.7,
+    "bands_clear_6db": 24,
+    "loudness_margin_lu": 13.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     63,
+     126,
+     800
+    ],
+    "margin_top3_db": 11.3,
+    "bands_clear_6db": 24,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "patrol_break": {
+     "shape_distance_db": 4.0,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    },
+    "camera_click": {
+     "shape_distance_db": 22.1,
+     "lufs": -30.0,
+     "centroid_hz": 7124
+    }
+   },
+   "shaping": {},
+   "cue": "draw",
+   "take": "paid/104-robot-sfx/takes/draw_servo_t1.wav",
+   "ledger_id": 26,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.006583,
+   "sha256": "95f4516b11630d538706b74505546e7df053dea12a8c4133a9e87d0ed9daa381"
+  },
+  "draw_video2_t1": {
+   "seconds": 2.02,
+   "true_peak_dbtp": -13.4,
+   "lufs_momentary_max": -20.0,
+   "small_speaker_lufs_m": -20.0,
+   "centroid_hz": 5987,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -57.7,
+    -21.3,
+    -11.9,
+    -0.3
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -51.8,
+   "tail_20ms_db": -23.1,
+   "floor_p10_db": -30.2,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     5080,
+     6400,
+     8064
+    ],
+    "margin_top3_db": 24.5,
+    "bands_clear_6db": 6,
+    "loudness_margin_lu": 13.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     5080,
+     6400,
+     8064
+    ],
+    "margin_top3_db": -1.2,
+    "bands_clear_6db": 1,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "patrol_break": {
+     "shape_distance_db": 22.0,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    },
+    "camera_click": {
+     "shape_distance_db": 6.9,
+     "lufs": -30.0,
+     "centroid_hz": 7124
+    }
+   },
+   "shaping": {},
+   "cue": "draw",
+   "take": "paid/104-robot-sfx/takes/draw_video2_t1.mp4",
+   "ledger_id": 44,
+   "model": "mirelo:1@1",
+   "cost_usd": 0.02,
+   "sha256": "6579d6c0b052c92fb6dc5f841ed9b380859569da528e95192f89d2e0fadb1381"
+  },
+  "draw_video2_t3": {
+   "seconds": 2.02,
+   "true_peak_dbtp": -9.6,
+   "lufs_momentary_max": -20.0,
+   "small_speaker_lufs_m": -20.0,
+   "centroid_hz": 1638,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -44.1,
+    -6.6,
+    -1.1,
+    -20.9
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -91.3,
+   "tail_20ms_db": -29.1,
+   "floor_p10_db": -26.6,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     1008,
+     1270,
+     8064
+    ],
+    "margin_top3_db": 29.7,
+    "bands_clear_6db": 8,
+    "loudness_margin_lu": 13.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     1008,
+     1270,
+     8064
+    ],
+    "margin_top3_db": -0.1,
+    "bands_clear_6db": 2,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "patrol_break": {
+     "shape_distance_db": 15.9,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    },
+    "camera_click": {
+     "shape_distance_db": 15.6,
+     "lufs": -30.0,
+     "centroid_hz": 7124
+    }
+   },
+   "shaping": {},
+   "cue": "draw",
+   "take": "paid/104-robot-sfx/takes/draw_video2_t3.mp4",
+   "ledger_id": 48,
+   "model": "mirelo:1@1",
+   "cost_usd": 0.02,
+   "sha256": "3d4b0d6b156a572a28cf05a67e075073332e2495237d243f301ed952fee3bd2f"
+  },
+  "chirp_alert_t2": {
+   "seconds": 0.94,
+   "true_peak_dbtp": -20.0,
+   "lufs_momentary_max": -27.0,
+   "small_speaker_lufs_m": -27.0,
+   "centroid_hz": 2567,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -59.9,
+    -5.8,
+    -1.3,
+    -24.8
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -73.7,
+   "tail_20ms_db": -98.7,
+   "floor_p10_db": -49.3,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     3200,
+     5080,
+     6400
+    ],
+    "margin_top3_db": 3.4,
+    "bands_clear_6db": 5,
+    "loudness_margin_lu": 6.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     3200,
+     5080,
+     6400
+    ],
+    "margin_top3_db": -16.6,
+    "bands_clear_6db": 1,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "notice_1": {
+     "shape_distance_db": 13.1,
+     "lufs": -26.0,
+     "centroid_hz": 6170
+    },
+    "notice_3": {
+     "shape_distance_db": 13.4,
+     "lufs": -19.0,
+     "centroid_hz": 4936
+    }
+   },
+   "shaping": {},
+   "cue": "chirp",
+   "take": "paid/104-robot-sfx/takes/chirp_alert_t2.wav",
+   "ledger_id": 29,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.002897,
+   "sha256": "ce571157450397eaf765e7b66b1df1684da3bcf7e46b896edb6cc890a847f440"
+  },
+  "chirp_alert_t2b": {
+   "seconds": 0.54,
+   "true_peak_dbtp": -20.0,
+   "lufs_momentary_max": -27.0,
+   "small_speaker_lufs_m": -27.0,
+   "centroid_hz": 3214,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -63.8,
+    -51.2,
+    -0.0,
+    -23.5
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -73.7,
+   "tail_20ms_db": -81.4,
+   "floor_p10_db": -53.3,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     3200,
+     5080,
+     6400
+    ],
+    "margin_top3_db": 3.4,
+    "bands_clear_6db": 5,
+    "loudness_margin_lu": 6.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     3200,
+     5080,
+     6400
+    ],
+    "margin_top3_db": -16.6,
+    "bands_clear_6db": 1,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "notice_1": {
+     "shape_distance_db": 13.1,
+     "lufs": -26.0,
+     "centroid_hz": 6170
+    },
+    "notice_3": {
+     "shape_distance_db": 13.4,
+     "lufs": -19.0,
+     "centroid_hz": 4936
+    }
+   },
+   "shaping": {},
+   "cue": "chirp",
+   "take": "paid/104-robot-sfx/takes/chirp_alert_t2.wav",
+   "ledger_id": 29,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.002897,
+   "sha256": "a8a1865ad532337c6cd7e2d584db9c057940aab18b3d1fbb40b26a13b87b743a"
+  },
+  "chirp_alert_t1": {
+   "seconds": 0.42,
+   "true_peak_dbtp": -15.3,
+   "lufs_momentary_max": -27.0,
+   "small_speaker_lufs_m": -27.0,
+   "centroid_hz": 3427,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -67.4,
+    -50.4,
+    -0.2,
+    -13.3
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -75.6,
+   "tail_20ms_db": -78.5,
+   "floor_p10_db": -57.3,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     2540,
+     3200,
+     4032
+    ],
+    "margin_top3_db": 17.7,
+    "bands_clear_6db": 8,
+    "loudness_margin_lu": 6.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     2540,
+     3200,
+     4032
+    ],
+    "margin_top3_db": -5.6,
+    "bands_clear_6db": 1,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "notice_1": {
+     "shape_distance_db": 7.0,
+     "lufs": -26.0,
+     "centroid_hz": 6170
+    },
+    "notice_3": {
+     "shape_distance_db": 14.2,
+     "lufs": -19.0,
+     "centroid_hz": 4936
+    }
+   },
+   "shaping": {},
+   "cue": "chirp",
+   "take": "paid/104-robot-sfx/takes/chirp_alert_t1.wav",
+   "ledger_id": 30,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.003634,
+   "sha256": "902c0ab5465f95d3ef35bb3e0d6d49d8c003992a575884cdd8adae18b25fa937"
+  },
+  "roll_ball_t2": {
+   "seconds": 15.0,
+   "true_peak_dbtp": -20.1,
+   "lufs_momentary_max": -33.1,
+   "small_speaker_lufs_m": -36.3,
+   "centroid_hz": 247,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -2.9,
+    -3.2,
+    -19.4,
+    -37.6
+   ],
+   "clipped_samples": 0,
+   "lufs_integrated": -36.0,
+   "seam": {
+    "step_percentile": 27.7,
+    "step_ratio": 0.52,
+    "level_jump_db": 1.47,
+    "typical_jump_db_p95": 5.47
+   },
+   "vs_pack": {
+    "patrol_loop": {
+     "shape_distance_db": 6.5,
+     "lufs": -33.0,
+     "centroid_hz": 203
+    }
+   },
+   "shaping": {},
+   "cue": "roll",
+   "take": "paid/104-robot-sfx/takes/roll_ball_t2.wav",
+   "ledger_id": 34,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.04345,
+   "sha256": "cb2e5c31779605adc073d3c5e52a936f7bead32ac565d7682175d826156b965d"
+  },
+  "hum_gyro_t1": {
+   "seconds": 13.0,
+   "true_peak_dbtp": -22.1,
+   "lufs_momentary_max": -39.8,
+   "small_speaker_lufs_m": -39.8,
+   "centroid_hz": 7596,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -17.1,
+    -17.4,
+    -11.8,
+    -0.5
+   ],
+   "clipped_samples": 0,
+   "lufs_integrated": -42.0,
+   "seam": {
+    "step_percentile": 90.6,
+    "step_ratio": 4.85,
+    "level_jump_db": 0.89,
+    "typical_jump_db_p95": 11.66
+   },
+   "vs_pack": {
+    "patrol_loop": {
+     "shape_distance_db": 22.0,
+     "lufs": -33.0,
+     "centroid_hz": 203
+    }
+   },
+   "shaping": {},
+   "cue": "hum",
+   "take": "paid/104-robot-sfx/takes/hum_gyro_t1.wav",
+   "ledger_id": 33,
+   "model": "bytedance:seed-audio@1.0",
+   "cost_usd": 0.0395,
+   "sha256": "b06735a3c7a92f50c596a4f87ce1759b5219b796c7530f7982eebbf178a41193"
+  }
+ },
+ "drafts": {
+  "robot_siren": {
+   "seconds": 2.37,
+   "true_peak_dbtp": -15.5,
+   "lufs_momentary_max": -22.0,
+   "small_speaker_lufs_m": -22.0,
+   "centroid_hz": 1199,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -22.0,
+    -5.3,
+    -1.6,
+    -24.0
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -36.4,
+   "tail_20ms_db": -240.0,
+   "floor_p10_db": -37.7,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     1008,
+     1270,
+     2540
+    ],
+    "margin_top3_db": 12.7,
+    "bands_clear_6db": 10,
+    "loudness_margin_lu": 11.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     1008,
+     1270,
+     2540
+    ],
+    "margin_top3_db": 0.5,
+    "bands_clear_6db": 3,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "police_siren": {
+     "shape_distance_db": 13.1,
+     "lufs": -21.0,
+     "centroid_hz": 783
+    },
+    "patrol_break": {
+     "shape_distance_db": 14.5,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    }
+   },
+   "sweep": {
+    "min_hz": 499,
+    "max_hz": 1254,
+    "span_octaves": 1.33
+   }
+  },
+  "robot_shot": {
+   "seconds": 1.11,
+   "true_peak_dbtp": -1.0,
+   "lufs_momentary_max": -18.9,
+   "small_speaker_lufs_m": -21.0,
+   "centroid_hz": 3305,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -1.9,
+    -13.5,
+    -10.0,
+    -6.7
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -3.3,
+   "tail_20ms_db": -240.0,
+   "floor_p10_db": -52.1,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     79,
+     100,
+     126
+    ],
+    "margin_top3_db": 17.0,
+    "bands_clear_6db": 24,
+    "loudness_margin_lu": 11.4
+   },
+   "vs_pack": {
+    "fire_pistol": {
+     "shape_distance_db": 11.2,
+     "lufs": -18.5,
+     "centroid_hz": 2321
+    },
+    "fire_police": {
+     "shape_distance_db": 8.7,
+     "lufs": -19.2,
+     "centroid_hz": 847
+    },
+    "fire_rival": {
+     "shape_distance_db": 11.5,
+     "lufs": -17.0,
+     "centroid_hz": 1625
+    },
+    "fire_robot": {
+     "shape_distance_db": 6.4,
+     "lufs": -18.0,
+     "centroid_hz": 2922
+    },
+    "fire_carbine": {
+     "shape_distance_db": 7.3,
+     "lufs": -15.0,
+     "centroid_hz": 833
+    }
+   },
+   "decay_20db_s": 0.128
+  },
+  "robot_draw": {
+   "seconds": 1.96,
+   "true_peak_dbtp": -3.9,
+   "lufs_momentary_max": -20.0,
+   "small_speaker_lufs_m": -20.5,
+   "centroid_hz": 1588,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -10.6,
+    -5.1,
+    -2.9,
+    -10.7
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -16.0,
+   "tail_20ms_db": -240.0,
+   "floor_p10_db": -41.2,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     100,
+     200,
+     504
+    ],
+    "margin_top3_db": 19.7,
+    "bands_clear_6db": 18,
+    "loudness_margin_lu": 13.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     100,
+     200,
+     504
+    ],
+    "margin_top3_db": 11.3,
+    "bands_clear_6db": 14,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "patrol_break": {
+     "shape_distance_db": 8.4,
+     "lufs": -22.0,
+     "centroid_hz": 2380
+    },
+    "camera_click": {
+     "shape_distance_db": 21.0,
+     "lufs": -30.0,
+     "centroid_hz": 7124
+    }
+   }
+  },
+  "robot_chirp_alert": {
+   "seconds": 0.46,
+   "true_peak_dbtp": -18.8,
+   "lufs_momentary_max": -27.0,
+   "small_speaker_lufs_m": -27.0,
+   "centroid_hz": 1617,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -64.1,
+    -30.4,
+    -0.1,
+    -17.3
+   ],
+   "clipped_samples": 0,
+   "head_5ms_db": -12.3,
+   "tail_20ms_db": -240.0,
+   "floor_p10_db": -14.1,
+   "clear_of_bed_and_roll": {
+    "top_bands_hz": [
+     1270,
+     2540,
+     3200
+    ],
+    "margin_top3_db": 20.5,
+    "bands_clear_6db": 9,
+    "loudness_margin_lu": 6.3
+   },
+   "clear_of_gunfire": {
+    "top_bands_hz": [
+     1270,
+     2540,
+     3200
+    ],
+    "margin_top3_db": -2.0,
+    "bands_clear_6db": 1,
+    "loudness_margin_lu": null
+   },
+   "vs_pack": {
+    "notice_1": {
+     "shape_distance_db": 20.1,
+     "lufs": -26.0,
+     "centroid_hz": 6170
+    },
+    "notice_3": {
+     "shape_distance_db": 14.1,
+     "lufs": -19.0,
+     "centroid_hz": 4936
+    }
+   }
+  },
+  "robot_roll": {
+   "seconds": 4.0,
+   "true_peak_dbtp": -22.5,
+   "lufs_momentary_max": -34.6,
+   "small_speaker_lufs_m": -41.2,
+   "centroid_hz": 280,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -0.5,
+    -12.3,
+    -13.8,
+    -18.4
+   ],
+   "clipped_samples": 0,
+   "lufs_integrated": -36.0,
+   "seam": {
+    "step_percentile": 2.0,
+    "step_ratio": 0.05,
+    "level_jump_db": 2.27,
+    "typical_jump_db_p95": 5.08
+   },
+   "vs_pack": {
+    "patrol_loop": {
+     "shape_distance_db": 14.1,
+     "lufs": -33.0,
+     "centroid_hz": 203
+    }
+   }
+  },
+  "robot_hum": {
+   "seconds": 4.0,
+   "true_peak_dbtp": -35.2,
+   "lufs_momentary_max": -41.5,
+   "small_speaker_lufs_m": -50.0,
+   "centroid_hz": 144,
+   "bands_db_lt200_lt1k_lt4k_hi": [
+    -0.6,
+    -8.7,
+    -26.3,
+    -36.1
+   ],
+   "clipped_samples": 0,
+   "lufs_integrated": -42.0,
+   "seam": {
+    "step_percentile": 6.1,
+    "step_ratio": 0.25,
+    "level_jump_db": 0.07,
+    "typical_jump_db_p95": 0.76
+   },
+   "vs_pack": {
+    "patrol_loop": {
+     "shape_distance_db": 6.9,
+     "lufs": -33.0,
+     "centroid_hz": 203
+    }
+   }
+  }
+ },
+ "spend": {
+  "calls": 48,
+  "ok": 48,
+  "usd": 0.5433,
+  "budget_usd": 3.0,
+  "by_model": {
+   "bytedance:seed-audio@1.0": {
+    "calls": 42,
+    "usd": 0.4533
+   },
+   "mirelo:1@1": {
+    "calls": 6,
+    "usd": 0.09
+   }
+  }
+ },
+ "preview": {
+  "file": "briefs/104/chime/paid/robot_beat_preview_paid.wav",
+  "picks": {
+   "siren": "siren_yelp_t3",
+   "shot": "shot_slide_t1",
+   "draw": "draw_hatch_t1",
+   "chirp": "chirp_alert_t1",
+   "roll": "roll_ball_t2"
+  },
+  "true_peak_dbtp": -2.6,
+  "lufs_momentary_max": -18.0,
+  "clipped_samples": 0
+ }
+}

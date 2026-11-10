@@ -70,8 +70,8 @@
    "usd": 0.0
   },
   "2026-11-10": {
-   "calls": 24,
-   "usd": 0.0
+   "calls": 72,
+   "usd": 0.54331
   }
  },
  "by_model": {
@@ -84,8 +84,8 @@
    "usd": 0.045
   },
   "bytedance:seed-audio@1.0": {
-   "calls": 86,
-   "usd": 1.29125
+   "calls": 128,
+   "usd": 1.74456
   },
   "bytedance:seedance@2.0": {
    "calls": 20,
@@ -128,8 +128,8 @@
    "usd": 0.6
   },
   "mirelo:1@1": {
-   "calls": 46,
-   "usd": 1.72
+   "calls": 52,
+   "usd": 1.81
   },
   "openai:gpt-image@2": {
    "calls": 10,
@@ -148,7 +148,7 @@
    "usd": 2.8
   }
  },
- "calls": 761,
+ "calls": 809,
  "failed": 27,
  "jobs": {
   "007-concepts": {
@@ -1388,6 +1388,40 @@
    "used": 0,
    "used_usd": 0.0
   },
+  "104-robot-sfx": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-10": {
+     "calls": 48,
+     "usd": 0.54331
+    }
+   },
+   "by_model": {
+    "bytedance:seed-audio@1.0": {
+     "calls": 42,
+     "usd": 0.45331
+    },
+    "mirelo:1@1": {
+     "calls": 6,
+     "usd": 0.09
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": 3.0,
+     "calls": 48,
+     "usd": 0.54331
+    }
+   },
+   "calls": 48,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 48,
+   "total_usd": 0.54331,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
   "900-codexcheck": {
    "blocked": 0,
    "by_day": {
@@ -1423,6 +1457,6 @@
   }
  },
  "schema": "suborned.paid-spend/1",
- "total_usd": 76.05754,
+ "total_usd": 76.60085,
  "used": 72
 }

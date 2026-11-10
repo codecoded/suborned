@@ -1,0 +1,127 @@
+[
+ {
+  "id": "siren_whoop",
+  "cue": "siren",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. A tiny 1950s police robot's own motor siren: a small electric rotor siren whooping up fast twice and winding down, bright and cute but unmistakably an alarm, close and dry with a short echo off stone buildings, about two seconds, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "siren_twotone",
+  "cue": "siren",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. A little robot's two-tone police alarm from a small horn speaker: a high-low hee-haw, three quick cycles, cute and clear, close, under two seconds, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "siren_bell",
+  "cue": "siren",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. A small clockwork police robot sounds its alarm: a fast brass alarm bell trilling under a tiny rising motor siren whoop, short and urgent but cute, close, about two seconds, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "siren_crank",
+  "cue": "siren",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. A miniature hand-cranked mechanical siren spun quickly once: a short rising metallic wail that peaks and falls away, small and high like a toy but sharp, close, about one and a half seconds, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "shot_tin",
+  "cue": "shot",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. One sharp small handgun shot outdoors in a city square, a crisp hard crack with a slight metallic ring, as if fired from inside a small tin machine's chest, a quick mechanical clack, and a short echo off stone buildings, then silence. One shot only. No voice, no speech, no music."
+ },
+ {
+  "id": "shot_slide",
+  "cue": "shot",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. One small-calibre pistol gunshot outdoors, a tight dry snap with the quick metallic clank of a steel slide cycling, then a short slap echo off stone walls, then silence. One shot only. No voice, no speech, no music."
+ },
+ {
+  "id": "shot_pack",
+  "cue": "shot",
+  "s": 3,
+  "takes": 2,
+  "prompt": "Sound effect only. One sharp small pistol gunshot outdoors in a city square, a crisp clean crack with a faint tinny metal ring after it, and a short echo off stone buildings, then silence. One shot only. No voice, no speech, no music."
+ },
+ {
+  "id": "draw_hatch",
+  "cue": "draw",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. A small machine's hidden compartment opening: a sharp latch click, a short whirr of a tiny electric motor as a metal hatch swings open and thunks against its stop, then a pistol sliding out on a steel rail with a ratcheting scrape and locking into place with a hard double clack. About one and a half seconds, then silence. No gunshot. No voice, no speech, no music."
+ },
+ {
+  "id": "draw_servo",
+  "cue": "draw",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. Close up: a small tin robot's chest panel unlatches with a click, a servo motor whirs, the panel snaps open, and a sliding steel rail clicks a gun forward and locks with a firm metallic clack. Mechanical and precise, about one second, then silence. No gunshot. No voice, no speech, no music."
+ },
+ {
+  "id": "draw_video",
+  "cue": "draw",
+  "video": "draw",
+  "takes": 3,
+  "model": "mirelo:1@1",
+  "est": 0.05,
+  "prompt": "(video to audio, no text) the demo's draw beat, close camera, 9.70-11.60 s: the turn to the target, the hatch opening, the sidearm out"
+ },
+ {
+  "id": "chirp_alert",
+  "cue": "chirp",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. A small cute robot's alert chirp from a little speaker grille: two quick high beeps and a short lower buzzy tone, like 'hey!', under half a second, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "roll_ball",
+  "cue": "roll",
+  "s": 10,
+  "takes": 2,
+  "est": 0.06,
+  "prompt": "Sound effect only. A heavy metal ball rolling steadily across smooth stone pavement: a low continuous rumble with fine grit and a soft electric gyroscope hum above it, even and constant for fifteen seconds with no change and no ending. No footsteps. No voice, no speech, no music."
+ },
+ {
+  "id": "hum_gyro",
+  "cue": "hum",
+  "s": 10,
+  "takes": 2,
+  "est": 0.06,
+  "prompt": "Sound effect only. A small machine idling close by: a soft steady electric gyroscope hum with a faint high whine and tiny clockwork ticking, constant for fifteen seconds with no change and no ending. No voice, no speech, no music."
+ },
+ {
+  "id": "siren_yelp",
+  "cue": "siren",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. A small police robot's siren: three or four quick rising whoop yelps from a little horn speaker, each sweeping up in pitch, bright, cute and urgent, close, under two seconds, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "siren_hilo",
+  "cue": "siren",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. A tiny robot's two-note police alarm: a high note and a lower note alternating quickly, nee-naw, three times, from a small horn speaker with a slight motor whine, close, about two seconds, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "siren_wooo",
+  "cue": "siren",
+  "s": 3,
+  "takes": 3,
+  "prompt": "Sound effect only. A small electric motor siren on a little robot whooping up and down quickly three times, wooo-wooo-wooo, bright and cute but clearly an alarm, close, about two seconds, then silence. No voice, no speech, no music."
+ },
+ {
+  "id": "draw_video2",
+  "cue": "draw",
+  "video": "draw2",
+  "takes": 3,
+  "model": "mirelo:1@1",
+  "est": 0.05,
+  "prompt": "(video to audio, no text) the demo's draw beat, close camera, 9.62-11.62 s (a whole 2.00 s: the first cut's 1.9 s came back as 1.0 s)"
+ }
+]

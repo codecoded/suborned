@@ -43,10 +43,78 @@ ul.tight{margin:6px 0 0 18px;padding:0}.tight li{margin:4px 0}
 <body>
 <main>
 <h1>Patrol robot sound</h1>
-<p class="sub">Chime · brief 104 · 2026-11-10 · the ball-balancing patrol robot (DK_PatrolBot104) · a proposal with drafts, nothing wired</p>
-<span class="pill sage">$0 spent · all synthesis</span><span class="pill">7 drafts + one listening aid</span><span class="pill amber">Not in Unity: hooks come after Sky listens</span><span class="pill red">I can't hear these: the numbers only rule things out. Sky's ears decide.</span>
+<p class="sub">Chime · brief 104 · 2026-11-10 · the ball-balancing patrol robot (DK_PatrolBot104) · round 2: the paid pass Sky asked for · nothing wired</p>
+<span class="pill sage">Paid pass: $0.54 of the $3.00 budget · 48 calls</span><span class="pill">5 paid picks + the synth hum</span><span class="pill amber">Not in Unity: hooks come after Sky listens</span><span class="pill red">I can't hear these: the numbers only rule things out. Sky's ears decide.</span>
 
-<h2 style="border:0;margin-top:22px">Recommendation</h2>
+<h2 style="border:0;margin-top:22px">Round 2: the paid picks</h2>
+<div class="rec">
+<p>Sky heard round 1's synth drafts and said: <i>"paid pass please - that siren just doesn't feel right. The shot not so bad, but nothing compared to our existing sfx"</i>. So this round I made them the way the 087 pack was made: <b>Seed Audio 1.0 on Runware</b>, one take per call, with 087's prompt pattern ("Sound effect only. … then silence. No voice, no speech, no music."), then mastered with 087's own steps and levels. For the draw I also tried <b>Mirelo video-to-audio</b> on a cut of the demo's draw beat.</p>
+<p>I picked by measurement against the 087 sound each cue sits with. I checked loudness and peak, spectral shape, clipping, clean starts and ends, and loop seams. Under each pick are the synth draft it replaces and the 087 sound beside it.</p>
+<ol>
+<li><b>Siren: <code>siren_yelp_t3</code></b>, three quick rising yelps from a small horn, 1.4 s. Of all 21 siren takes it's the furthest from the police siren in shape (12.8 dB), the clearest of gunfire (13.1 dB) and the cleanest underneath (a floor 55 dB down). Second pick: <code>siren_yelp_t1</code>, three round whoops. There are six more takes below, so Sky can choose.</li>
+<li><b>Shot: <code>shot_slide_t1</code></b>, a tight crack with two small slide clacks after it, the "inside a machine" part. It's at the pack's pistol loudness (-18.5 LUFS-M, soft-limited the way 087's guns were). Second: <code>shot_tin_t3</code>, a crack with a short metal ring.</li>
+<li><b>Draw: <code>draw_hatch_t1</code></b>: a latch click, a motor whirr while the hatch swings, then the lock's clack, 1.4 s, about as long as the animation. Mirelo's takes followed the picture but came back as drones with no clean end, and they were buried under gunfire (-1.2 dB). Seed's were 8 to 10 dB clear.</li>
+<li><b>Alert chirp: <code>chirp_alert_t1</code></b>, a short high beep, 17.7 dB over the bed. The synth chirp is still a fair choice: it's more of a "hey!".</li>
+<li><b>Roll: <code>roll_ball_t2</code></b>, a steady rumble with grit, made into a loop with a clean seam. <b>Hum: the synth stays.</b> Neither paid hum take had a hum in it, just hiss and ticks, and one failed the seam check.</li>
+</ol>
+<p class="note">The preview below and <code>briefs/104/vela/patrolbot/demo/patrolbot-demo-sfx2.mp4</code> (the close camera, first 20 s) carry these picks. The synth hum and curious chirp stay in, because no paid take replaced them.</p>
+</div>
+
+<h2>Listen: the paid picks</h2>
+<div class="card" style="margin-bottom:14px">
+<h3>The demo's beat with the paid picks</h3>
+<p class="meta">Same timeline as round 1's preview, so the two compare: roll, stop 5.0, curious 5.9, alert and siren 8.6, draw from 10.4, first shot 11.67, two more 1.5 s apart, roll away. No street bed. -18.0 LUFS-M, peak -2.6 dBTP, nothing clipped.</p>
+<audio data-clip="robot_beat_preview_paid"></audio>
+<p class="meta">Round 1's synth preview, to compare<audio data-clip="robot_beat_preview"></audio></p>
+</div>
+<div class="grid">
+<div class="card key"><h3>Siren · pick <code>siren_yelp_t3</code></h3>
+<p>Three quick rising yelps, about 1 to 2.1 kHz, 1.4 s. It sweeps 1.15 octaves, against the police siren's 0.57: near, quick and small, where the police are far and slow.</p>
+<audio data-clip="siren_yelp_t3"></audio>
+<p class="meta">Second pick, <code>siren_yelp_t1</code>: three round whoops, 380 Hz to 1.1 kHz, 1.8 s · 8.0 dB from the police siren in shape · 6.8 dB over gunfire</p><audio data-clip="siren_yelp_t1"></audio>
+<div class="ref">The synth draft Sky didn't like<audio data-clip="robot_siren"></audio>The 087 police siren it must stay apart from<audio data-clip="police_siren"></audio></div></div>
+<div class="card"><h3>Shot · pick <code>shot_slide_t1</code></h3>
+<p>A tight dry crack (it falls 20 dB in 0.05 s), then two small mechanical clacks at about 0.73 and 0.95 s: the robot's slide. -18.5 LUFS-M, the 087 pistol's level, held at -1.5 dBTP.</p>
+<audio data-clip="shot_slide_t1"></audio>
+<p class="meta">Second, <code>shot_tin_t3</code>: a crack with a metal ring (0.31 s to fall 20 dB)</p><audio data-clip="shot_tin_t3"></audio>
+<div class="ref">The synth draft · the 087 cell pistol and police revolver it sits with<audio data-clip="robot_shot"></audio><audio data-clip="fire_pistol"></audio><audio data-clip="fire_police"></audio></div>
+<p class="meta"><b>Worth hearing for:</b> every paid shot sits 3.2 to 4.3 dB in shape from the cell pistol. The pack's closest pair is 4.8 dB, and the synth sat at 11.2. So these sound like real pistols, which is what Sky asked for. What tells the robot's shot apart is its tail (the clacks or the ring), not the crack. If the cell's and the robot's shots blur together in play, the synth's shell ring can go under the paid crack.</p></div>
+<div class="card"><h3>Draw · pick <code>draw_hatch_t1</code></h3>
+<p>A latch click, a motor whirr while the hatch swings (0.1 to 0.9 s), and a clack as the sidearm locks (1.15 s). 1.4 s in all, 8.0 dB clear of gunfire. Second: <code>draw_hatch_t2</code> (2.1 s, 10.3 dB clear).</p>
+<audio data-clip="draw_hatch_t1"></audio><audio data-clip="draw_hatch_t2"></audio>
+<p class="meta">Mirelo, from the picture (the 2.0 s cut of the turn, hatch and sidearm): a servo drone with clicks at the end. It doesn't end clean (-23 dB at the cut), the floor is -30 dB, and it's buried under gunfire.</p><audio data-clip="draw_video2_t1"></audio>
+<div class="ref">The synth draft · the 087 relay clunk (<code>patrol_break</code>)<audio data-clip="robot_draw"></audio><audio data-clip="patrol_break"></audio></div></div>
+<div class="card"><h3>Alert chirp · pick <code>chirp_alert_t1</code></h3>
+<p>One short high beep, 0.4 s, 17.7 dB over the bed and the robot's roll, and 7.0 dB from the notice ting in shape. The synth chirp (two notes and a held one, 20.5 dB over the bed) is still a fair choice if it reads more as "hey!".</p>
+<audio data-clip="chirp_alert_t1"></audio>
+<div class="ref">The synth draft · the 087 notice ting<audio data-clip="robot_chirp_alert"></audio><audio data-clip="notice_1"></audio></div></div>
+<div class="card"><h3>Roll · pick <code>roll_ball_t2</code> (loop, first 6 s here)</h3>
+<p>A steady ball rumble with fine grit, centroid 247 Hz, -36 LUFS-I. The loop's seam is clean (step ratio 0.52, against a limit of 2). The other take was nearly all sub-bass (centroid 16 Hz), so it's out.</p>
+<audio data-clip="roll_ball_t2" loop></audio>
+<div class="ref">The synth draft · the 087 walking loop<audio data-clip="robot_roll" loop></audio><audio data-clip="patrol_loop" loop></audio></div></div>
+</div>
+
+<h3 style="margin-top:22px">More sirens, for Sky to choose</h3>
+<div class="grid">
+<div class="card"><p class="meta"><code>siren_wooo_t1</code>: three arched whoops, high (0.6–2 kHz). 11.5 dB from the police siren in shape, but its floor is only 31 dB down.</p><audio data-clip="siren_wooo_t1"></audio></div>
+<div class="card"><p class="meta"><code>siren_whoop_t1</code>: a run of little motor whoops, 2.95 s. 8.6 dB from the police siren; the longest one.</p><audio data-clip="siren_whoop_t1"></audio></div>
+<div class="card"><p class="meta"><code>siren_hilo_t1</code>: a hi-lo warble, 1.2 s. 8.6 dB from the police siren.</p><audio data-clip="siren_hilo_t1"></audio></div>
+<div class="card"><p class="meta"><code>siren_crank_t1</code>: one quick wind-up wail and its fall, 1.4 s. The furthest from the police siren in shape (18.0 dB), but only 3.3 dB over gunfire.</p><audio data-clip="siren_crank_t1"></audio></div>
+<div class="card"><p class="meta"><code>siren_twotone_t3</code>: short arched yelps, the narrowest sweep (0.81 octaves).</p><audio data-clip="siren_twotone_t3"></audio></div>
+<div class="card"><p class="meta"><code>siren_wooo_t3</code>: a quick warble, four wiggles, 1.5 s.</p><audio data-clip="siren_wooo_t3"></audio></div>
+</div>
+
+<h3 style="margin-top:22px">Paid candidates, measured</h3>
+<p class="note">From <code>make/robot_paid.py</code> (<code>paid-measures.json</code>). Mastered as 087's <code>build.py</code>. Shape distance is the third-octave shape of the loudest 250 ms, level-matched. Bed + roll and gunfire are as in round 1's measures. Head and tail are the first 5 ms and last 20 ms, in dB under the clip's peak: lower means a cleaner start or end. Floor is the quietest tenth of the clip's sounding 20 ms windows. Every clip peaks at or under -1 dBTP, and none clips. Running it twice gives the same bytes.</p>
+<!--paid-measures-->
+
+<h3 style="margin-top:22px">Spend</h3>
+<p>Job <code>paid/104-robot-sfx/</code>, pass 1, budget $3.00. <b>48 calls, all ok, $0.5433</b>: Seed Audio 1.0, 42 calls, $0.4533; Mirelo SFX 1.5 (video to audio), 6 calls, $0.09. Every call is in <code>paid/104-robot-sfx/ledger.jsonl</code> with its prompt, cost and sha256. Made by <code>make/robot_gen.py</code> from <code>make/prompts-paid.json</code>. The two demo cuts were uploaded with Runware's media storage, which isn't a generation and isn't billed. Licence: as brief 087's Seed Audio clips, Runware's terms for Partner Model outputs (<code>briefs/087/licences/generated.md</code>). Mirelo was tried and not used here, as in 087.</p>
+<p class="note">Next, after Sky listens: the picks go into the 087 cue table (<code>pack.py</code>/<code>build.py</code>) as robot cues. Latch hooks them up with Keel's draw hook, as round 1 set out below.</p>
+
+<h2>Round 1: the synth proposal</h2>
+<p class="note">Kept as it was. The cue design, the hooks and the many-robots rules still hold. The synth drafts are now the fallback.</p>
+<h2 style="border:0;margin-top:22px">Recommendation (round 1)</h2>
 <div class="rec">
 <p><b>Make the robot's whole voice by synthesis, from parts it shares: one grille speaker, one tin shell, one gyro hum.</b> That way every sound reads as the same little machine. It's deterministic and free, the licence is our own code, and a tweak is a number change.</p>
 <ol>
