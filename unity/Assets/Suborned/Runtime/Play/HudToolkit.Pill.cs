@@ -67,7 +67,7 @@ namespace Suborned.Play
             KIcon(loudRow, "p_alert", 20f, "ki-hot").Root.style.marginLeft = 12;
             loudLamps = E(loudRow); loudLamps.style.flexDirection = FlexDirection.Row; loudLamps.style.marginLeft = 5; loudLamps.style.alignItems = Align.Center;
             for (int i = 0; i < 3; i++) { var l = E(loudLamps, null, w: 15.2f, h: 15.2f); l.style.flexShrink = 0; l.style.marginLeft = i == 0 ? 0 : 0.8f; Round(l, 7.6f); Border(l, 1.6f, BkInk); }
-            loudPolice = E(loudRow, "e-page", w: 24, h: 24); loudPolice.style.flexShrink = 0; loudPolice.style.marginLeft = 12; Round(loudPolice, 12f); Border(loudPolice, 1.5f, BkInk); Bg(E(loudPolice, null, 2, 2, 19, 19), "badges/signal_police", Color.white);
+            loudPolice = E(loudRow, "e-page", w: 24, h: 24); loudPolice.style.flexShrink = 0; loudPolice.style.marginLeft = 12; Round(loudPolice, 12f); Border(loudPolice, 1.5f, BkInk); Bg(Middle(loudPolice, 19, 19), "badges/signal_police", Color.white); /* centring.md: inside its 1.5 px ring */
             loudLockIc = KIcon(loudRow, "lock", 20f).Root; loudLockIc.style.marginLeft = 12;
             loudTrailIc = KIcon(loudRow, "p_trail", 20f).Root; loudTrailIc.style.marginLeft = 12; loudTrail = KText(loudRow, 17f); loudTrail.Root.style.marginLeft = 4;
             manifest.Add((loudRow, "marker", () => loudWord.text)); Show(loudRow, false);

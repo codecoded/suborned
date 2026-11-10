@@ -19,7 +19,7 @@ namespace Suborned.Play
             while (forCarEls.Count <= i)
             {
                 var ring = E(marks, null, 0, 0, 30, 30); Round(ring, 15f); Border(ring, 2f, RivalViolet); ring.pickingMode = PickingMode.Ignore;
-                var d = E(ring, "e-body e-inline", 0, 0, 26, 26); Round(d, 13f); BorderW(d, 2f); d.pickingMode = PickingMode.Ignore; Icon(E(d, null, 6.24f, 6.24f, 13.5f, 13.5f), "car", Cream); /* brief 101 round 3: a round tab */
+                var d = E(ring, "e-body e-inline", 0, 0, 26, 26); Round(d, 13f); BorderW(d, 2f); d.pickingMode = PickingMode.Ignore; Icon(Middle(d, 13.5f, 13.5f), "car", Cream); /* centring.md: inside its 2 px ring */ /* brief 101 round 3: a round tab */
                 manifest.Add((ring, "image", () => "rival going for the car")); forCarEls.Add(ring);
             }
             return forCarEls[i];

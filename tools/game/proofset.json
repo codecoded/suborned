@@ -47,7 +47,7 @@
         { "name": "r067-board-landed", "what": "the Scout and the Fixer aboard: the seat pips filled", "crop": ["roster"] },
         { "name": "r067-drive-pill-car", "what": "nobody selected, the pointer on the car: the Drive pill with its stand live" },
         { "name": "r067-car-ring-go-alt", "what": "the car's ring with Alt held: Go last with its struck Vale cameo and the line under it (Fable's less.go.noVale)" },
-        { "name": "r067-car-ring-drive", "what": "the car's ring with nobody selected: Drive, and Go last with its struck Vale cameo and the 0.5 s hold (no dashes)" },
+        { "name": "r067-car-ring-drive", "what": "the car's ring with nobody selected and the Scout and the Fixer aboard: Drive, Get out (never Move), and Go last with its struck Vale cameo and the 0.5 s hold (no dashes)" },
         { "name": "r067-car-ring-drive-hover", "what": "the Drive wedge hovered: the stand the car will go to" },
         { "name": "r067-drive-parked", "what": "the getaway car has driven to its new stand and parked" },
         { "name": "r067-convo-inez-1", "what": "the Fixer's one Help on Inez after the Listen, from the ground view: both idle and facing, both heads in the frame" },

@@ -94,7 +94,7 @@ namespace Suborned.Play
             actGlyph = E(actDisc, null, 5, 5, ActDisc - 10, ActDisc - 10);
             actMore = P(actBadge, ActDisc / 2 + 2, -6, 20, 12, (p, r) => Dots(p, r.center, 2.4f, 1.9f, Cream));
             actWalk = E(actBadge, "s-disc_dark_24", -ActDisc / 2 - 20, -9, 18, 18); Icon(E(actWalk, null, 3, 3, 12, 12), "s_moving", Cream);
-            actDraw = E(actBadge, null, -ActDisc / 2 - 20, -9, 18, 18); Round(actDraw, 9); Border(actDraw, 1.4f, Cream); actDraw.style.backgroundColor = new Color(Plate.r, Plate.g, Plate.b, 0.9f); Icon(E(actDraw, null, 3.5f, 3.5f, 11, 11), "fire", Cream); // the holstered-gun mark (the ring wedge's)
+            actDraw = E(actBadge, null, -ActDisc / 2 - 20, -9, 18, 18); Round(actDraw, 9); Border(actDraw, 1.4f, Cream); actDraw.style.backgroundColor = new Color(Plate.r, Plate.g, Plate.b, 0.9f); Icon(Middle(actDraw, 11, 11), "fire", Cream); // the holstered-gun mark (the ring wedge's)
             manifest.Add((actBadge, "image", () => "hover marker: what a right click does"));
             Show(actBadge, false);
         }

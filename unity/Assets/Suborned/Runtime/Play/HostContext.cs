@@ -261,8 +261,8 @@ namespace Suborned.Play
         /// Tie, Hide, Drop, Knockout, Kill, Fire.</summary>
         string RingWord(Intent i)
         {
-            var o = i.Order; string key = o.Do == "turn" ? (string.IsNullOrEmpty(o.Approach) ? "turn" : o.Approach) : o.Do; // brief 102: the Already turned lock is the Turn as a whole (ring-turn)
-            if (Text != null && Text.Actions.TryGetValue("ring-" + key, out var a) && a.Label.Length > 0) return a.Label;
+            var o = i.Order; string key = o.Do == "turn" ? (string.IsNullOrEmpty(o.Approach) ? "turn" : o.Approach) : o.Do == "drive-car" ? "drive" : o.Do; // brief 102: the Already turned lock is the Turn as a whole (ring-turn); the car's Drive is ring-drive
+            if (Text != null && (i.How == StepOutHow && Text.Actions.TryGetValue(i.How, out var a) || Text.Actions.TryGetValue("ring-" + key, out a)) && a.Label.Length > 0) return a.Label; // Sky 2026-11-10: a host way names itself (Get out), never its engine verb's capitalised key ("Move")
             return key switch
             {
                 "takedown" => o.How == "kill" ? "Kill" : "Knockout", "restrain" => "Tie", "stash" => "Hide", "drop" => "Drop", "mislead" => "Tip", "drive-car" => "Drive", // brief 067 C: the car's own Drive wedge (text.json has no ring-drive-car)

@@ -587,11 +587,11 @@ namespace Suborned.Play
 
         VisualElement WorldEl(string cls, float w, float h)
         {
-            while (worldEls.Count <= worldUsed) { var e = E(marks, null, 0, 0, w, h); var g = E(e, null, 0, 0, w, h); g.name = "g"; worldEls.Add(e); manifest.Add((e, "image", () => "street mark")); } // Glyph G2 (0.2.135): every street mark in the manifest
+            while (worldEls.Count <= worldUsed) { var e = E(marks, null, 0, 0, w, h); Middle(e, w * 0.6f, h * 0.6f, "g"); worldEls.Add(e); manifest.Add((e, "image", () => "street mark")); } // Glyph G2 (0.2.135): every street mark in the manifest
             var el = worldEls[worldUsed++]; Show(el, true); el.ClearClassList(); if (cls != null) foreach (var c in cls.Split(' ')) el.AddToClassList(c);
             el.style.width = w; el.style.height = h; el.style.opacity = 1; el.style.unityBackgroundImageTintColor = Color.white; el.style.backgroundImage = StyleKeyword.Null; el.style.scale = StyleKeyword.Null;
             if (el.Q<Label>("num") is Label nl0) Show(nl0, false);
-            var gl = el.Q("g"); gl.style.left = w * 0.2f; gl.style.top = h * 0.2f; gl.style.width = w * 0.6f; gl.style.height = h * 0.6f; Show(gl, true); gl.style.backgroundImage = StyleKeyword.Null;
+            var gl = el.Q("g"); gl.style.width = w * 0.6f; gl.style.height = h * 0.6f; Show(gl, true); gl.style.backgroundImage = StyleKeyword.Null;
             Border(el, 0, Color.clear); Round(el, 0); el.style.backgroundColor = Color.clear; // a pooled element: no fill left from an eye marker's disc
             return el;
         }
@@ -654,7 +654,7 @@ namespace Suborned.Play
             if (host.HintNow?.Ring is Vector3 hr && !m.Ended && hintAlpha > 0f)
             {
                 var rc = hintNounColour; rc.a = hintAlpha; Ground(hr, 90 * (1f + 0.12f * Mathf.Sin(now * 4f)), rc, 2.6f, true);
-                if (host.HintNow.Cause != "door" && Proj(hr, out var hq)) { var he = WorldEl("e-body e-inline", 26, 26); Round(he, 13f); BorderW(he, 2f); RingColour(he, null); /* brief 101 round 3: a round tab; H13's door cause: the door marker stands there, the ring alone */ he.style.left = hq.x - 13; he.style.top = hq.y - 13; he.style.opacity = hintAlpha; var hg = he.Q("g"); hg.style.left = hg.style.top = 6.24f; hg.style.width = hg.style.height = 13.5f; Icon(hg, hintVerbGlyph, rc); }
+                if (host.HintNow.Cause != "door" && Proj(hr, out var hq)) { var he = WorldEl("e-body e-inline", 26, 26); Round(he, 13f); BorderW(he, 2f); RingColour(he, null); /* brief 101 round 3: a round tab; H13's door cause: the door marker stands there, the ring alone */ he.style.left = hq.x - 13; he.style.top = hq.y - 13; he.style.opacity = hintAlpha; var hg = he.Q("g"); hg.style.width = hg.style.height = 13.5f; /* centred inside the 2 px ring (centring.md: was 2 px right and low) */ Icon(hg, hintVerbGlyph, rc); }
             }
             foreach (var (w, kind, born) in m.Pulses) { float a = (now - born) / 0.7f; if (a < 0 || a > 1) continue; { bool refused = kind == HandoverHost.Feedback.Refused; var pc = refused ? Cream : TurqLight; pc.a = 1 - a; Ground(w, 50 + 90 * a, pc, 2f, refused); } } // sourced colours (the old coral and mint were the lab colours): refused = a dashed cream pulse, taken = turquoise-light (Glyph 0.2.79: the faint pink circle)
             if (m.Box is Rect box) { var bp = RuntimePanelUtils.ScreenToPanel(root.panel, box.min); var bq = RuntimePanelUtils.ScreenToPanel(root.panel, box.max); paints.Add(pp => { pp.strokeColor = Cream; pp.lineWidth = 1.5f; pp.BeginPath(); pp.MoveTo(bp); pp.LineTo(new Vector2(bq.x, bp.y)); pp.LineTo(bq); pp.LineTo(new Vector2(bp.x, bq.y)); pp.ClosePath(); pp.Stroke(); }); }
@@ -714,8 +714,8 @@ namespace Suborned.Play
                 pinRects.Add(rect);
                 var pe = WorldEl(null, 18, 18); pe.style.left = rect.x; pe.style.top = rect.y; Round(pe, 9); pe.style.backgroundColor = Cream; Border(pe, sel ? 1.6f : 0.8f, sel ? TurqLight : Ink);
                 var gl = pe.Q("g"); Show(gl, false);
-                var lab = pe.Q<Label>("num"); if (lab == null) { lab = L(pe, "numplate", 0, 0, 18, 18); lab.name = "num"; lab.style.unityTextAlign = TextAnchor.MiddleCenter; lab.style.color = Ink; lab.style.fontSize = 10; }
-                Show(lab, true); Text(lab, (k + 1).ToString());
+                var lab = pe.Q<Label>("num"); if (lab == null) { lab = CentreNum(pe, "numplate"); lab.name = "num"; /* centring.md: inside the border, whatever its width */ lab.style.color = Ink; lab.style.fontSize = 10; }
+                Show(lab, true); SetNum(lab, (k + 1).ToString());
                 if (alt && op.Walk.Points.Length > 1)
                 {
                     var pts = new List<Vector2>(); Proj(host.frame.World(op.Pos), out var p0); pts.Add(p0); long done = op.WalkMm, run = 0; var wp = op.Walk.Points;
@@ -740,7 +740,7 @@ namespace Suborned.Play
                     var ct = host.Views.Find("camera/" + cm.Id); if (ct == null || !ct.gameObject.activeInHierarchy || !Proj(ct.position + Vector3.up * (host.Views.TopUp("camera/" + cm.Id) - 1.6f), out var hq)) continue;
                     bool cut = dead == "cut"; var de = WorldEl(cut ? "s-disc_dark_24" : null, 24, 24); de.style.left = hq.x - 12; de.style.top = hq.y - 20 - 12;
                     if (!cut) Bg(de, "markers/disc_light_24", Color.white);
-                    var dg = de.Q("g"); dg.style.left = 4.5f; dg.style.top = 4.5f; dg.style.width = 15; dg.style.height = 15; Icon(dg, cut ? "disable" : "fire", cut ? Cream : Ink);
+                    var dg = de.Q("g"); dg.style.width = 15; dg.style.height = 15; Icon(dg, cut ? "disable" : "fire", cut ? Cream : Ink);
                     DeadDiscsShown++;
                 }
             // the eye on the target while a takedown is armed or hovered (Glyph §3): shut = from behind, open = he sees you, ? unknown
@@ -835,7 +835,7 @@ namespace Suborned.Play
             }
             string glyph = state == "seen" ? "eye_open" : state == "unk" ? "eye_unk" : state == "alert" ? "p_alert" : mv.CarryS >= 0 ? "s_carrying" : "s_moving";
             float gs = Mathf.Min(25f, 25f * px); var se = WorldEl(null, gs, gs); se.style.left = q.x - gs / 2; se.style.top = q.y - gs / 2;
-            var sg = se.Q("g"); sg.style.left = 0; sg.style.top = 0; sg.style.width = gs; sg.style.height = gs; Icon(sg, glyph, state == "seen" ? rim : state == "alert" ? cream : state == "unk" ? cream : TurqLight);
+            var sg = se.Q("g"); sg.style.width = gs; sg.style.height = gs; Icon(sg, glyph, state == "seen" ? rim : state == "alert" ? cream : state == "unk" ? cream : TurqLight);
             foreach (var w in mv.Unwatched) if (Proj(w, out var wq)) { int was = worldUsed; EyeMark(wq, "unk", Cream); if (worldUsed > was) worldEls[worldUsed - 1].style.opacity = 0.6f; }
         }
 
@@ -846,7 +846,7 @@ namespace Suborned.Play
             eyesAt.Add(at);
             // Glyph, "Eyes, revised": a flat ink-deep disc (no chrome, which read as a button), the glyph 18 px; the thin rim says whose eye
             var e = WorldEl(null, 24, 24); e.style.left = at.x - 12; e.style.top = at.y - 12; Round(e, 12); e.style.backgroundColor = new Color(0.059f, 0.153f, 0.157f, 0.94f);
-            var g2 = e.Q("g"); g2.style.left = 3; g2.style.top = 3; g2.style.width = 18; g2.style.height = 18;
+            var g2 = e.Q("g"); g2.style.width = 18; g2.style.height = 18; // centred inside any rim (centring.md)
             Icon(g2, state == "open" ? "eye_open" : state == "shut" ? "eye_shut" : "eye_unk", state == "open" ? Red : Cream);
             if (rim != Cream) Border(e, 1.2f, rim);
         }

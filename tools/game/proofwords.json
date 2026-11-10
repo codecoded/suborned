@@ -9,7 +9,9 @@
    "Board",
    "Drive",
    "Fire",
-   "Guard"
+   "Get out",
+   "Guard",
+   "Move"
   ],
   "Proof083.cs": [
    "Click again to stop"

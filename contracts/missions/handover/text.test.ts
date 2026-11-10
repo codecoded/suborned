@@ -2024,7 +2024,7 @@ describe('brief 096: the end card says what really happened (debrief.cause, by t
 describe('brief 096: Step out and the getaway in the book', () => {
   test('Step out is the car ring\'s way out for anyone aboard, a move, and says Popovic stays in', () => {
     const a = t.actions['step-out']!;
-    expect(a.label).toBe('Step out'); expect(a.engine.do).toBe('move'); expect(a.by.slice().sort()).toEqual([...AGENTS].sort());
+    expect(a.label).toBe('Get out'); // Sky 2026-11-10: "Get out" (the ring said Move, read as drive the car) expect(a.engine.do).toBe('move'); expect(a.by.slice().sort()).toEqual([...AGENTS].sort());
     expect(a.does).toMatch(/Popovic stays in/);
   });
   test('the book\'s getaway lines: the car on both ways (the pickup\'s is ours or Popovic\'s, lent), the guard while blocked on the front door\'s, then Go and nobody caught, shared (Latch\'s check words car-guarded and left-safe are live; never a check the host can\'t read)', () => {

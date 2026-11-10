@@ -111,7 +111,7 @@ namespace Suborned.Play
         {
             while (blips.Count <= blipUsed) { var e = E(glass, null, 0, 0, 12, 12); var l = L(e, "keycap"); l.name = "n"; l.style.position = Position.Absolute; l.style.left = 0; l.style.top = 0; l.style.right = 0; l.style.bottom = 0; l.style.unityTextAlign = TextAnchor.MiddleCenter; l.style.fontSize = 8.5f; blips.Add(e); }
             var b = blips[blipUsed++]; Show(b, true); b.style.width = size; b.style.height = size; Border(b, 0, Color.clear); Round(b, 0); b.style.backgroundColor = Color.clear;
-            b.Q<Label>("n").text = ""; if (art != null) Art(b, art, tint); else b.style.backgroundImage = StyleKeyword.Null;
+            SetNum(b.Q<Label>("n"), ""); if (art != null) Art(b, art, tint); else b.style.backgroundImage = StyleKeyword.Null;
             return b;
         }
 
@@ -192,7 +192,7 @@ namespace Suborned.Play
             {
                 var op = g.Ops[k]; if (ScopeOf(host.frame.World(op.Pos)) is not Vector2 q) continue;
                 var b = Blip(null, 11); Place(b, q, 11, 11); Round(b, 5.5f); b.style.backgroundColor = op.Down ? new Color(0.5f, 0.52f, 0.52f) : Cream;
-                Border(b, host.Selected[k] ? 1.6f : 0.6f, host.Selected[k] ? TurqLight : Ink); var n = b.Q<Label>("n"); n.text = (k + 1).ToString(); n.style.color = Ink;
+                Border(b, host.Selected[k] ? 1.6f : 0.6f, host.Selected[k] ? TurqLight : Ink); var n = b.Q<Label>("n"); SetNum(n, (k + 1).ToString()); n.style.color = Ink;
             }
             // the levels: street, deck, sky concourse; the scope draws the street (every Handover act is on it): three dots inside the rim at the lower right
             scopeOps.Add(pp => { for (int i = 0; i < 3; i++) { var lc = mid + new Vector2(Mathf.Cos((32f + i * 7f) * Mathf.Deg2Rad), Mathf.Sin((32f + i * 7f) * Mathf.Deg2Rad)) * (gw / 2f - 10f); pp.fillColor = i == 0 ? Cream : new Color(1, 1, 1, 0.25f); pp.BeginPath(); pp.Arc(lc, 1.8f, Deg(0), Deg(360)); pp.Fill(); } });

@@ -19,7 +19,6 @@ namespace Suborned.Play
         /// <summary>The pause menu's focused word (the proof's focus checks).</summary>
         public static string MenuFocusName => live?.menuList != null && live.menuFocus >= 0 && live.menuFocus < live.menuList.Items.Count ? live.menuList.Items[live.menuFocus].Root.name : "";
 
-        Label menuBuild;
         void BuildMenu()
         {
             menuVeil = E(root, null, pick: true); menuVeil.style.position = Position.Absolute; menuVeil.style.left = 0; menuVeil.style.top = 0; menuVeil.style.right = 0; menuVeil.style.bottom = 0;
@@ -49,8 +48,7 @@ namespace Suborned.Play
                 FrontEnd.Hook(w, () => MenuFocus(ix), act); menuActs.Add(act);
                 if (items[i].text is "Fight range" or "The Handover") menuRange = w.Label;
             }
-            var b = new Label { pickingMode = PickingMode.Ignore }; menuCard.Add(b); FrontEnd.Typeset(b, ll.type.pauseBuild, BuildStamp.Line); menuBuild = b; b.style.opacity = ll.type.pauseBuild.alpha;
-            b.style.position = Position.Absolute; b.style.left = P.padX - 2; b.style.bottom = P.padBottom; // Sky 2026-10-19: which build this is (BuildStamp)
+            // Sky 2026-11-10: no build line on the pause sheet ("text going off - and not needed here"); the build stays in the briefing card's corner (BuildLine)
             manifest.Add((menuCard, "image", () => "pause menu"));
             Show(menuVeil, false); Show(menuCard, false);
         }
@@ -70,7 +68,6 @@ namespace Suborned.Play
             if (host.MenuOpen && !menuWasOpen) { menuOpenFrame = Time.frameCount; MenuFocus(0); } // Resume focused on open
             menuWasOpen = host.MenuOpen;
             if (!open) return;
-            if (menuBuild != null && host.Game != null) Text(menuBuild, $"{BuildStamp.Line} · seed {host.Game.Seed}"); // brief 080: small, with the build
             if (root.IndexOf(menuCard) != root.childCount - 1) { menuVeil.BringToFront(); menuCard.BringToFront(); }
             var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) || size.x <= 0 ? 1920 : size.x, H = float.IsNaN(size.y) || size.y <= 0 ? 1080 : size.y;
             // Glyph 0.2.85 #7: the card scales by H / 1080 like the front end (the HUD panel's whole-number scale made it 409 ref at 2880 x 1864, spec 360)

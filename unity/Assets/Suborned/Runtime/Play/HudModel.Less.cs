@@ -45,9 +45,9 @@ namespace Suborned.Play
             var t = h.Text;
             if (o.Do == "takedown" && t != null && t.Actions.TryGetValue("takedown", out var td) && td.Ways.TryGetValue(o.How ?? "", out var w)) return w.label;
             if (o.Do == "takedown") return o.How == "kill" ? "Kill" : "Knock out";
+            if (i.How == HandoverHost.StepOutHow) return t != null && t.Actions.TryGetValue(i.How, out var so) && so.Label.Length > 0 ? so.Label : i.Name; // Sky 2026-11-10: the car's Get out, never its engine verb's label (Walk)
             if (o.Do == "enter") return "Enter";
-            if (o.Do == "board") return "Board";
-            if (o.Do == "go") return "Go"; // brief 018 §6.5 (Glyph r1): who stays is the row's cameos and fate glyphs, not a sentence
+            if (o.Do is "board" or "go") return t != null && t.Actions.TryGetValue(o.Do, out var cv) && cv.Label.Length > 0 ? cv.Label : o.Do == "go" ? "Go" : "Board"; // the car's verbs by their own labels (Sky 2026-11-10); brief 018 §6.5 (Glyph r1): who stays is the row's cameos and fate glyphs, not a sentence
             if (o.Do == "loop") return "Loop";
             if (o.Do == "disable") return "Disable";
             if (o.Do == "stash") return "Hide";

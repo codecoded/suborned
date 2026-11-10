@@ -258,7 +258,7 @@ namespace Suborned.Play
             // the objective line (objective_line): under the pill, right 14, top 62, height 34
             objective = E(root, "s-panel_strip", pick: true); objective.style.position = Position.Absolute; objective.style.right = 14; objective.style.top = 62; objective.style.height = 34;
             objective.style.flexDirection = FlexDirection.Row; objective.style.alignItems = Align.Center; objective.style.paddingLeft = 40; objective.style.paddingRight = 26;
-            var mark = E(objective, null, 23, 12, 11, 11); Round(mark, 5.5f); Border(mark, 1.4f, TurqLight); var dot = E(mark, null, 3.3f, 3.3f, 4.4f, 4.4f); Round(dot, 2.2f); dot.style.backgroundColor = TurqLight;
+            var mark = E(objective, null, 23, 12, 11, 11); Round(mark, 5.5f); Border(mark, 1.4f, TurqLight); var dot = Middle(mark, 4.4f, 4.4f); Round(dot, 2.2f); dot.style.backgroundColor = TurqLight;
             objText = L(objective, "objective"); objTail = L(objective, "objective-tail");
             objective.RegisterCallback<PointerEnterEvent>(_ => objHover = true); objective.RegisterCallback<PointerLeaveEvent>(_ => objHover = false);
             objective.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { ObjPinned = !ObjPinned; if (!ObjPinned) objUntil = 0; e.StopPropagation(); } }); // a click pins it open
@@ -465,11 +465,11 @@ namespace Suborned.Play
                 w.Pips = E(clip, null, 0, 2 * rad - 14, 2 * rad, 8); w.Pips.style.flexDirection = FlexDirection.Row; w.Pips.style.justifyContent = Justify.Center; // raised 2 px to clear the ring's band
                 w.RingBusy = E(frame, null, 0, 0, 0, 0); // busy is the timer chip; never drawn
                 w.Arm = E(frame, "s-disc_dark_24", c0.x - 38, c0.y + 15, 20, 20, pick: true); /* brief 033 (Glyph's slots): the sidearm mark bottom left; the armed verb takes the bottom right */ Round(w.Arm, 10); Border(w.Arm, 1.6f, Color.clear); // Glyph fight r1 #5: 3 px in, 2 px up, clear of the selection ring; the top right stays free for 018's in-car badge
-                w.GunIcon = E(w.Arm, null, 2.4f, 2.4f, 12, 12); Icon(w.GunIcon, "fire", Cream); var wk = w; w.StanceIn = P(w.Arm, 2.4f, 2.4f, 12, 12, (p, r) => StanceGlyph(p, new Vector2(6, 6), 5f, wk.Index >= 0 && host.Game != null ? host.Game.Ops[wk.Index].Gun.Stance : "return", Cream)); // brief 030: a stance other than return shows inside the mark // Sky 2026-10-18: a sidearm pip on every armed agent (all four carry one in the Handover)
+                w.GunIcon = Middle(w.Arm, 12, 12); Icon(w.GunIcon, "fire", Cream); var wk = w; w.StanceIn = P(Middle(w.Arm, 12, 12), 0, 0, 12, 12, (p, r) => StanceGlyph(p, new Vector2(6, 6), 5f, wk.Index >= 0 && host.Game != null ? host.Game.Ops[wk.Index].Gun.Stance : "return", Cream)); // brief 030: a stance other than return shows inside the mark // Sky 2026-10-18: a sidearm pip on every armed agent (all four carry one in the Handover)
                 // brief 030 §5: the mark toggles that one agent's weapon (F does the selection); a watcher's warning shows its seconds beside it
                 int ka = i; w.Arm.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.DrawOrHolsterAgent(ka); e.StopPropagation(); } }); w.Arm.RegisterCallback<PointerEnterEvent>(_ => { if (host.OneInput) return; fanAgent = ka; fanArm = true; }); /* engine 0.35: no stance fan (one input) */ w.Arm.RegisterCallback<PointerLeaveEvent>(_ => { fanArm = false; fanLeft = Time.unscaledTime; }); // brief 030: hovering the drawn mark opens the stance fan
                 var wl = L(w.Arm, "keycap"); wl.name = "warn"; wl.style.position = Position.Absolute; wl.style.left = -12; wl.style.top = 1; wl.style.color = Amber; wl.style.fontSize = 12; Show(wl, false);
-                w.Car = E(frame, null, c0.x + 13, c0.y - 34, 22, 22); Round(w.Car, 11); Border(w.Car, 1.6f, Color.clear); E(w.Car, null, 4, 4, 14, 14).name = "g"; P(w.Car, 3, 3, 16, 16, (p, r) => CuffsPaint(p, r, Red)).name = "cf"; Show(w.Car, false);
+                w.Car = E(frame, null, c0.x + 13, c0.y - 34, 22, 22); Round(w.Car, 11); Border(w.Car, 1.6f, Color.clear); Middle(w.Car, 14, 14, "g"); P(Middle(w.Car, 16, 16), 0, 0, 16, 16, (p, r) => CuffsPaint(p, r, Red)).name = "cf"; Show(w.Car, false);
                 w.Rim = E(frame, null, c0.x - BezelR - 2, c0.y - BezelR - 2, 2 * BezelR + 4, 2 * BezelR + 4); Round(w.Rim, BezelR + 2); Border(w.Rim, 2f, Cream); Show(w.Rim, false); // the hover rim (brief 018 §6.6: the left-behind flag's line on hover)
                 int kk = i; w.Portrait.RegisterCallback<PointerEnterEvent>(_ => rosterHover = kk); w.Portrait.RegisterCallback<PointerLeaveEvent>(_ => { if (rosterHover == kk) rosterHover = -1; }); // brief 018 §6.6: the in-car badge, or (Go card up) the left-behind flag, in the top right kept for it
                 { var plate = E(frame, "s-plate_light", c0.x - 34, c0.y - 34, 25, 21); plate.name = "keyplate"; w.Num = L(plate, "numplate"); w.Num.style.flexGrow = 1; w.Num.style.unityTextAlign = TextAnchor.MiddleCenter; }
@@ -477,7 +477,7 @@ namespace Suborned.Play
                 // badge top right; brief 030: the armed verb's glyph bottom right on the selected portrait
                 var wc = w; w.Cue = P(frame, c0.x - 60, c0.y - 60, 120, 120, (p, r) => CuePaint(wc, p)); w.Cue.style.overflow = Overflow.Visible;
                 w.Eye = P(frame, c0.x + 14, c0.y - 50, 34, 24, (p, r) => EyePaint(wc, p));
-                w.Glyph = E(frame, null, c0.x + 18, c0.y + 15, 20, 20); Round(w.Glyph, 10); Border(w.Glyph, 1.6f, TurqLight); w.Glyph.style.backgroundColor = new Color(0.086f, 0.4f, 0.369f); E(w.Glyph, null, 3.4f, 3.4f, 13.2f, 13.2f).name = "g"; Show(w.Glyph, false);
+                w.Glyph = E(frame, null, c0.x + 18, c0.y + 15, 20, 20); Round(w.Glyph, 10); Border(w.Glyph, 1.6f, TurqLight); w.Glyph.style.backgroundColor = new Color(0.086f, 0.4f, 0.369f); Middle(w.Glyph, 13.2f, 13.2f, "g"); Show(w.Glyph, false);
             }
         }
 
@@ -626,7 +626,7 @@ namespace Suborned.Play
                 // Glyph r1: the marks drawn over the world: the caught operative's pulsing cyan ring, a dotted line to the culprit, its locator
                 failMarks = new VisualElement { pickingMode = PickingMode.Ignore }; failMarks.style.position = Position.Absolute; failMarks.style.left = 0; failMarks.style.top = 0; failMarks.style.right = 0; failMarks.style.bottom = 0;
                 failMarks.generateVisualContent += FailMarksPaint; root.Add(failMarks); failMarks.SendToBack(); Show(failMarks, false);
-                failLoc = E(root, "s-disc_dark_24", 0, 0, 28, 28); Border(failLoc, 2f, new Color(0.878f, 0.227f, 0.184f)); failLocIcon = E(failLoc, null, 5, 5, 18, 18); Icon(failLocIcon, "eye_open", new Color(0.878f, 0.227f, 0.184f)); manifest.Add((failLoc, "image", () => "culprit locator")); Show(failLoc, false);
+                failLoc = E(root, "s-disc_dark_24", 0, 0, 28, 28); Border(failLoc, 2f, new Color(0.878f, 0.227f, 0.184f)); failLocIcon = Middle(failLoc, 18, 18); Icon(failLocIcon, "eye_open", new Color(0.878f, 0.227f, 0.184f)); manifest.Add((failLoc, "image", () => "culprit locator")); Show(failLoc, false);
                 /* Glyph 0.2.117 #1: the kit's plate at the unlock pills' size and slice (a fat unsliced rim read as a web pill), the time icon, Jost Bold 12.5 */
                 failChip = PlateDark(root, UnlH, UnlScale); failChip.style.position = Position.Absolute; failChip.style.left = 14; failChip.style.top = 14; failChip.style.paddingLeft = 9; failChip.style.paddingRight = 10;
                 var fci = E(failChip, null, w: 12, h: 12); fci.style.flexShrink = 0; Icon(fci, "p_time", Cream);
@@ -1065,7 +1065,7 @@ namespace Suborned.Play
                     Border(w.Arm, warn >= 0 ? (pulse ? 2.6f : 1.6f) : 1.4f, warn >= 0 ? Amber : s.Drawn ? TurqLight : Cream);
                     var wl = w.Arm.Q<Label>("warn"); Show(wl, warn >= 0); if (warn >= 0) Text(wl, $"{warn}");
                 }
-                if (w.Num != null) { Text(w.Num, s.Key); w.Num.parent.style.unityBackgroundImageTintColor = s.Selected ? TurqLight : Color.white; } // selected: the key badge turns turquoise (no ring: see BuildRoster)
+                if (w.Num != null) { SetNum(w.Num, s.Key); w.Num.parent.style.unityBackgroundImageTintColor = s.Selected ? TurqLight : Color.white; } // selected: the key badge turns turquoise (no ring: see BuildRoster)
                 if (w.Street) { FacesPips(w, s.Hp, s.HpMax); FacesLivePips(i, w, s); } else { Pips(w, s.Hp, s.HpMax); LivePips(i, w, s); } // brief 033: the lost pip flashes, a badly hurt agent's pips pulse
                 if (st.Root.style.display == DisplayStyle.None) continue;
                 // compact (Glyph #8): a ready or downed agent is one 34 px line, "SCOUT · READY"; ` shows every strip full

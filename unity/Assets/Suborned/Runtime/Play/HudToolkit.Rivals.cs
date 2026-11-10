@@ -99,7 +99,7 @@ namespace Suborned.Play
             var h = host; var rv = h.Rivals; RivalsShown = ""; if (marks == null) return;
             if (rvStop == null)
             {
-                rvStop = E(marks, "e-body e-inline", 0, 0, 22, 22); Round(rvStop, 11f); BorderW(rvStop, 2f); rvStop.pickingMode = PickingMode.Ignore; var sg = E(rvStop, null, 5.3f, 5.3f, 11.4f, 11.4f); sg.name = "g"; /* brief 101 round 3: a round tab */ Show(rvStop, false); manifest.Add((rvStop, "image", () => "rival stop"));
+                rvStop = E(marks, "e-body e-inline", 0, 0, 22, 22); Round(rvStop, 11f); BorderW(rvStop, 2f); rvStop.pickingMode = PickingMode.Ignore; Middle(rvStop, 11.4f, 11.4f, "g"); /* brief 101 round 3: a round tab; centring.md: inside its 2 px ring */ Show(rvStop, false); manifest.Add((rvStop, "image", () => "rival stop"));
                 rvEdgeTab = NewEdgeTab(null, "badges/signal_rival"); rvEdge = rvEdgeTab.Root; // brief 101 round 3 (Glyph's rule 2): a round tab with the rivals' badge and the ink chevron
                 Show(rvEdge, false); manifest.Add((rvEdge, "image", () => "rival car edge chip"));
             }
@@ -177,7 +177,7 @@ namespace Suborned.Play
                     // the disc at the centre (none under the car), the shut plate above the far edge
                     if (!gh.Here && !gh.Struck && liveK > 0.01f && Proj(gh.At, out var q) && InView(q))
                     {
-                        while (standDiscs.Count <= used) { var r = E(marks, "e-body e-inline", 0, 0, 24, 24); Round(r, 12f); BorderW(r, 2f); r.pickingMode = PickingMode.Ignore; var gl = E(r, null, 5.76f, 5.76f, 12.5f, 12.5f); gl.name = "g"; /* brief 101 round 3: the stand a round tab */ standDiscs.Add((r, gl)); manifest.Add((r, "image", () => "stand disc")); }
+                        while (standDiscs.Count <= used) { var r = E(marks, "e-body e-inline", 0, 0, 24, 24); Round(r, 12f); BorderW(r, 2f); r.pickingMode = PickingMode.Ignore; var gl = Middle(r, 12.5f, 12.5f, "g"); /* brief 101 round 3: the stand a round tab; centring.md: inside its 2 px ring */ standDiscs.Add((r, gl)); manifest.Add((r, "image", () => "stand disc")); }
                         var (dr, dg) = standDiscs[used++]; Show(dr, true); dr.style.left = q.x - 12; dr.style.top = q.y - 12; dr.style.opacity = (gh.Shut ? 0.5f : 1f) * liveK; Icon(dg, "car", Cream);
                     }
                     if (gh.Shut || opening && gh.OpenedAt > 0f)
@@ -211,7 +211,7 @@ namespace Suborned.Play
                 var ci = E(valePlate, null, w: 14, h: 14); ci.name = "car"; ci.style.flexShrink = 0; valeFrom = Words(valePlate, 13.5f); valeFrom.style.marginLeft = 5;
                 var pi = E(valePlate, null, w: 12, h: 12); pi.name = "pointer"; pi.style.marginLeft = 5; pi.style.flexShrink = 0; valeTo = Words(valePlate, 13.5f); valeTo.style.marginLeft = 5;
                 Show(valePlate, false); manifest.Add((valePlate, "image", () => "vale car times"));
-                valeTake = E(marks, "e-body e-inline", 0, 0, 22, 22); Round(valeTake, 11f); BorderW(valeTake, 2f); valeTake.pickingMode = PickingMode.Ignore; var tg = E(valeTake, null, 5.3f, 5.3f, 11.4f, 11.4f); tg.name = "g"; /* brief 101 round 3: a round tab */ Show(valeTake, false); manifest.Add((valeTake, "image", () => "hand-off take"));
+                valeTake = E(marks, "e-body e-inline", 0, 0, 22, 22); Round(valeTake, 11f); BorderW(valeTake, 2f); valeTake.pickingMode = PickingMode.Ignore; Middle(valeTake, 11.4f, 11.4f, "g"); /* brief 101 round 3: a round tab; centring.md: inside its 2 px ring */ Show(valeTake, false); manifest.Add((valeTake, "image", () => "hand-off take"));
             }
             Show(valePlate, false); Show(valeTake, false);
             if (m.Ended || host.View == null || !(v.On || v.HandOff)) return;

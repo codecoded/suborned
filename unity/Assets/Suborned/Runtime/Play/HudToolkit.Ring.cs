@@ -178,7 +178,7 @@ namespace Suborned.Play
             if (ringFocusEl == null)
             {
                 ringFocusEl = E(root, null, 0, 0, 44, 44); Round(ringFocusEl, 22); Border(ringFocusEl, 2.6f, LookLive); ringFocusEl.style.backgroundColor = new Color(LookLive.r, LookLive.g, LookLive.b, 0.12f);
-                var halo = E(ringFocusEl, null, -3.6f, -3.6f, 47.2f, 47.2f); Round(halo, 23.6f); Border(halo, 1f, new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.7f)); // reads on pale stone
+                var halo = E(ringFocusEl, null, -4.2f, -4.2f, 47.2f, 47.2f); /* centring.md: offsets count from inside the 2.6 px ring */ Round(halo, 23.6f); Border(halo, 1f, new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.7f)); // reads on pale stone
                 manifest.Add((ringFocusEl, "image", () => "ring focus"));
             }
             var f = host.RingFocus; Transform t = f.HasValue && host.Views != null ? host.Views.Find(f.Value.view) : null;

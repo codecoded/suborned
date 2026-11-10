@@ -156,7 +156,7 @@ namespace Suborned.Play
         void BkFact(VisualElement body, BookFact f, BookLayout.Item it)
         {
             float x = it.At.x, y = it.At.y, d = it.D;
-            if (f.Unknown) { var q = E(body, null, x, y, d, d); Round(q, d / 2f); Border(q, 1.8f, BkSoft); BkPut(q, d * .33f, d / 2f, "?", d * .56f, "Jost-Bold", BkSoftHex); }
+            if (f.Unknown) { var q = E(body, null, x, y, d, d); Round(q, d / 2f); Border(q, 1.8f, BkSoft); BkMid(q, d, 1.8f, "?", d * .56f, "Jost-Bold", BkSoftHex); }
             else Icon(E(body, null, x + 2f, y + 2f, d - 4f, d - 4f), f.Icon, BkInk);
             var word = f.Word + (f.Unknown && f.Note.Length == 0 ? " ?" : ""); BkPut(body, x + d + 12f, it.Cy, word, it.Size, "Jost-SemiBold", f.Unknown ? BkSoftHex : BkInkHex);
             if (f.Note.Length > 0) BkPut(body, x + d + 12f + BkTw(word, it.Size, "Jost-SemiBold") + 10f, it.Cy + 1f, f.Note, it.Size * .76f, "Jost-Medium", BkSoftHex);
@@ -216,7 +216,7 @@ namespace Suborned.Play
         {
             float x = it.At.x, y = it.At.y, d = it.D; var m = E(body, null, x, y + 2f, d, d); Round(m, d / 2f); m.name = "book-need";
             if (n.Met) { m.style.backgroundColor = BkDeep; Icon(E(m, null, 4f, 4f, d - 8f, d - 8f), "check", Cream); }
-            else { Border(m, 1.8f, BkSoft); if (n.Unknown) BkPut(m, d * .3f, d / 2f, "?", d * .6f, "Jost-Bold", BkSoftHex); }
+            else { Border(m, 1.8f, BkSoft); if (n.Unknown) BkMid(m, d, 1.8f, "?", d * .6f, "Jost-Bold", BkSoftHex); }
             for (int i = 0; i < lines.Length; i++) BkPut(body, x + d + 12f, y + 13f + BookLayout.NeedLineH * i, lines[i], it.Size, "Jost-Medium", n.Met ? BkInkHex : n.Unknown ? BkSoftHex : BkInkHex);
         }
 

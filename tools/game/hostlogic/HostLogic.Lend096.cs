@@ -51,6 +51,10 @@ public class Lend096
         Assert.That(ours.Exists(r => r.I.Order?.Do == "drive-car" && r.By == OpId.Enforcer), Is.False, "the Enforcer at Popovic's wheel never drives ours");
         Assert.That(ours.Exists(r => r.I.How == HandoverHost.StepOutHow && r.By == OpId.Enforcer), Is.False, "Step out on our car is for those in ours");
         Host.NoTokens("lent rows", rows.Select(r => r.Verb).Concat(rows.Select(r => r.Reason)).ToArray());
+        // Sky 2026-11-10 ("Move" read as drive the car): every car way says its own word on the ring and the card, never its engine verb's
+        var so = rows.First(r => r.I.How == HandoverHost.StepOutHow).I; string gw = h.Text.Actions[HandoverHost.StepOutHow].Label;
+        Assert.That(gw, Is.EqualTo("Get out")); Assert.That(Host.Call(h, "RingWord", so), Is.EqualTo(gw), "the ring"); Assert.That(HudModel.ShortName(h, so), Is.EqualTo(gw), "the card"); Assert.That(so.Label, Is.EqualTo(gw), "the hover");
+        Assert.That(Host.Call(h, "RingWord", go.I), Is.EqualTo(h.Text.Actions["ring-go"].Label)); Assert.That(Host.Call(h, "RingWord", board.I), Is.EqualTo(h.Text.Actions["ring-board"].Label));
     }
 
     [Test] public void WhilePopovicIsLentOurGoGetsTheRestClearAndNobodyIsCapturedYet()

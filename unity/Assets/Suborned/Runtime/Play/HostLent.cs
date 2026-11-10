@@ -117,11 +117,11 @@ namespace Suborned.Play
         {
             var g = Game; if (g == null || g.Range || g.Over) return;
             var seat = lent ? g.CarPos() : g.GetawaySeat; var at = g.Walk.NearestFree(seat) ?? seat;
-            string word = Text != null && Text.Actions.TryGetValue(StepOutHow, out var sa) && sa.Label.Length > 0 ? sa.Label : "Step out";
+            string word = Text != null && Text.Actions.TryGetValue(StepOutHow, out var sa) && sa.Label.Length > 0 ? sa.Label : "Get out"; string does = Text != null && Text.Actions.TryGetValue(StepOutHow, out var sd) ? sd.Does ?? "" : ""; // Sky 2026-11-10: "Get out" (Move read as drive the car)
             for (int k = 0; k < 4; k++)
             {
                 var op = g.Ops[k]; if (!op.InCar || op.InLent != lent || op.Down || op.LeftMap) continue;
-                var v = new Intent { Slot = -1, Label = word, Name = word, How = StepOutHow, Lead = "s_moving", Order = new Order { Op = Op.Name((OpId)k), Do = "move", Point = at } };
+                var v = new Intent { Slot = -1, Label = word, Name = word, Does = does, How = StepOutHow, Lead = "s_moving", Order = new Order { Op = Op.Name((OpId)k), Do = "move", Point = at } };
                 v.Time = $"{g.R.BoardS} s"; v.Usd = "$0"; v.Trail = "T 0"; v.Alert = "A 0"; v.Outcome = (lent ? g.Vale == ValeAt.Lent : g.Vale == ValeAt.Car) ? $"{ValeWord} stays in" : "";
                 var lk = op.Busy != null ? new Answer { ok = false, code = "agent-busy", why = "busy in the car", m = -1, cm = -1, usd = -1, tick = -1 } : new Answer { ok = true, code = "", why = "" };
                 pn.Rows.Add(new PanelRow { By = (OpId)k, Slot = -1, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : ShortOf(v.Order, lk) ?? lk.why });

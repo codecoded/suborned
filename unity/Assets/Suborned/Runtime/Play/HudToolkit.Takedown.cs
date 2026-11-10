@@ -209,7 +209,7 @@ namespace Suborned.Play
             {
                 if (!Proj(w, out var p)) continue;
                 if (headMarks.Count <= hi) { var k = new Mark { Root = E(marks, "s-plate_light", 0, 0, 18, 18) }; k.Text = L(k.Root, "numplate"); k.Text.style.flexGrow = 1; k.Text.style.unityTextAlign = TextAnchor.MiddleCenter; headMarks.Add(k); }
-                var u = headMarks[hi]; Show(u.Root, true); Place(u.Root, p, 18, 18); Text(u.Text, (hi + 1).ToString()); hi++;
+                var u = headMarks[hi]; Show(u.Root, true); Place(u.Root, p, 18, 18); SetNum(u.Text, (hi + 1).ToString()); hi++;
             }
             for (int i = hi; i < headMarks.Count; i++) Show(headMarks[i].Root, false);
             // the response pill and its list, under Intel

@@ -309,7 +309,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++)
             {
                 bool show = known != null && System.Linq.Enumerable.Contains(known, Op.Name((OpId)k)) && PortraitScreen(k) is Vector2 && !(colWins[k]?.Street == true && m.Dock == RosterDock.Left); // the faces carry their own badge (FacesFrame)
-                if (knownEls[k] == null) { if (!show) continue; knownEls[k] = E(root, null, 0, 0, 20, 20); Round(knownEls[k], 10); knownEls[k].style.backgroundColor = Ink; Border(knownEls[k], 1.5f, Cream); var ic = E(knownEls[k], null, 2, 2, 16, 16); ic.name = "g"; manifest.Add((knownEls[k], "image", () => "face known badge")); }
+                if (knownEls[k] == null) { if (!show) continue; knownEls[k] = E(root, null, 0, 0, 20, 20); Round(knownEls[k], 10); knownEls[k].style.backgroundColor = Ink; Border(knownEls[k], 1.5f, Cream); var ic = Middle(knownEls[k], 16, 16, "g"); /* centring.md: was 1.5 px right and low */ manifest.Add((knownEls[k], "image", () => "face known badge")); }
                 Show(knownEls[k], show); if (!show) continue;
                 var ps = PortraitScreen(k).Value; var pp = RuntimePanelUtils.ScreenToPanel(root.panel, new Vector2(ps.x, Screen.height - ps.y));
                 knownEls[k].style.left = pp.x - 40; knownEls[k].style.top = pp.y - 40; Icon(knownEls[k].Q("g"), "sawyou", Cream);

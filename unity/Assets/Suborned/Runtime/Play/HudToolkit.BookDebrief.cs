@@ -25,7 +25,7 @@ namespace Suborned.Play
             float x = it.At.x + 2f, cy = it.Cy, d = it.D; var m = E(body, null, x, cy - d / 2f, d, d); Round(m, d / 2f); m.name = "debrief-tick";
             if (t.Met) { m.style.backgroundColor = BkDeep; Icon(E(m, null, d * .2f, d * .2f, d * .6f, d * .6f), "check", Cream); }
             else if (t.Lost) { m.style.backgroundColor = BkOrange; Icon(E(m, null, d * .22f, d * .22f, d * .56f, d * .56f), "close_x", Cream); }
-            else { Border(m, 2f, BkSoft); if (t.Unknown) BkPut(m, d * .3f, d / 2f - 2f, "?", d * .6f, "Jost-Bold", BkSoftHex); }
+            else { Border(m, 2f, BkSoft); if (t.Unknown) BkMid(m, d, 2f, "?", d * .6f, "Jost-Bold", BkSoftHex); }
             BkPut(body, x + 40f, cy, t.Words, wordSize, "Jost-SemiBold", t.Met || t.Lost ? BkInkHex : BkSoftHex);
             if (t.Note.Length == 0) return;
             float ns = it.Size - 2f; string font = t.Lost ? "Jost-SemiBold" : "Jost-Medium";

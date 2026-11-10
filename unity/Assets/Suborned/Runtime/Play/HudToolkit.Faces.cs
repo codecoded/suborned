@@ -51,24 +51,24 @@ namespace Suborned.Play
                 w.Pips = w.Dots = E(frame, null, c.x + Cs(34f), c.y - Cs(26f), Cs(7f), Cs(60f)); w.Dots.name = "roster-dots"; w.Pips.style.flexDirection = FlexDirection.Column; w.Pips.style.overflow = Overflow.Visible;
                 // the sidearm mark (lower left) and the act disc (lower right): 22 and 26 px, the street tab's body and cream ring
                 float ad = Ce(22f); w.Arm = E(frame, "e-body e-inline", c.x - Cs(23f) - ad / 2f, c.y + Cs(21f) - ad / 2f, ad, ad, pick: true); Round(w.Arm, ad / 2f); BorderW(w.Arm, Cs(2f));
-                float gi = Ce(13f); w.GunIcon = E(w.Arm, null, (ad - gi) / 2f - Cs(2f), (ad - gi) / 2f - Cs(2f), gi, gi); Icon(w.GunIcon, "fire", Cream);
-                var wk = w; w.StanceIn = P(w.Arm, (ad - gi) / 2f - Cs(2f), (ad - gi) / 2f - Cs(2f), gi, gi, (p, _) => StanceGlyph(p, new Vector2(gi / 2f, gi / 2f), gi * 0.42f, host.Game != null ? host.Game.Ops[wk.Index].Gun.Stance : "return", Cream));
+                float gi = Ce(13f); w.GunIcon = Middle(w.Arm, gi, gi); /* centring.md: centred at any ring width (the warning thickens it) */ Icon(w.GunIcon, "fire", Cream);
+                var wk = w; w.StanceIn = P(Middle(w.Arm, gi, gi), 0, 0, gi, gi, (p, _) => StanceGlyph(p, new Vector2(gi / 2f, gi / 2f), gi * 0.42f, host.Game != null ? host.Game.Ops[wk.Index].Gun.Stance : "return", Cream));
                 w.Arm.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.DrawOrHolsterAgent(k); e.StopPropagation(); } });
                 w.Arm.RegisterCallback<PointerEnterEvent>(_ => { faceBits[k].Over = true; if (host.OneInput) return; fanAgent = k; fanArm = true; }); w.Arm.RegisterCallback<PointerLeaveEvent>(_ => { faceBits[k].Over = false; fanArm = false; fanLeft = Time.unscaledTime; });
                 var wl = L(w.Arm, "keycap"); wl.name = "warn"; wl.style.position = Position.Absolute; wl.style.left = -Cs(14f); wl.style.top = 0; wl.style.color = Amber; wl.style.fontSize = Cs(12f); Show(wl, false);
                 float sd = Ce(26f); w.Status = E(frame, "e-body e-inline", c.x + Cs(23f) - sd / 2f, c.y + Cs(21f) - sd / 2f, sd, sd, pick: true); w.Status.name = "roster-status"; Round(w.Status, sd / 2f); BorderW(w.Status, Cs(2f));
-                float si = Ce(14f); w.StatusIcon = E(w.Status, null, (sd - si) / 2f - Cs(2f), (sd - si) / 2f - Cs(2f), si, si); w.StatusIcon.name = "g"; Show(w.Status, false);
+                float si = Ce(14f); w.StatusIcon = Middle(w.Status, si, si, "g"); Show(w.Status, false);
                 w.Status.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0 && host.Game != null && host.Game.Ops[k].Walk != null) { host.ToggleGait(k); e.StopPropagation(); } }); // a walk's pace, as the old chip's lead glyph
                 w.Status.RegisterCallback<PointerEnterEvent>(_ => faceBits[k].Over = true); w.Status.RegisterCallback<PointerLeaveEvent>(_ => faceBits[k].Over = false);
                 // kept for the frame's shared code: the in-car badge, the armed glyph, the hover rim (the left-behind flag's line), the cue and eye layers
-                w.Car = E(frame, null, c.x + 13, c.y - 34, 22, 22); E(w.Car, null, 4, 4, 14, 14).name = "g"; P(w.Car, 3, 3, 16, 16, (p, rr) => CuffsPaint(p, rr, Red)).name = "cf"; Show(w.Car, false);
-                w.Glyph = E(frame, null, 0, 0, 20, 20); E(w.Glyph, null, 3.4f, 3.4f, 13.2f, 13.2f).name = "g"; Show(w.Glyph, false);
+                w.Car = E(frame, null, c.x + 13, c.y - 34, 22, 22); Middle(w.Car, 14, 14, "g"); P(Middle(w.Car, 16, 16), 0, 0, 16, 16, (p, rr) => CuffsPaint(p, rr, Red)).name = "cf"; /* centring.md: its ring comes later (1.4 or 1.6 px) */ Show(w.Car, false);
+                w.Glyph = E(frame, null, 0, 0, 20, 20); Middle(w.Glyph, 13.2f, 13.2f, "g"); Show(w.Glyph, false);
                 w.Rim = E(frame, null, c.x - r - 2, c.y - r - 2, 2 * r + 4, 2 * r + 4); Round(w.Rim, r + 2); Border(w.Rim, 2f, Cream); Show(w.Rim, false);
                 w.Cue = P(frame, c.x - 60, c.y - 60, 120, 120, (p, _) => CuePaint(wk, p)); w.Cue.style.overflow = Overflow.Visible;
                 w.Eye = P(frame, c.x + Cs(14f), c.y - Cs(44f), 34, 24, (p, _) => EyePaint(wk, p));
                 // a known face (security knows it): the "seen you" badge at the upper left
                 var b = faceBits[i] = new FaceBits(); float kd = Ce(20f);
-                b.Known = E(frame, "e-ink e-inline", c.x - Cs(24f) - kd / 2f, c.y - Cs(22f) - kd / 2f, kd, kd); Round(b.Known, kd / 2f); BorderW(b.Known, Cs(1.5f)); Icon(E(b.Known, null, Cs(2.5f), Cs(2.5f), Cs(13f), Cs(13f)), "sawyou", Cream); Show(b.Known, false);
+                b.Known = E(frame, "e-ink e-inline", c.x - Cs(24f) - kd / 2f, c.y - Cs(22f) - kd / 2f, kd, kd); Round(b.Known, kd / 2f); BorderW(b.Known, Cs(1.5f)); Icon(Middle(b.Known, Cs(13f), Cs(13f)), "sawyou", Cream); Show(b.Known, false);
                 // beside the face, in the root at screen px: the run's eye, a cause's icon and two words, as street labels; the act's × on hover
                 var at = FaceScreen(i); b.Row = StackRow(root, 28f); b.Row.style.position = Position.Absolute; b.Row.style.left = TakeX + TakeD + TakeGap; b.Row.style.top = at.y - 14f; b.Row.style.justifyContent = Justify.FlexStart; // brief 101: after the take-control tab's slot (HudToolkit.TakeControl)
                 b.Eye = KIcon(b.Row, "eye_unk", 16f); b.Eye.Root.pickingMode = PickingMode.Position; b.Eye.Root.style.marginRight = 6f;
