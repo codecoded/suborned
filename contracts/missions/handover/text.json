@@ -3400,8 +3400,8 @@
       "fixes": [{"icon": "mislead", "word": "Mislead", "agent": "scout"}, {"icon": "pay", "word": "Pay", "agent": "fixer"}, {"icon": "takedown", "word": "Take", "agent": "enforcer"}]
      },
      "boxed": {
-      "title": "Our car boxed in",
-      "line": "their car across our way"
+      "title": "Our car is boxed in",
+      "line": "a rival car is blocking the way out"
      },
      "rivals-follow": {
       "title": "Rivals after our car",
