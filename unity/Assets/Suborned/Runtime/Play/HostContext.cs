@@ -205,7 +205,7 @@ namespace Suborned.Play
             // dim), its pill the lock and the time the running loop ends; a press says why (loop-holds)
             if (plan.T?.Kind == "camera" && plan.Pn.Rows.Find(r => r.I?.Order?.Do == "loop" && !r.Available && r.Lock.code == "loop-holds") is PanelRow lr && !rs.Segs.Exists(x => x.Row?.I?.Order?.Do == "loop") && rs.Segs.Count < RingMaxWays)
                 rs.Segs.Insert(0, new RingSeg { Way = -1, Row = lr, Word = RingWord(lr.I), Icon = "loop", Shut = true, ShutText = lr.Lock.tick >= 0 ? MissionClock(lr.Lock.tick) : "" });
-            if (plan.T?.Kind != "camera" || rs.Segs.Count == 0) rs.Segs.Add(new RingSeg { More = true, Icon = "", Word = "" }); // ⋯: the full panel, every locked row and its reason (Glyph 058 §1: a camera's ring is its ways alone: Loop · Disable · Fire, or Fire as the whole ring)
+            TakeCarShutSeg(rs, plan); /* brief 105: Take car shut, its short lock its word (HostTakeCar) */ if (plan.T?.Kind != "camera" || rs.Segs.Count == 0) rs.Segs.Add(new RingSeg { More = true, Icon = "", Word = "" }); // ⋯: the full panel, every locked row and its reason (Glyph 058 §1: a camera's ring is its ways alone: Loop · Disable · Fire, or Fire as the whole ring)
             rs.Lit = ch.Act == ContextRank.Act.Ring || ch.Act == ContextRank.Act.Default ? Math.Max(0, rs.Segs.FindIndex(x => x.Way == ch.Pick)) : controls.quickAction ? 0 : -1; // ring by default: nothing ranked (a passer-by's takedowns), nothing lit
             if (rs.Segs.Count == 1) rs.Lit = 0;
             if (Picked >= 0) { int ai = rs.Segs.FindIndex(x => x.Key == Picked && x.By.Contains(Agent)); if (ai >= 0) rs.Lit = ai; } // brief 030 (no plate): the ring opens on the armed verb's wedge

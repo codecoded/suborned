@@ -428,7 +428,7 @@ namespace Suborned.Play
         /// <summary>The clock's city scenes (the chime), on their tick.</summary>
         void FeedClock()
         {
-            if (forCarCard && Game.RivalsForCar.Count == 0) forCarCard = false; // brief 096: the walk is over (back to cover, or the walkers down): the next one has its card
+            forCarCard = false; // engine 0.53.0 (brief 105): the walk on the car is retired (no rivals.for-car)
             CrucialTrack(); // brief 096: the slim feed's crucial cards (HostCrucial)
             if (Text == null) return;
             foreach (var e in Text.Events.Values) if (e.Clock.Length > 0 && e.Log.Count == 0 && Game.Tick == ClockTick(e.Clock)) _ = CityScene(e.Id, null);

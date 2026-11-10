@@ -45,9 +45,9 @@ namespace Suborned.Play
             try { (members, car) = g.RivalPoses(); } catch { members = new List<(string, Pt, Pt, string)>(); car = (default, new Pt(0, 100), "off"); }
             RivalCarState = car.state;
             bool carOn = car.state != "off";
-            Set("car/rivals", carOn ? car.pos : (Pt?)null);
-            rivalHeading = null;
-            if (carOn && (car.heading.X != 0 || car.heading.Y != 0)) { var w = frame.World(new Pt(car.pos.X + car.heading.X, car.pos.Y + car.heading.Y)) - frame.World(car.pos); w.y = 0f; if (w.sqrMagnitude > 1e-8f) rivalHeading = w.normalized; }
+            bool leaving = TakenLeaving("car/rivals"); // engine 0.53.0 (car.take): ours and gone, it drives off in the view (HostViews.LeavingLent)
+            if (!leaving) { Set("car/rivals", carOn ? car.pos : (Pt?)null); rivalHeading = null; }
+            if (!leaving && carOn && (car.heading.X != 0 || car.heading.Y != 0)) { var w = frame.World(new Pt(car.pos.X + car.heading.X, car.pos.Y + car.heading.Y)) - frame.World(car.pos); w.y = 0f; if (w.sqrMagnitude > 1e-8f) rivalHeading = w.normalized; }
             foreach (var k in RivalKeys) RivalModes.Remove(k);
             var seen = new HashSet<string>();
             foreach (var m in members)
@@ -66,7 +66,7 @@ namespace Suborned.Play
         }
 
         /// <summary>The rival car's engine heading as a world direction, else null (it keeps its last).</summary>
-        Vector3? RivalCarFacing() => rivalHeading;
+        Vector3? RivalCarFacing() => TakenLeaving("car/rivals") ? lentHeading : rivalHeading;
 
         /// <summary>The getaway car's engine heading as a world direction (along its Drive, else its stand's facing).</summary>
         Vector3? GetawayFacing()

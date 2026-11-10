@@ -11,7 +11,7 @@ namespace Suborned.Play
     public sealed partial class HandoverHost
     {
         /// <summary>"car" for ours, "car:official" for Popovic's (the engine's names for a Go's car).</summary>
-        static string GoCarOf(string target) => LentOrder(target) ? "car:official" : "car";
+        string GoCarOf(string target) => LentOrder(target) ? LentCarId : "car";
 
         /// <summary>The agents climbing into this car now (a Board under way), in id order, only while the engine says a Go would wait for them.</summary>
         List<int> Climbers(string car)

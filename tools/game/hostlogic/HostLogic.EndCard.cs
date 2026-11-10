@@ -10,44 +10,16 @@ using Suborned.Sim;
 /// <summary>The end card, worded by Game.Cause (Fable's debrief.cause and debrief.story).</summary>
 public class EndCause
 {
-    /// <summary>The engine's own scenario for Sky's run (seed 1562486586): Vale boarded, the car held, nobody outside drawn, the rivals walk up and take him.</summary>
-    static Game Unguarded(HandoverHost h)
+    /// <summary>Engine 0.53.0 (brief 105; Sky 2026-11-10: "they can't take popovic from the car"): K3-PRESS, the whole cell in the held car with Popovic, is no longer
+    /// a take: the rivals shoot the car, it is shot out, everyone gets out and fights on. The reached-car cause is retired from the words.</summary>
+    [Test] public void AShotOutCarIsNoTakeAndReachedCarIsRetired()
     {
-        var s = Scenarios.Find("K3-PRESS"); Assert.That(s, Is.Not.Null, "the engine's K3-PRESS scenario is gone");
+        var h = Host.Fresh(); var s = Scenarios.Find("K3-PRESS"); Assert.That(s, Is.Not.Null, "the engine's K3-PRESS scenario is gone");
         var g = Scenarios.Run(h.PlayInputs, s).G;
-        Assert.That(g.FailCode, Is.EqualTo("rivals-reach-vale"), $"{g.Result} {g.FailCode}"); Assert.That(g.Cause?.Why, Is.EqualTo("reached-car"));
-        return g;
-    }
-    /// <summary>A played run adopted as the host's ended run, as ShowEnded does without its views and fail camera.</summary>
-    static List<string> CardOf(HandoverHost h, Game g)
-    {
-        Host.Set(h, "Game", g); Host.Set(h, "EndDebrief", Debrief.Of(g)); Host.Set(h, "Ending", "test");
-        var m = new HudModel(); Host.Call(m, "EndCard", h); return m.EndLines;
-    }
-
-    [Test] public void AnUnguardedHeldCarSaysTheRivalsTookHimFromTheCarAndTheStoryRunsToTheEnd()
-    {
-        var h = Host.Fresh(); var g = Unguarded(h); var t = h.Text; var ct = t.CauseFor("rivals-reach-vale", "reached-car");
-        Assert.That(ct, Is.Not.Null, "text.json has no debrief.cause.rivals-reach-vale.reached-car");
-        var holders = g.CarHolders(); var lines = CardOf(h, g);
-        Assert.That(lines[0], Is.EqualTo(ct.Head.TrimEnd('.')), "the head is the cause's, not less.end.fail's"); Assert.That(lines[0], Is.EqualTo("Rivals took Popovic from the car"));
-        Assert.That(lines[1], Is.EqualTo(ct.Line)); Assert.That(lines[1], Does.Not.Contain("got to Popovic first"));
-        string reached = t.Route["vale-reaches-getaway-car"], route = lines.FirstOrDefault(l => l.Contains(reached)) ?? "";
-        Assert.That(route, Is.Not.Empty, $"no route line with '{reached}': {string.Join(" | ", lines)}");
-        string after = route[(route.IndexOf(reached, StringComparison.Ordinal) + reached.Length)..].Trim(), unguarded = t.DebriefStory["unguarded"];
-        if (holders.Count > 0) Assert.That(after, Does.StartWith(Cap(t.DebriefStory["blocked"].Replace("{holders}", t.HoldersPhrase(string.Join(",", holders))))), $"holders {string.Join(",", holders)}: '{after}'");
-        else Assert.That(after, Does.Not.Contain("blocked"), "no holders at the end: the blocked line is left out");
-        Assert.That(after, Does.Contain(unguarded)); Host.NoTokens("end card", lines.ToArray());
-        Console.WriteLine($"K3-PRESS card: {lines[0]} · {lines[1]} · …{after}  (holders {string.Join(",", holders)})");
-    }
-
-    [Test] public void TheBlockedLineNamesTheHoldersAndIsLeftOutWithoutThem()
-    {
-        var h = Host.Fresh(); var c = new FailCause { Fail = "rivals-reach-vale", Why = "reached-car" };
-        var two = h.CauseWords(c, new[] { "rival-1", "rival-2" }); var none = h.CauseWords(c, new string[0]);
-        Assert.That(two.Head, Is.EqualTo("Rivals took Popovic from the car"));
-        Assert.That(two.Story, Is.EqualTo(new[] { "2 rivals blocked the car, so Go wouldn't work.", h.Text.DebriefStory["unguarded"] }));
-        Assert.That(none.Story, Is.EqualTo(new[] { h.Text.DebriefStory["unguarded"] }), "no holders: the {holders} line is dropped");
+        Assert.That(g.Log.Exists(l => l.Code == "rivals.fire-car"), "the rivals shoot the car"); Assert.That(g.Log.Exists(l => l.Code == "car.shot-out"), "the car is shot out");
+        Assert.That(g.Cause?.Why ?? "", Is.Not.EqualTo("reached-car")); Assert.That(g.FailCode ?? "", Is.Not.EqualTo("getaway-lost"), "a car the rivals shot out is no getaway-lost");
+        Assert.That(h.Text.CauseFor("rivals-reach-vale", "reached-car"), Is.Null, "debrief.cause.rivals-reach-vale.reached-car is retired (Fable 105)");
+        Assert.That(BookWordsFile.Get().ShotOut, Does.Contain("Popovic"), "book.cars.shotOut read");
     }
 
     [Test] public void EveryCauseIsWordedWithNoHoleAndTheSealIsKeyedByItsCar()
@@ -83,13 +55,13 @@ public class BookGetaway
     [Test] public void TheHostsGuardIsTheEnginesGuard()
     {
         var h = Host.Fresh(); var g = h.Game; var host = typeof(HandoverHost).GetMethod("CarGuard", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-        var engine = typeof(Game).GetMethod("Guards", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-        Assert.That(host, Is.Not.Null, "HandoverHost.CarGuard is gone"); Assert.That(engine, Is.Not.Null, "Game.Guards is gone: re-read sim/Suborned.Sim/GameUnguarded.cs");
+        var engine = typeof(Game).GetMethod("Outside", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        Assert.That(host, Is.Not.Null, "HandoverHost.CarGuard is gone"); Assert.That(engine, Is.Not.Null, "Game.Outside is gone: re-read sim/Suborned.Sim/GameUnguarded.cs");
         var o = g.Ops[3]; int n = 0;
-        foreach (var down in new[] { false, true }) foreach (var inCar in new[] { false, true }) foreach (var inside in new[] { false, true }) foreach (var drawn in new[] { false, true }) foreach (var holster in new[] { -1, 5 })
+        foreach (var down in new[] { false, true }) foreach (var inCar in new[] { false, true }) foreach (var inside in new[] { false, true }) foreach (var drawn in new[] { false, true }) foreach (var left in new[] { false, true })
         {
-            o.Gun.Down = down; o.InCar = inCar; o.Inside = inside; o.Gun.Drawn = drawn; o.Gun.HolsterAt = holster; n++;
-            Assert.That(host.Invoke(null, new object[] { o }), Is.EqualTo(engine.Invoke(null, new object[] { o })), $"down {down} car {inCar} inside {inside} drawn {drawn} holster {holster}");
+            o.Gun.Down = down; o.InCar = inCar; o.Inside = inside; o.Gun.Drawn = drawn; o.LeftMap = left; n++;
+            Assert.That(host.Invoke(null, new object[] { o }), Is.EqualTo(engine.Invoke(null, new object[] { o })), $"down {down} car {inCar} inside {inside} drawn {drawn} left {left}");
         }
         Assert.That(n, Is.EqualTo(32));
     }
@@ -98,7 +70,7 @@ public class BookGetaway
     {
         var h = Host.Fresh(); var g = h.Game;
         Assert.That(h.BookCheck("car-guarded"), Is.False, "Popovic is not aboard at the start"); Assert.That(h.BookCheck("left-safe"), Is.EqualTo(g.LeftBehind().All(x => x.fate == "walked")));
-        g.Vale = ValeAt.Car; bool held = g.CarHeld(); Assert.That(h.BookCheck("car-guarded"), Is.EqualTo(!held || g.Ops.Any(o => !o.Down && !o.InCar && !o.Inside && o.Gun.Drawn && o.Gun.HolsterAt < 0)), $"held {held}");
+        g.Vale = ValeAt.Car; bool held = g.CarHeld(); Assert.That(h.BookCheck("car-guarded"), Is.EqualTo(!held || g.Ops.Any(o => !o.Down && !o.InCar && !o.Inside && !o.LeftMap)), $"held {held}");
         g.Ops[3].Gun.Down = true; Assert.That(h.BookCheck("left-safe"), Is.False, "a downed agent left behind is captured");
         var needs = BookWordsFile.Get().Needs;
         foreach (var way in new[] { "front-door", "pickup" })
@@ -109,21 +81,18 @@ public class BookGetaway
     }
 }
 
-/// <summary>The held car's feed card: one a walk on the car (Game.RivalsForCar turning non-empty), not one a rival.</summary>
+/// <summary>Engine 0.53.0 (brief 105): the crucial card for-car comes at rivals.fire-car (Fable's "They're shooting at our car"), once, and leaves once one of ours is out.</summary>
 public class ForCarCard
 {
-    [Test] public void OneCardAWalkNotOneARival()
+    [Test] public void TheFireCarCardComesOnceAndLeavesWhenOneOfUsIsOut()
     {
-        var h = Host.Fresh(); var g = h.Game; var walkers = (SortedSet<string>)Host.Get(g, "forCar");
-        LogLine L(string id) => new LogLine { Tick = g.Tick, Code = "rivals.for-car", Text = $"{id} sees nobody of the cell guarding the car and goes for Popovic." };
-        bool On() => (bool)Host.Get(h, "forCarCard");
-        walkers.Add("rival-1"); walkers.Add("rival-2"); walkers.Add("rival-3");
-        Host.Call(h, "FeedEvent", L("rival-1")); Assert.That(On(), "the first rival's line starts the walk's card");
-        float pulse = h.HolderPulseAt; Host.Later(1f);
-        Host.Call(h, "FeedClock"); Host.Call(h, "FeedEvent", L("rival-2")); Host.Call(h, "FeedEvent", L("rival-3"));
-        Assert.That(h.HolderPulseAt, Is.EqualTo(pulse), "the rest of the walk's lines make no card (and no second pulse)");
-        walkers.Clear(); Host.Call(h, "FeedClock"); Assert.That(On(), Is.False, "the walk is over once RivalsForCar is empty");
-        walkers.Add("rival-2"); Host.Call(h, "FeedEvent", L("rival-2")); Assert.That(On()); Assert.That(h.HolderPulseAt, Is.GreaterThan(pulse), "a new walk has its own card");
-        walkers.Clear();
+        var h = Host.Fresh(); var g = h.Game; g.Vale = ValeAt.Car; foreach (var o in g.Ops) o.InCar = true;
+        LogLine L() => new LogLine { Tick = g.Tick, Code = "rivals.fire-car", Text = "The rivals are shooting the getaway car with Popovic inside: nobody of the cell is out to fight them." };
+        Host.Call(h, "CrucialFromLog", L()); Host.Call(h, "CrucialFromLog", L());
+        Assert.That(h.CrucialQueue.Count(c => c.Kind == "for-car"), Is.EqualTo(1), "one card while the shooting lasts");
+        var c0 = h.CrucialQueue.First(c => c.Kind == "for-car"); Assert.That(c0.Title, Is.EqualTo(BookWordsFile.Get().Card("for-car").Title)); Host.NoTokens("for-car", c0.Title, h.CrucialLine(c0));
+        Assert.That((bool)Host.Call(h, "CrucialTrue", c0), Is.True, "true while Popovic is in and none of us is out");
+        g.Ops[0].InCar = false; Assert.That((bool)Host.Call(h, "CrucialTrue", c0), Is.False, "the Scout out: the rivals shoot at her, not the car");
+        foreach (var o in g.Ops) o.InCar = false; g.Vale = ValeAt.Office;
     }
 }

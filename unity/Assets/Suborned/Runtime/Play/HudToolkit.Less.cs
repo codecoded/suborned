@@ -1055,7 +1055,7 @@ namespace Suborned.Play
         void EndLess()
         {
             if (!m.Ended) return;
-            var g = host.Game; var t = host.Text; string line = t == null ? (m.EndLines.Count > 0 ? m.EndLines[0] : "") : g.Result == Outcome.Success ? (host.ValeOut ? BookWordsFile.Get().EndWinLine : t.EndWin) : g.Result == Outcome.Withdrawn ? t.EndWithdraw : t.EndFail.TryGetValue(g.FailCode, out var f) ? f : (m.EndLines.Count > 0 ? m.EndLines[0] : "");
+            var g = host.Game; var t = host.Text; string line = t == null ? (m.EndLines.Count > 0 ? m.EndLines[0] : "") : g.Result == Outcome.Success ? (host.ValeOut ? host.WinLine() : t.EndWin) : g.Result == Outcome.Withdrawn ? t.EndWithdraw : t.EndFail.TryGetValue(g.FailCode, out var f) ? f : (m.EndLines.Count > 0 ? m.EndLines[0] : "");
             Text(endTitle, line); Show(endLine, endDetailOpen);
             Text(endTally, HandoverHost.MissionClock(g.Tick)); Text(endCash, $"${g.S.Purse - g.Cash:N0}"); Text(endTrail, $"+{g.Trail}");
             var stl = host.StandingLines(); bool hasSt = stl.Count > 0; Show(endStand, hasSt); Show(endStandArrow, hasSt && stl[0].dir != 0);

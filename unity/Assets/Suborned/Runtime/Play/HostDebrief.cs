@@ -95,7 +95,7 @@ namespace Suborned.Play
         (string head, string line) DebriefHead(bool win)
         {
             var g = Game; var dw = DebriefWords.Get(); var bw = BookWordsFile.Get();
-            if (win) return ValeOut ? (bw.EndWinHead, bw.EndWinLine) : (dw.Debrief("headline", "win"), dw.Debrief("result", "win"));
+            if (win) return ValeOut ? (bw.EndWinHead, WinLine()) : (dw.Debrief("headline", "win"), dw.Debrief("result", "win"));
             var cw = EndCauseWords(); string failLine = Text?.Fails.Find(f => f.code == g.FailCode).line ?? "";
             string head = cw.Head ?? (Text != null && Text.EndFail.TryGetValue(g.FailCode ?? "", out var ft) && ft.Length > 0 ? ft.TrimEnd('.') : failLine.Length > 0 ? failLine.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.') : dw.Debrief("headline", g.Result == Outcome.Withdrawn ? "withdraw" : "fail"));
             return (head, cw.Line ?? (failLine.Length > 0 ? failLine : g.FailText));

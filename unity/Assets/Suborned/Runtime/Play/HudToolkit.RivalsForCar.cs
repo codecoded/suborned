@@ -27,7 +27,7 @@ namespace Suborned.Play
 
         void RivalsForCarMarks(bool on)
         {
-            int used = 0; var g = host.Game; var ids = on && g != null && !g.Over ? g.RivalsForCar : null; string shown = "";
+            int used = 0; var g = host.Game; List<string> ids = null; string shown = ""; // engine 0.53.0 (brief 105): nobody walks on a car any more (Game.RivalsForCar is retired); the marks stay off
             if (ids != null)
                 foreach (var id in ids)
                 {

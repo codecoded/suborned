@@ -73,9 +73,23 @@ namespace Suborned.Play
                 else if (s.Row?.I?.Order is Order so && rs.Plan?.T != null && host.Fresh(rs.Plan.T, so)) Sparkle(p, c + Dir(i * w + w * 0.28f) * (ro - 9f), 6f, Cream); // brief 043: the act that just opened
             }
             p.fillColor = new Color(Plate.r, Plate.g, Plate.b, 0.6f); p.BeginPath(); p.Arc(c, ri - 5f, Deg(0), Deg(360)); p.Fill(); // the middle: release here to keep it open
+            if (host.RingCarHealth() is var (left, max, stops) && max > 0) CarHealthBar(p, c, left, max, stops); // brief 105 (Fable, Glyph's rule: no numbers): the car's health, a bar with a mark where it stops
             // brief 101 round 3 (Glyph's ring): the wheel's rim is the book's cream on an ink keyline (the chrome rim retired), a notch outside the wedges
             p.lineCap = LineCap.Butt; p.strokeColor = new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.59f); p.lineWidth = 4.4f; p.BeginPath(); p.Arc(c, ro + 4.6f, Deg(0), Deg(360)); p.Stroke();
             p.strokeColor = StPage; p.lineWidth = 2.2f; p.BeginPath(); p.Arc(c, ro + 4.6f, Deg(0), Deg(360)); p.Stroke();
+        }
+
+        /// <summary>Brief 105: a car's health in the ring's middle, no number (briefs/101-hud-sweep.md): a cream bar on an ink well, what is left filled, a cream
+        /// notch where the car stops (car.target.disabledAt); at or under it the bar is struck through (shot out).</summary>
+        static void CarHealthBar(Painter2D p, Vector2 c, int left, int max, int stops)
+        {
+            const float w = 38f, h = 7f; float x0 = c.x - w / 2f, y0 = c.y - h / 2f;
+            void Box(float x, float y, float bw, float bh, Color col) { p.fillColor = col; p.BeginPath(); p.MoveTo(new Vector2(x, y)); p.LineTo(new Vector2(x + bw, y)); p.LineTo(new Vector2(x + bw, y + bh)); p.LineTo(new Vector2(x, y + bh)); p.ClosePath(); p.Fill(); }
+            Box(x0 - 1.5f, y0 - 1.5f, w + 3f, h + 3f, new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.9f));
+            float f = Mathf.Clamp01(left / (float)max), s = Mathf.Clamp01(stops / (float)max);
+            Box(x0, y0, w * f, h, left > stops ? Cream : new Color(Cream.r, Cream.g, Cream.b, 0.45f));
+            float mx = x0 + w * s; p.strokeColor = left > stops ? InkDeep : Cream; p.lineWidth = 2f; p.lineCap = LineCap.Butt; p.BeginPath(); p.MoveTo(new Vector2(mx, y0 - 3f)); p.LineTo(new Vector2(mx, y0 + h + 3f)); p.Stroke();
+            if (left <= stops) { p.strokeColor = Cream; p.lineWidth = 1.6f; p.BeginPath(); p.MoveTo(new Vector2(x0 - 2f, y0 + h + 2f)); p.LineTo(new Vector2(x0 + w + 2f, y0 - 2f)); p.Stroke(); }
         }
 
         static Vector2 Dir(float deg) { float a = deg * Mathf.Deg2Rad; return new Vector2(Mathf.Sin(a), -Mathf.Cos(a)); } // 0 at 12 o'clock, clockwise, y down

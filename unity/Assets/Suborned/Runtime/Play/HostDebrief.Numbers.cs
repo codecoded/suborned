@@ -116,7 +116,9 @@ namespace Suborned.Play
         /// by the cause's why: the lookout's Mislead, Pay and Take, each with its agent). Faces and words, never a button: the page gives no order.</summary>
         void DebriefNext(BookPage p, DebriefWords dw, bool win)
         {
-            if (win || Game.Cause is not FailCause c) return; string line = NextWords(dw, "line"); if (line.Length == 0) return;
+            if (win || Game.Cause is not FailCause c) return; string line = NextWords(dw, "line");
+            if (Game.Log.Exists(x => x.Code == "car.shot-out")) { var bw = BookWordsFile.Get(); line = (line.Length > 0 ? line + " " : "") + (Game.Lent && Game.LentId != "car:official" ? bw.NextShotOut : bw.NextShotOut + " " + bw.NextTaken); } // brief 105 (engine 0.53.0): our car shot out; a car stood free to take
+            if (line.Length == 0) return;
             p.NextHead = dw.W("next", "head"); p.NextLine = line;
             if (BookWordsFile.Get().FeedCards.TryGetValue(c.Why, out var card))
                 for (int i = 0; i < card.Fixes.Count && i < card.FixBy.Count; i++)

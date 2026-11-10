@@ -20,7 +20,7 @@ namespace Suborned.Play
         public int[] trafficPaintAvoid;
 
         /// <summary>A car target that is a passing car: neither the Handover's own two (the rival car is a target of its own kind) nor the fight range's.</summary>
-        public static bool IsTrafficCar(Target t) => t != null && t.Kind == "car" && t.Key.Length > 0 && t.Key is not ("official" or "getaway") && !t.Key.StartsWith("range-", StringComparison.Ordinal);
+        public static bool IsTrafficCar(Target t) => t != null && t.Kind == "car" && t.Key.Length > 0 && t.Key is not ("official" or "getaway" or "rivals") && !t.Key.StartsWith("range-", StringComparison.Ordinal);
 
         /// <summary>TargetOf: a passing car's view (car/&lt;slot&gt;-&lt;trip&gt;) as a car target while the engine has it on the roads, else null.</summary>
         Target TrafficTarget(string n)

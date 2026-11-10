@@ -35,7 +35,7 @@ namespace Suborned.Play
             "move" when w.How == HandoverHost.StepOutHow => 1, // Sky 2026-11-04: the car's Step out, after Board and Drive, before a withdrawing Go
             "watch" or "listen" => 2,
             "turn" => 3,
-            "loop" or "disable" or "reroute" or "mislead" => 4,
+            "loop" or "disable" or "reroute" or "mislead" or "take-car" => 4, // brief 105: Take car, after a car's Watch
             "carry" or "stash" or "restrain" or "drop" => 5,
             "takedown" => 6,
             "fire" => 7,

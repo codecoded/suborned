@@ -773,7 +773,7 @@ namespace Suborned.Play
                     if (md is "down" or "aboard" or "") return null; // down: his body view takes the click; aboard: off the street
                     return new Target { Kind = md == "fight" ? "hostile" : "rivals", Key = n, Id = n, Label = Text?.HoldersPhrase(n) ?? "a rival" };
                 }
-                if (n == "car/rivals") return new Target { Kind = "rivals", Key = "car:rivals", Id = "car:rivals", Label = Name("rivals") }; // the rival car: Watch, the false tip, Fire
+                if (n == "car/rivals") return RivalCarTarget(); // the rival car: Watch, the false tip, Fire; engine 0.53.0: a cell car once taken (HostTakeCar)
                 if (n.StartsWith("security/")) return new Target { Kind = "security", Key = OfficerOfView(n), Label = Name("security") }; // Fable 067 (the glossary): "the police"; brief 101: each officer by his own id (HostPolice)
                 if (n.StartsWith("hostile/"))
                 {
@@ -1177,7 +1177,7 @@ namespace Suborned.Play
                     pn.Rows.Add(new PanelRow { By = OpId.Enforcer, Slot = 0, I = tk, Verb = tk.Name, Lock = only, Reason = only.why, Available = false, Unlock = "Select the Enforcer." });
                 }
                 if (pn.Rows.Count == 0) pn.Note = WhoCan(t, order);
-                KeyRows(pn); Before(pn);
+                TakeCarRows(pn, order, t); KeyRows(pn); Before(pn); // brief 105: Take car on a car we may take (HostTakeCar)
                 int ti = pn.Rows.FindIndex(r => r.I.Order?.Do == "take" && r.Available); if (ti > 0) { var tr = pn.Rows[ti]; pn.Rows.RemoveAt(ti); pn.Rows.Insert(0, tr); } // Take Vale tops the panel (Sky, route B), above a takedown
             });
             return pn;
@@ -1329,7 +1329,7 @@ namespace Suborned.Play
             {
                 case "loop": case "disable": case "reroute": place = "cabinet"; break;
                 case "enter": place = s.GuardPost; break;
-                case "board": place = g.CurStand.Car; break; // brief 018: board within at-reach of the car; brief 059 K6: at the stand it stands at
+                case "board": if (LentOrder(o.Target)) return CarDoorWalk(by, LentCarId); place = g.CurStand.Car; break; // engine 0.53.0: the second car's door (HostTakeCar); brief 018: board within at-reach of the car; brief 059 K6: at the stand it stands at
                 case "watch": tp = o.Target == "car:rivals" ? g.RivalCarPose()?.pos : PosOf(t); reach = R.WatchReachCm(by); break; // brief 031: within the agent's own reach (Scout 30, Tech 24, Fixer 12, Enforcer 3 m), on a clear line
                 case "listen": tp = PosOf(t); reach = ReachOf("scout.listen"); break;
                 case "turn": tp = PosOf(t); reach = IsCrew(o.Target) ? R.ActReachCm : R.ApproachReachCm; break; // engine 0.41.0: a member's Pay is in act reach
@@ -1340,7 +1340,7 @@ namespace Suborned.Play
                 case "carry": case "restrain": { var b = g.BodyById(o.Target); if (b == null) return null; tp = g.BodyPos(b); reach = R.ActReachCm; break; }
                 case "takedown": { var p = g.PersonById(o.Target); tp = p == null ? (IsCrew(o.Target) ? g.PosOf(o.Target) : null) : g.PosOfPerson(p); reach = R.TakedownReachCm; break; } // engine 0.33.0: a member on foot
                 case "stash": { var st = g.S.Stashes.Find(x => x.Id == o.Target); if (st == null) return null; tp = st.Stand; reach = R.AtReachCm; break; }
-                default: return null; // a call is made from wherever the Fixer stands
+                case "take-car": return CarDoorWalk(by, o.Target); default: return null; // brief 105: to the car's door (HostTakeCar); a call is made from wherever the Fixer stands
             }
             if (place.Length > 0)
             {

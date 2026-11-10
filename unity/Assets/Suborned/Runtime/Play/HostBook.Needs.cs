@@ -30,7 +30,7 @@ namespace Suborned.Play
                     case "turned": v = g.PersonByRole(a) is { Turned: true }; break;
                     case "log": v = codes != null ? codes.Contains(a) : g.Log.Exists(l => l.Code == a); break;
                     case "sight": v = g.Known(a) is { Sight: true }; break;
-                    case "car-guarded": v = g.Vale == ValeAt.Car && (!g.CarHeld() || Array.Exists(g.Ops, CarGuard)); break; // brief 096: the opposite of fight.unguarded's CarUnguarded
+                    case "car-guarded": v = g.Vale == ValeAt.Car && (!g.CarHeld() || Array.Exists(g.Ops, CarGuard)); break; // brief 096; engine 0.53.0: anyone of ours outside the car, drawn or not
                     case "left-safe": v = g.LeftBehind().TrueForAll(x => x.fate == "walked"); break; // brief 096 (GDD §06 left behind): nobody a Go now leaves would be captured
                     default: return null;
                 }
@@ -39,9 +39,9 @@ namespace Suborned.Play
             return any;
         }
 
-        /// <summary>Brief 096: the engine's guard of a held car (Game.Guards, sim/Suborned.Sim/GameUnguarded.cs, engine 0.35.2), read here as it reads:
-        /// up, on the street outside the car, gun drawn or drawing, not holstering. An undrawn agent standing by guards nothing.</summary>
-        static bool CarGuard(Op o) => !o.Down && !o.InCar && !o.Inside && o.Gun.Drawn && o.Gun.HolsterAt < 0;
+        /// <summary>Engine 0.53.0 (brief 105, fight.unguarded a; GameUnguarded.Outside): one of ours out on the street, up, not in a car, drawn or not: with one
+        /// of us outside the rivals shoot at people, never the car (0.35.2's "drawn only" is retired).</summary>
+        static bool CarGuard(Op o) => !o.Down && !o.InCar && !o.Inside && !o.LeftMap;
 
         /// <summary>The words with their times, from the mission's own clock (the site's seconds).</summary>
         string BookTimes(string w)

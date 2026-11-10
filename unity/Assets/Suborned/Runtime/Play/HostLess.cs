@@ -179,6 +179,8 @@ namespace Suborned.Play
             "drive-held" => "icons/singles/lock", "drive-fight" => "icons/singles/car#struck", "drive-busy" or "stand-shut" => "icons/singles/p_time",
             "drive-no-driver" or "drive-here" or "driver-brings-vale" => "icons/singles/car", "unknown-stand" => "badges/mark_no", "car-not-parked" => "icons/singles/p_time", // brief 059 K3: the Take round the back
             "car-no-driver" => "icons/singles/car", // engine 0.34.0 (M067-K3 c): Go with only the downed aboard
+            "draw-first" => "icons/singles/fire", "car-wheelman" => "portraits/cameo_enforcer_normal", // engine 0.53.0 (brief 105, car.take): Take car's fixes
+            "car-disabled" or "car-full" or "car-taken" or "car-ours" or "car-moving" or "car-driver" or "car-crewed" or "car-unknown" => "icons/singles/car",
             "hints-on" or "hints-off" => "icons/singles/p_unknown",
             _ => "badges/mark_no",
         };
@@ -199,7 +201,7 @@ namespace Suborned.Play
 
         /// <summary>The host's own short for an engine refusal Fable's text does not word yet (a pop is never the engine's sentence); null for the rest.
         /// Engine 0.34.0: car-no-driver (Go with only the downed aboard: Motive M067-K3 c).</summary>
-        static string HostShort(string code) => code switch { "car-no-driver" => "No driver aboard", _ => null };
+        static string HostShort(string code) => code switch { "car-no-driver" => "No driver aboard", "draw-first" => "Draw first", "car-wheelman" => "Enforcer only", "car-disabled" => "Shot out", _ => null };
 
         /// <summary>A port of text.schema.ts `lockVariant` (engine 0.33.0, Fable): car-held with the rival car among its holders (Answer.ids) is
         /// worded by `rival-car` when the engine sends its first rider's step-out tick, `rival-car-driving` when it sends none (-1: the car still

@@ -473,7 +473,7 @@ namespace Suborned.Play
         {
             "turn" => approach is "ask" or "pay" or "help" or "pressure" ? approach : "ask",
             "watch" or "listen" or "mislead" or "loop" or "disable" or "reroute" or "enter" or "take" or "fire" or "call" or "ask" or "pay" or "help" or "pressure" => verb,
-            "act" => "enter", "board" or "go" or "drive-car" or "ride" => "car", /* brief 059 K6: Drive, and riding in the car */ "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" or "cease" => "fire", /* Fable 067 H21: the cease tip wears the fire glyph */
+            "act" => "enter", "board" or "go" or "drive-car" or "ride" or "take-car" => "car", /* brief 059 K6: Drive, and riding in the car */ "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" or "cease" => "fire", /* Fable 067 H21: the cease tip wears the fire glyph */
             "takedown" or "drop" or "stash" or "restrain" => verb, // Glyph's 013 glyphs
             "turn-view" => "turn_view", // brief 016's turn hint (H13): Glyph's turn glyph (briefs/014/glyph/glyphs/turn_view)
             _ => phase == "holding" ? "s_looping" : "s_ready",

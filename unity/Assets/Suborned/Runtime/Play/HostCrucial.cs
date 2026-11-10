@@ -30,12 +30,12 @@ namespace Suborned.Play
         public readonly List<CrucialCard> CrucialQueue = new(), CrucialLog = new();
         public CrucialCard CrucialNow => CrucialQueue.Count > 0 ? CrucialQueue[0] : null;
 
-        int crucialLogAt, crucialLedgerAt, crucialAlert, crucialSeenAt = -1000; readonly bool[] crucialDown = new bool[4]; bool crucialForCar, crucialLookout;
+        int crucialLogAt, crucialLedgerAt, crucialAlert, crucialSeenAt = -1000; readonly bool[] crucialDown = new bool[4]; bool crucialLookout;
 
         void ResetCrucial()
         {
             if (BookOpen) BookShut(true); // a new run shuts the book (Begin resets the feed); the start opens it again on Job
-            CrucialQueue.Clear(); CrucialLog.Clear(); Array.Clear(crucialDown, 0, 4); crucialForCar = crucialLookout = false; crucialSeenAt = -1000;
+            CrucialQueue.Clear(); CrucialLog.Clear(); Array.Clear(crucialDown, 0, 4); crucialLookout = false; crucialSeenAt = -1000;
             crucialLogAt = Game?.Log.Count ?? 0; crucialLedgerAt = Game?.Ledger.Count ?? 0; crucialAlert = Game?.Alert ?? 0;
             if (Game != null) for (int k = 0; k < 4; k++) crucialDown[k] = Game.Ops[k].Down;
             journalSeen = 0; JournalOpenId = -1; JournalFrom = 0; JournalFilter = "all";
@@ -75,9 +75,7 @@ namespace Suborned.Play
                 bool down = g.Ops[k].Down; if (down && !crucialDown[k]) { string r = Op.Name((OpId)k); var c = Crucial("down", r + ".down", agent: k); c.Face = $"portraits/cameo_{r}_hurt"; c.View = "op/" + r; c.Place = frame.World(g.Ops[k].Pos); }
                 crucialDown[k] = down;
             }
-            bool forCar = g.RivalsForCar.Count > 0;
-            if (forCar && !crucialForCar) { var c = Crucial("for-car", "rivals.for-car"); c.Icon = "car"; c.View = "car/getaway"; }
-            crucialForCar = forCar;
+            TakenNameTrack(); // brief 105: the taken car's name (HostTakeCar)
             bool lk = LookoutWatching(); if (lk && !crucialLookout && CrucialLog.Exists(x => x.Kind == "lookout") && !CrucialQueue.Exists(x => x.Kind == "lookout")) LookoutCard("rivals.misled-back"); // back at his post (misled, or awake): the card again
             crucialLookout = lk;
             // a card that stops being true leaves by itself (Sky's call 4); it stays in the Journal
@@ -86,7 +84,7 @@ namespace Suborned.Play
 
         bool CrucialTrue(CrucialCard c) => c.Kind switch
         {
-            "for-car" => Game.RivalsForCar.Count > 0,
+            "for-car" => CarUnderFire(), // engine 0.53.0 (brief 105): while the rivals shoot the car Popovic is in and none of us is out
             "down" => c.Agent >= 0 && Game.Ops[c.Agent].Down,
             "hurt" => !Game.Ops[(int)OpId.Enforcer].Down,
             "hurt-carry" => !Game.Ops[(int)OpId.Enforcer].Down && Game.Vale == ValeAt.WithEnforcer,
@@ -101,6 +99,7 @@ namespace Suborned.Play
             // Sky 2026-11-05 ("sure"): the seal is never a feed card; its plate under the clock (brief 093) carries the countdown, in the Journal like every event
             if (code is "security.called" or "fight.loud" || code.StartsWith("alarm.dispatches", StringComparison.Ordinal))
             { Suborned.Fx097.PoliceCalled(); if (!CrucialQueue.Exists(x => x.Kind == "police")) { var c = Crucial("police", code); c.Face = "badges/signal_police"; c.View = "security/0"; TakeWhy(c, WhyNow("police")); } } // brief 097: the police posts' domes pulse; brief 100: its cause
+            else if (code == "rivals.fire-car") { if (!CrucialQueue.Exists(x => x.Kind == "for-car")) { var c = Crucial("for-car", code); c.Icon = "car"; c.View = ViewKeyOfCar(ValeCarId()); } } // engine 0.53.0 (brief 105): the rivals shoot our car with Popovic inside (book.feed.cards.for-car)
             else if (code == "vale.out") { var c = Crucial("vale-out", code); c.Icon = "car"; c.View = "car/getaway"; } // brief 096 (car.lend L5): Popovic is out; the rest to our car before the police
             else if (code == "lend.lent") { var c = Crucial("lent", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "car/official"; } // L1: Popovic's car is ours, the Enforcer at its wheel
             else if (code == "rivals.lookout-posted") LookoutCard(code); // engine 0.41.0: deal with him, or he reaches Popovic's car
@@ -147,7 +146,7 @@ namespace Suborned.Play
         {
             if (line.Length > 0)
             {
-                line = line.Replace("{n}", (c.Kind == "for-car" ? Math.Max(1, Game.RivalsForCar.Count) : c.Kind is "hurt" or "hurt-carry" ? Game.Ops[(int)OpId.Enforcer].Gun.Health : c.Value).ToString()).Replace("{vale}", ValeWord)
+                line = line.Replace("{n}", (c.Kind == "for-car" ? (RingHealthOf(ValeCarId())?.left ?? 0) : c.Kind is "hurt" or "hurt-carry" ? Game.Ops[(int)OpId.Enforcer].Gun.Health : c.Value).ToString()).Replace("{vale}", ValeWord)
                     .Replace("{seal}", Game.Lockdown < int.MaxValue / 8 ? MissionClock(Game.Lockdown) : "?").Replace("{by}", "")
                     .Replace("{s}", RespSoonestS >= 0 ? $"{RespSoonestS} s" : "?").Replace("{police}", Game.SplitPoliceAt < LendInf ? MissionClock(Game.SplitPoliceAt) : "?");
                 line = line.Trim();

@@ -62,13 +62,14 @@ namespace Suborned.Play
             if (op.Down) return No("agent-down", "down");
             if (op.Inside) return No("enforcer-inside", "inside the Office");
             if (op.InCar) return No("in-car", "already in the car");
+            if (g.CarDisabled("car:getaway")) return No("car-disabled", "our car is shot out"); // engine 0.53.0 (brief 105): a shot-out car seats nobody
             return new Answer { ok = true, code = "", why = "" };
         }
 
         /// <summary>Where a cell order given with no click shows its refusal: over the car a Go is on (ours, or Popovic's when lent), else nowhere (the HUD's own place).</summary>
         Vector3? CellOrderWorld(Order o) => o.Do != "go" || Game == null ? null : LentOrder(o.Target) ? LentWorld : GetawayWorld;
         /// <summary>The engine's own answer to Go now (car-held names the holders in `ids`; car-empty).</summary>
-        public Answer GoLock() { Answer a = new Answer { ok = true, code = "", why = "" }; Guard("go query", () => a = Game.GoQuery()); a.code ??= ""; a.why ??= ""; return a; }
+        public Answer GoLock() { Answer a = new Answer { ok = true, code = "", why = "" }; Guard("go query", () => a = Game.CarDisabled("car:getaway") && !Game.Range ? new Answer { ok = false, code = "car-disabled", why = "our car is shot out", m = -1, cm = -1, usd = -1, tick = -1 } : Game.GoQuery()); /* engine 0.53.0: Go on a shot-out car is refused car-disabled (GameGetaway.Go) */ a.code ??= ""; a.why ??= ""; return a; }
 
         /// <summary>Who a Go now would leave, with fate and why (the engine's LeftBehind: read-only).</summary>
         public List<(string op, string fate, string why)> LeftBehindNow()

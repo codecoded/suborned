@@ -15,10 +15,9 @@ namespace Suborned.Play
         const int LendInf = int.MaxValue / 8;
         /// <summary>Popovic's car is ours and still standing (lent, not gone).</summary>
         public bool LentCarOurs => Game != null && !Game.Range && Game.Lent && !Game.LentGone;
-        bool IsLentCar(Target t) => t != null && t.Kind == "car" && t.Key == "official" && LentCarOurs;
+        bool IsLentCar(Target t) => t != null && LentCarOurs && CarIdOf(t) == LentCarId; // engine 0.53.0 (car.take): Popovic's car lent, or any car taken (HostTakeCar)
         /// <summary>Either cell car: ours, or Popovic's once lent.</summary>
         bool IsCellCar(Target t) => IsGetaway(t) || IsLentCar(t);
-        static bool LentOrder(string target) => target is "car:official" or "official";
         /// <summary>Popovic is out (vale.out): the win is fixed, the mission runs on until the police close in.</summary>
         public bool ValeOut => Game != null && Game.ValeOutTick < LendInf;
         /// <summary>The police countdown is on (after vale.out, the run not over).</summary>
@@ -28,7 +27,7 @@ namespace Suborned.Play
         /// <summary>The roster's left-behind flags: while a Go card is open, and all the time once the police countdown runs.</summary>
         public bool LeftFlagsOn => GoCardOpen || PoliceOn;
         /// <summary>Where Popovic's car is drawn now.</summary>
-        public Vector3 LentWorld => Game == null ? Vector3.zero : frame.World(Game.CarPos());
+        public Vector3 LentWorld => Game == null ? Vector3.zero : frame.World(LentPt);
 
         /// <summary>The cars' names: ours stays names.targets.car-getaway; Popovic's is labelled as ours from the lend (book.cars.lentName).</summary>
         string OfficialCarName() => LentCarOurs ? BookWordsFile.Get().LentName : Text?.TargetName("car-official", $"{ValeWord}'s car") ?? $"{ValeWord}'s car";
@@ -40,7 +39,7 @@ namespace Suborned.Play
         Intent LentBoardIntent(OpId k)
         {
             var g = Game; var op = g.Ops[(int)k]; int secs = g.R.BoardS + (op.Carrying.HasValue ? g.R.CarryS : 0);
-            var i = new Intent { Slot = -1, Label = "Board", Order = new Order { Op = Op.Name(k), Do = "board", Target = "car:official" } };
+            var i = new Intent { Slot = -1, Label = "Board", Order = new Order { Op = Op.Name(k), Do = "board", Target = LentCarId } };
             i.Time = $"{secs} s"; i.Usd = "$0"; i.Trail = "T 0"; i.Alert = "A 0"; i.Outcome = op.Carrying.HasValue ? "with the " + Op.Name(op.Carrying.Value) : "";
             return i;
         }
@@ -51,8 +50,9 @@ namespace Suborned.Play
             Answer No(string code, string why, string ids = "") => new Answer { ok = false, code = code, why = why, m = -1, cm = -1, usd = -1, tick = -1, ids = ids };
             if (!LentCarOurs) return No("car-left", "that car has already gone");
             var b = BoardLock(k); if (!b.ok) return b;
-            bool dis = false; Guard("car disabled", () => dis = g.CarDisabled("car:official")); if (dis) return No("car-disabled", $"{ValeWord}'s car is disabled");
-            int w = LentDriver(); if (w >= 0) return No("board-lent-full", $"the {Op.Name((OpId)w)} is at the wheel", Op.Name((OpId)w));
+            bool dis = false; Guard("car disabled", () => dis = g.CarDisabled(LentCarId)); if (dis) return No("car-disabled", $"{LentCarName()} is disabled");
+            int w = LentDriver(); if (LentCarId == "car:official" && w >= 0) return No("board-lent-full", $"the {Op.Name((OpId)w)} is at the wheel", Op.Name((OpId)w));
+            if (LentCarId != "car:official" && LentSeatsFull(k)) return No("car-full", "no room"); // engine 0.53.0 (car.take): a taken car seats its kind's seats
             return new Answer { ok = true, code = "", why = "" };
         }
         /// <summary>The lent car's Go: the engine's own answer (boxed, held, no driver, disabled, already left).</summary>
@@ -64,8 +64,8 @@ namespace Suborned.Play
         }
         Intent LentGoIntent(OpId by)
         {
-            var i = new Intent { Slot = -1, Label = BookWordsFile.Get().GoLent, Order = new Order { Op = Op.Name(by), Do = "go", Target = "car:official" } };
-            i.Time = "now"; i.Usd = "$0"; i.Alert = "A 0"; i.Outcome = "win";
+            var i = new Intent { Slot = -1, Label = BookWordsFile.Get().GoLent, Order = new Order { Op = Op.Name(by), Do = "go", Target = LentCarId } };
+            i.Time = "now"; i.Usd = "$0"; i.Alert = "A 0"; i.Outcome = Game.Vale == ValeAt.Lent ? "win" : "clear";
             bool seen = LentWatcherNow().Length > 0; i.Trail = seen ? $"T +{Game.R.WitnessTrail}" : "T 0"; // engine 0.43.0: who would see it leave (lent.seen), the Go card's "+1 T if seen"
             if (seen) i.Label += " · " + (Text?.GoSeen ?? "+{trail} T if seen").Replace("{trail}", Game.R.WitnessTrail.ToString());
             return i;
@@ -98,12 +98,12 @@ namespace Suborned.Play
             {
                 if (g.Ops[k].InCar) continue;
                 var v = LentBoardIntent((OpId)k); var aw = ActPlace((OpId)k, v.Order, t);
-                if (aw != null) { v.Walk = $"walks {aw.Cm / 100} m ({aw.Seconds} s) to {OfficialCarName()}, then"; v.WalkS = aw.Seconds; }
+                if (aw != null) { v.Walk = $"walks {aw.Cm / 100} m ({aw.Seconds} s) to {LentCarName()}, then"; v.WalkS = aw.Seconds; }
                 Words(v, t); var lk = LentBoardLock((OpId)k);
                 pn.Rows.Add(new PanelRow { By = (OpId)k, Slot = -1, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : ShortOf(v.Order, lk) ?? lk.why });
             }
             int w = LentDriver(); var by = w >= 0 ? (OpId)w : order.Count > 0 ? (OpId)order[0] : Agent;
-            var gv = LentGoIntent(by); Words(gv, t); GoWaitWords(gv, "car:official"); gv.Name = gv.Label; var gl = LentGoLock(); // G1: the climber counted in (HostGoWaits)
+            var gv = LentGoIntent(by); Words(gv, t); GoWaitWords(gv, LentCarId); gv.Name = gv.Label; var gl = LentGoLock(); // G1: the climber counted in (HostGoWaits)
             var goRow = new PanelRow { By = by, Slot = -1, I = gv, Verb = gv.Name, Lock = gl, Reason = gl.ok ? "" : ShortOf(gv.Order, gl) ?? gl.why };
             if (gl.ok) pn.Rows.Insert(0, goRow); else pn.Rows.Add(goRow);
             StepOutRows(pn, true);
@@ -116,7 +116,7 @@ namespace Suborned.Play
         void StepOutRows(ActionPanel pn, bool lent)
         {
             var g = Game; if (g == null || g.Range || g.Over) return;
-            var seat = lent ? g.CarPos() : g.GetawaySeat; var at = g.Walk.NearestFree(seat) ?? seat;
+            var seat = lent ? LentPt : g.GetawaySeat; var at = g.Walk.NearestFree(seat) ?? seat;
             string word = Text != null && Text.Actions.TryGetValue(StepOutHow, out var sa) && sa.Label.Length > 0 ? sa.Label : "Get out"; string does = Text != null && Text.Actions.TryGetValue(StepOutHow, out var sd) ? sd.Does ?? "" : ""; // Sky 2026-11-10: "Get out" (Move read as drive the car)
             for (int k = 0; k < 4; k++)
             {
@@ -131,7 +131,7 @@ namespace Suborned.Play
         /// <summary>The lent car's Go given: refused, it says why and pulses the holders; else at once (the others stay on: the mission runs on).</summary>
         void LentGoGive(OpId by, Vector2? screen)
         {
-            var o = new Order { Op = Op.Name(LentDriver() >= 0 ? (OpId)LentDriver() : by), Do = "go", Target = "car:official" }; var lk = LentGoLock(); var at = LentWorld;
+            var o = new Order { Op = Op.Name(LentDriver() >= 0 ? (OpId)LentDriver() : by), Do = "go", Target = LentCarId }; var lk = LentGoLock(); var at = LentWorld;
             if (!lk.ok) { Pop(ShortOf(o, lk) ?? lk.why, screen, screen.HasValue ? null : at, Feedback.Refused, 2f, PopIcon(lk.code ?? ""), LockLine(o, lk) ?? lk.why); if (lk.code is "car-held" or "car-boxed") HolderPulseAt = Time.unscaledTime; PulseBoxers(lk); return; } // brief 098 step 1b: a passing car boxing it in pulses
             Issue(o, screen, at);
         }

@@ -66,7 +66,7 @@ namespace Suborned.Play
             }
             if (trafficCars.Count == trafficSeen.Count) return;
             trafficGone.Clear(); foreach (var id in trafficCars.Keys) if (!trafficSeen.Contains(id)) trafficGone.Add(id);
-            foreach (var id in trafficGone) { TrafficRelease(trafficCars[id]); trafficCars.Remove(id); }
+            foreach (var id in trafficGone) { if (TakenLeaving("car/" + id.Substring(4))) continue; TrafficRelease(trafficCars[id]); trafficCars.Remove(id); } // engine 0.53.0 (car.take): a taken car drives off in the view first (HostViews.LeavingLent)
         }
 
         /// <summary>Per frame (HostViews.Frame): the heading eased between the ticks, as the position is; the scooter's hover bob.</summary>

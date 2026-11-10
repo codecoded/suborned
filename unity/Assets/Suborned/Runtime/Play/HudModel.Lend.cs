@@ -14,7 +14,8 @@ namespace Suborned.Play
             if (d.Next.CarSeenBy == "left") EndLines.Add(bw.CarLost.Replace("{trail}", trail));
             else if (d.Next.CarSeenBy.Length > 0 && t.DebriefBetween.TryGetValue("car-seen", out var cs))
                 EndLines.Add(cs.Replace("{by}", W(t.GetawayBy, PlayText.RoleOfId(d.Next.CarSeenBy))).Replace("{trail}", trail));
-            foreach (var l in d.Next.Lines) if (l.Line == "lent-seen") { var ln = bw.LentSeen.Replace("{by}", W(t.GetawayBy, PlayText.RoleOfId(l.Who))).Replace("{trail}", trail); EndLines.Add(ln.Length > 0 ? char.ToUpperInvariant(ln[0]) + ln.Substring(1) : ln); }
+            if (h.Game.Log.Exists(x => x.Code == "car.shot-out")) EndLines.Add(bw.ShotOut); // brief 105 (engine 0.53.0): our car shot out, the fight went on
+            foreach (var l in d.Next.Lines) if (l.Line == "lent-seen") { var ln = (h.LentCarId == "car:official" ? bw.LentSeen : bw.TakenSeen.Replace("{car}", h.TakenCarWord())).Replace("{by}", W(t.GetawayBy, PlayText.RoleOfId(l.Who))).Replace("{trail}", trail); EndLines.Add(ln.Length > 0 ? char.ToUpperInvariant(ln[0]) + ln.Substring(1) : ln); }
         }
     }
 }

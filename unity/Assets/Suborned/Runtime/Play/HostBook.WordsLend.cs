@@ -9,6 +9,8 @@ namespace Suborned.Play
     public sealed partial class BookWordsFile
     {
         public string GoLent = "Go · drive him off", GoClear = "Gets the rest clear", EndWinHead = "Popovic is out", EndWinLine = "We drove Popovic off in his own car.", LentName = "Popovic's car, now ours";
+        public string TakenName = "the {car}, now ours", TakenWinLine = "We drove Popovic off in the {car}.", TakenSeen = "{by} saw the {car} leave: a lead, but not to our car. Trail +{trail}."; // brief 105 (car.take)
+        public string ShotOut = "The rivals shot our car out. Everyone got out with Popovic and fought on.", NextShotOut = "With none of us outside, the rivals shoot at the car Popovic is in.", NextTaken = "Any standing car with nobody driving it can still get Popovic out.";
         public string GoOnce = "waits for {list} to get in", GoWaiting = "Go · waiting for {list}", GoWaitsRoster = "then the car goes"; // engine 0.43.0 (G1): HostGoWaits
         public string CarLost = "We left our car behind, and the police will trace it. Trail +{trail}.", LentSeen = "{by} saw Popovic's car leave: a lead, but not to our car. Trail +{trail}.";
         public string PoliceHead = "Police close in {time}", PoliceWhy = "Popovic is out. The rest get clear in our car.", PoliceLeft = "Still here: {list}", PoliceClear = "Everyone is clear", PoliceEnd = "End now";
@@ -18,7 +20,7 @@ namespace Suborned.Play
         void ReadLend(JNode b)
         {
             static string S(JNode n, string k, string or) => n?.Opt(k) is JNode v && v.Kind == JKind.Str && v.Str().Length > 0 ? v.Str() : or;
-            if (b.Opt("cars") is JNode c) { GoLent = S(c, "goLent", GoLent); GoClear = S(c, "goClear", GoClear); EndWinHead = S(c, "endWinHead", EndWinHead); EndWinLine = S(c, "endWinLine", EndWinLine); LentName = S(c, "lentName", LentName); CarLost = S(c, "carLost", CarLost); LentSeen = S(c, "lentSeen", LentSeen); GoOnce = S(c, "goOnce", GoOnce); GoWaiting = S(c, "goWaiting", GoWaiting); GoWaitsRoster = S(c, "goWaitsRoster", GoWaitsRoster); }
+            if (b.Opt("cars") is JNode c) { GoLent = S(c, "goLent", GoLent); GoClear = S(c, "goClear", GoClear); EndWinHead = S(c, "endWinHead", EndWinHead); EndWinLine = S(c, "endWinLine", EndWinLine); LentName = S(c, "lentName", LentName); CarLost = S(c, "carLost", CarLost); LentSeen = S(c, "lentSeen", LentSeen); GoOnce = S(c, "goOnce", GoOnce); GoWaiting = S(c, "goWaiting", GoWaiting); GoWaitsRoster = S(c, "goWaitsRoster", GoWaitsRoster); TakenName = S(c, "takenName", TakenName); TakenWinLine = S(c, "takenWinLine", TakenWinLine); TakenSeen = S(c, "takenSeen", TakenSeen); ShotOut = S(c, "shotOut", ShotOut); NextShotOut = S(c, "nextShotOut", NextShotOut); NextTaken = S(c, "nextTaken", NextTaken); }
             if (b.Opt("police") is JNode p) { PoliceHead = S(p, "head", PoliceHead); PoliceWhy = S(p, "why", PoliceWhy); PoliceLeft = S(p, "left", PoliceLeft); PoliceClear = S(p, "clear", PoliceClear); PoliceEnd = S(p, "end", PoliceEnd); }
             if (b.Opt("tape") is JNode t) { TapeSeen = S(t, "seen", TapeSeen); TapeMaybe = S(t, "maybe", TapeMaybe); TapeLoopEnds = S(t, "loopEnds", TapeLoopEnds); }
             if (b.Opt("parked") is JNode k) { ParkedSeen = S(k, "seen", ParkedSeen); ParkedMaybe = S(k, "maybe", ParkedMaybe); ParkedBack = S(k, "back", ParkedBack); }
