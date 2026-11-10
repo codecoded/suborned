@@ -229,3 +229,17 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
   - **Well:** gunmetal, with a chrome lip, two ribs and two amber lamps.
   - **Rail:** nickel.
 - **Size and budget:** 8,608 triangles and 1.271 m tall. The old patrol robot builds identically.
+
+**Sky: "can you show me a demo video of it first before putting in game".**
+- Vela animated it in Blender: `briefs/104/vela/patrolbot/demo/patrolbot-demo.mp4`, git-ignored, with a contact sheet `demo/frames.png`.
+  - The clip runs 40 s: the 20 s routine on a close follow camera, then the same routine on the play camera at 1:1 (the robot is 54 px tall).
+  - The routine: patrol, stop, look around, alarm, draw and three shots, hit, stand down.
+  - Rendering took 297 s (EEVEE, 16 samples), through `bun run guard`.
+- What it showed:
+  - All eleven pivots work.
+  - The ball rolls with 0 mm of slide.
+  - The body leans at most 7° and clears the ball.
+- Open look questions for Sky:
+  - The open hatch hides most of the sidearm from the close camera. A longer slide (0.14 m) or a wider hatch (165°) would show it.
+  - At play size the draw reads through the flash, the recoil and the beacon, not the hatch.
+  - The beacon's red drifts to salmon in Blender, so Glint judges it in Unity.

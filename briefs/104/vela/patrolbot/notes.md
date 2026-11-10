@@ -89,3 +89,29 @@ The six faces are drawn from the details sheet as a 34 × 18 amber dot grid: cal
 - **`export_kit.baked`:** carries an object's world matrix when it isn't identity. Every existing piece is at identity, so its FBX bytes are unchanged.
 - **`kit.FAMILIES`:** + `patrolbot104`.
 - **Caveat:** `kit.asset(floor=...)` edits vertices in local space, so don't combine it with pivoted parts. This piece doesn't use it.
+
+## Demo clip (Sky, 2026-11-10: "a demo video of it first before putting in game")
+- **Clip:** `demo/patrolbot-demo.mp4`, 1920 × 1080, H.264, 30 fps, 40 s. It is the same 20 s timeline twice: first the close camera that follows the robot, then the play camera. The play camera is orthographic, 38° down, yaw 30, at 54 px/m on 1080 (zoom 10), easing after the robot, with the 1.8 m figure standing nearby. The play pass is shown at 1:1 (the robot is 54 px tall, median), with a ×3 inset in the corner that is labelled as not game size. **Contact sheet:** `demo/frames.png`, one frame per beat plus a 1:1 play-camera crop.
+- **Scripts (in `make/`):**
+  - `demo_motion.py`: the timeline, pure Python. `python3 -I demo_motion.py` prints the beats and the slide check.
+  - `demo.py`: the Blender render, from the exported FBX, in EEVEE.
+  - `demo_compose.py`: labels, the inset, the mp4 and the sheet.
+- **To redo:** `python3 -I make/faces.py DIR`, then `bun run guard Blender -b -P make/demo.py -- --out R --faces DIR`, then `python3 -I make/demo_compose.py R demo`.
+- **Render time:** 297 s for 1,200 frames (2 passes × 600), EEVEE at 16 samples, 1080p, about 0.25 s a frame on the Studio. Composing and encoding took another 50 s.
+- **How it is driven:** this is the game's way, with every part moved about its exported pivot.
+  - The ball turns to the travel heading and rolls about its own axle by distance / 0.20 m. The check gives 0.000 mm of slide per frame.
+  - The body's lean is a damped spring toward speed and acceleration: into travel, back when it brakes, and into the turn. It peaks at 7°, and the spring gives the settle wobble when it stops. It pivots at the top of the ball (the Body pivot). The shots and the hit kick it.
+  - The arms sway about the shoulder, and each forearm is carried by its arm. The panel turns -150° about its hinge, and the gadget slides 0.11 m with a 1.8 cm recoil. The BeaconLamp spins.
+  - The faces are mapped onto `faces.py`'s textures: focused = cross, hurt = dazed.
+- **Render-only stand-ins for what the game drives:**
+  - The beacon: since the opaque dome hides the spinning mirror, the dome's emission is a lobe swept round it at 1.6 rev/s, with a red spot light turning with it and a weak light inside.
+  - Muzzle flashes: an emissive card and a light, 2 frames each.
+  - The hit: a spark on the right shoulder.
+  - Bloom: a compositor glare, standing in for Unity's bloom.
+
+**What the animation showed about the model.** Nothing is broken and the model is unchanged.
+- **Pivots:** all eleven are right as exported. The panel swings on its barrels with no gap or pop at the hinge, and the gadget runs straight out of the well on its rail.
+- **Lean:** the Body's egg tip sits 1 mm above the ball. Measured over the mesh, leaning up to 10° either way about the Body pivot (or about the ball's centre) keeps that 1 mm, so it never cuts into the ball. The lean pivot works as built.
+- **Hatch versus sidearm:** at 150° the open panel lies like a tray just above the muzzle. From the close three-quarter camera it hides most of the sidearm, and the flash comes out right under its lip. The sidearm's 0.11 m travel only just clears the panel's edge. If Sky wants the fire line clear, the options are a longer slide (about 0.14 m) or the panel at about 165°. I didn't change either: that's a look call.
+- **At play size:** the beacon's sweep reads as a red flicker on a ~8 px dome. The face expressions read as a change of shape, not detail. The open hatch and the sidearm are hard to see from 38° when the robot faces the camera. In play, the draw will mostly read through the flash, the recoil and the beacon, not the hatch.
+- **Beacon colour:** under AgX the peak of the sweep drifts to pink-salmon. This is the same thing round 2 saw on the lit dome. Glint should judge the lit red with Unity's bloom.
