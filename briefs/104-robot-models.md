@@ -118,3 +118,17 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
     6. a tall cabinet on treads with a side gun.
   - The faces are display slits whose glyphs change.
   - The finish is slightly worn painted enamel.
+
+**Sky: "hmm robots still not appealing to me".**
+- **Pass 8:** a wide exploration with as little guidance as possible: nine directions, made as different as possible, with only the world, "patrols, watches, armed" and "appealing, charming, memorable".
+- `P8-explore` (3 × 3):
+  1. a mint pebble on casters;
+  2. a stilt-legged heron;
+  3. a red four-legged hound;
+  4. a hovering ring with an eye;
+  5. a yellow tank on treads;
+  6. a ball on a pole with a fan crest;
+  7. a blue umbrella on four legs with a periscope;
+  8. a chrome finned unicycle;
+  9. a lilac cabinet with a fan crest.
+- The faces are lenses, not displays.
