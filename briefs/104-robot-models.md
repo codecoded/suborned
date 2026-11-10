@@ -132,3 +132,21 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
   8. a chrome finned unicycle;
   9. a lilac cabinet with a fan crest.
 - The faces are lenses, not displays.
+
+**Sky: "more cute".**
+- **Pass 9**, `P9-explore-cute`: the pass 8 prompt made cute. The result was nine chubby robots with painted cartoon faces and toy ray-gun pistols.
+
+**Sky: "minimal weaponry, nothing more than pistol … and yes, needs an LED face".**
+- **The rulebook already agrees.** A robot is a patrol unit with a pistol:
+  - `GameResponse.cs:175` gives response robots `PistolW`, and `Game.cs:129` does the same for the patrol;
+  - pistol: 1 damage, a shot every 1.5 s, effective to 15 m, maximum 16 m;
+  - robot aim: 45 % (`aim-robot`, below a guard's 50 %);
+  - robot health: 4 (`health-patrol`).
+- **Pass 10**, `P10-cute-led`: the same cute brief, plus:
+  - an LED face: a dark glass screen with glowing dot eyes and a dot mouth, with no painted face;
+  - one small pistol in a hip holster, and nothing built in.
+- The result: nine round pastel robots, each with a holstered pistol.
+  - Row 1: a pear, a four-legged yellow pod, a tall pink figure in big boots.
+  - Row 2: a blue bubble car, a mint robot balancing on a ball, a coral six-legged pod with its head on a spring.
+  - Row 3: a red head-on-spring robot on treads, a mint saucer, a lilac robot on casters.
+- Aster's note: the LED expression can change with Alert (a calm smile, then a flat line), driven by the shader so the robots stay instanced.
