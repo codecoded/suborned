@@ -243,3 +243,10 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
   - The open hatch hides most of the sidearm from the close camera. A longer slide (0.14 m) or a wider hatch (165°) would show it.
   - At play size the draw reads through the flash, the recoil and the beacon, not the hatch.
   - The beacon's red drifts to salmon in Blender, so Glint judges it in Unity.
+
+**Sound, Chime's paid pass:**
+- **Cost:** $0.54 of $3, 48 calls: Seed Audio 1.0 and Mirelo. Report: `briefs/104/chime/robot-sfx.html`.
+- **The shot.** Sky: "the gun shot doesn't really match, I think robot_shot might be a bit better. Paid one has a reload sound, too long".
+  - The shot is **the synth `robot_shot`** (round 1).
+  - Aster cut the paid crack without its slide clacks, `paid/shot_slide_t1_crack.wav` (0.6 s), in case it's wanted as an alternative.
+- **The siren** is still for Sky to pick. Chime's pick is `siren_yelp_t3`.
