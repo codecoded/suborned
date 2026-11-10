@@ -64,6 +64,9 @@ static class Adaptive
         // engine 0.42.0 (car.lend): the lend's cards, the countdown, the security that sees a car go, the break
         ["lend.lent"] = "the lend's card; Popovic's car gets its Go", ["vale.out"] = "Popovic's car driving off, and the card that stays", ["split.police"] = "the police countdown on the HUD",
         ["lend.spring"] = "the crew turning on our car, and the card", ["car.leaves-split"] = "our car driving off", ["ai.break"] = "the crew running off, holstered",
+        // engine 0.53.0 (brief 105): the rivals shooting the car with Popovic in it, its health on the ring, everyone out of a shot-out car, a car taken
+        ["rivals.fire-car"] = "the card: rivals shooting our car (brief 105)", ["car.health"] = "the car's health on its ring", ["car.shot-out"] = "everyone out of the car, and the card",
+        ["car.taken"] = "the taken car's card; it gets its Go", ["take-car.wheelman"] = "the wheelman pulled out at the door",
     };
 
     public sealed class Pace { public double GapP50, GapP90, ReactP50, ReactP90, IdleProb, IdleP50, IdleP90; }
@@ -204,7 +207,7 @@ static class Adaptive
             foreach (var k in OrderKeys) if (r.Opt(k) is JNode v)
             {
                 if (k == "target" && v.Str().StartsWith('$')) { rule.TargetVar = v.Str(); w.Prop(k, "__TARGET__"); continue; }
-                if (k == "to" && v.Kind == JKind.Str && v.Str().StartsWith("$at:", StringComparison.Ordinal)) { rule.ToVar = v.Str().Substring(4); Op.Parse(rule.ToVar); w.Prop(k, "__TO__"); continue; } // engine 0.42.0: where an agent stands or lies (the map shows him)
+                if (k == "to" && v.Kind == JKind.Str && v.Str().StartsWith("$at:", StringComparison.Ordinal)) { rule.ToVar = v.Str().Substring(4); if (rule.ToVar != "car:rivals") Op.Parse(rule.ToVar); w.Prop(k, "__TO__"); continue; } // engine 0.42.0: where an agent stands or lies (the map shows him); brief 105 (Waymark): or where the rival car stands (the map shows it), for take-car
                 w.Key(k); Value(w, v);
             }
             rule.OrderText = w.EndObj().ToString();
@@ -271,7 +274,7 @@ static class Adaptive
                 if (who == null) return false;
                 txt = txt.Replace("__TARGET__", who, StringComparison.Ordinal);
             }
-            if (r.ToVar.Length > 0) { var at = k.Op(r.ToVar).Pos; txt = txt.Replace("\"__TO__\"", $"[{at.X.ToString(CultureInfo.InvariantCulture)},{at.Y.ToString(CultureInfo.InvariantCulture)}]", StringComparison.Ordinal); }
+            if (r.ToVar.Length > 0) { Pt? to = r.ToVar == "car:rivals" ? k.G.CarAt(r.ToVar) : k.Op(r.ToVar).Pos; if (!to.HasValue) return false; var at = to.Value; txt = txt.Replace("\"__TO__\"", $"[{at.X.ToString(CultureInfo.InvariantCulture)},{at.Y.ToString(CultureInfo.InvariantCulture)}]", StringComparison.Ordinal); }
             var a = g.Issue(Order.Parse(JNode.Parse(txt, r.Id)));
             x.Inputs++;
             if (a.ok)
@@ -375,5 +378,5 @@ static class Adaptive
         return w.EndObj().ToString();
     }
     static readonly string[] OpNames = { "scout", "fixer", "tech", "enforcer" };
-    static readonly HashSet<string> Marks = new HashSet<string>(StringComparer.Ordinal) { "vale.out", "lend.lent", "ai.break", "rivals.drives-off", "car.unboxed", "car.exploded", "split.police", "enter.in", "enter.out", "take.done", "fight.safe", "fight.loud", "fight.ambush", "blocker.out", "car.free", "board.in", "rivals.arrive", "rivals.coming", "attention.reporting", "seal.starts", "captured", "rivals.wiped", "enforcer.warning", "loop.on", "loop.ends", "guard.at-cafe", "guard.back", "call.waitress", "takedown.out", "takedown.seen", "takedown.fails", "fight.over", "camera.recorded", "camera.record-lands", "car.reported", "car.report-lands", "car.kerbside", "rivals.block", "rivals.back" }; // engine 0.43.0: the block's span, for MC-11's reading of the crew's holds (tools/missions/check/blocker.ts)
+    static readonly HashSet<string> Marks = new HashSet<string>(StringComparer.Ordinal) { "rivals.fire-car", "car.shot-out", "car.taken", "take-car.wheelman", /* brief 105 (Waymark): the bands of undrawn-at-car, answer-the-shots and take-rival-car */ "vale.out", "lend.lent", "ai.break", "rivals.drives-off", "car.unboxed", "car.exploded", "split.police", "enter.in", "enter.out", "take.done", "fight.safe", "fight.loud", "fight.ambush", "blocker.out", "car.free", "board.in", "rivals.arrive", "rivals.coming", "attention.reporting", "seal.starts", "captured", "rivals.wiped", "enforcer.warning", "loop.on", "loop.ends", "guard.at-cafe", "guard.back", "call.waitress", "takedown.out", "takedown.seen", "takedown.fails", "fight.over", "camera.recorded", "camera.record-lands", "car.reported", "car.report-lands", "car.kerbside", "rivals.block", "rivals.back" }; // engine 0.43.0: the block's span, for MC-11's reading of the crew's holds (tools/missions/check/blocker.ts)
 }

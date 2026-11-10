@@ -447,15 +447,14 @@
    "id": "fight-safe-unguarded",
    "file": "fight-safe-unguarded.json",
    "plan": "fight-safe-unguarded.plan.json",
-   "kind": "fail",
+   "kind": "outcome",
    "expects": {
     "outcome": "failure",
-    "fail": "rivals-reach-vale",
+    "fail": "cell-down",
     "alert": 1
    },
-   "reaches": "rivals-reach-vale",
-   "src": "§06 rivals reach Vale; engine 0.35.2 (Motive rulings-0.35.1 §2: only a drawn op guards a held car); Keel K3-UNDRAWN",
-   "note": "Engine 0.35.2 (Waymark, Aster 2026-10-27): renamed from fight-safe-cell-down; expects rivals-reach-vale. The cell never draws, so nobody guards the held car (only a drawn operative does): the rivals walk to it and the first there takes Vale beside the standing Enforcer (Keel: 3:09.7). The §07 line 'the cell down' is covered by Keel's K3-CELL-DOWN scenario instead (fails[].scenario; Sky: \"Sure\"). Engine 0.35.1 (brief 039, Waymark 2026-10-27): re-composed as 'the cell never draws and is shot down' (the stances are retired, so 'draw and hold fire' is no play). DOES NOT REACH cell-down on 0.35.1: undrawn, the cell gives the rivals no cause (rulebook ai.intent, final: agent: rivals fire on drawn, vale or seen), so no rival fires all mission; the blocker holds the car with Vale aboard and the run ends at the 8:30 close with no outcome. Pending Aster's call (brief 039 report). c038 (Waymark, engine 0.34.1): §07 fail 'the cell down (every op down)' (GDD v0.26.0; Motive M067-K3 b; Keel K3-CELL-DOWN), in the safe fight: route-g-fast-board to the spring (no contact touched), but the cell will not fight at the car. The Enforcer walks Vale in, boards him and steps out again to stand by the car. Someone of the cell always stands outside, so the rivals keep their cover (no walk to the held car, K3 a)."
+   "src": "§06 the final fight, an unguarded car; engine 0.53.0 (brief 105, Motive unguarded-car.html: no take from a car, anyone at the car counts); Keel K3-UNDRAWN",
+   "note": "Engine 0.53.0 (Waymark, brief 105): expects cell-down, kind outcome (was a fail script reaching rivals-reach-vale/reached-car, a take from the car, retired in 0.53.0). The cell never draws and stands round the car with Vale aboard: no take, the rivals shoot the people there and the undrawn cell is shot down (3:32.4). §07's 'the cell down' stays counted by K3-CELL-DOWN. Engine 0.35.2 (Waymark, Aster 2026-10-27): renamed from fight-safe-cell-down; expects rivals-reach-vale. The cell never draws, so nobody guards the held car (only a drawn operative does): the rivals walk to it and the first there takes Vale beside the standing Enforcer (Keel: 3:09.7). The §07 line 'the cell down' is covered by Keel's K3-CELL-DOWN scenario instead (fails[].scenario; Sky: \"Sure\"). Engine 0.35.1 (brief 039, Waymark 2026-10-27): re-composed as 'the cell never draws and is shot down' (the stances are retired, so 'draw and hold fire' is no play). DOES NOT REACH cell-down on 0.35.1: undrawn, the cell gives the rivals no cause (rulebook ai.intent, final: agent: rivals fire on drawn, vale or seen), so no rival fires all mission; the blocker holds the car with Vale aboard and the run ends at the 8:30 close with no outcome. Pending Aster's call (brief 039 report). c038 (Waymark, engine 0.34.1): §07 fail 'the cell down (every op down)' (GDD v0.26.0; Motive M067-K3 b; Keel K3-CELL-DOWN), in the safe fight: route-g-fast-board to the spring (no contact touched), but the cell will not fight at the car. The Enforcer walks Vale in, boards him and steps out again to stand by the car. Someone of the cell always stands outside, so the rivals keep their cover (no walk to the held car, K3 a)."
   },
   {
    "id": "fight-loud-wait-square",

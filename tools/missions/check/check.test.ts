@@ -31,7 +31,7 @@ describe('the Handover route manifest and scripts', () => {
     // goes (on engine 0.32+ the cheapest loud win must break the crew gunfire draws, so it is loud itself)
     expect(by('quiet')).toEqual(['route-a', 'route-a-board', 'route-a-pressure', 'route-a-pressure-board', 'route-a-disable', 'route-b', 'route-b-board', 'route-b-thin', 'route-g', 'route-g-board', 'route-g-fast', 'route-g-fast-board', 'route-g-kill', 'route-g-kill-board']);
     expect(by('loud')).toEqual(['loud', 'loud-fight']);
-    expect(by('outcome')).toEqual(['fight-loud-wait-yard', 'withdraw', 'loud-left-downed', 'loud-left-standing']); // brief 018 §5: an op left downed, an op left standing; brief 059 MC-13: the yard's loud-wait twin withdraws once its Go is refused
+    expect(by('outcome')).toEqual(['fight-safe-unguarded', 'fight-loud-wait-yard', 'withdraw', 'loud-left-downed', 'loud-left-standing']); // engine 0.53.0 (brief 105): the undrawn cell at the car is shot down (cell-down), no take; // brief 018 §5: an op left downed, an op left standing; brief 059 MC-13: the yard's loud-wait twin withdraws once its Go is refused
     expect(L.manifest.scripts.filter(s => s.expects.left).map(s => `${s.id} ${JSON.stringify(s.expects.left)}`)).toEqual(['loud-left-downed {"scout":"captured downed"}', 'loud-left-standing {"scout":"captured fighting"}', 'careless-thin-all {"scout":"captured fighting","fixer":"captured fighting"}']); // brief 059: over-thinning goes loud, and the car goes once the police blocker is down, without the two; engine 0.35.1 (brief 039, Waymark): the Scout, fighting on his own, is at 1 health when it goes, so captured fighting (0.34.2: downed)
     expect(L.manifest.scripts.filter(s => s.holds).map(s => `${s.id} ${s.holds}`)).toEqual(['fight-loud-wait-square square', 'fight-loud-wait-yard service-drive']); // brief 059 MC-13: one loud-wait twin per stand
     expect(Object.values(L.scripts).some(s => s.orders.some(o => o.do === 'extract'))).toBe(false); // brief 018: extract is retired into Board and Go
@@ -101,6 +101,7 @@ describe('the §09 conditions, each with a failing example', () => {
       'loud-left-downed': { ...win(3200, 9), alert: 2, shots: 2, fight: 'loud', campaignTrail: 4, left: { scout: 'captured downed' } }, 'loud-left-standing': { ...win(3200, 9), alert: 2, shots: 2, fight: 'loud', campaignTrail: 4, left: { scout: 'captured fighting' } },
     };
     for (const s of M.scripts.filter(s => s.kind === 'fail' && !s.pending)) p[s.id] = fail(s.expects.fail!);
+    p['fight-safe-unguarded'] = fail('cell-down'); // engine 0.53.0: an outcome script that ends cell-down
     p['route-b'] = win(5098, 4, { 'take.done': 3800 }); // taken 6:20: 1:50 before the 8:10 close
     // brief 013 D: route G takes the guard out (no contact); careless twins fail or win only loud and dearer
     p['route-g'] = { ...win(2474, 2, { 'enter.in': 1270 }), campaignTrail: 4, alert: 1, takedownS: 6 }; p['route-g-fast'] = { ...win(2170, 2, { 'enter.in': 1270 }), campaignTrail: 4, alert: 1, takedownS: 6 };
@@ -247,7 +248,7 @@ describe('the §09 conditions, each with a failing example', () => {
     }
     expect(c({ scenarios: {} }).detail).toContain('NOT REACHED (scenario K3-CELL-DOWN not run)');
     // a route that reaches the line still counts, scenario or not
-    const m = structuredClone(M), s = m.scripts.find(x => x.id === 'fight-safe-unguarded')!; s.expects.fail = 'cell-down'; s.reaches = 'cell-down';
+    const m = structuredClone(M), s = m.scripts.find(x => x.id === 'fight-safe-unguarded')!; s.kind = 'fail'; s.expects.fail = 'cell-down'; s.reaches = 'cell-down'; // engine 0.53.0: it reaches cell-down, played as an outcome script
     const p = good(); p['fight-safe-unguarded'] = fail('cell-down');
     const r = judge(m, L.scripts, mirror(p), [], { facts: {}, scenarios: {} }).conditions.find(x => x.id === 'MC-3')!;
     expect([r.ok, r.value]).toEqual([true, '8/8']);
@@ -282,8 +283,9 @@ const KNOWN_RED = [
   'B-8 quiet-g' /* Waymark: quiet-g's plan waits for the beside-guard window with the whole cell idle (median 57 s, p95 82 s): the plan's logic */,
   'B-9 quiet-b' /* Motive and Waymark: on the lend the three left at the square wait in the open, and the rival crew's advances on them are no longer turned back by a step out of a line (fight.cover): they close and trade at short range, 1.09 down per win (c061 0.88, c060 0.46) */,
   'B-11 drive-early', 'B-11 quiet-b-lookout-ignored', 'B-11 quiet-b-taped' /* Motive: no final fight on these plans (0-0 s): the variety band reads a fight that never comes */,
-  'B-11 drive-round' /* Motive: the drive round's fights span 9-17 s, under 10 s: the band */,
+  'B-11 answer-the-shots', 'B-11 undrawn-at-car' /* Motive (brief 105, Waymark's plans): route A's safe fight, decided quickly and alike as quiet-a's (10-16 s, 11-16 s): B-11 quiet-a's question. B-11 drive-round is off: engine 0.53.0 lets its fights run on (40-61 s) */,
   'B-11 quiet-a', 'B-11 quiet-g', 'B-11 thin-quiet' /* Motive and Pulse: fighters hold cover (engine 0.50.0): no advance, hide and advance again, so the safe fight is decided quickly and alike (middle halves 10-16 s, 15-22 s, 12-16 s; B-7's medians 12-17 s, all in band); whether a decided fight needs 10 s of spread is Motive's band */,
+  'B-13' /* Motive and Waymark (engine 0.53.0, brief 105): quiet-b's median Trail 7 → 11 T, so loud's 3× line rises 21 → 33 T against loud's unchanged median 33 T (60 of 114 loud wins): more of the three captured at the square (1.5 → 1.74 a win), the same short-range trade as B-9 quiet-b and L96 B-all */,
   'B-14' /* Motive: 20 of 1,850 falls under 5 s (fastest 1.8 s), the Enforcer 1 of 162 under 7 s: the hit rolls' streak cap, his band */,
   'B-16 drive-early' /* Motive: the early drive is never seen (Alert ≥ 1 on 0 of 200): what makes the mistake seen is his rule's to set */,
   'L96 A' /* Motive: quiet-a wins 100 % (99 % on c063), over its 97 % ceiling (briefs/096/keel/report-lukac-help.md); route A behind the square's mast loses nothing (brief 101) */,
