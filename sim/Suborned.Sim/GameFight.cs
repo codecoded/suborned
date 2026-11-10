@@ -119,7 +119,7 @@ namespace Suborned.Sim
             if (FightBranch.Length == 0 || FightOverTick != INF) return;
             JoinResponse();
             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
-            if (RivalReachesVale()) { Fail("rivals-reach-vale", $"A rival reaches the car with nobody beside it and takes {ValeName} out.", RivalsAtCar); return; }
+            // engine 0.53.0 (brief 105): brief 018's reach take (RivalReachesVale) is retired: nobody takes anyone out of a car
             var e = Enforcer; var car = Car;
             if (FightBranch == "safe" && FightSprung == INF && ((Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) || (R.FightAlways && Vale == ValeAt.Car) || LendSpringNear(car))) Spring(false); // engine 0.33.0 (Motive M059-S1.3): or Vale already in the car; engine 0.42.0 (Motive L7): or an agent near our car while he is lent
             bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;

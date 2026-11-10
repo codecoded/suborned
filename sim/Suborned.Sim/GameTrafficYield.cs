@@ -106,7 +106,7 @@ namespace Suborned.Sim
         bool MissionDriving(string id) => id switch
         {
             "car:getaway" => getawayPath != null,
-            "car:official" => valeDriveStart >= 0 && carToService != null && carDrive != null && !carStoppedAt.HasValue && !lentLeft && Tick < CarInBayTick,
+            "car:official" => valeDriveStart >= 0 && carToService != null && carDrive != null && !carStoppedAt.HasValue && !(lentLeft && lentId == "car:official") && Tick < CarInBayTick,
             "car:rivals" => CarMoving,
             _ => false,
         };

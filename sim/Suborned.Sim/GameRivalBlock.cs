@@ -64,6 +64,7 @@ namespace Suborned.Sim
 
         void CarLeg(CrewCar st, Path p, string stop)
         {
+            if (RivalCarTaken) return; // engine 0.53.0 (car.take): the cell's car now, never driven by the crew
             CarSt = st; CarStTick = Tick; ccPath = p; ccProf = CarProfile(p); ccStart = Tick; ccStop = stop;
             if (ccProf.Length <= 1) CarArrive(); // already there
         }

@@ -20,7 +20,7 @@ namespace Suborned.Sim
         void TrafficBoxWatch()
         {
             BoxSpell("car:getaway", GetawayBoxers(), AnyInCar);
-            BoxSpell("car:official", OfficialBoxers(), Vale == ValeAt.InCar || Vale == ValeAt.Lent);
+            BoxSpell("car:official", OfficialBoxers(), Vale == ValeAt.InCar || (Vale == ValeAt.Lent && lentId == "car:official"));
         }
         void BoxSpell(string car, List<string> bx, bool aboard)
         {

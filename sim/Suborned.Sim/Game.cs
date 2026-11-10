@@ -237,7 +237,6 @@ namespace Suborned.Sim
             CarAheadStep(); // engine 0.37.0 (car.footprint.ahead; brief 081): and an agent steps off the ground it is about to stop on
             CarEpochStep(); // engine 0.33.1 (car.footprint): the standing cars as this tick starts, for the crowd's legs that set out now
             if (!Range) { GuardTimeline(); CarTimeline(); CrewStep(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule; brief 059: the crew's step (GameCrew.cs)
-            UnguardedStep(); // engine 0.34.0 (Motive M067-K3 a, GameUnguarded.cs): the rivals go for a car nobody guards from outside, read after the last tick's orders
             foreach (var op in Ops)
             {
                 op.StepFrom = op.Pos; // tuning.md §8.3: the gait's direction is this tick's step
@@ -382,7 +381,7 @@ namespace Suborned.Sim
         public Pt? CarHeading() => OfficialHeading();
         Pt? DriverPosRaw() // brief 098 L9: DriverPos (GameBodies.cs) lays it
         {
-            if (Driver.Down) return null; if (Lent) return LentDriverPos(); // engine 0.42.0 (car.lend): out of his car, walking off
+            if (Driver.Down) return null; if (driverOff != null) return LentDriverPos(); // engine 0.53.0: walking off since the lend (whatever car is taken after) // engine 0.42.0 (car.lend): out of his car, walking off
             var car = CarPos();
             if (valeDriveStart < 0 && car == blockPath.Points[0]) return S.Stand(S.CarDriver); // brief 059: on duty by his car at the pickup until Vale is in
             return OfficialOut ? BesideCar(car, -1) : car; // tuning.md §10.7: out of a disabled car (engine 0.33.1: the road side)
@@ -393,7 +392,7 @@ namespace Suborned.Sim
             {
                 case ValeAt.Leaving: { int span = T(valeAtCarS) - T(valeExitsS); return valePath!.At(valePath.Length * Math.Min(span, Tick - T(valeExitsS)) / span); }
                 case ValeAt.Pickup: return BesideCar(CarPos(), 1); // engine 0.33.1 (car.footprint): at his car's kerb-side door until he gets in, or waiting by it (0.33.0: its centre, inside the body, unless disabled)
-                case ValeAt.InCar: case ValeAt.Lent: return CarPos(); // brief 059 K1: in the back of his car (engine 0.42.0: lent too)
+                case ValeAt.InCar: return CarPos(); case ValeAt.Lent: return LentPos(); // engine 0.53.0 (car.take): in the back of the taken car // brief 059 K1: in the back of his car (engine 0.42.0: lent too)
                 case ValeAt.Taking: return OfficialOut || !PickupService ? BesideCar(CarPos(), 1) : CarPos(); // seized at the door at the front; in the back round the back
                 case ValeAt.WithEnforcer: return Enforcer.Inside ? (Pt?)null : Enforcer.Pos + new Pt(100, 0);
                 default: return null;

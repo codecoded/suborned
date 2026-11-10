@@ -63,7 +63,7 @@ namespace Suborned.Sim
             long half = S.GroundOf(R).Half;
             foreach (var c in Traffic)
             {
-                if (!Shot(c)) continue;
+                if (!Shot(c) || c.Id == by) continue; // engine 0.53.0 (car.take): a taken passing car doesn't push itself
                 var (at, h) = TrafficPose(c); if (!CarGeo.OnWay(CarGeo.Rect(at, h, c.HalfLen, c.HalfW), way, half)) continue;
                 int best = 0; long bd = long.MaxValue; // the way's stretch nearest the wreck
                 for (int k = 0; k + 1 < way.Length; k++) { long d = SegD2(at, way[k], way[k + 1]); if (d < bd) { bd = d; best = k; } }

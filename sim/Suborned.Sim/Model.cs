@@ -292,7 +292,7 @@ namespace Suborned.Sim
             "free-not-cell",
             // brief 059 (engine 0.32.0): the getaway car's Drive between its stands, and the Take round the back
             "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked", "car-boxed", "drive-boxed", "stand-boxed", // brief 096
-            "stand-at-car", "board-lent-full", "drive-lent", "car-left", "car-disabled", "not-out", "agent-gone", // engine 0.42.0 (car.lend): the lent car's Board, Drive and Go, End, an agent gone in a car (car.box)
+            "stand-at-car", "board-lent-full", "drive-lent", "car-left", "car-disabled", "not-out", "agent-gone", "car-ours", "car-taken", "car-moving", "car-full", "car-driver", "car-crewed", "car-wheelman", "draw-first", "car-unknown", // engine 0.53.0 (brief 105, car.take) // engine 0.42.0 (car.lend): the lent car's Board, Drive and Go, End, an agent gone in a car (car.box)
             // engine 0.33.1 (rulebook cancel.driveCar): a cancel of a Drive under way, the driver's or a rider's
             "car-driving",
             // brief 039 (engine 0.35.0, weapons.moves): a move not ready yet (with the tick it is), Talk down never on police, not before one of the

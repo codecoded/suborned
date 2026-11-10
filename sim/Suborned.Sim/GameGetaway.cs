@@ -96,7 +96,7 @@ namespace Suborned.Sim
         /// his displacement (the press, a kite step); the patrol by its chase; anyone else is at his own post. Read-only.</summary>
         string HeldHow(string id, Hostile? h)
         {
-            if (h != null) return h.Blocker ? "blocker" : forCar.Contains(id) ? "press" : h.Why;
+            if (h != null) return h.Blocker ? "blocker" : h.Why;
             if (CrewOf(id) is CrewMember m) return m.Disp == null ? "post" : m.Disp.Press ? "press" : "answer";
             if (id == "patrol") return PatrolChasing ? "advance" : "post";
             int k = SecIndex(id);
@@ -210,6 +210,7 @@ namespace Suborned.Sim
             if (LentTarget(o.Target)) return BoardLent(op, o); // engine 0.42.0 (car.lend, L3)
             if (o.Target.Length > 0 && o.Target != "car" && o.Target != "car:getaway") return No("target-unknown", $"board names the getaway car (\"car\") or the lent car (\"car:official\"), not '{o.Target}'");
             if (GetawayGone) return No("car-left", "the getaway car has left");
+            if (GetawayLost) return No("car-disabled", "the getaway car is disabled"); // engine 0.53.0 (brief 105): shot out, it seats nobody
             if (op.Running) return No("board-running", "a running operative doesn't board: stop first");
             if (op.Id == OpId.Tech && Tethered) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body: the car seats the cell and the target");
@@ -265,6 +266,7 @@ namespace Suborned.Sim
             if (LentTarget(o.Target)) return GoLent(o); // engine 0.42.0 (car.lend, L6): the lent car's own Go
             if (o.Target.Length > 0 && o.Target != "car" && o.Target != "car:getaway") return No("target-unknown", $"go names the getaway car (\"car\") or the lent car (\"car:official\"), not '{o.Target}'");
             if (GetawayGone) return No("car-left", "the getaway car has left");
+            if (GetawayLost) { goRefusedAt = Tick; goRefused = "car-disabled"; return No("car-disabled", "the getaway car is disabled"); } // engine 0.53.0 (brief 105)
             bool climbing = GoWouldWait("car"); // engine 0.43.0 (G1): someone climbing in counts as in, for the Go to wait for
             if (!AnyInCar && !climbing) { goRefusedAt = Tick; goRefused = "car-empty"; return No("car-empty", "nobody is in the car"); }
             if (!CarHasDriver() && !climbing) { goRefusedAt = Tick; goRefused = "car-no-driver"; return No("car-no-driver", "nobody aboard can drive: only the downed are in the car"); } // engine 0.34.0 (Motive M067-K3 c)
@@ -397,19 +399,6 @@ namespace Suborned.Sim
                 if (d < bd || (d == bd && best != null && string.CompareOrdinal(c.Id, best.Id) < 0)) { bd = d; best = c; }
             }
             return best;
-        }
-
-        /// <summary>A rival at the car (engine 0.33.1: within car.footprint.reach of its body; was cell.atReach of its centre) while Vale is in it,
-        /// with no operative standing within cell.reach of it (brief 018 §1).</summary>
-        bool RivalReachesVale()
-        {
-            if (Vale == ValeAt.Lent) return RivalReachesLent(); // engine 0.42.0 (L11): the lent car's body
-            if (Vale != ValeAt.Car) return false;
-            bool rival = false;
-            foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && AtGetaway(h.Pos(Tick))) rival = true;
-            if (!rival) return false;
-            foreach (var op in Ops) if (Guards(op) && G.Within(op.Pos, Car, actReach)) return false; // engine 0.35.2 (Motive rulings-0.35.1 §2): a drawn op only
-            return true;
         }
 
         // ---------------------------------------------------------------- the custody projection (the debrief)

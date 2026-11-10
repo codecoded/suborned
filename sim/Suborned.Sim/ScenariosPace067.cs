@@ -4,11 +4,11 @@
 //    PACE-RUN-NOTICED   M067-B2 (Motive's RUN-NOTICED; a Handover id never starts with R, the range's letter): a run in a camera's sight is noticed at once, wary 11.9 s and reported 36.9 s of run in sight later (Heat 0)
 //    PACE-RUN-NOT-ALERT M067-B2 (Motive's RUN-NOT-ALERT): route A's opening runs past the shift guards: sighted and remembered, no Alert (0.33.1: Alert 1)
 //    PACE-RUN-FREE      M067-B2 (Motive's RUN-FREE): at Alert 2 a run moves no clock and logs no sighting
-//    K3-PRESS       M067-K3 (a): the cell all in the held car: the rivals walk to it and take Vale (rivals-reach-vale)
+//    K3-PRESS       engine 0.53.0 (brief 105, fight.unguarded a): the cell all in the car with Vale: the rivals shoot the car (rivals.fire-car,
+//                   car.health); shot out, everyone gets out with Vale and the fight goes on (car.shot-out; no getaway-lost, no take)
 //    K3-CELL-DOWN   M067-K3 (b): the cell shot down by the car with Vale in it: cell-down the tick the last falls
-//    K3-BACK        M067-K3 (a): an operative standing outside again, drawn (engine 0.35.2), sends them back to cover
-//    K3-UNDRAWN     engine 0.35.2 (Motive rulings-0.35.1 §2): an undrawn operative standing by the held car is no guard: the walk goes on and
-//                   the first at the car takes Vale with her standing beside it (rivals-reach-vale)
+//    K3-BACK        engine 0.53.0: one steps out of the shot-at car, undrawn: the rivals turn to her and stop shooting the car
+//    K3-UNDRAWN     engine 0.53.0 (Sky's 0.2.310 case): the three stand round the car undrawn: they are shot at, the car is not, no loss
 //    K3-DRIVER      M067-K3 (c): Go with only the downed aboard is refused car-no-driver; a standing operative boards and Go is taken
 //    POST-BESIDE    Pulse note 3: the relief who stands beside the cast guard's post keeps her check-in marks (PostOf reads the waiting point)
 //    DOOR-KERB      Pulse note 4: a guard posted at an Office door faces out of it (kerb), not along the wall
@@ -192,26 +192,31 @@ namespace Suborned.Sim
                 r.Is(!g.Log.Exists(l => l.Code == "attention.noticed" && l.Text.Contains("running")), "nobody noticed her running");
             }, new Start { Crowd = false });
 
-            Add("K3-PRESS", "067", "Motive M067-K3 (a) (fight.unguarded, engine 0.34.0): route A into the safe fight, the three drawing the rivals' fire off the Enforcer (one shot each at a rival aiming at him, never breaking the crew, so the car stays held) while he walks Vale in and boards; then the three make for the car together. The Scout falls on the way; the Tech and the Fixer get in. With nobody of the cell standing outside, the rivals up and not broken (the blocker keeps his lane) walk to the car firing as they walk, and the first at its body takes Vale: hiding in a held car loses (rivals-reach-vale). 0.33.1 held the car to the close.", r =>
+            Add("K3-PRESS", "067", "Engine 0.53.0 (brief 105, fight.unguarded a; was Motive M067-K3 a): route A into the safe fight, the three drawing the rivals' fire off the Enforcer while he walks Vale in and boards; then the three make for the car and get in (any who fall stay where they fell). With nobody of the cell outside and Vale aboard, the rivals fire at the car from where they stand (rivals.fire-car at the first hit, car.health at each), never walking to its door; the car shot out puts everyone out with Vale, the Enforcer holding him (car.shot-out), and the fight goes on: no getaway-lost, nobody takes Vale from the car.", r =>
             {
                 var g = r.G;
                 if (!RouteAAboard(r)) return;
                 foreach (var op in new[] { Scout, Fixer, Tech }) { var o = r.Op(op); if (!o.Down && !o.InCar) { g.Issue(new Order { Tick = g.Tick, Op = op, Do = "cease" }); r.SendTo(op, g.GetawaySeat); } }
-                int until = g.Tick + T(60), outside = -1;
-                while (!g.Over && g.Tick < until)
+                int until = g.Tick + T(90), outside = -1;
+                while (!g.Over && g.Tick < until && LogTick(g, "car.shot-out") < 0)
                 {
                     foreach (var op in new[] { Scout, Fixer, Tech }) { var o = r.Op(op); if (!o.Down && !o.InCar && o.Busy == null && o.Walk == null && g.AtGetaway(o.Pos)) g.Issue(new Order { Tick = g.Tick, Op = op, Do = "board", Target = "car" }); }
                     g.Step();
                     if (outside < 0 && Array.TrueForAll(g.Ops, o => o.Down || o.InCar)) outside = g.Tick;
                 }
-                int walk = LogTick(g, "rivals.for-car");
-                r.Is(outside >= 0 && walk == outside + 1, $"the tick after nobody of the cell stands outside ({Report.Clock(outside)}), the rivals go for the car ({Report.Clock(walk)}: read as the tick starts)");
-                r.Is(!g.Log.Exists(l => l.Code == "rivals.for-car" && g.Hostiles.Exists(h => h.Blocker && l.Text.StartsWith(h.Id + " ", StringComparison.Ordinal))), "the blocker keeps his lane");
-                r.Eq(g.FailCode, "rivals-reach-vale", $"the first at the car takes Vale: hiding in a held car loses ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
-                r.Is(g.Cause != null && g.Cause.Culprits.Count > 0 && g.Cause.Culprits[0].Kind == "rival" && g.Cause.Culprits[0].Role == "reached", $"the fail camera on the rival who reached the car ({g.Cause?.Culprits.FirstOrDefault()})");
+                int fire = LogTick(g, "rivals.fire-car"), outAt = LogTick(g, "car.shot-out");
+                r.Is(outside >= 0 && fire >= outside, $"nobody of the cell outside ({Report.Clock(outside)}): the rivals shoot the car ({Report.Clock(fire)})");
+                r.Is(!g.Log.Exists(l => l.Code == "rivals.for-car"), "nobody walks to the car's door (the walk-in is retired)");
+                r.Is(g.Log.Count(l => l.Code == "car.health") >= 1 && g.Log.Exists(l => l.Code == "car.health" && l.Text.Contains(" left")), "each hit logs the health left");
+                if (!r.Is(outAt >= 0 && !g.Over, $"the car is shot out and the mission goes on ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})")) return;
+                r.Is(g.Vale == ValeAt.WithEnforcer && Array.TrueForAll(g.Ops, o => !o.InCar), $"everyone is out, Vale with the Enforcer ({g.Vale})");
+                r.Is(!r.Op(Enf).Down && g.Vale != ValeAt.Dead && !g.CarBurning("car:getaway"), "Vale and the Enforcer out alive, before any burn or blast");
+                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = "cell", Do = "go", Target = "car" }).code, "car-disabled", "Go on the shot-out car is refused car-disabled");
+                r.Until(() => g.Over, T(10));
+                r.Is(g.FailCode != "getaway-lost" && !(g.FailCode == "rivals-reach-vale" && g.Cause?.Why == "reached-car"), $"no getaway-lost, no take from the car ({g.Result} {g.FailCode}/{g.Cause?.Why})");
             }, new Start { WeaponsFree = false, OneInput = false }); // brief 039: weapons free off and cease are the controls before one input
 
-            Add("K3-CELL-DOWN", "067", "Motive M067-K3 (b): as K3-PRESS until the Enforcer is in with Vale; then he steps out again and the four stand in the open by the car, each having fired once (a cause for the rivals under ai.intent.final agent), holding their fire. Someone of the cell always stands outside, so the rivals keep their cover (no walk to the car); they shoot the cell down one by one, and the tick the last operative goes down the mission fails at once (cell-down: the whole cell is down), the fail camera on that shot. 0.33.1 ran on with the whole cell down to the close.", r =>
+            Add("K3-CELL-DOWN", "067", "Motive M067-K3 (b): as K3-PRESS until the Enforcer is in with Vale; then he steps out again and the four stand in the open by the car, each having fired once (a cause for the rivals under ai.intent.final agent), holding their fire. Someone of the cell always stands outside, so the rivals shoot people, never the car (engine 0.53.0); they shoot the cell down one by one, and the tick the last operative goes down the mission fails at once (cell-down: the whole cell is down), the fail camera on that shot. 0.33.1 ran on with the whole cell down to the close.", r =>
             {
                 var g = r.G;
                 if (!RouteAAboard(r)) return;
@@ -231,55 +236,47 @@ namespace Suborned.Sim
                     for (; seen < g.Log.Count; seen++) { var l = g.Log[seen]; if (l.Code != "shot.hit" && l.Code != "shot.miss") continue; foreach (var op in new[] { Scout, Fixer, Tech, Enf }) if (l.Text.StartsWith(op + " fires on ", StringComparison.Ordinal)) g.Issue(new Order { Tick = g.Tick, Op = op, Do = "cease" }); }
                     g.Step();
                 }
-                int walk = LogTick(g, "rivals.for-car", shotAt), last = -1;
+                int walk = LogTick(g, "rivals.fire-car", shotAt), last = -1;
                 foreach (var op in new[] { Scout, Fixer, Tech, Enf }) last = Math.Max(last, LogTick(g, op + ".down"));
-                r.Is(walk < 0, $"someone of the cell stood outside until the last fell: the rivals never walked to the car ({(walk < 0 ? "-" : Report.Clock(walk))})");
+                r.Is(walk < 0, $"someone of the cell stood outside until the last fell: the rivals never shot the car ({(walk < 0 ? "-" : Report.Clock(walk))})");
                 r.Eq(g.FailCode, "cell-down", $"the whole cell down fails the mission ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
                 r.Eq(g.Tick, last, $"at once: the tick the last operative went down ({Report.Clock(last)})");
                 r.Is(g.Cause != null && g.Cause.Why == "shot" && g.Cause.Culprits.Count >= 2 && g.Cause.Culprits[0].Kind == "rival" && g.Cause.Culprits[1].Kind == "op", $"the fail camera: the shooter, then the last to fall ({string.Join(" ", g.Cause?.Culprits.Select(c => c.ToString()) ?? new string[0])})");
             }, new Start { WeaponsFree = false, OneInput = false }); // brief 039: weapons free off and cease are the controls before one input
 
-            // engine 0.35.2 (Motive rulings-0.35.1 §2, Sky's yes 2026-10-27): only a drawn operative outside guards the car. She steps out and
-            // draws (F): drawing counts, from the draw's first tick
-            Add("K3-BACK", "067", "Motive M067-K3 (a), engine 0.35.2: as K3-PRESS until the rivals go for the car; then the Scout steps out of it and draws (F; she never fired). A drawn operative standing outside again sends them back to cover (rivals.back-to-cover); none of them takes Vale while she stands.", r =>
+            // engine 0.53.0 (brief 105, fight.unguarded a): an agent outside, drawn or not, is a person in the fight: the rivals turn to him
+            Add("K3-BACK", "067", "Engine 0.53.0 (brief 105, fight.unguarded a): route A, the whole cell in the car with Vale; the rivals shoot the car (rivals.fire-car). The Scout steps out, undrawn: the rivals turn to her at once (no car.health after she stands out, bar a shot already fired) and fire on her; nobody takes Vale.", r =>
             {
                 var g = r.G;
                 if (!RouteAHidden(r)) return;
-                r.Until(() => g.RivalsForCar.Count > 0 || g.Over, T(2));
-                if (!r.Is(g.RivalsForCar.Count > 0, "the rivals go for the car")) return;
-                var going = g.RivalsForCar.ToList(); int press = g.Tick;
+                r.Until(() => LogTick(g, "rivals.fire-car") >= 0 || g.Over, T(30));
+                if (!r.Is(LogTick(g, "rivals.fire-car") >= 0 && !g.Over, $"the rivals shoot the car ({g.Result} {g.FailCode})")) return;
+                g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "holster" });
                 var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", Point = g.Walk.NearestFree(g.GetawaySeat + new Pt(0, 300)) ?? g.GetawaySeat });
                 r.Is(ok, $"the Scout steps out ({why})");
-                r.Until(() => !r.Op(Scout).InCar || g.Over, T(5));
-                r.Is(g.RivalsForCar.Count > 0 || g.Over, "out but undrawn she is no guard: the walk goes on");
-                var dr = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "draw" }); r.Is(dr.ok, $"she draws ({dr.code})"); int drew = g.Tick;
-                r.Until(() => g.RivalsForCar.Count == 0 || g.Over, T(2));
-                int back = LogTick(g, "rivals.back-to-cover", press);
-                r.Is(!g.Over && g.RivalsForCar.Count == 0 && back >= 0, $"with her outside and drawn they go back to cover ({Report.Clock(back)}): {string.Join(", ", going)}");
-                r.Eq(back, drew + 1, "the tick after the draw starts (drawing counts; read as the tick starts)");
-                r.Is(g.Log.Exists(l => l.Code == "rivals.back-to-cover" && l.Text.Contains("drawn outside the car")), "logged: the cell drawn outside the car again");
-                r.Until(() => g.Over || r.Op(Scout).Down, T(5));
-                r.Is(g.FailCode != "rivals-reach-vale" || r.Op(Scout).Down, $"nobody takes Vale while she stands ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
+                r.Until(() => !r.Op(Scout).InCar || g.Over, T(5)); int outAt = g.Tick, seen = g.Log.Count;
+                r.Until(() => g.Over || r.Op(Scout).Down || g.Log.Skip(seen).Any(l => (l.Code == "shot.hit" || l.Code == "shot.miss") && l.Text.Contains(" fires on scout")), T(10));
+                r.Is(g.Log.Skip(seen).Any(l => (l.Code == "shot.hit" || l.Code == "shot.miss") && l.Text.Contains(" fires on scout")) || r.Op(Scout).Down, "the rivals fire on her, undrawn");
+                r.Is(!g.Log.Exists(l => l.Code == "car.health" && l.Tick > outAt + T(2)), "with her outside, nobody shoots the car");
+                r.Is(g.FailCode != "rivals-reach-vale" && g.FailCode != "getaway-lost", $"nobody takes Vale from the car ({g.Result} {g.FailCode})");
             }, new Start { WeaponsFree = false, OneInput = false }); // brief 039: weapons free off and cease are the controls before one input
 
-            Add("K3-UNDRAWN", "067", "Engine 0.35.2 (Motive briefs/039/motive/rulings-0.35.1.md §2, Sky's yes 2026-10-27; fight.unguarded a): as K3-BACK until the rivals go for the car; the Scout steps out and stands by it undrawn. An undrawn agent standing by is no guard: the rivals keep walking (no rivals.back-to-cover), fire on nobody (she gave them no cause), and the first at the car takes Vale with her standing within cell.reach of it (rivals-reach-vale). 0.35.1: she sent them back undrawn, and a cell that never drew idled to the close.", r =>
+            Add("K3-UNDRAWN", "067", "Engine 0.53.0 (brief 105; Sky 2026-11-10: \"everyone was around the car, can't just make me lose for that\"): route A, Vale and the Enforcer in the car; the Scout, the Fixer and the Tech stand round it undrawn (0.2.310's case). They count: the rivals fire on them, never on the car, and nothing ends the mission for their standing there (no rivals-reach-vale, no getaway-lost) for 20 s.", r =>
             {
                 var g = r.G;
                 if (!RouteAHidden(r)) return;
-                r.Until(() => g.RivalsForCar.Count > 0 || g.Over, T(2));
-                if (!r.Is(g.RivalsForCar.Count > 0, "the rivals go for the car")) return;
-                int press = g.Tick;
-                var stand = g.Walk.NearestFree(g.GetawaySeat + new Pt(0, 300)) ?? g.GetawaySeat;
-                var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", Point = stand });
-                r.Is(ok, $"the Scout steps out ({why})");
-                r.Until(() => g.Over || (!r.Op(Scout).InCar && r.Op(Scout).Walk == null), T(10));
-                var sc = r.Op(Scout);
-                r.Is(!sc.Gun.Drawn && !sc.InCar, $"she stands outside the car, undrawn ({(sc.InCar ? "in the car" : "out")}, {(sc.Gun.Drawn ? "drawn" : "holstered")})");
-                r.Until(() => g.Over, T(60));
-                r.Eq(LogTick(g, "rivals.back-to-cover", press), -1, "they never go back to cover for her");
-                r.Eq(g.FailCode, "rivals-reach-vale", $"the first at the car takes Vale ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
-                r.Is(!sc.Down && !sc.InCar && G.Within(sc.Pos, g.GetawayCarPos(), g.R.ActReachCm), $"with her standing beside it, undrawn, within cell.reach ({(sc.Down ? "down" : "up")}, {(G.Within(sc.Pos, g.GetawayCarPos(), g.R.ActReachCm) ? "in reach" : "out of reach")})");
-                r.Line(!sc.Down, "nobody shoots her down: an undrawn agent is no cause (ai.intent final agent)");
+                int k = 0; foreach (var op in new[] { Scout, Fixer, Tech })
+                {
+                    g.Issue(new Order { Tick = g.Tick, Op = op, Do = "holster" });
+                    var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = op, Do = "move", Point = g.Walk.NearestFree(g.GetawaySeat + new Pt(-250 + 250 * k++, 300)) ?? g.GetawaySeat });
+                    r.Is(ok, $"the {op} steps out ({why})");
+                }
+                r.Until(() => g.Over || new[] { Scout, Fixer, Tech }.All(o => !r.Op(o).InCar), T(5)); int outAt = g.Tick, seen = g.Log.Count;
+                r.Is(new[] { Scout, Fixer, Tech }.All(o => !r.Op(o).Gun.Drawn), "the three stand outside, undrawn");
+                r.Until(() => g.Over, T(20));
+                r.Is(g.Log.Skip(seen).Any(l => (l.Code == "shot.hit" || l.Code == "shot.miss") && l.Text.StartsWith("rival-", StringComparison.Ordinal) && !l.Text.Contains("fires on car:")), "the rivals fire on the cell standing there");
+                r.Is(!g.Log.Exists(l => l.Code == "car.health" && l.Tick > outAt + T(2)), "nobody shoots the car while they stand");
+                r.Is(!g.Over || (g.FailCode != "rivals-reach-vale" && g.FailCode != "getaway-lost"), $"no loss for standing at the car ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
             }, new Start { WeaponsFree = false, OneInput = false }); // as K3-BACK
 
             Add("K3-DRIVER", "067", "Motive M067-K3 (c): Go needs a driver. The guard shoots the Scout down (she drew in front of him, weapons free off, so she never fires); the Enforcer carries her into the getaway car and steps out: with only the downed aboard, Go is refused car-no-driver (the Go card says so too); he boards again and Go is taken (the cell withdraws by car, Vale not aboard).", r =>

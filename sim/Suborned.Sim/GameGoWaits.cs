@@ -16,7 +16,7 @@ namespace Suborned.Sim
         /// <summary>A Go waiting for a Board under way, by car ("car" ours, "car:official" the lent car): the order and the agents it waits for.</summary>
         readonly SortedDictionary<string, (Order o, int mask)> goWaits = new SortedDictionary<string, (Order, int)>(StringComparer.Ordinal);
 
-        static string GoCar(string target) => LentTarget(target) ? "car:official" : "car";
+        string GoCar(string target) => LentTarget(target) ? lentId : "car"; // engine 0.53.0 (car.take): the second cell car, lent or taken
         /// <summary>The agent is climbing into this car now (a Board under way, not down).</summary>
         bool ClimbingInto(Op op, string car) => R.GoWaitsBoard && !op.Down && op.Busy is Order b && b.Do == "board" && op.BusyEnd > Tick && GoCar(b.Target) == car;
         /// <summary>The agents climbing into this car now, as a mask by OpId.</summary>
@@ -55,7 +55,7 @@ namespace Suborned.Sim
 
         /// <summary>Host read (Latch, the lent car's Go card's "+1 T if seen"): the security body that would see Popovic's car leave now, the first
         /// by id, or "" (as CarWatcher for ours); "" while the car isn't ours to drive.</summary>
-        public string LentCarWatcher() => Lent && !lentLeft ? CarWatcherAt(CarPos()) : "";
+        public string LentCarWatcher() => Lent && !lentLeft ? CarWatcherAt(LentPos()) : "";
 
         internal void HashGoWaits(Hash.H h)
         {

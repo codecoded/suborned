@@ -64,10 +64,11 @@ namespace Suborned.Sim
         public Pt? CarAt(string id)
         {
             if (Range) return RangeCarAt(id); // the range's spawned cars (GameRange.cs)
+            if (Lent && id == lentId && id != "car:official") return lentLeft ? (Pt?)null : takenAt; // engine 0.53.0 (car.take): a taken car stands where it was taken until its Go
             switch (id)
             {
                 case "car:getaway": return Car;
-                case "car:official": return lentLeft ? (Pt?)null : CarPos(); // engine 0.42.0: gone once the lent car leaves
+                case "car:official": return lentLeft && lentId == "car:official" ? (Pt?)null : CarPos(); // engine 0.42.0: gone once the lent car leaves
                 case "car:rivals": return RivalCarPose()?.pos; // brief 059 K7: a target from its entry, wherever it drives
                 default: return TrafficCarById(id) is TrafficCar tc ? TrafficPose(tc).at : (Pt?)null; // brief 098 step 1: a passing car, wherever it drives
             }
@@ -90,7 +91,8 @@ namespace Suborned.Sim
             var c = cars[t];
             if (IsOpId(by)) c.By = by;
             if (IsTrafficId(t)) TrafficHit(t, by); // brief 098 step 1: a driver whose car is shot gets out and runs (GameTrafficLaw.cs)
-            if (c.DisabledAt < 0 && tg.Health <= R.CarDisabledAt * HealthScale) CarDisable(c);
+            RivalsHitCar(t, tg, by); // engine 0.53.0 (brief 105): the HUD's lines while Vale is aboard
+            if (c.DisabledAt < 0 && tg.Health <= R.CarDisabledAt * HealthScale) CarDisable(c, by);
             if (Over) return;
             if (tg.Health == 0 && c.BurningAt < 0)
             {
@@ -104,14 +106,16 @@ namespace Suborned.Sim
         }
         string CarName(string id) => id == "car:getaway" ? "getaway car" : id == "car:official" ? "official car" : id == "car:rivals" ? "rival car" : IsTrafficId(id) ? "passing " + (TrafficCarById(id)?.Model ?? "car") : "car " + id.Substring(4); // the range's: car range-1, …; brief 098 step 1: a passing sedan, van, scooter
 
-        void CarDisable(CarTarget c)
+        void CarDisable(CarTarget c, string by)
         {
             c.DisabledAt = Tick; c.At = CarAt(c.Id) ?? c.At;
             Chain.Add(c.Id.Substring(4) + "-car-disabled");
             Note("car.disabled", $"The {CarName(c.Id)} is disabled. It can't drive.");
+            if (Lent && c.Id == lentId && !lentLeft) { LentDisabled(); return; } // engine 0.42.0 (car.lend), 0.53.0 (car.take): everyone out with the target (GameLend.cs)
             switch (c.Id)
             {
                 case "car:getaway":
+                    if (!IsOpId(by)) { GetawayShotOut(); return; } // engine 0.53.0 (brief 105, Sky: a shot-out car is not a loss): everyone out, the fight goes on (GameCarShot.cs)
                     Fail("getaway-lost", "The getaway car is wrecked.", () => With(Because("wrecked", true, Locate("getaway-car", "wrecked")), OpIn(c.By)));
                     return;
                 case "car:rivals": // brief 059: it stops where it is and never drives again; brief 096 (engine 0.41.0): its riders get out, the first after board-s, then rivals.step apart in id order, the wheelman last
@@ -123,7 +127,6 @@ namespace Suborned.Sim
                     if (Range) RangeCarOut(c); // the range's car: its occupant gets out (GameRange.cs)
                     return;
                 case "car:official":
-                    if (Lent) { LentDisabled(); return; } // engine 0.42.0 (car.lend): the Enforcer steps out with the target (GameLend.cs)
                     StopOfficial(c.At); // it stops where it is (the driver-shot rule's own stop)
                     bool driverIn = !Driver.Down && valeDriveStart >= 0, valeIn = Vale == ValeAt.InCar; // at the pickup the driver stands beside it already (brief 059: until Vale is in)
                     if (valeIn) { Vale = ValeAt.Pickup; PickupService = false; } // brief 059: he gets out and stands by it
@@ -187,7 +190,7 @@ namespace Suborned.Sim
         }
 
         /// <summary>Held inside the car at its blast: Vale while the Enforcer is seizing him at the official car.</summary>
-        bool Inside(CarTarget c, string id) => (c.Id == "car:official" && id == "councillor" && (Vale == ValeAt.Taking || Vale == ValeAt.InCar || Vale == ValeAt.Lent)) // brief 059: in the back of his car too
+        bool Inside(CarTarget c, string id) => (c.Id == "car:official" && id == "councillor" && (Vale == ValeAt.Taking || Vale == ValeAt.InCar)) || (id == "councillor" && Vale == ValeAt.Lent && c.Id == lentId) // brief 059: in the back of his car too
             || (c.Id == "car:rivals" && CrewOf(id) is CrewMember im && im.Mode == CrewMode.Aboard && !im.Fight); // brief 096 (engine 0.41.0): a member still in the rival car
 
         /// <summary>Everyone a blast can reach, in a fixed order: the cell, the city's people by role, the guard and the patrol, the response's

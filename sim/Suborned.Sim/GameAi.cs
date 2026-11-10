@@ -19,7 +19,6 @@ namespace Suborned.Sim
         {
             var keys = new List<string>(coverTaken.Keys); keys.Sort(StringComparer.Ordinal);
             foreach (var k in keys) { foreach (var c in k) i(c); foreach (var c in coverTaken[k]) i(c); i(-1); }
-            if (forCar.Count > 0) { i(-67); foreach (var id in forCar) { foreach (var c in id) i(c); i(-1); } } // engine 0.34.0 (M067-K3 a): only while any walk to the car
             for (int k = 0; k < SecGuns.Length; k++) i(secJoined[k] ? 1 : 0);
             i(patrolOrigin.X); i(patrolOrigin.Y); i(patrolReturning ? 1 : 0);
             var so = new List<string>(standOverflow.Keys); so.Sort(StringComparer.Ordinal);
@@ -83,14 +82,15 @@ namespace Suborned.Sim
             var l = new List<(string, Pt)>(); long eff = (long)g.W!.EffCm * g.W.EffCm;
             foreach (var op in Ops)
             {
-                if (op.Down || op.Inside || op.LeftMap) continue;
-                bool foe = (anyOp && (R.Intent.FinalEvery || Range)) || Provoked(id, op); // engine 0.20.0 (ai.intent.final agent, tuning.md §15.2, PROVISIONAL): in the final fight too, per agent; the range every // engine 0.19.0 (ai.intent): per agent, from what it is seen doing or its own known face (was: a weapon out, fired, Vale, or security saw violence, for every body)
+                if (op.Down || op.Inside || op.LeftMap || op.InCar) continue; // engine 0.53.0 (brief 105, fight.unguarded a): a rider is no target; the car is (CarFoe)
+                bool foe = (anyOp && (R.Intent.FinalEvery || Range || IsRival(id))) || Provoked(id, op); // engine 0.53.0 (brief 105, fight.unguarded a): in the final fight a rival fires at any agent outside, drawn or not // engine 0.20.0 (ai.intent.final agent, tuning.md §15.2, PROVISIONAL): in the final fight too, per agent; the range every // engine 0.19.0 (ai.intent): per agent, from what it is seen doing or its own known face (was: a weapon out, fired, Vale, or security saw violence, for every body)
                 if (!foe || !sees(op.Pos)) continue;
                 long d2 = G.D2(pos, op.Pos);
                 if (d2 > eff && !(d2 <= (long)g.W.MaxCm * g.W.MaxCm && PoliceBody(id) && ShotAtRecently(g, Sim.Op.Name(op.Id)))) continue; // tuning.md §7.10 rule 1: shot at, the police answer to their max ring
                 l.Add((Sim.Op.Name(op.Id), op.Pos));
             }
             if (anyOp && IsRival(id) && GuardAlly && !GuardDown) { var ga = PosOf("guard"); if (ga.HasValue && G.D2(pos, ga.Value) <= eff && sees(ga.Value)) l.Add(("guard", ga.Value)); }
+            if (anyOp && l.Count == 0 && CarFoe(id) is var cf && cf.HasValue && G.D2(pos, cf.Value.at) <= eff && sees(cf.Value.at)) l.Add(cf.Value); // engine 0.53.0 (brief 105): nobody outside, Vale aboard: the car
             return l;
         }
 
@@ -183,7 +183,6 @@ namespace Suborned.Sim
             var g = h.Gun;
             if (g.Down) { ReleaseCover(g); CommitEnd(g); h.Closing = false; return; }
             if (!h.Present || g.St == "gone") return;
-            if (ForCarBody(h)) return; // engine 0.34.0 (Motive M067-K3 a): going for the unguarded car, firing as he walks
             var pos = h.Pos(Tick); var w = g.W!;
             Func<Pt, bool> sees = p => Sees(pos, p);
             var foes = g.St == "break" ? new List<(string, Pt)>() : FoesInReach(h.Id, g, pos, sees, true);
@@ -266,9 +265,10 @@ namespace Suborned.Sim
         {
             var g = h.Gun; var pos = h.Pos(Tick);
             if (IsHolder(h)) { if (h.Blocker) { MoveTo(h, h.Home); h.Why = "blocker"; } else MoveToFight(h, h.Home); return; } // engine 0.34.0 (Motive M067-SQ1): back to its stand round the car's hold (the blocker's lane is the road)
-            Pt foe = !Enforcer.Inside && !Enforcer.Down && !Enforcer.InLent ? Enforcer.Pos : Car; // engine 0.42.0: at the wheel of the lent car (or gone in it) he is no foe to walk on
-            var c = SelectCover(pos, Car, foe, R.SeekRivalCm); h.Why = "advance";
-            if (c != null) { TakeCover(g, c); MoveTo(h, c.At); } else MoveTo(h, StopPoint(pos, Car, g.W!.EffCm));
+            var vc = ValeCarId(); Pt car = vc.Length > 0 && vc != "car:getaway" && CarAt(vc) is Pt vp ? vp : Car; // engine 0.53.0 (brief 105): the car Vale sits in, lent or taken, is the objective
+            Pt foe = !Enforcer.Inside && !Enforcer.Down && !Enforcer.InLent ? Enforcer.Pos : car; // engine 0.42.0: at the wheel of the lent car (or gone in it) he is no foe to walk on
+            var c = SelectCover(pos, car, foe, R.SeekRivalCm); h.Why = "advance";
+            if (c != null) { TakeCover(g, c); MoveTo(h, c.At); } else MoveTo(h, StopPoint(pos, car, g.W!.EffCm));
             h.Closing = h.Run != null; // engine 0.50.0 (fight.cover): an advance is never turned back on its walk by a step out of a line (KiteTick), as one on an operative (0.34.1)
         }
 

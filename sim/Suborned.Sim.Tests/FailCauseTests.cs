@@ -139,28 +139,19 @@ public class FailCauseTests
     }
 
     [Fact]
-    public void ARivalAtTheCarWithNobodyBesideItIsTheCulprit()
+    public void ARivalAtTheCarWithNobodyBesideItTakesNobody()
     {
-        // brief 018 §1 (GameFight.FightStep): Vale in the car, a rival within cell.atReach of it, no operative standing within reach. No route
-        // reaches it on today's data (the rivals stop at cover or their weapon's reach), so the state is placed: a fixture, not a scenario.
-        // The whole cell is in the car (boarded, Go refused while the car is held): nobody stands beside it.
-        // Engine 0.34.0 (Motive M067-K3 a): the same state now comes in play too (the rivals walk to a held car nobody stands outside: K3-PRESS,
-        // BAL-YARD-AT-WILL). Each rival stands on a free walk cell beside the car's body (since 0.33.1's car.footprint nobody stands on its
-        // ground; K3's walk starts from the free cell nearest, so a body placed on the ground would be read there)
+        // engine 0.53.0 (brief 105; Sky 2026-11-10: "they can't take popovic from the car - they can only shoot at the car"): brief 018's reach
+        // take (rivals-reach-vale, reached-car) is retired. The old fixture: the whole cell in the car with Vale, two rivals at its body.
         var g = Engine.New(I); var car = g.S.At(g.S.GetawayCar);
         foreach (var o in g.Ops) o.InCar = true;
         g.Vale = ValeAt.Car; g.FightBranch = "safe";
         var at = g.Walk.NearestFree(car + new Pt(100, 0))!.Value; var at2 = g.Walk.NearestFree(at + new Pt(60, 0))!.Value;
-        Assert.True(g.AtGetaway(at) && G.D2(at2, car) > G.D2(at, car), $"the fixture's points: {at} at the car, {at2} farther");
+        Assert.True(g.AtGetaway(at), $"the fixture's point {at} is at the car");
         g.Hostiles.Add(new Hostile { Id = "rival-2", At = at2, Home = at2, Present = true, Gun = new Gun("rival-2") { W = g.R.Pistol, Health = 2, Max = 2 } });
         g.Hostiles.Add(new Hostile { Id = "rival-1", At = at, Home = at, Present = true, Gun = new Gun("rival-1") { W = g.R.Pistol, Health = 2, Max = 2 } });
-        g.Step();
-        Assert.Equal((Outcome.Failure, "rivals-reach-vale"), (g.Result, g.FailCode));
-        var c = g.Cause!;
-        Assert.Equal(("reached-car", true), (c.Why, c.Single));
-        Assert.Equal(new[] { "rival-1", "rival-2", "councillor" }, c.Culprits.Select(b => b.Id)); // nearest first, then Vale
-        Assert.True(c.Culprits[0].Placed && c.Culprits[0].At == at && c.Culprits[0].Kind == "rival");
-        Assert.True(c.Culprits[2].Placed && c.Culprits[2].At == car && c.Culprits[2].Kind == "vale", "Vale in the car, at the car");
-        Assert.Empty(c.Ops);
+        for (int k = 0; k < Game.T(2); k++) g.Step();
+        Assert.Equal((Outcome.None, ""), (g.Result, g.FailCode));
+        Assert.Equal(ValeAt.Car, g.Vale);
     }
 }

@@ -116,7 +116,7 @@ namespace Suborned.Sim
             }
             foreach (var h in Hostiles)
             {
-                if (h.Down || !h.Present || h.Gun.St == "break" || h.Gun.St == "gone" || forCar.Contains(h.Id)) continue; // engine 0.34.0 (M067-K3 a): the walk to the car takes no kite step
+                if (h.Down || !h.Present || h.Gun.St == "break" || h.Gun.St == "gone") continue;
                 if (h.Closing && h.Gun.St == "advance" && h.Moving(Tick)) continue; // engine 0.34.1 (Aster's ruling within M067-SQ2): nor an advance on an operative, which closes; engine 0.50.0, nor a police body's close (fight.cover)
                 KiteBody(h.Gun, h.Pos(Tick), h, -1);
             }

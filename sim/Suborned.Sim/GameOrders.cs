@@ -100,7 +100,7 @@ namespace Suborned.Sim
                 case "carry": return Carry(op, o);
                 case "enter": return Enter(op, o);
                 case "take": return Take(op, o);
-                case "board": return Board(op, o); // brief 018 (GameGetaway.cs); extract is retired
+                case "board": return Board(op, o); case "take-car": return TakeCar(op, o); // brief 018 (GameGetaway.cs); extract is retired; engine 0.53.0 (brief 105): car.take (GameTakeCar.cs)
                 case "takedown": return Takedown(op, o);   // brief 013 (GameTakedown.cs)
                 case "drop": return Drop(op, o);
                 case "stash": return Stash(op, o);
@@ -324,7 +324,7 @@ namespace Suborned.Sim
                         Note("enter.out", serviceHeld ? $"The service door is held: {ValeName} and the Enforcer come out at the public door." : $"{Cap(ValeName)} and the Enforcer come out at the service lane."); StartFight(); break;
                     }
                 case "takedown": LandTakedown(op, o); break;
-                case "board": if (LentTarget(o.Target)) LandBoardLent(op); else LandBoard(op); break;
+                case "board": if (LentTarget(o.Target)) LandBoardLent(op); else LandBoard(op); break; case "take-car": LandTakeCar(op, o); break; // engine 0.53.0 (car.take)
                 case "move": LandStepOut(op, o); break; // only a boarded operative's move is an action: the step out
                 case "drop": case "stash": case "restrain": LandBodyOrder(op, o); break;
                 case "carry" when !IsOpId(o.Target): LandBodyOrder(op, o); break;

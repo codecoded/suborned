@@ -11,7 +11,9 @@
 //    or down; sooner when nobody is left on the map outside a car that has left, or at End (Withdraw), or when the cell's car leaves. The seal,
 //    the close and the cell down no longer fail after vale.out; the cell's car wrecked while the target is lent is no failure.
 //  · L9: the cell's car still standing at the end is lost (+witness-trail, hunted: debrief car-seen 'left'); the lent car seen leaving is
-//    +witness-trail and a lead, not hunted. L10 (the drive-round block point) is GameRivalBlock's BlockPoint. L11: RivalReachesLent.
+//    +witness-trail and a lead, not hunted. L10 (the drive-round block point) is GameRivalBlock's BlockPoint. L11 (RivalReachesLent) is retired
+//    (engine 0.53.0, brief 105: nobody takes anyone from a car). Engine 0.53.0 (car.take, GameTakeCar.cs): the lend generalised. The second cell
+//    car is lentId: the official car lent at the in-car Take, or any standing car taken by Take car (its point, heading and lane kept at the take).
 // Hashed in HashLend, no bytes until the car is lent: with car.lend.split 0 every run hashes as 0.41.0 (with F1-F3, V1-V2).
 using System;
 using System.Collections.Generic;
@@ -35,16 +37,16 @@ namespace Suborned.Sim
         bool lentLeft; int splitEnd = INF; Pt[] lentLane = Array.Empty<Pt>(); long lentHalf; Stand? lentStand;
         Path? driverOff; int driverOffStart = -1;
 
-        static bool LentTarget(string t) => t == "car:official" || t == "official";
+        bool LentTarget(string t) => t == lentId || (lentId == "car:official" && t == "official");
         /// <summary>Where an operative sits in the lent car, and where he steps out (the road side, off its ground).</summary>
-        Pt LentSeat => Walk.NearestFree(CarPos()) ?? CarPos();
-        Pt LentSideOut => BesideCar(CarPos(), -1);
+        Pt LentSeat => Walk.NearestFree(LentPos()) ?? LentPos();
+        Pt LentSideOut => lentId == "car:official" ? BesideCar(CarPos(), -1) : Beside(takenAt, takenHead, -1);
         bool FightAtLent => Lent && !lentLeft && FightBranch == "loud" && Vale == ValeAt.Lent;
         /// <summary>The stand whose police stands the fight uses: the lent car's while the loud fight is at it, else the cell's car's.</summary>
         Stand FightStandNow => FightAtLent && lentStand != null ? lentStand : CurStand;
         bool LentHasDriver => Array.Exists(Ops, o => o.InLent && !o.LeftMap && !o.Down);
         Op? LentStanding() { foreach (var o in Ops) if (o.InLent && !o.LeftMap && !o.Down) return o; return null; }
-        bool AtLent(Pt p) { if (!Lent || lentLeft) return false; int d = CarBodyCm("car:official", p); return d >= 0 && d <= R.CarReachCm; }
+        bool AtLent(Pt p) { if (!Lent || lentLeft) return false; int d = CarBodyCm(lentId, p); return d >= 0 && d <= R.CarReachCm; }
 
         // ---------------------------------------------------------------- the lend (L1)
 
@@ -75,9 +77,11 @@ namespace Suborned.Sim
         /// <summary>The lent car disabled (CarDisable): it stays; the Enforcer steps out with the target (the one-car way from here).</summary>
         void LentDisabled()
         {
-            foreach (var o in Ops) if (o.InLent && !o.LeftMap) { o.InCar = false; o.InLent = false; o.Pos = Walk.NearestFree(LentSideOut) ?? LentSideOut; }
-            if (Vale == ValeAt.Lent) Vale = Enforcer.Down ? ValeAt.Pickup : ValeAt.WithEnforcer;
-            Note("car.out", $"{Cap(ValeName)}'s car is disabled: the Enforcer gets out with him.");
+            bool any = false, vale = Vale == ValeAt.Lent;
+            foreach (var o in Ops) if (o.InLent && !o.LeftMap) { o.InCar = false; o.InLent = false; o.Pos = Walk.NearestFree(LentSideOut) ?? LentSideOut; any = true; }
+            if (lentId == "car:official") Note("car.out", $"{Cap(ValeName)}'s car is disabled: the Enforcer gets out with him.");
+            if (any || vale) ShotOutNote(lentId, vale); // engine 0.53.0 (brief 105): car.shot-out
+            if (vale) { if (lentId == "car:official" && Enforcer.Down) Vale = ValeAt.Pickup; else ValeOutOfCar(); } // engine 0.42.0: by his own car; 0.53.0: a taken car's law
         }
 
         // ---------------------------------------------------------------- Board, the hold, Go (L3, L4, L6)
@@ -88,9 +92,10 @@ namespace Suborned.Sim
             if (op.Running) return No("board-running", "a running operative doesn't board: stop first");
             if (op.Id == OpId.Tech && Tethered) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body: the car seats the cell and the target");
-            if (CarDisabled("car:official")) return No("car-disabled", $"{Cap(ValeName)}'s car is disabled");
-            if (!AtLent(op.Pos)) return No("stand-at-car", $"stand at {ValeName}'s car", cm: R.CarReachCm);
-            if (LentStanding() is Op x) return No("board-lent-full", $"Only one of us drives {ValeName}'s car: the {Sim.Op.Name(x.Id)} is at the wheel.");
+            if (CarDisabled(lentId)) return No("car-disabled", $"{Cap(LentName)} is disabled");
+            if (!AtLent(op.Pos)) return No("stand-at-car", $"stand at {LentName}", cm: R.CarReachCm);
+            if (lentId == "car:official" && LentStanding() is Op x) return No("board-lent-full", $"Only one of us drives {ValeName}'s car: the {Sim.Op.Name(x.Id)} is at the wheel.");
+            if (lentId != "car:official" && SeatsFull(op) is string full) return full; // engine 0.53.0 (car.take): the kind's seats
             op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = "";
             Engage(op, o, R.BoardS + (op.Carrying.HasValue ? R.CarryS : 0));
             return "";
@@ -98,16 +103,17 @@ namespace Suborned.Sim
         void LandBoardLent(Op op)
         {
             if (op.Down) return;
-            if (!AtLent(op.Pos) || LentStanding() != null) { Note("board.missed", $"The {Sim.Op.Name(op.Id)} can't get into {ValeName}'s car."); return; }
+            if (!AtLent(op.Pos) || (lentId == "car:official" ? LentStanding() != null : SeatsFull(op) != null)) { Note("board.missed", $"The {Sim.Op.Name(op.Id)} can't get into {LentName}."); return; }
             op.InCar = true; op.InLent = true; op.Pos = LentSeat; op.Walk = null; op.WalkMm = 0; op.Running = false; op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = "";
             string with = "";
             if (op.Carrying.HasValue) { var c = OpOf(op.Carrying.Value); op.Carrying = null; c.CarriedBy = null; c.InCar = true; c.InLent = true; c.Pos = op.Pos; with = " with the " + Sim.Op.Name(c.Id); }
-            Note("board.in", $"The {Sim.Op.Name(op.Id)} is in {ValeName}'s car{with}.");
+            if (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) { Vale = ValeAt.Lent; with = $" with {ValeName}"; Chain.Add("vale-in-taken-car"); } // engine 0.53.0 (car.take)
+            Note("board.in", $"The {Sim.Op.Name(op.Id)} is in {LentName}{with}.");
         }
 
         /// <summary>Host read (and LEND-12): a hostile standing at p would hold the lent car (its hold or its lane).</summary>
         public bool LentHoldsAt(Pt p) => Lent && !lentLeft && HoldsLent(p);
-        bool HoldsLent(Pt p) => G.Within(p, CarPos(), R.HoldCm) || InLentLane(p);
+        bool HoldsLent(Pt p) => G.Within(p, LentPos(), R.HoldCm) || InLentLane(p);
         /// <summary>On the lent car's lane: within its half-width of the lane's line, on a carriageway or on a drive.</summary>
         bool InLentLane(Pt p)
         {
@@ -117,7 +123,7 @@ namespace Suborned.Sim
             foreach (var d in S.Drives) if (CarGeo.Inside(p, d.Poly)) return true;
             return false;
         }
-        Pt LentLaneAt(int cm) => lentLane.Length >= 2 ? Walk.NearestFree(new Path(lentLane).At((long)cm * 10)) ?? lentLane[0] : CarPos();
+        Pt LentLaneAt(int cm) => lentLane.Length >= 2 ? Walk.NearestFree(new Path(lentLane).At((long)cm * 10)) ?? lentLane[0] : LentPos();
 
         /// <summary>The lent car's holders now, in id order (L6): the HUD names them, its Go's refusal lists them. Read-only.</summary>
         public List<string> LentHolders()
@@ -146,9 +152,9 @@ namespace Suborned.Sim
         {
             if (Over) return No("mission-over", "the mission is over");
             if (!Lent || lentLeft) return No("car-left", $"{Cap(ValeName)}'s car is not ours to drive");
-            if (CarDisabled("car:official")) return No("car-disabled", $"{Cap(ValeName)}'s car is disabled");
-            if (!LentHasDriver && !GoWouldWait("car:official")) return No("car-no-driver", "nobody aboard can drive: only the downed are in the car");
-            var bx = OfficialBoxers(); var hs = LentHolders();
+            if (CarDisabled(lentId)) return No("car-disabled", $"{Cap(LentName)} is disabled");
+            if (!LentHasDriver && !GoWouldWait(lentId)) return No("car-no-driver", "nobody aboard can drive: only the downed are in the car");
+            var bx = LentBoxers(); var hs = LentHolders();
             if (bx.Count > 0) return No("car-boxed", BoxedWords(bx, hs), ids: BoxedIds(bx, hs));
             if (hs.Count > 0) return No("car-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs));
             return "";
@@ -165,9 +171,8 @@ namespace Suborned.Sim
         {
             var why = LentRefusal(); if (why.Length > 0) { goRefusedAt = Tick; goRefused = refusal.code ?? ""; return why; }
             if (GoWaitFor(go) is string w) return w; // engine 0.43.0 (G1)
-            ShoveOffWay(OfficialWay(), "car:official"); lentLeft = true; // brief 098 step 1b: a wreck on its way out is pushed aside as it goes
-            var by = CarWatcherAt(CarPos());
-            if (by.Length > 0) { LentSeenBy = by; if (incidents.Add("lent-seen")) AddTrail(R.WitnessTrail, "lent-seen:" + by); Note("lent.seen", $"The {by} sees {ValeName}'s car leave: a lead, not our car."); }
+            ShoveOffWay(LentWay(), lentId); var by = CarWatcherAt(LentPos()); lentLeft = true; TakenLeaves(); // brief 098 step 1b: a wreck on its way out is pushed aside as it goes; engine 0.53.0: a taken car leaves the street
+            if (by.Length > 0) { LentSeenBy = by; if (incidents.Add("lent-seen")) AddTrail(R.WitnessTrail, "lent-seen:" + by); Note("lent.seen", $"The {by} sees {LentName} leave: a lead, not our car."); }
             var names = new List<string>(); foreach (var o in Ops) if (o.InLent) { o.LeftMap = true; names.Add(Sim.Op.Name(o.Id)); }
             if (Vale == ValeAt.Lent)
             {
@@ -188,16 +193,6 @@ namespace Suborned.Sim
             if (!Lent || Vale != ValeAt.Lent) return false;
             foreach (var o in Ops) if (!o.Down && !o.Inside && !o.InCar && !o.LeftMap && G.Within(o.Pos, car, R.SafeAmbushCm)) return true;
             return false;
-        }
-        /// <summary>L11, in the final fight: a rival at the lent car's body with the target in it, no drawn operative standing within cell.reach of it.</summary>
-        bool RivalReachesLent()
-        {
-            if (lentLeft) return false;
-            bool rival = false;
-            foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && CarBodyCm("car:official", h.Pos(Tick)) is int d && d >= 0 && d <= R.CarReachCm) rival = true;
-            if (!rival) return false;
-            foreach (var op in Ops) if (Guards(op) && G.Within(op.Pos, CarPos(), actReach)) return false;
-            return true;
         }
 
         // ---------------------------------------------------------------- after vale.out (L8, L9)
@@ -264,7 +259,7 @@ namespace Suborned.Sim
             var l = new List<(string, string, string)>();
             foreach (var o in Ops)
             {
-                if (o.LeftMap || o.InCar || ClimbingInto(o, "car") || ClimbingInto(o, "car:official")) continue; // engine 0.43.0 (G1)
+                if (o.LeftMap || o.InCar || ClimbingInto(o, "car") || ClimbingInto(o, lentId)) continue; // engine 0.43.0 (G1)
                 l.Add((Sim.Op.Name(o.Id), ValeOutTick != INF ? "captured" : "stays", o.Down ? "downed" : ValeOutTick != INF ? "police" : "lent"));
             }
             return l;
@@ -272,11 +267,11 @@ namespace Suborned.Sim
         /// <summary>The close with the target still in the lent car (CloseStep): why it never went.</summary>
         (string why, Blamed? who, string words) LentCloseWhy()
         {
-            if (!LentHasDriver) return ("no-driver", Locate("car:official", "closed-in"), "nobody left who can drive");
-            var bx = OfficialBoxers(); var hs = LentHolders();
-            if (bx.Count > 0) return ("boxed", Locate(LocateCar(bx[0]), "closed-in"), $"{ValeName}'s car boxed in by {string.Join(", ", bx)}");
-            if (hs.Count > 0) return ("car-held", Locate(hs[0], "closed-in"), $"{ValeName}'s car held");
-            return ("no-go", Locate("car:official", "closed-in"), $"{ValeName}'s car never told to go");
+            if (!LentHasDriver) return ("no-driver", Locate(lentId, "closed-in"), "nobody left who can drive");
+            var bx = LentBoxers(); var hs = LentHolders();
+            if (bx.Count > 0) return ("boxed", Locate(LocateCar(bx[0]), "closed-in"), $"{LentName} boxed in by {string.Join(", ", bx)}");
+            if (hs.Count > 0) return ("car-held", Locate(hs[0], "closed-in"), $"{LentName} held");
+            return ("no-go", Locate(lentId, "closed-in"), $"{LentName} never told to go");
         }
 
         /// <summary>L10: a stand whose car stands on a drive blocks across the drive's mouth (with the lend on): on the carriageway, half a car's length
@@ -326,6 +321,7 @@ namespace Suborned.Sim
         {
             if (!Lent) return;
             h.S("lend").I(LentTick).I(ValeOutTick).Z(lentLeft).I(splitEnd).S(LentSeenBy).I(driverOffStart).I(lentLane.Length);
+            if (lentId != "car:official") h.S(lentId).P(takenAt).P(takenHead); // engine 0.53.0 (car.take): no bytes until a car is taken
             foreach (var o in Ops) h.Z(o.InLent).Z(o.LeftMap);
         }
     }

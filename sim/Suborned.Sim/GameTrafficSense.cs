@@ -69,7 +69,7 @@ namespace Suborned.Sim
         IEnumerable<(string id, Pt at, Pt h, bool moving)> MissionCarsNow()
         {
             if (CurStand != null) yield return ("car:getaway", GetawayCarPos(), GetawayHeading(), getawayPath != null);
-            if (!lentLeft) yield return ("car:official", CarPos(), OfficialHeading(), !OfficialStanding());
+            if (!(lentLeft && lentId == "car:official")) yield return ("car:official", CarPos(), OfficialHeading(), !OfficialStanding());
             if (RivalCarPose() is var rp && rp.HasValue) yield return ("car:rivals", rp.Value.pos, rp.Value.heading, CarMoving);
         }
         /// <summary>Where a mission car will be at `t`: along the leg it drives (its own profile), or at the start of the one its timetable begins by
@@ -81,7 +81,7 @@ namespace Suborned.Sim
             {
                 case "car:getaway": if (getawayPath == null) return null; { int k = Math.Max(0, Math.Min(t - getawayStart, getawayProf!.Length - 1)); return (getawayPath.At(getawayProf[k]), getawayPath.Heading(getawayProf[k])); }
                 case "car:official":
-                    if (lentLeft || carStoppedAt.HasValue || OfficialOut) return null;
+                    if ((lentLeft && lentId == "car:official") || carStoppedAt.HasValue || OfficialOut) return null;
                     if (valeDriveStart >= 0 && carToService != null && carDrive != null) { if (t >= CarInBayTick) return null; long mm = CarDriveMm(t); return (carToService.At(mm), carToService.Heading(mm)); }
                     { int due = T(valeAtCarS) + T(R.ValeInS); if (!Driver.Turned || Driver.Down || Start.ValeWaits || (Vale != ValeAt.Leaving && Vale != ValeAt.Pickup) || t < due || Tick > due) return null; // due, not yet past: a drive that did not start is no car coming
                       officialOut ??= new Path(S.CarServicePath); officialProf ??= CarProfile(officialOut); int k = Math.Min(t - due, officialProf.Length - 1); return (officialOut.At(officialProf[k]), officialOut.Heading(officialProf[k])); }
