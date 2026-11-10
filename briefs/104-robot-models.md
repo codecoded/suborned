@@ -247,6 +247,7 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
 **Sound, Chime's paid pass:**
 - **Cost:** $0.54 of $3, 48 calls: Seed Audio 1.0 and Mirelo. Report: `briefs/104/chime/robot-sfx.html`.
 - **The shot.** Sky: "the gun shot doesn't really match, I think robot_shot might be a bit better. Paid one has a reload sound, too long".
-  - The shot is **the synth `robot_shot`** (round 1).
-  - Aster cut the paid crack without its slide clacks, `paid/shot_slide_t1_crack.wav` (0.6 s), in case it's wanted as an alternative.
+  - Aster then cut the paid crack without its slide clacks: `briefs/104/chime/paid/shot_slide_t1_crack.wav`, 0.6 s, trimmed at 0.6 s with a 0.18 s fade, made with ffmpeg from `shot_slide_t1`.
+  - Sky: "yeah, shot slide trimmed works actually". **The shot is `shot_slide_t1_crack`.** The synth `robot_shot` is the fallback.
+  - Chime should make the trim part of `make/robot_paid.py`, so it rebuilds like the other clips.
 - **The siren** is still for Sky to pick. Chime's pick is `siren_yelp_t3`.
