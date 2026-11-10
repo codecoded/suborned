@@ -2,7 +2,7 @@
   "schema": "suborned.geometry.summary/1",
   "brief": "055",
   "world": {
-    "sha256": "735066aa9b11bd8ccddef81f2abf3ba1ec97b4ddecff0ace4d4a44477852c06c",
+    "sha256": "eb88260892ebcc5cd938bfd1394982e66e75b6a2f46c9906776e7f3489039082",
     "stale": false
   },
   "window": {
@@ -40,8 +40,8 @@
     "invisibleWall": 102
   },
   "sight": {
-    "drawnAtEye": 481,
-    "drawnAtChest": 719,
+    "drawnAtEye": 482,
+    "drawnAtChest": 720,
     "occludersWithGaps": [
       {
         "id": "plot-04",
@@ -73,11 +73,12 @@
     "blockedBy": ""
   },
   "kit": {
-    "measured": 414,
-    "offPivotOrSize": 21,
+    "measured": 415,
+    "offPivotOrSize": 22,
     "placedHere": [
       "BikeRack_Play: size 0.32 m off the catalogue",
-      "ShrubMound_TB: size 0.24 m off the catalogue"
+      "ShrubMound_TB: size 0.24 m off the catalogue",
+      "RecordsEntrance: size 0.07 m off the catalogue"
     ]
   },
   "rules": [
@@ -137,7 +138,7 @@
     },
     {
       "id": "K-1",
-      "count": 2,
+      "count": 3,
       "unit": "pieces",
       "example": "BikeRack_Play: size 0.32 m off the catalogue"
     }

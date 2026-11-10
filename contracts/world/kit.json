@@ -80854,11 +80854,11 @@
     -0.262
    ],
    "front": "+Z",
-   "tris": 2704,
+   "tris": 3970,
    "materials": [
+    "DK_Brass_Civic",
     "DK_Eye_Seafoam",
     "DK_Eye_Ivory",
-    "DK_Brass_Civic",
     "DK_Chrome",
     "DK_Eye_Coral",
     "DK_Enamel_Charcoal",
@@ -80874,12 +80874,12 @@
    "lods": [
     {
      "file": "Models/Signals/DK_HoverCamera_L1.fbx",
-     "tris": 674,
+     "tris": 990,
      "screen": 0.008
     },
     {
      "file": "Models/Signals/DK_HoverCamera_L2.fbx",
-     "tris": 159,
+     "tris": 235,
      "screen": 0.003
     }
    ],
@@ -80889,8 +80889,22 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Signals/DK_HoverCamera.fbx",
-     "sha256": "1bc04649bbb9dd298073cd5ba8362bd84c396cfbc6a6b60faa7c998ed18bd8b3",
-     "bytes": 106476
+     "sha256": "d238387c3f2643ab5608076b60c8a90564a9137e0f6e65c7c25b11edaa87d596",
+     "bytes": 135980
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Brass_Civic.mat",
+     "sha256": "b156b8c4533f44f780616cbcf6ee76239f4f61d81d1e089b322f01203dc3dbdc",
+     "bytes": 4042
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Brass_Civic.mat.meta",
+     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
+     "bytes": 188
     },
     {
      "root": "generated",
@@ -80918,20 +80932,6 @@
      "role": "material-meta",
      "path": "Materials/DK_Eye_Ivory.mat.meta",
      "sha256": "377253716606ba4a315da58a2f453cb858eb5d11fddb294f18e6b460032eeedb",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Brass_Civic.mat",
-     "sha256": "b156b8c4533f44f780616cbcf6ee76239f4f61d81d1e089b322f01203dc3dbdc",
-     "bytes": 4042
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Brass_Civic.mat.meta",
-     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
      "bytes": 188
     },
     {
@@ -81078,15 +81078,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Signals/DK_HoverCamera_L1.fbx",
-     "sha256": "4c6b1d00c789284d153725412f4f9d29b2e8b9a07f1a29324721113c3b8a3d7c",
-     "bytes": 62172
+     "sha256": "571ae8049f318a129d360b561f86691d5313cea601ff4d1e999a402bc211dbe2",
+     "bytes": 72604
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Signals/DK_HoverCamera_L2.fbx",
-     "sha256": "3e3aa71985686baef4f22a56b48b5f003d82ec1f55f2e7bf48a8d4fbd39d375d",
-     "bytes": 41212
+     "sha256": "eb65d1d7dd352a800eab218a1ca180d1a068fc07492d6b587bc2e63888bdb88e",
+     "bytes": 44284
     }
    ],
    "tags": {
@@ -83452,17 +83452,17 @@
    "id": "MastCamera",
    "category": "Signals",
    "size": [
-    1.1353,
-    8.1405,
-    1.0087
+    0.443,
+    7.93,
+    1.0588
    ],
    "pivot": "origin-ground",
    "pivotOffset": [
-    -0.057,
-    -0.07
+    0,
+    -0.095
    ],
    "front": "+Z",
-   "tris": 2182,
+   "tris": 2454,
    "materials": [
     "DK_Limestone",
     "DK_Enamel_Teal__southside",
@@ -83479,12 +83479,12 @@
    "lods": [
     {
      "file": "Models/Signals/DK_MastCamera_L1.fbx",
-     "tris": 545,
+     "tris": 613,
      "screen": 0.008
     },
     {
      "file": "Models/Signals/DK_MastCamera_L2.fbx",
-     "tris": 129,
+     "tris": 144,
      "screen": 0.003
     }
    ],
@@ -83494,8 +83494,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Signals/DK_MastCamera.fbx",
-     "sha256": "03087ac118e14ba42b23b48c0ac20cee417f91e95611c89751a13a7cbc04b398",
-     "bytes": 77100
+     "sha256": "a6e6c270b4b3a5c5159e461d0c0341c59a833bd094adb9bb0e2b2c01ac43dd19",
+     "bytes": 83628
     },
     {
      "root": "generated",
@@ -83695,15 +83695,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Signals/DK_MastCamera_L1.fbx",
-     "sha256": "bbf60bb4d2cde58981ac5a2bf2a64e52dce1636f2913e3adb6013196f0048cb8",
-     "bytes": 48652
+     "sha256": "4045f5288ca4af323a95798cdef50794544b22eaf569bbdd873248a528ec3872",
+     "bytes": 51100
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Signals/DK_MastCamera_L2.fbx",
-     "sha256": "4b613d7d1316e90caab617fa4a18a2d572e7236999eab30a3d4de5c039b772eb",
-     "bytes": 33708
+     "sha256": "056a17c99be8893836607c31bf45d6ae6f975c97bbbdb5b9c92213e231929344",
+     "bytes": 34300
     }
    ],
    "tags": {
@@ -83724,17 +83724,17 @@
    "id": "MastCamera_Lamp",
    "category": "Signals",
    "size": [
-    1.7653,
-    8.2,
-    1.2503
+    1.7929,
+    8.195,
+    1.2886
    ],
    "pivot": "origin-ground",
    "pivotOffset": [
-    0.177,
-    0.331
+    0.191,
+    0.351
    ],
    "front": "+Z",
-   "tris": 10760,
+   "tris": 14674,
    "materials": [
     "DK_Limestone",
     "DK_Brass_Civic",
@@ -83755,12 +83755,12 @@
    "lods": [
     {
      "file": "Models/Signals/DK_MastCamera_Lamp_L1.fbx",
-     "tris": 2687,
+     "tris": 3665,
      "screen": 0.008
     },
     {
      "file": "Models/Signals/DK_MastCamera_Lamp_L2.fbx",
-     "tris": 641,
+     "tris": 877,
      "screen": 0.003
     }
    ],
@@ -83770,8 +83770,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Signals/DK_MastCamera_Lamp.fbx",
-     "sha256": "074728ce20345345f5d75d7042f5c7d28272cf25ef46454424a938c629428785",
-     "bytes": 322604
+     "sha256": "b5db0be3633d11c026cfbeb6769d27f936c913d8e04aceb1e38fa3ab234d12b5",
+     "bytes": 446364
     },
     {
      "root": "generated",
@@ -84009,15 +84009,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Signals/DK_MastCamera_Lamp_L1.fbx",
-     "sha256": "3378339838de95ab3144becc034817f83132667347fa3c62de9c1420dadcc44f",
-     "bytes": 139916
+     "sha256": "16a3b3ce4b97a1741a1f1eedbcfff9bcf3022a813a258536673a92dc6ad01f4a",
+     "bytes": 182780
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Signals/DK_MastCamera_Lamp_L2.fbx",
-     "sha256": "6214c0062c005e4da8885525d520d1a79bfe88695876d35a0f37e2e98b6d0d5f",
-     "bytes": 67868
+     "sha256": "b8df1a95e3949c02805ae464d7ca9f43cbd8df0e20180f63a923648cf7df6b96",
+     "bytes": 80684
     }
    ],
    "tags": {
