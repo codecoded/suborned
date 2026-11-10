@@ -218,3 +218,14 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
   - the kit step (`bun run kit`, collide, sim:site);
   - Latch's check that the parts import into Unity with no added rotation;
   - the runtime: face swap, roll, lean, aim, and the hatch clip.
+
+**Sky: "sure - though I would put a siren light on his head instead of antenna".** Vela, round 2:
+- **Siren:** a `Beacon` replaces the halo. It has a chrome base, a red glass dome 0.152 m across with a four-bar cage, and a spinning `BeaconLamp` inside (a mirror and bulb). The material is `DK_PatrolBot104_Beacon`, red, with emission off as built; the game drives it.
+  - The spinning mirror only shows if the dome gets see-through glass in Unity (Latch). Until then the spin is an emission sweep.
+  - Glint judges the lit red in Unity.
+- **Ball:** the halves are now warm satin gunmetal (`DK_Gunmetal_Warm`). The cream-halves option merged with the body's tip.
+- **Hatch:**
+  - **Panel:** 25 mm thick, with a gunmetal inner face, two stiffeners and two barrel hinges.
+  - **Well:** gunmetal, with a chrome lip, two ribs and two amber lamps.
+  - **Rail:** nickel.
+- **Size and budget:** 8,608 triangles and 1.271 m tall. The old patrol robot builds identically.

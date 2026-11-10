@@ -8,8 +8,11 @@ the screen shows a face texture from faces.py (render-only: the game swaps face 
   three_closed                     three-quarter front (35 deg off the front, 12 deg down), calm face
   three_open                       the same camera: the hatch open (-150 deg about its hinge), the sidearm out 0.11 m, the cross face, the body leaning 6 deg forward
                                    about the ball contact, the ball rolled 40 deg, the right arm raised and its hand bent
-  hatch_open                       a close look at the open hatch and the sidearm (same pose), 1400 px/m
-  play / play_person               the play camera (ortho size 10 on 1080 px = 54 px/m, 38 deg down, yaw 30), alone and beside a 1.8 m figure
+  hatch_open                       a close look at the open hatch and the sidearm (same pose), 1200 px/m
+  hatch_front / hatch_side         the same, from nearly in front and from the robot's left
+  play / play_person               the play camera (ortho size 10 on 1080 px = 54 px/m, 38 deg down, yaw 30), alone and beside a 1.8 m figure, the beacon lit
+  play_ball                        the same, two robots: the kit's gunmetal ball (right) and the cream-halves variant (left: halves and band swapped), beacons lit
+  beacon_unlit / beacon_lit        the beacon close (1400 px/m); lit = the glass's emission on (DK_PatrolBot104_Beacon x LIT) and a small red point light in the dome
 Writes <shot>.png and pivots.json (each part's pivot as imported)."""
 
 import json
@@ -45,9 +48,16 @@ SHOTS = {
     "three_closed": (35.0, 12.0, 500.0, (1.3, 1.5), (0.0, 0.0, 0.66), "calm", False),
     "three_open": (35.0, 12.0, 500.0, (1.3, 1.5), (0.0, -0.05, 0.66), "cross", True),
     "hatch_open": (28.0, 18.0, 1200.0, (0.6, 0.5), (0.0, -0.2, 0.64), "cross", True),
+    "hatch_front": (12.0, 22.0, 1200.0, (0.45, 0.4), (0.0, -0.2, 0.6), "cross", True),
+    "hatch_side": (80.0, 5.0, 1200.0, (0.45, 0.4), (0.0, -0.2, 0.62), "cross", True),
     "play": (30.0, 38.0, 54.0, (3.0, 2.4), (0.4, 0.0, 0.8), "calm", False),
     "play_person": (30.0, 38.0, 54.0, (3.0, 2.4), (0.4, 0.0, 0.8), "calm", False),
+    "play_ball": (30.0, 38.0, 54.0, (3.6, 2.4), (0.1, 0.0, 0.8), "calm", False),
+    "beacon_unlit": (30.0, 14.0, 1400.0, (0.34, 0.26), (0.0, 0.0, 1.165), "calm", False),
+    "beacon_lit": (30.0, 14.0, 1400.0, (0.34, 0.26), (0.0, 0.0, 1.165), "calm", False),
 }
+LIT = {"play_person", "play_ball", "beacon_lit"}
+LIT_EMIT = (1.0, 0.012, 0.0), 0.9  # the game drives this; a render-only stand-in for the alert state
 
 
 def studio(samples):
@@ -141,7 +151,8 @@ def load(src, fbx):
             for sl in o.material_slots:
                 sl.material = mats.get(sl.material.name.removesuffix("_fbx"))
     bpy.context.view_layer.update()
-    return {("Body" if o.name == "DK_PatrolBot104" else o.name.replace("DK_PatrolBot104_", "")): o for o in objs}
+    name = lambda o: o.name.split(".")[0]  # noqa: E731  (a second import is suffixed .001)
+    return {("Body" if name(o) == "DK_PatrolBot104" else name(o).replace("DK_PatrolBot104_", "")): o for o in objs}
 
 
 def about(objs, pivot, axis, deg):
@@ -162,6 +173,23 @@ def pose_open(p):
     about([p["ForearmR"]], piv("ForearmR"), Vector((0.0, 1.0, 0.0)), 25.0)        # its hand bent at the elbow
     body = [o for n, o in p.items() if n != "Ball"]
     about(body, piv("Body"), "X", 6.0)                                           # the whole body leans forward about the ball contact
+
+
+def light_beacon(p):
+    """The alert state, render-only: the beacon glass emits, and a small red light in the dome spills on the crown and the cage."""
+    m = bpy.data.materials["DK_PatrolBot104_Beacon"]
+    b = m.node_tree.nodes["Principled BSDF"]
+    b.inputs["Emission Color"].default_value = (*LIT_EMIT[0], 1.0)
+    b.inputs["Emission Strength"].default_value = LIT_EMIT[1]
+    for o in [o for o in bpy.data.objects if o.name.endswith("BeaconLamp")]:
+        lt = bpy.data.lights.new("BeaconLight", "POINT")
+        lt.energy, lt.color, lt.shadow_soft_size = 6.0, (1.0, 0.2, 0.1), 0.03
+        lo = bpy.data.objects.new("BeaconLight", lt)
+        bpy.context.scene.collection.objects.link(lo)
+        lo.location = o.matrix_world.translation
+        o.hide_render = True  # inside the opaque dome; the light stands in for it
+    for o in [o for o in bpy.data.objects if o.name.endswith("_Beacon")]:
+        o.visible_shadow = False  # so the light inside reaches the crown (in Unity, a light on the beacon)
 
 
 def person():
@@ -195,8 +223,18 @@ def main():
         p["Screen"].material_slots[0].material = face_material(faces / f"{face}.png")
         if opened:
             pose_open(p)
-        if shot == "play_person":
+        if shot in ("play_person", "play_ball"):
             person()
+        if shot == "play_ball":  # the variant: the ball's halves cream, its band gunmetal, 0.7 m to the left
+            q = load(src, fbx)
+            q["Screen"].material_slots[0].material = face_material(faces / f"{face}.png")
+            swap = {"DK_Gunmetal_Warm": "DK_RobotEnamel_Cream", "DK_RobotEnamel_Cream": "DK_Gunmetal_Warm"}
+            for sl in q["Ball"].material_slots:
+                sl.material = mats.get(swap.get(sl.material.name, sl.material.name))
+            for o in q.values():
+                o.matrix_world = Matrix.Translation((-0.7, 0.0, 0.0)) @ o.matrix_world
+        if shot in LIT:
+            light_beacon(p)
         if pitch >= 90.0:  # the top view: no ground shadow under the plan
             bpy.data.objects["Plane"].hide_render = True
         place_camera(cam, yaw, pitch, ppm, frame, target)
