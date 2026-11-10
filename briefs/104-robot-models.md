@@ -87,3 +87,8 @@ Vela, then Sky, then Latch.
 - `P4-plate-dusk`: two petrol-pump patrol robots answering an alarm at dusk outside the Records Office, light bars on.
 
 Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3-plate-1`. 11 images in all, $0.
+
+**Sky: "Not really happy with them. Robot patrols would need guns, be armed as they fire at the agents don't they?"** Yes: GDD §07 says "a robot is an armed patrol unit", and at Alert 3 robots fire on a reported face (HI-ROBOT).
+- **Pass 5** keeps the livery and adds a visible 1950s-styled firearm: a carbine or a holstered sidearm, part of the design, a real gun, not a ray gun. The robots are serious and imposing, not cute.
+  - `P5-lineup-armed`: six broad, upright armoured robots with car-grille chests.
+  - `P5-plate-armed`: one on the square, carbine held low, light bar, visor face.
