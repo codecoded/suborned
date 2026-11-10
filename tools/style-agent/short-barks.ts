@@ -43,7 +43,7 @@ export const BARK_FAMILIES: { id: string; title: string; pick: (r: Row) => boole
 const ACKS_4: [string, string, string[]][] = [
   ['acts', 'Acknowledgements: watch, listen, the approaches, the call, the Tech\'s and the Enforcer\'s jobs', ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'disable', 'reroute', 'enter', 'take', 'takedown']],
   ['guns', 'Acknowledgements: fire, draw, holster, cease fire', ['fire', 'draw', 'holster', 'cease']], ['fire', 'Acknowledgements: volley, when to fire, panic, the field', ['volley', 'stance', 'panic', 'field']],
-  ['car', 'Acknowledgements: board, go, drive, withdraw, end, the range\'s spawn', ['board', 'go', 'drive-car', 'withdraw', 'end', 'spawn']], ['feet', 'Acknowledgements: walk, run, cancel', ['move', 'run', 'cancel']],
+  ['car', 'Acknowledgements: board, go, drive, withdraw, end, the range\'s spawn', ['board', 'take-car', 'go', 'drive-car', 'withdraw', 'end', 'spawn']], ['feet', 'Acknowledgements: walk, run, cancel', ['move', 'run', 'cancel']],
   ['bodies', 'Acknowledgements: carry, put down, hide, tie up', ['carry', 'drop', 'stash', 'restrain']],
 ];
 /** Guide /12: the acknowledgements that still speak under Fable's frequency (walks, runs, the car, fire and put down are silent), in three families. */

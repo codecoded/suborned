@@ -91,14 +91,12 @@
   { "key": "ack/run/scout", "line": "I'm running. People may notice.", "why": "WORTH, MECHANICS: the order card's warning read back." },
   { "key": "done/restrain/scout", "line": "I've tied them. They can't report us.", "why": "MECHANICS: “report” as a rule. WORTH: the card said so." },
   { "key": "win/enforcer", "line": "Popovic's away. Job done.", "why": "VOICE: any of the four could say it." },
-  { "key": "ack/move/enforcer", "line": "Taking a walk.", "why": "WORTH: the click narrated." },
-  { "key": "rivals-for-car/scout", "line": "Rivals walking up. Draw on them outside.", "why": "WORTH: the card's fix read out (the lozenge carries it). NATURAL: clipped." }
+  { "key": "ack/move/enforcer", "line": "Taking a walk.", "why": "WORTH: the click narrated." }
  ],
  "pass": [
   { "key": "ack/watch/scout", "line": "Leave them to me. Everybody has a habit.", "why": "Heard once a game: it lands her, glad of her trade, and promises only what a Watch gives." },
   { "key": "done/mislead/scout", "line": "He bought it. He'll be back, and he knows my face.", "why": "Pleased, then plain; tells what the card can't: he'll know her." },
   { "key": "vale-exits/scout", "line": "There he is. He's left the Office, heading for his car.", "why": "She sees it first; the glossary's words (he leaves the Office; “out” is the win)." },
-  { "key": "rivals-for-car/scout", "line": "They're walking up on our car. Nobody's outside with a gun.", "why": "What's wrong, as she sees it; the card keeps the fix." },
   { "key": "blocker/scout", "line": "One of them's making for the road to block our car.", "why": "News the player can act on, in her quick concrete way." },
   { "key": "win/scout", "line": "We did it! He's in the car and we're away!", "why": "A cheer: the one place she shouts for joy." },
   { "key": "ack/call/fixer", "line": "I'll ring Inez. She knows what to do.", "why": "Calm trust in someone they turned; the click isn't read back." },
@@ -126,7 +124,7 @@
   "ack": {
    "always": ["call", "enter", "take", "takedown/knockout", "takedown/kill", "end", "panic"],
    "first": ["watch", "listen", "mislead", "ask", "pay", "help", "pressure", "loop", "disable", "reroute", "draw", "carry", "stash", "restrain"],
-   "never": ["move", "run", "cancel", "holster", "cease", "stance", "board", "drive-car", "drop", "fire", "volley", "field", "spawn", "go", "withdraw", "takedown"]
+   "never": ["move", "run", "cancel", "holster", "cease", "stance", "board", "take-car", "drive-car", "drop", "fire", "volley", "field", "spawn", "go", "withdraw", "takedown"]
   },
   "arrive": ["ask", "pay", "help", "pressure", "takedown/struggle"],
   "done": ["mislead", "loop", "disable", "reroute", "enter", "take", "turn", "takedown/kill"],

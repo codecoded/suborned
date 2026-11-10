@@ -47,7 +47,7 @@ type Text = { dialogue: Row[]; events: Record<string, { kind: string; speakers: 
 /** A key is a verb, or verb/outcome for one row; a verb covers its rows with any outcome except one whose own key is listed (the sheet's `keys`). */
 const listed = (keys: string[], r: Row, all: string[]) => keys.some(k => k === `${r.verb}/${r.outcome}` || (k === r.verb && !all.includes(`${r.verb}/${r.outcome}`)));
 const NEVER: Record<string, string> = {
-  holster: 'the sidearm mark on the portrait shows it', board: 'the car shows who is aboard', 'drive-car': 'the car moving shows it', drop: 'the body on the ground shows it',
+  holster: 'the sidearm mark on the portrait shows it', board: 'the car shows who is aboard', 'take-car': 'the agent at its wheel and the car-taken card show it', 'drive-car': 'the car moving shows it', drop: 'the body on the ground shows it',
   fire: 'the first shot has its own going-loud line; the muzzle flash shows the rest', go: 'the end\'s own lines follow at once (the win, or the withdrawal)', withdraw: 'the withdrawal\'s own line follows at once',
   takedown: 'the order\'s way (knockout or kill) picks its own row, once the host passes it',
 };
