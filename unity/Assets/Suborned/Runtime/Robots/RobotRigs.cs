@@ -24,6 +24,8 @@ namespace Suborned.Robots
             public Face[] moods = Array.Empty<Face>();
             /// <summary>Brief 031: Vela's `attention.stages` (calm, noticed, wary, reporting), the watcher's four faces on this display.</summary>
             public Face[] attention = Array.Empty<Face>();
+            /// <summary>Brief 104: the fight faces (PatrolBot104: focused when drawn, hurt when hit); empty = none.</summary>
+            public Face focused = new(), hurt = new();
         }
         [Serializable]
         public sealed class Table
@@ -70,6 +72,7 @@ namespace Suborned.Robots
             var st = new RobotFace.Expression[r.attention?.Length ?? 0];
             for (int i = 0; i < st.Length; i++) st[i] = new RobotFace.Expression(r.attention[i].left ?? "", r.attention[i].right ?? "", r.attention[i].mouth ?? "");
             face.SetStages(st); // brief 031: the attention faces (empty: the robot shows no stage)
+            face.SetFight(E(r.focused, default), E(r.hurt, default)); // brief 104: the fight faces (empty: none)
             if (!go.TryGetComponent<RobotIdle>(out var idle)) idle = go.AddComponent<RobotIdle>();
             idle.Configure(face, r.range, r.turn, r.hold, r.home, t.lead, t.gaze);
             return face;

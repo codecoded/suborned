@@ -251,3 +251,30 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
   - Sky: "yeah, shot slide trimmed works actually". **The shot is `shot_slide_t1_crack`.** The synth `robot_shot` is the fallback.
   - Chime should make the trim part of `make/robot_paid.py`, so it rebuilds like the other clips.
 - **The siren** is still for Sky to pick. Chime's pick is `siren_yelp_t3`.
+
+## In the game: build 0.2.309 (Latch, Aster's kit step)
+- **Both roles:** `DK_PatrolBot104` draws the patrol and the response's robot model, on the shared LED face (DK_RobotFace and RobotFace.cs, with four new glyphs: focused and hurt).
+  - The Handover sends no response robots, because the engine sends them only from a dock and the square's dock is empty. So the patrol is the mission's only robot.
+- **New code:**
+  - `Runtime/Robots/PatrolBot.cs`: ball, lean, hatch, slide, recoil, flash, arms and beacon, from Vela's demo maths.
+  - `Runtime/Play/HostViews.PatrolBot.cs`: read-only from the engine.
+  - `Runtime/Play/Proof104.cs`: the r104 proof.
+- **The beacon** lights from Alert 2 or when the weapon is out. The view counts the weapon as out when it's drawn or has a target, because the engine's patrol never sets "drawn".
+- **r104 passes:**
+  - 11 parts, 0.0 cm off Vela's pivots, no added rotation;
+  - the ball rolls 1.02 m per 1.00 m;
+  - the draw shows the hatch at 150°, the gadget out 0.140 m, the focused face and the beacon lit;
+  - only the face carries a property block.
+- **Kit step:**
+  - `kit.json` adopted, and the cover and skyline digests regenerated (Latch).
+  - `bun run collide` (Aster) added only the PatrolBot104 record.
+  - `bun run sim:site` is unchanged.
+- **Batch:** everything through game-build and its proofs passed, with 13 shots and a clean budget.
+  - late-fight wasn't judged ("NOISY MACHINE": a Blender bake from another project was using about 1,600 % CPU), and tp-long didn't run.
+  - Next, when the Studio is quiet: `bun run batch --from late-fight`.
+- **Open:**
+  - Glint: the beacon's red under bloom, and its placeholder emission.
+  - Splice: five skyline tests fail on an extra CAP-3, also at HEAD.
+  - The robot's view keeps moving while paused.
+  - The square's dock stays empty, so no robot units appear in the Handover. Sky to decide.
+  - Chime's sound, once Sky picks the siren.

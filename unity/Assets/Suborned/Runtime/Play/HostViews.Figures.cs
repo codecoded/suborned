@@ -341,7 +341,7 @@ namespace Suborned.Play
             if (t.Find("body")?.GetComponent<MeshRenderer>() is MeshRenderer mr) mr.enabled = false;
             foreach (var r in inst.GetComponentsInChildren<Renderer>()) r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
             // brief 026: a robot model gets its live face and servo head (robots.json), seeded by the host key; view only
-            if (host.robotRigs != null && host.robotGlyphs && Suborned.Robots.RobotRigs.Attach(inst, host.robotRigs, host.robotGlyphs, key, Suborned.Robots.RobotRigs.KindOf(model.name)) != null
+            if (Suborned.Robots.PatrolBot.Is(model)) BotView(key, inst); /* brief 104: Vela's PatrolBot104, its parts and its LED face (HostViews.PatrolBot) */ else if (host.robotRigs != null && host.robotGlyphs && Suborned.Robots.RobotRigs.Attach(inst, host.robotRigs, host.robotGlyphs, key, Suborned.Robots.RobotRigs.KindOf(model.name)) != null
                 && inst.GetComponent<Suborned.Robots.RobotIdle>() is { } idle) robotHeads[key] = (idle, false);
             else if (Suborned.Robots.RobotRigs.KindOf(model.name) == null) StageRobot(key, inst); // brief 031: the patrol robot's stage face (M_RobotFace), when the model has one
             return inst.transform;

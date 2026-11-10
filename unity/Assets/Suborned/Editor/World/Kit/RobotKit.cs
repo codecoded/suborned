@@ -64,6 +64,7 @@ namespace Suborned.World
                         kind = kv.Key, range = J.F(r, "range"), turn = J.F(r, "turn"), home = J.F(r, "home"), corner = J.F(r, "corner"),
                         hold = J.P(r, "hold"), eye = J.P(r, "eye"), mouth = J.P(r, "mouth"), grid = new Vector2Int(Mathf.RoundToInt(g.x), Mathf.RoundToInt(g.y)),
                         neutral = Face(J.Get(r, "neutral")), angry = Face(J.Get(r, "angry")), moods = moods.ToArray(), attention = Stages(r),
+                        focused = Face(J.Get(r, "focused")) ?? new RobotRigs.Face(), hurt = Face(J.Get(r, "hurt")) ?? new RobotRigs.Face(), // brief 104: PatrolBot104's fight faces
                     });
                 }
                 t.rigs = rigs.ToArray();

@@ -85592,6 +85592,256 @@
    "source": "generated"
   },
   {
+   "id": "PatrolBot104",
+   "category": "Robots",
+   "size": [
+    0.8875,
+    1.2708,
+    0.4816
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 8608,
+   "materials": [
+    "DK_RobotEnamel_Cream",
+    "DK_RobotEnamel_Sage",
+    "DK_Gunmetal_Warm",
+    "DK_Nickel_Satin",
+    "DK_Glow_Amber",
+    "DK_Iron",
+    "DK_PatrolBot104_Beacon",
+    "DK_PatrolBot104_Screen"
+   ],
+   "parts": [
+    "DK_PatrolBot104_ArmL",
+    "DK_PatrolBot104_ArmR",
+    "DK_PatrolBot104_Ball",
+    "DK_PatrolBot104_Beacon",
+    "DK_PatrolBot104_BeaconLamp",
+    "DK_PatrolBot104_ChestPanel",
+    "DK_PatrolBot104_ForearmL",
+    "DK_PatrolBot104_ForearmR",
+    "DK_PatrolBot104_Gadget",
+    "DK_PatrolBot104_Screen"
+   ],
+   "lods": [
+    {
+     "file": "Models/Robots/DK_PatrolBot104_L1.fbx",
+     "tris": 2139,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Robots/DK_PatrolBot104_L2.fbx",
+     "tris": 508,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Robots/DK_PatrolBot104.fbx",
+     "sha256": "c8e64b94905e7bb57cb9d9d9f664d1d9713c002ce52ace4dae62226ed0cc7c7a",
+     "bytes": 280268
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_RobotEnamel_Cream.mat",
+     "sha256": "62ab02469ff60d1f15980bb981f63ccfbaaf9f0b30c61853390fcd4b280f1dfc",
+     "bytes": 3989
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_RobotEnamel_Cream.mat.meta",
+     "sha256": "c7d479f4ea91f9ae322f92070d66be2d072644d9f87081b5ed7d17bc490a3e01",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_RobotEnamel_Sage.mat",
+     "sha256": "0eaeb9dc85b0828177f591fb4304db847e1ce48b16fc51a09b26561bdf1391a6",
+     "bytes": 3988
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_RobotEnamel_Sage.mat.meta",
+     "sha256": "e29a5e520c967b9be75242abecdde04d62783cc87bcc7384ca4233000fe37c76",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Gunmetal_Warm.mat",
+     "sha256": "b9fb22ed14f23a168e32f396a840b6fe0901f29b474dfa94b87de3fc0a5ffaac",
+     "bytes": 4044
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Gunmetal_Warm.mat.meta",
+     "sha256": "025a69842ae9b3720888d0b11d917bf91e3ae0d04eceec1dc9fa992ef004f96d",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Nickel_Satin.mat",
+     "sha256": "ba67db0aa43ba834b024360eb8362ad2626ddc9d3c1a4e0089cfd0e5f63aeba1",
+     "bytes": 4043
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Nickel_Satin.mat.meta",
+     "sha256": "b2389957ed9e24219e3e893200164803ed705389ddf1f1121a6da314aaf7a625",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Glow_Amber.mat",
+     "sha256": "0e335fdae8ca2147469a8760ecbf47ae8395b4c131efe6bcaf1e5b790648f991",
+     "bytes": 3968
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Glow_Amber.mat.meta",
+     "sha256": "43f7a2ba0df512a94747493d79cbce58742a42ae99dc0078360eac03e3a05f63",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Iron.mat",
+     "sha256": "1c488ef74fd8b2da43766cba86eba799d43cf9d9598ce37b6e3a5219fd0ba8e2",
+     "bytes": 4053
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Iron.mat.meta",
+     "sha256": "017b21e643b2a1b1ec1e8a27030904b51d74563821a4853aa4f0901143c8b750",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_PatrolBot104_Beacon.mat",
+     "sha256": "04d51dd4e0233b27f978cac4d7848ef63ec4ef6b52edb5f5961308c9f4732efd",
+     "bytes": 3929
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_PatrolBot104_Beacon.mat.meta",
+     "sha256": "4efa7c6810c386998c9c06b5aa1c834320d25569412f20d2db68032d88da1568",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_PatrolBot104_Screen.mat",
+     "sha256": "ba5b8b6cca19b9792ac965ad66e1a607b8007c995938edc6d4a579691f98c92d",
+     "bytes": 3843
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_PatrolBot104_Screen.mat.meta",
+     "sha256": "e4e95f92bf1aaa2856e62dab8ad407a5c3839068817614c544ac290cc5ac954a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/robot_enamel_detail_v1.png",
+     "sha256": "8bf9434fa92d1cb8528b58442990daf5fe78d8ec7aabcbbb1341c1a3d5aef201",
+     "bytes": 129049
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/robot_enamel_detail_v1.png.meta",
+     "sha256": "36f8a6348f197359fb557cdc302acd7a7b35921d75e77d56bb3b97dfb567c2cf",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/robot_enamel_detail_v1_normal.png",
+     "sha256": "9a79cc7406bad926ae68bf20a750bd388e3454a7f9511c93d3bf2152d12114c1",
+     "bytes": 203685
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/robot_enamel_detail_v1_normal.png.meta",
+     "sha256": "df1f2041dfd71e52f46f28558146818b7a9ef973cf38f9563ea06629b1457d21",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Robots/DK_PatrolBot104_L1.fbx",
+     "sha256": "585996d6283e267356e09a1a89609d2596e44c0ef398dd2fe5bf2265e4d6e943",
+     "bytes": 135468
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Robots/DK_PatrolBot104_L2.fbx",
+     "sha256": "f1cf599a01e676b3623cab2996db26ae7f70371332e1a62c9fafc5cd4490a9aa",
+     "bytes": 77708
+    }
+   ],
+   "tags": {
+    "use": [
+     "cast"
+    ],
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated",
+   "why": "Adopted (brief 104, Latch for Vela, 2026-11-10; Sky: \"he's awesome\"): the patrol robot and the response dial's robot units are drawn by it (HostViews.PatrolBot); a moving unit, never placed by the world"
+  },
+  {
    "id": "PatrolRobot",
    "category": "Robots",
    "size": [
@@ -85945,15 +86195,15 @@
      "root": "generated",
      "role": "data",
      "path": "Data/robot-faces.json",
-     "sha256": "1ea1b728b68d50aaba9e778ead33d9b59ecf53615d5ab1bdc86f3787955e1541",
-     "bytes": 13618
+     "sha256": "347b91aa3d9e23c71c245b551cd334e0fe95547bda277f8c691942c7e83bccaf",
+     "bytes": 15913
     },
     {
      "root": "generated",
      "role": "data",
      "path": "Data/RobotGlyphs.txt",
-     "sha256": "b920fbc8f19f82fb7875e66a7c2343627a609b20c9e0f5f4bd1df4f63e688e65",
-     "bytes": 1197
+     "sha256": "ef25d5807fa39eb7511cf09353d662d4a4a9b0393a6006081161ce332b09bc4f",
+     "bytes": 1603
     },
     {
      "root": "generated",

@@ -40,6 +40,11 @@ RIGS = {
                        angry=E("angry_l", "angry_r", "grit"), moods=[E("heart", None, "smile"), E("round", None, "smile"), E("happy", None, "beam")]),
     "RobotShopkeeper": dict(face="DK_Face_Teal", range=55, turn=.45, hold=[1, 3], home=.4, grid=[24, 9], corner=1.6, eye=[5.3, 1.3], mouth=[0, -3.2], neutral=E("round", None, "smile"),
                             angry=E("angry_l", "angry_r", "grit"), moods=[E("happy", None, "beam"), E("round", "happy", "smile"), E("star", None, "smile")]),
+    # brief 104 (Latch; Sky 2026-11-10: the same LED face as the other robots): Vela's PatrolBot104, the patrol and the response's robot units. Its Screen's glass is
+    # about 0.46 x 0.24 m (UVs 0..1 across it), so 23 x 12 square cells; calm = round eyes and a smile, curious = wide eyes and an o, the alarm the shared red
+    # stare; focused (drawn) and hurt (hit) are the fight faces the view picks (RobotFace.Fight). No head: the whole body turns, so no glance range is used.
+    "PatrolBot104": dict(face="DK_Face_Amber", range=35, turn=.7, hold=[2, 5], home=.5, grid=[23, 12], corner=3, eye=[5, 1.5], mouth=[0, -3.5], neutral=E("round", None, "smile"),
+                         angry=E("angry_l", "angry_r", "grit"), moods=[E("wide", None, "o")], focused=E("narrow", None, "flat"), hurt=E("x_eye", None, "waver")),
 }
 
 
@@ -74,7 +79,7 @@ def build():
     glyphs = parse((ART / "RobotGlyphs.txt").read_text())
     g_out = {}
     for name, rows in glyphs.items():
-        kind = "mouth" if name in ("smile", "grin", "beam", "o", "grit", "alarm_s") else ("alarm-eye" if name.startswith("angry") else "eye")
+        kind = "mouth" if name in ("smile", "grin", "beam", "o", "grit", "alarm_s", "flat", "waver") else ("alarm-eye" if name.startswith("angry") else "eye")
         row = dict(rows=rows, w=max(len(r) for r in rows), h=len(rows), kind=kind, lit=sum(r.count("#") for r in rows))
         if name in FLAG:
             row.update(needsSky=True, why=FLAG[name])
@@ -99,7 +104,7 @@ def build():
                     alarmGlowLinear=[2.6, .1, .04], lead=.15, gazeCells=2, overshoot=1.1, snap=.2, snapOvershoot=1.7, settle=.6, stareMax=120),
         shader=dict(ghost=.05, dot=.36, glowMaterials={"DK_Face_Amber": dict(hex="#F28A1E", strength=1.6), "DK_Face_Teal": dict(hex="#3FC9A0", strength=1.4)}),
         glyphs=g_out, robots=rigs,
-        playPieces={k: f"{k}_Play" for k in RIGS})
+        playPieces={k: f"{k}_Play" for k in RIGS if k.startswith("Robot")})  # PatrolBot104 has no _Play piece: the play scene draws its own FBX
 
 
 def main():

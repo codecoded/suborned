@@ -220,6 +220,48 @@
    "h": 7,
    "kind": "mouth",
    "lit": 20
+  },
+  "narrow": {
+   "rows": [
+    "#####",
+    ".###."
+   ],
+   "w": 5,
+   "h": 2,
+   "kind": "eye",
+   "lit": 8
+  },
+  "flat": {
+   "rows": [
+    "#######"
+   ],
+   "w": 7,
+   "h": 1,
+   "kind": "mouth",
+   "lit": 7
+  },
+  "x_eye": {
+   "rows": [
+    "#...#",
+    ".#.#.",
+    "..#..",
+    ".#.#.",
+    "#...#"
+   ],
+   "w": 5,
+   "h": 5,
+   "kind": "eye",
+   "lit": 9
+  },
+  "waver": {
+   "rows": [
+    ".##..##",
+    "#..##.."
+   ],
+   "w": 7,
+   "h": 2,
+   "kind": "mouth",
+   "lit": 7
   }
  },
  "robots": {
@@ -705,6 +747,111 @@
      "why": "a star glyph is a cartoon sticker (section 15: no cartoon eyes); the Porter's and Shopkeeper's old mood"
     }
    ],
+   "attention": {
+    "stages": [
+     {
+      "stage": 0,
+      "name": "calm",
+      "left": "round",
+      "right": "round",
+      "mouth": "smile",
+      "blink": true,
+      "moods": true,
+      "glow": "own"
+     },
+     {
+      "stage": 1,
+      "name": "noticed",
+      "left": "wide",
+      "right": "wide",
+      "mouth": "o",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 2,
+      "name": "wary",
+      "left": "angry_l",
+      "right": "angry_r",
+      "mouth": "",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 3,
+      "name": "reporting",
+      "left": "",
+      "right": "",
+      "mouth": "alarm_s",
+      "mouthAt": [
+       0,
+       0
+      ],
+      "glow": "alarm",
+      "flashHz": 2,
+      "on": 0.3,
+      "off": 0.2
+     }
+    ],
+    "glowOptions": {
+     "own": "the robot's own LED colour (DK_Face_Amber / DK_Face_Teal)",
+     "phosphor": "#BFF3E6 x1.6, the patrol robot's seafoam; shown beside the own colour in briefs/031/robot-face",
+     "alarm": "#FF5A3C x2.2"
+    },
+    "gazeCells": 2,
+    "dropAfterS": 2.0
+   }
+  },
+  "PatrolBot104": {
+   "face": "DK_Face_Amber",
+   "range": 35,
+   "turn": 0.7,
+   "hold": [
+    2,
+    5
+   ],
+   "home": 0.5,
+   "grid": [
+    23,
+    12
+   ],
+   "corner": 3,
+   "eye": [
+    5,
+    1.5
+   ],
+   "mouth": [
+    0,
+    -3.5
+   ],
+   "neutral": {
+    "left": "round",
+    "right": "round",
+    "mouth": "smile"
+   },
+   "angry": {
+    "left": "angry_l",
+    "right": "angry_r",
+    "mouth": "grit"
+   },
+   "moods": [
+    {
+     "left": "wide",
+     "right": "wide",
+     "mouth": "o"
+    }
+   ],
+   "focused": {
+    "left": "narrow",
+    "right": "narrow",
+    "mouth": "flat"
+   },
+   "hurt": {
+    "left": "x_eye",
+    "right": "x_eye",
+    "mouth": "waver"
+   },
+   "moodsHeld": [],
    "attention": {
     "stages": [
      {

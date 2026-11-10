@@ -36,8 +36,8 @@ namespace Suborned.Play
         [Tooltip("Brief 020: the stand-in figures (Forma); null = capsules everywhere.")]
         public FigureLibrary figures;
         [Tooltip("Brief 020 (Vela's kit pick): the cars and the response robots as kit models; null = the boxes and drums. Brief 067 L: sedanRival is Vela's Sedan_Rival (plum, ink bubble, pearl stripes), the rivals' own car.")]
-        public GameObject sedanOfficial, sedanGetaway, sedanRival, robotPorter;
-        [Tooltip("The patrol robot's model (brief 031: Vela's PatrolRobot, its head the attention face M_RobotFace); null = the capsule.")]
+        public GameObject sedanOfficial, sedanGetaway, sedanRival; [UnityEngine.Serialization.FormerlySerializedAs("robotPorter")] public GameObject robotUnit; public Material robotFaceLed; // brief 104: the response's robot units are PatrolBot104 (was the porter), its LED face DK_Face_Amber
+        [Tooltip("The patrol robot's model (brief 104: Vela's PatrolBot104, its LED face on the Screen; was brief 031's PatrolRobot); null = the capsule.")]
         [UnityEngine.Serialization.FormerlySerializedAs("serviceRobot")] public GameObject patrolRobot;
         [Tooltip("Brief 055: the mission cameras' poles, Vela's CCTVPole (the world's pole-camera piece) scaled to the plan's 5.5 m mount, lens at 4.79 m; null = the 3.2 m stand-in. Brief 096: hoverCamera (Vela's HoverCamera, floating at the pole's lens with no pole) replaces it when set (HostViews.HoverCam).")]
         public GameObject cctvPole, hoverCamera;

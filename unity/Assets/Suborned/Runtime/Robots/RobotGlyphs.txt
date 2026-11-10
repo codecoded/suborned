@@ -90,3 +90,23 @@
 .#.#.#.
 #.....#
 #######
+
+; ---- brief 104 (Latch; Sky 2026-11-10: the new patrol robot, PatrolBot104, wears the shared LED face): its two fight faces. Appended, so every older glyph keeps
+; its tile. Focused (its sidearm drawn): eyes narrowed under a level lid and a flat mouth. Hurt (hit, or down): X eyes and a wavering mouth.
+= narrow
+#####
+.###.
+
+= flat
+#######
+
+= x_eye
+#...#
+.#.#.
+..#..
+.#.#.
+#...#
+
+= waver
+.##..##
+#..##..

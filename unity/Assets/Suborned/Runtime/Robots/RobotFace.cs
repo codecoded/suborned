@@ -43,6 +43,8 @@ namespace Suborned.Robots
         // noticed (wide eyes on the agent), wary (narrowed, brows down), reporting (the alarm pictogram, flashing 0.3 s on, 0.2 s off)
         [SerializeField] Expression[] stages = Array.Empty<Expression>();
         [SerializeField, ColorUsage(false, true)] Color reportGlow = new(2.2f, .22f, .1f);  // #FF5A3C at 2.2, linear
+        // brief 104 (PatrolBot104's rig in robot-faces.json): its two fight faces, focused (weapon drawn) and hurt (hit); empty = none
+        [SerializeField] Expression focused, hurt;
 
         const int Blinks = 24, Moods = 8;
         const float Half = .04f, Shut = .07f, Double = .26f;  // a blink: 40 ms half, 70 ms bar, 40 ms half
@@ -62,7 +64,7 @@ namespace Suborned.Robots
         [NonSerialized] float[] blinkAt, moodAt, moodFor;
         [NonSerialized] int[] moodIs;
         [NonSerialized] float blinkLoop, moodLoop, alarmAt = float.PositiveInfinity, calmAt = float.PositiveInfinity;
-        [NonSerialized] int stage, stageGaze;
+        [NonSerialized] int stage, stageGaze, fight;
 
         /// <summary>When the first expression change comes (for captures that want one in frame).</summary>
         public float FirstMoodAt => moods.Length > 0 && (screens != null || Build()) ? moodAt[0] : 0f;
@@ -97,6 +99,13 @@ namespace Suborned.Robots
         public void Stage(int s, int gazeCells) { stage = HasStages ? Mathf.Clamp(s, 0, 3) : 0; stageGaze = gazeCells; }
         public int StageNow => stage;
 
+        /// <summary>Brief 104: the fight faces this robot has (RobotRigs from its rig's `focused` and `hurt`).</summary>
+        public void SetFight(Expression focusedFace, Expression hurtFace) { focused = focusedFace; hurt = hurtFace; }
+        /// <summary>Brief 104: the fight face shown (0 none, 1 focused: its weapon drawn, 2 hurt: just hit or down). It outranks the stage and the
+        /// mood, and keeps the alarm's red while alarmed. View only: the host picks it from the robot's gun.</summary>
+        public void Fight(int mode) { fight = mode == 1 && !string.IsNullOrEmpty(focused.left) ? 1 : mode == 2 && !string.IsNullOrEmpty(hurt.left) ? 2 : 0; }
+        public int FightNow => fight;
+
         /// <summary>Turn hostile from `seconds` on this robot's clock (Time.time in play) until Calm.</summary>
         public void Alarm(float seconds) { alarmAt = seconds; calmAt = float.PositiveInfinity; }
 
@@ -114,6 +123,7 @@ namespace Suborned.Robots
             var red = (alarmGlow * (1f + Pulse * Mathf.Sin(2f * Mathf.PI * PulseHz * Mathf.Max(since - Flicker, 0f)))).gamma;
             bool staged = stage > 0 && HasStages, report = staged && stage == 3;
             if (staged) { e = stages[stage]; lid = 0f; gaze = stage < 3 ? stageGaze : 0; } // brief 031: the stage outranks the old alarm glare (its wary eyes are the glare)
+            if (fight > 0) { e = fight == 2 ? hurt : focused; lid = 0f; gaze = 0; staged = report = false; } // brief 104: a fight face outranks both, in the alarm's red when alarmed
             var reportCol = (reportGlow * (Mathf.Repeat(seconds, .5f) < .3f ? 1f : .12f)).gamma; // 2 Hz: 0.3 s on, 0.2 s off
             Vector2 mouthAt = report ? Vector2.zero : mouth; // the pictogram sits on the display's centre
             Vector4 l = Place(e.left, new Vector2(-eye.x, eye.y), lid, gaze), r = Place(e.right, eye, lid, gaze), m = Place(e.mouth, mouthAt, 0f, 0);

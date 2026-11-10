@@ -446,7 +446,7 @@ namespace Suborned.Play
             // spark on the body hit; the gun 1.3 m up and 0.45 m out toward the target (the way the shooter turns to face)
             var fromD = DrawnAt(by) ?? from.Value; var toD = DrawnAt(t) ?? to.Value;
             var aim = toD - fromD; aim.y = 0f; aim = aim.sqrMagnitude > 0.01f ? aim.normalized : Vector3.forward;
-            var src = fromD + Vector3.up * 1.3f + aim * 0.45f; var dst = toD + Vector3.up * 1.2f;
+            var src = views.MuzzleAt(ViewKey(by)) /* brief 104: a robot fires from its gadget */ ?? fromD + Vector3.up * 1.3f + aim * 0.45f; var dst = toD + Vector3.up * 1.2f;
             if (!hit) // a miss ends on the ground beside the target, never on the body: its puff lands there
             {
                 var side = Vector3.Cross(Vector3.up, aim) * (((l.Tick + by.Length) & 1) == 0 ? 0.7f : -0.7f);

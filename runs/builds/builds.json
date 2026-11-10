@@ -162,6 +162,21 @@
     }
    ],
    "whatsNew": "The square's lamp mast camera by the cell's start; the hover outline (Sky's B); the Records Office's ball in satin nickel (Sky's A); police targeted one by one."
+  },
+  {
+   "build": 309,
+   "version": "0.2.309",
+   "date": "2026-11-10T14:42:01.554Z",
+   "builtAt": "2026-11-10T14:25:57.7363480Z",
+   "sha": "804093fe0",
+   "dirty": true,
+   "engine": "0.52.0",
+   "engineSource": "the build's own stamp (StreamingAssets/build.json)",
+   "dllSha256": "2480eb92ab57ed33a96c370684fe5ac4b881faf5b045b098e1153f16f2ab9128",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": ""
   }
  ]
 }

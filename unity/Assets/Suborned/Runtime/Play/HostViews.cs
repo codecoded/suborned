@@ -376,10 +376,10 @@ namespace Suborned.Play
             var col = go.AddComponent<CapsuleCollider>(); col.height = 1.4f; col.radius = 0.45f; col.center = new Vector3(0, 0.7f, 0);
             go.SetActive(false);
             things[key] = (go.transform, Vector3.zero, Vector3.zero, false);
-            if (Visual(key, host.robotPorter) is Transform m) // brief 020: the porter; the lamp rides on top of it
+            if (Visual(key, host.robotUnit) is Transform m) // brief 020: the robot model; brief 104: PatrolBot104 carries its own beacon, so the drum's lamp goes
             {
                 float top = 0f; foreach (var r in m.GetComponentsInChildren<Renderer>()) top = Mathf.Max(top, r.bounds.max.y - go.transform.position.y);
-                if (top > 0.3f) lamp.localPosition = new Vector3(0, top + 0.12f, 0);
+                if (Suborned.Robots.PatrolBot.Is(host.robotUnit)) lamp.gameObject.SetActive(false); else if (top > 0.3f) lamp.localPosition = new Vector3(0, top + 0.12f, 0);
                 carModels[key] = m; // it faces where it goes, as a car does
             }
         }
@@ -439,7 +439,7 @@ namespace Suborned.Play
                 if (dest) { d.position = frame.World(walk.End) + Vector3.up * 0.03f; d.localScale = new Vector3(0.6f, 0.01f, 0.6f); }
             }
             host.AimTargets(Aim, FiredNow); // Sky 2026-10-20: every shooter faces its target (one rule, HandoverHost.AimTargets)
-            Figures(alpha); Cars(); CellRings(); RivalRings();
+            Figures(alpha); Cars(); Bots(); CellRings(); RivalRings(); // brief 104: the robots posed after they have turned (HostViews.PatrolBot)
             AttentionViews(); // brief 031: lenses, faces and heads (HostViews.Attention)
         }
 
