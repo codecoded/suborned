@@ -181,3 +181,22 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
   - **Ball:** its roll comes from ground speed, in code.
   - **Body:** it leans into travel in code, and aims by turning, since the gadget is fixed to the chest.
   - **Face:** the LED face is a shader setting.
+
+**Sky: "former, you do it"**, i.e. the turnaround sheet for modelling in Blender.
+- **Pass 13:**
+  - `P13-turnaround`: five orthographic views on a common ground line, with guide lines at the ball centre, the widest part of the body, the top of the body and the antenna. The views are front, left, back, right and top, drawn about 1.3 m tall.
+  - `P13-details`:
+    - six LED faces: calm, curious, alert, focused, hurt and off;
+    - the chest-panel mechanism: closed, then hinged up, then the gadget slid out on a rail, in side cutaway and front views;
+    - the ball's bands.
+- **The model reference is committed** in `briefs/104/concepts/`, kept by `.gitignore`:
+  - `patrol-robot-pick.png`
+  - `patrol-robot-chest-sidearm.png`
+  - `patrol-robot-turnaround.png`
+  - `patrol-robot-details.png`
+- **Model notes for the build:**
+  - **Rigid parts:** ball, body, chest panel (hinged at its top edge), gadget (on a rail), two arms (shoulder and elbow), and the halo antenna.
+  - **Face:** one screen material whose expression is chosen in the shader. No per-robot MaterialPropertyBlock, so the robots stay inside the GPU Resident Drawer.
+  - **Driven in code:** the ball's roll from ground speed, the body's lean and the aim turn.
+  - **Clips (short):** the panel opening and the gadget sliding out, the gadget going back, an arm idle and a hit flinch.
+  - **Next:** check the 1.3 m height against the robot dock (0.98 m) and the crowd budget before modelling.
