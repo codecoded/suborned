@@ -92,3 +92,17 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
 - **Pass 5** keeps the livery and adds a visible 1950s-styled firearm: a carbine or a holstered sidearm, part of the design, a real gun, not a ray gun. The robots are serious and imposing, not cute.
   - `P5-lineup-armed`: six broad, upright armoured robots with car-grille chests.
   - `P5-plate-armed`: one on the square, carbine held low, light bar, visor face.
+
+**Sky: "less menacing. Think 1950s retro future robots are more cute but deadly kinda vibe".**
+- **Pass 6** keeps the gun, the livery and the warning lights, and makes the body charming: tin-toy and appliance proportions, a big round helmet head with a porthole visor, ball-tipped antennae, and a polite face made of amber dots. The holstered pistol is what gives it away.
+  - `P6-lineup-cute`: six designs:
+    1. a pear body on wheels;
+    2. a jukebox chest on a hover disc;
+    3. a round body on one wheel;
+    4. a small, round figure on hover feet;
+    5. a fridge body on treads;
+    6. a red and yellow body on a hover disc.
+  - `P6-plate-cute`: design 6 in blue and red on the square in front of the Records Office, with its pistol in a hip holster.
+  - Aster's notes:
+    - The smile is a dot display, so it can change: a calm smile on patrol and a flat line at Alert 3, with no new mesh.
+    - The big heads are about 1.6–1.9 m tall next to the scale figure, so a pick needs shrinking to the 1.3 m brief.
