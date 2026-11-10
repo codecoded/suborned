@@ -150,3 +150,22 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
   - Row 2: a blue bubble car, a mint robot balancing on a ball, a coral six-legged pod with its head on a spring.
   - Row 3: a red head-on-spring robot on treads, a mint saucer, a lilac robot on casters.
 - Aster's note: the LED expression can change with Alert (a calm smile, then a flat line), driven by the shader so the robots stay instanced.
+
+**Sky: "which would be easiest to make in Blender and add movement animation?"** Aster: the saucer.
+- It is made of revolved, rigid parts.
+- Hover, tilt and turn are done in code.
+- Only the arms would need keyframed clips.
+- The ball-balancer is second. Legs are the most work.
+
+**Sky: "but how about the shooting / holding of the gun. I would probably mount the weapon".**
+- **Pass 11**, `P11-saucer-mounts`: the P10 saucer (`refs/ref-p10-saucer.png`), with four mounts, each shown closed and open. The LED face goes from a smile to narrowed eyes.
+  1. A swing arm out of a hatch in the rim.
+  2. In the forearm, behind a sliding cover.
+  3. A swivel mount that rises from the top of the head.
+  4. A turret that drops from under the saucer.
+- The first wording, with "pistol … aiming", was refused by Codex's violence filter (ledger row 21). It worked when described as a "sidearm-shaped gadget … pointing forward".
+- Aster's read for play at 38°:
+  - **3 (head top)** shows best from above. Rising is the draw, which security treats as an act. A two-axis swivel aimed in code needs no clips.
+  - **1 (rim arm)** changes the silhouette at the side.
+  - **2 (forearm)** is the smallest change and hard to read at about 80 px.
+  - **4 (under the saucer)** is hidden by the saucer from the play camera.
