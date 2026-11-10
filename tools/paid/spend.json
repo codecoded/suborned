@@ -68,6 +68,10 @@
   "2026-11-07": {
    "calls": 3,
    "usd": 0.0
+  },
+  "2026-11-10": {
+   "calls": 24,
+   "usd": 0.0
   }
  },
  "by_model": {
@@ -92,7 +96,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 173,
+   "calls": 197,
    "usd": 0.0
   },
   "fishaudio:s2.1@pro": {
@@ -144,8 +148,8 @@
    "usd": 2.8
   }
  },
- "calls": 737,
- "failed": 26,
+ "calls": 761,
+ "failed": 27,
  "jobs": {
   "007-concepts": {
    "blocked": 0,
@@ -1302,6 +1306,83 @@
    "cost_per_used": null,
    "failed": 0,
    "ok": 2,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "104-patrol-robot": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-10": {
+     "calls": 24,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 24,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "lineup-1": {
+     "calls": 3,
+     "usd": 0.0
+    },
+    "pass10": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "pass11": {
+     "calls": 2,
+     "usd": 0.0
+    },
+    "pass12": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "pass13": {
+     "calls": 2,
+     "usd": 0.0
+    },
+    "pass2": {
+     "calls": 3,
+     "usd": 0.0
+    },
+    "pass3": {
+     "calls": 2,
+     "usd": 0.0
+    },
+    "pass4": {
+     "calls": 3,
+     "usd": 0.0
+    },
+    "pass5": {
+     "calls": 2,
+     "usd": 0.0
+    },
+    "pass6": {
+     "calls": 2,
+     "usd": 0.0
+    },
+    "pass7": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "pass8": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "pass9": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 24,
+   "cost_per_used": null,
+   "failed": 1,
+   "ok": 23,
    "total_usd": 0.0,
    "unknown_cost_calls": 0,
    "used": 0,

@@ -200,3 +200,21 @@ Strongest so far: `P3-lineup-1` #2, the call-box and petrol-pump robots, and `P3
   - **Driven in code:** the ball's roll from ground speed, the body's lean and the aim turn.
   - **Clips (short):** the panel opening and the gadget sliding out, the gadget going back, an arm idle and a hit flinch.
   - **Next:** check the 1.3 m height against the robot dock (0.98 m) and the crowd budget before modelling.
+
+**Sky: "model it".** Vela built it.
+- **What:** `DK_PatrolBot104`, made by `tools/decokit/patrolbot104.py` and `patrolbot104_surf.py`, exported to `out/decokit/Models/Robots/DK_PatrolBot104.fbx`. Notes and renders are in `briefs/104/vela/patrolbot/`.
+- **Size:** 1.30 m tall and 0.89 m across, so it fits the dock bay (0.98 × 1.0 × 2.14 m). At play zoom it's about 58 px tall, next to about 85 px for a 1.8 m person.
+- **Triangles:** 7,988, with lower-detail versions at 1,986 and 471.
+- **Parts:** Body (the root, pivoted at the ball contact), Ball, ChestPanel, Gadget, ArmL/R, ForearmL/R, Halo and Screen.
+- **Materials:** five, all shared.
+- **Faces:** Vela proposes one material per face, all on one shader with a 3 × 2 atlas, swapped on the Screen's slot so the robots stay instanced.
+- **Where it differs from the sheets:**
+  - the arms hang at 42° to keep it within 0.9 m;
+  - the ball halves are dark iron;
+  - the sidearm is cream;
+  - the hatch opens about 150°.
+- **Shared code:** `geo.Shape.part(pivot=)` and `export_kit` now keep a part's own pivot. It's opt-in; the old patrol robot builds identically at 12,522 triangles.
+- **Not done yet:**
+  - the kit step (`bun run kit`, collide, sim:site);
+  - Latch's check that the parts import into Unity with no added rotation;
+  - the runtime: face swap, roll, lean, aim, and the hatch clip.

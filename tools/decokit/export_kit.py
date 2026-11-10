@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).parent))
 import kit  # noqa: E402
@@ -140,6 +140,8 @@ def baked(obj):
                 d.uv = (round(d.uv[0], 3), round(d.uv[1], 3))
     out = bpy.data.objects.new(obj.name, me)
     bpy.context.scene.collection.objects.link(out)
+    if obj.matrix_world != Matrix.Identity(4):  # brief 104: a part with its own pivot (geo.Shape.part pivot=) keeps its place; every other piece stands at the origin, unchanged
+        out.matrix_world = obj.matrix_world.copy()
     return out
 
 

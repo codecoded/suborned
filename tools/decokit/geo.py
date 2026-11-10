@@ -107,6 +107,7 @@ class Shape:
         self.parts = {}
         self.volumes = []  # declared collision volumes (brief 055), in the builder's own frame; see solid()
         self.lean = 1.0  # segment scale for small street props (kit.asset lean=; brief 007 round 3, Redline's per-pixel caps)
+        self.pivot = None  # brief 104: this object's own origin in the asset frame (a part that rolls, leans or hinges about its own point); None = the asset origin
 
     def _seg(self, seg, lo):
         return seg if self.lean == 1.0 else max(lo, int(round(seg * self.lean)))
@@ -129,13 +130,16 @@ class Shape:
             self._stack.pop()
 
     @contextmanager
-    def part(self, name):
+    def part(self, name, pivot=None):
         """A movable child mesh (a head that turns, a face the engine draws): geometry built on the yielded shape
         goes to object `<name>_<part>`, parented under this one (exported as a sibling: the FBX axis bake misplaces
-        children). Parts nest, and all share the asset's origin, so a part turns about the asset's vertical axis."""
+        children). Parts nest, and all share the asset's origin, so a part turns about the asset's vertical axis.
+        pivot (brief 104) = the part's own origin, a point in the asset frame (outside s.at()): the mesh is stored about it and the object stands there,
+        so the part rolls, hinges or slides about that point (export_kit keeps the placement). Geometry is still written in the asset frame."""
         p = self.parts.get(name)
         if p is None:
             p = self.parts[name] = Shape(f"{self.name}_{name}")
+            p.pivot = pivot
         p.up_uv = self.up_uv  # set by kit.build before the builder runs
         p._stack = self._stack  # shares the frame, so nested s.at() places part geometry like any other
         yield p
@@ -298,8 +302,8 @@ class Shape:
         return bv
 
     # output -----------------------------------------------------------------
-    def build(self, col=None, bevel=0.005, sharp=38.0, seg=2, parent=None):
-        """The root object; parts become children (identity transforms) in the same collection."""
+    def build(self, col=None, bevel=0.005, sharp=38.0, seg=2, parent=None, parent_pivot=None):
+        """The root object; parts become children (identity transforms, or each at its own pivot) in the same collection."""
         bm = self.bm
         bm.normal_update()
         uv = bm.loops.layers.uv.new("UVMap")
@@ -323,9 +327,16 @@ class Shape:
         for m in self.mats:
             me.materials.append(m)
         me.set_sharp_from_angle(angle=math.radians(sharp))
+        piv = Vector(self.pivot) if self.pivot is not None else None
+        if piv is not None:  # the mesh about its pivot (UVs were projected in the asset frame above, so they do not move)
+            me.transform(Matrix.Translation(-piv))
         obj = bpy.data.objects.new(self.name, me)
         (col or bpy.context.scene.collection).objects.link(obj)
         obj.parent = parent
+        if parent_pivot is not None:  # world = parent (at its pivot) @ inverse @ local: the child stands at its own pivot in the asset frame
+            obj.matrix_parent_inverse = Matrix.Translation(-parent_pivot)
+        if piv is not None:
+            obj.location = piv
         if bevel > 0:
             b = obj.modifiers.new("EdgeSoften", "BEVEL")
             b.width, b.segments = bevel, seg
@@ -336,7 +347,7 @@ class Shape:
         wn.keep_sharp = True
         wn.weight = 50
         for p in self.parts.values():
-            p.build(col, bevel, sharp, seg, parent=obj)
+            p.build(col, bevel, sharp, seg, parent=obj, parent_pivot=piv)
         if self.volumes:
             import json
             obj["dk_volumes"] = json.dumps(self.volumes)
