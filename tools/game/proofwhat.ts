@@ -5,7 +5,7 @@
 //        bun tools/game/proofwhat.ts what-if <path>... [--map <file>]           these paths alone
 //        bun tools/game/proofwhat.ts unplaced [--map <file>]                     every path of the tree's snapshot no row places (exit 1 if any)
 import { resolve } from 'node:path';
-import { GATED_STEPS, MISSION_FILE, ROOT, classify, emptyLedger, loadMap, mapHash, missionParts, planLines, planProof, sectionIds, shotsGate, snapshot, stepGate, unplacedIn, type Plan, type ProofMap } from './proofdelta';
+import { GATED_STEPS, KIT_FILE, MISSION_FILE, ROOT, kitParts, classify, emptyLedger, loadMap, mapHash, missionParts, planLines, planProof, sectionIds, shotsGate, snapshot, stepGate, unplacedIn, type Plan, type ProofMap } from './proofdelta';
 
 export type WhatIf = { plan: Plan; steps: Record<string, { run: boolean; why: string }>; shots: { names: 'all' | string[]; why: string }; unplaced: string[] };
 /** What a change to `paths` alone would run, as if every section, step and the shots had just passed on the tree before it. */
@@ -18,12 +18,11 @@ export function whatIfAll(m: ProofMap, paths: string[]): WhatIf {
 }
 const git = (args: string[]) => { const r = Bun.spawnSync(['git', ...args], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' }); if (r.exitCode !== 0) throw new Error(`git ${args.join(' ')}: ${r.stderr.toString().trim()}`); return r.stdout.toString(); };
 const at = (rev: string, path: string) => { const r = Bun.spawnSync(['git', 'show', `${rev}:${path}`], { cwd: ROOT, stdout: 'pipe', stderr: 'ignore' }); return r.exitCode === 0 ? r.stdout.toString() : undefined; };
-/** The paths a commit range changed, as the snapshot reads them: mission.json also by the fields that moved (proofdelta.ts missionParts). */
+/** The paths a commit range changed, as the snapshot reads them: mission.json and kit.json also by the parts that moved (proofdelta.ts missionParts, kitParts). */
 export function rangePaths(from: string, to: string): string[] {
   const paths = git(['diff', '--name-only', from, to]).split('\n').filter(Boolean);
-  if (!paths.includes(MISSION_FILE)) return paths;
-  const a = missionParts(at(from, MISSION_FILE) ?? ''), b = missionParts(at(to, MISSION_FILE) ?? '');
-  return [...paths, ...Object.keys(b).filter(k => a[k] !== b[k])];
+  const parts = ([[MISSION_FILE, missionParts], [KIT_FILE, kitParts]] as const).filter(([f]) => paths.includes(f)).flatMap(([f, by]) => { const a = by(at(from, f) ?? ''), b = by(at(to, f) ?? ''); return Object.keys(b).filter(k => a[k] !== b[k]); });
+  return [...paths, ...parts];
 }
 /** The screen's lines for a what-if. */
 export function whatLines(w: WhatIf): string[] {

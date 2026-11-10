@@ -48,3 +48,26 @@ test('bun tools/game/batch.ts --dry-run: exit 0, the plan printed, nothing writt
     expect(existsSync(join(out, 'logs'))).toBe(false);
   } finally { rmSync(out, { recursive: true, force: true }); }
 });
+
+test('bun tools/game/batch.ts --sky --then-full --dry-run: exit 0, only the --sky steps planned, the smoke named, the behind command printed, nothing started or written', () => {
+  const scratch = join(ROOT, 'out', 'scratch', 'splice'); mkdirSync(scratch, { recursive: true });
+  const out = mkdtempSync(join(scratch, 'batch-'));
+  try {
+    const r = Bun.spawnSync([process.execPath, join(ROOT, 'tools', 'game', 'batch.ts'), '--sky', '--then-full', '--dry-run'], { cwd: ROOT, env: { ...process.env, SUBORNED_BATCH_OUT: out } });
+    const text = r.stdout.toString();
+    expect(r.exitCode).toBe(0);
+    expect(text).toContain('--sky: steps sim, words, compile, hostlogic, kit, world, unity-world, game-build');
+    expect(text).toContain('-proofOnly base'); expect(text).toContain('then behind: SUBORNED_PLAYER_DIR=out/build/full');
+    for (const s of ['unity-match', 'game-check', 'shots', 'budget', 'late-fight', 'tp-long', 'perf064']) expect(text).toMatch(new RegExp(`\\n${s}  \\(skipped`));
+    expect(text).not.toContain('proof: FULL');
+    expect(readdirSync(out)).toEqual([]);
+    expect(text).not.toContain('behind   the full batch, pid'); // nothing started behind
+  } finally { rmSync(out, { recursive: true, force: true }); }
+});
+
+test('--then-full without --sky, and --sky with --full, are refused before anything runs', () => {
+  for (const a of [['--then-full'], ['--sky', '--full']]) {
+    const r = Bun.spawnSync([process.execPath, join(ROOT, 'tools', 'game', 'batch.ts'), ...a, '--dry-run'], { cwd: ROOT });
+    expect(r.exitCode, a.join(' ')).toBe(2); expect(r.stderr.toString(), a.join(' ')).toContain('conflicting argument');
+  }
+});

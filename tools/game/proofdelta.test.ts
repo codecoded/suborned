@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { GATED } from './proofgates';
 import { comparedWords, proofSources, wordGaps, wordsOf } from './words';
 import { zoneProblem } from './batch';
-import { MISSION_FILE, missionParts, stillsKeyOf, hostGaps, hostReads, sectionReads, aloneLine, recordSteps, shotsGate, stepGate, changedPaths, classify, coverageGaps, emptyLedger, gateFile, ledgerFile, loadMap, mapHash, planFile, planLines, planProof, recordProof, readLedger, sectionIds, skipText, snapshot, snapshotOf, whatIf, writeLedger, writePlan, ROOT, type Ledger, type ProofMap } from './proofdelta';
+import { KIT_FILE, kitParts, MISSION_FILE, missionParts, stillsKeyOf, hostGaps, hostReads, sectionReads, aloneLine, recordSteps, shotsGate, stepGate, changedPaths, classify, coverageGaps, emptyLedger, gateFile, ledgerFile, loadMap, mapHash, planFile, planLines, planProof, recordProof, readLedger, sectionIds, skipText, snapshot, snapshotOf, whatIf, writeLedger, writePlan, ROOT, type Ledger, type ProofMap } from './proofdelta';
 
 const m = loadMap(), ids = sectionIds(m), PLAY = 'unity/Assets/Suborned/Runtime/Play/';
 const snap = (o: Record<string, string>) => snapshotOf(new Map(Object.entries(o)));
@@ -27,7 +27,7 @@ describe('the table', () => {
     expect(ids.filter(i => !(GATED as readonly string[]).includes(i))).toEqual(['drive', 'r123', 'r101', 'r102']); // r101, r102: briefs 101 and 102's pictures for Sky, not gated
   });
   test('the engine, its data, the world export and the kit are full, as the brief names them', () => {
-    for (const p of ['sim/data/rulebook.json', 'sim/Suborned.Sim/Game.cs', 'out/world/harbour-district.world.json', 'contracts/world/kit.json', 'tools/kit/catalogue.ts', 'unity/Assets/Suborned/Kit/a/b.fbx', 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', 'unity/Assets/StreamingAssets/sim/x.json', PLAY + 'GameBoot.cs']) expect(classify(m, p)?.run).toBe('full');
+    for (const p of ['sim/data/rulebook.json', 'sim/Suborned.Sim/Game.cs', 'out/world/harbour-district.world.json', 'contracts/world/kit.json#unity', 'unity/Assets/Suborned/Kit/a/b.fbx', 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', 'unity/Assets/StreamingAssets/sim/x.json', PLAY + 'GameBoot.cs']) expect(classify(m, p)?.run).toBe('full');
   });
   test('a path it cannot place has no row: a new tool or host file (brief 098: every path of today\'s tree has one, proofwhat.test.ts)', () => {
     for (const p of ['tools/mystery/x.ts', PLAY + 'HostNew.cs', 'unity/Assets/Suborned/Mystery/x.asset']) expect(classify(m, p)).toBeUndefined();
@@ -305,6 +305,19 @@ describe('the batch\'s steps (delta only)', () => {
     const copy = 'unity/Assets/StreamingAssets/sim/handover.listen-partners.json'; expect(whatIf(m, [copy]).only).toEqual(['r067', 'r083']); expect(whatIf(m, [`${M}#listenPartners`]).only).toEqual([]);
     expect(whatIf(m, [`${M}#points`]).only.sort()).toEqual(['cars', 'done', 'r067']);
     expect(classify(m, 'unity/Assets/StreamingAssets/sim/rulebook.json')?.run).toBe('full'); // failing example: another copy stays on the full row
+  });
+  test('kit.json by reader (Splice, 2026-11-11): a candidate added or edited moves #rest only (the kit and world steps); an adopted row, a rejected generated row or a table moves #unity (the scene and the whole proof)', () => {
+    const K = KIT_FILE, kit = (assets: object[], o: object = {}) => JSON.stringify({ schema: 'k', lodClasses: { a: 1 }, assets, ...o }), A = { id: 'A', status: 'adopted', files: [{ sha256: '1' }] }, C = { id: 'C', status: 'candidate' };
+    const base = kitParts(kit([A, C])), now = (t: string) => kitParts(t), moved = (t: string) => Object.keys(base).filter(k => base[k] !== now(t)[k]);
+    expect(moved(kit([A, { ...C, tris: 9 }]))).toEqual([`${K}#rest`]); expect(moved(kit([A, C, { id: 'D', status: 'candidate' }]))).toEqual([`${K}#rest`]);
+    expect(moved(kit([A, C, { id: 'R', status: 'rejected', source: 'store' }]))).toEqual([`${K}#rest`]);
+    expect(moved(kit([{ ...A, files: [{ sha256: '2' }] }, C]))).toEqual([`${K}#unity`]); expect(moved(kit([A, { ...C, status: 'adopted' }]))).toEqual([`${K}#unity`, `${K}#rest`]);
+    expect(moved(kit([A, C, { id: 'G', status: 'rejected', source: 'generated' }]))).toEqual([`${K}#unity`]); expect(moved(kit([A, C], { lodClasses: { a: 2 } }))).toEqual([`${K}#unity`]);
+    expect(moved('not json')).toContain(`${K}#unity`);
+    const go = (f: Record<string, string>, step: string) => stepGate(m, snap({ ...f, [K]: 'b' }), recordSteps(emptyLedger(), snap({ ...base, [K]: 'a' }), ['kit', 'world', 'unity-world', 'late-fight', 'tp-long'], BUILD), step).run;
+    expect(['kit', 'world', 'unity-world', 'late-fight', 'tp-long'].filter(s => go(now(kit([A, { ...C, tris: 9 }])), s))).toEqual(['kit', 'world']);
+    expect(['kit', 'world', 'unity-world', 'late-fight', 'tp-long'].filter(s => go(now(kit([{ ...A, files: [{ sha256: '2' }] }, C])), s))).toEqual(['kit', 'world', 'unity-world', 'late-fight', 'tp-long']);
+    expect(changedPaths({ [K]: 'a' }, { [K]: 'a', ...base })).toEqual([]); // a ledger from before the split
   });
   test('a ledger from before the split: the whole file unchanged is no change, moved it counts', () => {
     const M = MISSION_FILE, parts = missionParts('{"points":[1]}'); expect(changedPaths({ [M]: 'a' }, { [M]: 'a', ...parts })).toEqual([]);

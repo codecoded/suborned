@@ -31,7 +31,7 @@ import { appShips } from './ships'; import { launchArgs, stopBehind } from './la
 const ROOT = join(import.meta.dir, '..', '..');
 const UNITY = join(ROOT, 'unity');
 /** SUBORNED_GAME_OUT: the tests point the build folder at a scratch folder; nothing else sets it. */
-const DIR = process.env.SUBORNED_GAME_OUT ? resolve(process.env.SUBORNED_GAME_OUT) : join(ROOT, 'out', 'build', 'play');
+const DIR = process.env.SUBORNED_GAME_OUT ? resolve(process.env.SUBORNED_GAME_OUT) : join(ROOT, 'out', 'build', 'play'), SCRATCH = process.env.SUBORNED_GAME_SCRATCH === '1'; // SCRATCH: the batch behind's own player (batch-paths.ts), built by GameBuild.CliScratch into DIR: no build number, never out/build/play
 const APP = join(DIR, 'The Suborned.app');
 const STAMP = join(DIR, 'build.json');
 const PROFILE = 'suborned-notary';
@@ -145,7 +145,7 @@ function editorStatus(): { playMode?: string; compiling?: boolean } | null {
 
 async function build(): Promise<boolean> {
   const before = existsSync(STAMP) ? statSync(STAMP).mtimeMs : 0;
-  if (editorOpen()) {
+  if (editorOpen()) { if (SCRATCH) { console.error('game: a scratch build (SUBORNED_GAME_SCRATCH) runs in batch mode only; the Editor has the project open'); return false; }
     const st = editorStatus();
     if (!st) { console.error('game: Unity has the project open but does not answer the CLI. Close Unity, or build from its menu: Suborned/Build Game.'); return false; }
     if (st.playMode && st.playMode !== 'stopped') { console.error(`game: Unity is in Play (${st.playMode}). Stop Play, or close Unity, and run again; a build would end the session.`); return false; }
@@ -160,8 +160,8 @@ async function build(): Promise<boolean> {
     const ver = readFileSync(join(UNITY, 'ProjectSettings', 'ProjectVersion.txt'), 'utf8').match(/m_EditorVersion: (\S+)/)?.[1];
     const exe = `/Applications/Unity/Hub/Editor/${ver}/Unity.app/Contents/MacOS/Unity`;
     if (!existsSync(exe)) { console.error(`game: Unity ${ver} is not installed at ${exe}`); return false; }
-    console.log(`game: building in batch mode (Unity ${ver}; log out/build/play/build.log)…`);
-    run(exe, ['-batchmode', '-quit', '-projectPath', UNITY, '-executeMethod', 'Suborned.World.Play.GameBuild.Cli', '-logFile', join(DIR, 'build.log')]);
+    console.log(`game: building in batch mode (Unity ${ver}${SCRATCH ? ', a scratch build' : ''}; log ${relative(ROOT, join(DIR, 'build.log'))})…`);
+    run(exe, ['-batchmode', '-quit', '-projectPath', UNITY, '-executeMethod', `Suborned.World.Play.GameBuild.${SCRATCH ? 'CliScratch' : 'Cli'}`, ...(SCRATCH ? ['-scratchBuild', DIR] : []), '-logFile', join(DIR, 'build.log')]);
   }
   const b = built();
   if (!b.ok || b.at <= before) { console.error(`game: the build did not finish (${b.why || 'no new build.json'}); see out/build/play/build.json and build.log or the Editor console`); return false; }
@@ -313,7 +313,7 @@ function proofBlank(): boolean { const f = join(DIR, 'proof', 'proof.json'); ret
 
 /** A blank build is never shipped: its number goes back to tools/game/version.json, so the rebuild takes the same one. */
 function giveBackNumber(): void {
-  const f = join(ROOT, 'tools', 'game', 'version.json'); if (!existsSync(f)) return;
+  const f = join(ROOT, 'tools', 'game', 'version.json'); if (SCRATCH || !existsSync(f)) return; // a scratch build took no number
   const v = JSON.parse(readFileSync(f, 'utf8')); if (typeof v.build === 'number' && v.build > 0) { v.build -= 1; Bun.write(f, JSON.stringify(v, null, 4) + '\n'); }
 }
 
@@ -403,7 +403,7 @@ function dryRun(stale: string): number {
   say('dry run: nothing is built, checked, packed, signed, sent or opened; Unity is not started; nothing is written under out/build or runs/builds');
   if (building) {
     say(`would build ${next} (${forced ? 'forced' : stale})`);
-    say(`  how: ${editorOpen() ? 'through the open Editor (unity cmd editor invoke_menu "Suborned/Build Game"), when it is stopped and not compiling' : 'Unity in batch mode (-executeMethod Suborned.World.Play.GameBuild.Cli; log out/build/play/build.log)'}`);
+    say(`  how: ${editorOpen() ? 'through the open Editor (unity cmd editor invoke_menu "Suborned/Build Game"), when it is stopped and not compiling' : `Unity in batch mode (-executeMethod Suborned.World.Play.GameBuild.${SCRATCH ? `CliScratch -scratchBuild ${relative(ROOT, DIR)}: a scratch build, no build number` : 'Cli'}; log ${relative(ROOT, join(DIR, 'build.log'))})`}`);
     if (appRunning()) say('  the game is open: a real run would stop here and ask you to close it');
   } else say(`the app is current (${stamp().version ?? 'built before the counter'}); would not build`);
   const full = has('--build') || has('--check') || has('--pack') || has('--send');

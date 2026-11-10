@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { onlyShots, timeLines, appCurrent, frameLines, gateWords, nextCommand, resumeFrom, sessionWords, type LastRun, type ProofGate, installRunner, judgeProofSets, judgeShots, logProblems, matchResult, onlyRows, pick, playerCommand, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
 import { emptyLedger, picturesJudged, recordPictures } from './proofdelta';
+import { skySkips } from './batch-sky';
 import { resolveShots, type Resolver } from './shots';
 
 const ctx = (over: Partial<Ctx> = {}): Ctx => ({ dry: false, mode: 'batchmode', shotsFile: '', shotsOut: '', facts: {}, say: () => {}, ...over });
@@ -18,6 +19,10 @@ describe('the steps are the ones Sky named, in order', () => {
     expect(ids).toEqual(['sim', 'words', 'compile', 'hostlogic', 'kit', 'world', 'unity-world', 'unity-match', 'game-build', 'game-check', 'shots', 'budget', 'late-fight', 'tp-long', 'perf064']);
     expect(STEPS.find(s => s.id === 'sim')!.plan(ctx())).toEqual(['bun tools/sim/unity.ts --tree']);
     expect(STEPS.find(s => s.id === 'game-build')!.plan(ctx({ rebuild: true }))[0]).toContain('bun tools/game/cli.ts --build');
+  });
+  test('--sky (batch-sky.ts) runs the steps up to the build and leaves the match, the proof, the shots and the frame times to the full batch', () => {
+    expect(pick(STEPS.map(s => s.id), { skip: skySkips(STEPS.map(s => s.id)) }).run).toEqual(['sim', 'words', 'compile', 'hostlogic', 'kit', 'world', 'unity-world', 'game-build']);
+    expect(STEPS.find(s => s.id === 'game-build')!.plan(ctx({ sky: true })).join('\n')).toContain('-proofOnly base');
   });
   test('Unity is driven through its menus with the Editor open and by batchmode otherwise', () => {
     const w = STEPS.find(s => s.id === 'unity-world')!;

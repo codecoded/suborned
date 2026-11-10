@@ -72,7 +72,11 @@ describe('the batch\'s steps', () => {
   });
   test('a world source remakes the export and the scene, then the frame-time steps; never the engine, words or kit steps', () => {
     for (const f of ['contracts/world/harbour-district.plan.json', 'tools/plan/checks.ts', 'tools/world/build.ts']) expect(ran(whatIfAll(m, [f])), f).toEqual(['world', 'unity-world', 'late-fight', 'tp-long']);
-    expect(ran(whatIfAll(m, ['contracts/world/kit.json']))).toEqual(['kit', 'world', 'unity-world', 'late-fight', 'tp-long']);
+    expect(ran(whatIfAll(m, ['contracts/world/kit.json#unity']))).toEqual(['kit', 'world', 'unity-world', 'late-fight', 'tp-long']); expect(whatIfAll(m, ['contracts/world/kit.json#unity']).plan.mode).toBe('full');
+    // Splice 2026-11-11: the kit's candidates, its schema, its tools and the DecoKit generator run the kit and world steps alone; what they move is read by content after them
+    for (const f of ['contracts/world/kit.json#rest', 'contracts/world/kit.schema.ts', 'tools/kit/catalogue.ts', 'tools/decokit/cameras.py']) { const w = whatIfAll(m, [f]); expect(ran(w), f).toEqual(['kit', 'world']); expect(w.plan, f).toMatchObject({ mode: 'delta', only: [] }); expect(w.shots.names, f).toEqual([]); }
+    expect(ran(whatIfAll(m, ['contracts/world/kit.json']))).toEqual([]); // the whole file's own line: its parts decide
+    expect(ran(whatIfAll(m, ['tools/decokit/art/robots/robot-faces.json']))).toEqual(['kit', 'world', 'unity-world', 'late-fight', 'tp-long']); // RobotKit reads it at the scene build
     expect(ran(whatIfAll(m, ['tools/world/gen/kitrefs.test.ts', 'tools/plan/checks.test.ts', 'tools/world/test/preremap.kit.json']))).toEqual([]); // tests and their fixtures: nothing (a world test ran everything until 2026-11-08)
   });
   test('the camera\'s stand-off runs the whole proof and every shot, and no gated step', () => {

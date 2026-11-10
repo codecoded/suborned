@@ -1,4 +1,10 @@
-// usage: bun run batch [--force] [--wait-timeout <s>] [--dry-run] [--from <step>] [--restart] [--full | --submission] [--spots] [--only a,b] [--skip a,b] [--editor | --batchmode] [--shots <file>] [--shots-out <dir>] [--no-shots] [--rebuild] [--perf064] [--rows a,b] [--behind]
+// usage: bun run batch [--force] [--wait-timeout <s>] [--dry-run] [--from <step>] [--restart] [--full | --submission] [--spots] [--only a,b] [--skip a,b] [--editor | --batchmode] [--shots <file>] [--shots-out <dir>] [--no-shots] [--rebuild] [--perf064] [--rows a,b] [--behind] [--sky [--then-full]] [--verdict <file>]
+// FOR SKY (CLAUDE.md "Delta only"; Sky 2026-11-11): bun run batch --sky [--then-full] [--dry-run]: the build for Sky in about 10 minutes (tools/game/batch-sky.ts): sim (only when the engine
+//   changed), words, compile, hostlogic, kit, world and unity-world (each only when its gate says: a candidate added to the kit runs none of the scene), then game-build with a SHORT smoke
+//   (the proof's base: OldTown with the Handover host, the briefing, a few seconds of play, the play shot with its HUD, no Exception in the log) behind, not the proof. It records the
+//   build (version.json, runs/builds/builds.json) and prints the app. --then-full then starts `--full` behind, detached, into its own player (out/build/full, a scratch build: never Sky's
+//   app) and folder (out/batch/full-behind), --force and --behind, its verdict in out/batch/full-behind/verdict.json (--verdict: a frame-time failure on a NOISY machine is noted, not a stop).
+//   Any batch on Sky's player first asks a running behind batch to stop at its next step and waits (one Unity project lock).
 // The one command Latch runs per build (brief 034 item 3). In order, stopping at the first failure:
 //   sim          bun tools/sim/unity.ts --tree           the engine, the inputs and the DLL into the Unity project (headless scenarios first)
 //   words        tools/game/words.ts                     text.json checked (schema, its tests, the words the proofs compare) and into StreamingAssets/sim: the words alone need no engine build
@@ -16,7 +22,7 @@
 //   tp-long      the built player with -tplong          tools/game/tplong.json: the two third-person views (Sky's street, the worst heading) and the play view at 1920x1080, ~40 s: triangles, SetPass, shadow casters, renderers drawn and far, mean and p99 against the gates in tplong.ts (brief 048); SKIPPED, with the reason, until the built player has the hook
 //   perf064      the built player with -perf064         (opt-in: --perf064 or --only perf064, ~3 minutes) Redline's scene at 2880x1864, four 20 s windows, before/after: frame ms, the host's cone cost, the CPU/GPU split and each window's load when the build writes them (brief 064 R7; tools/game/perfrow.ts). Counts are the gate; ms only on a quiet machine
 //   Every step that reports frame times (game-check, shots, late-fight, tp-long, perf064) records the load average (1/5/15) at its start and end and prints it under its row, NOISY MACHINE included.
-// Delta only (brief 078; Sky: "a small change reaches Sky in about 5 minutes"; tools/game/proofdelta.ts, proofmap.json): the proof runs only the sections a change since each one's last recorded pass can affect. sim, kit, world, unity-world, unity-match, the check's scenarios, late-fight and tp-long run only when a path that can affect them changed since their last pass (a row's `steps`; a `full` row without them, or a path the map cannot place, is all of them), or with --full or --submission (--only names a step to run whatever changed). shots and budget run only for what a HUD or view path can show. A section or step not run says why, never "passed". The last line of the screen is the time budget; a delta over 5 minutes warns. --spots adds the frame-time spots to the proof (off by default).
+// Delta only (brief 078; Sky: "a small change reaches Sky in about 5 minutes"; tools/game/proofdelta.ts, proofmap.json): the proof runs only the sections a change since each one's last recorded pass can affect. sim, kit, world, unity-world, unity-match, the check's scenarios, late-fight and tp-long run only when a path that can affect them changed since their last pass (a row's `steps`; a `full` row without them, or a path the map cannot place, is all of them; once the kit or world step ran, the scene and frame-time steps read the tree as it then is: kit.json is read in two parts, #unity and #rest, proofdelta.ts kitParts), or with --full or --submission (--only names a step to run whatever changed). shots and budget run only for what a HUD or view path can show. A section or step not run says why, never "passed". The last line of the screen is the time budget; a delta over 5 minutes warns. --spots adds the frame-time spots to the proof (off by default).
 // After a failure the screen prints the command that goes on (next line); a bare `bun run batch` does the same while the sources are unchanged: it starts at the failed step on the same player (--restart: from the top). No step before it runs, so nothing rewrites the scene and forces a rebuild. A failed proof section runs alone; a pass alone after a failure in company is said, and --full checks it.
 // Sky is playing (a player of his, no automation flag; playing.ts): before every step the batch waits ("Sky is playing; waiting") up to --wait-timeout seconds (default 1200), then stops; --force goes on.
 // Every player step starts the player ONCE with its whole list (-shots, -late, -tplong take a file of rows; -perf064 is one scene): launchPlayer below. The window opens
@@ -28,7 +34,7 @@
 // then prints one screen: pass/fail per step, seconds, the build, frame times, where the shots are. Logs of every step: out/batch/logs/<step>.log.
 // --dry-run prints what each step would run and touches nothing (no Unity, no build, nothing written under out/): only the steps' plan() texts run, plus read-only pgrep to see whether the Editor is open (tests: batch.test.ts). Exit 0 only if every step that ran passed.
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { cpus, homedir, loadavg } from 'node:os';
+import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { compile as runtimeCompile } from './runtime-compile';
 import { guardConfig, takeGuardFlags, timeoutText, waitForSky } from './playing';
@@ -36,14 +42,15 @@ import { hostLogic } from './hostlogic';
 import { GATES, MARKER as TPLONG_MARKER, judgeTpLong, resolveTpLong, type TpLongReport } from './tplong';
 import { LIMITS, loadText, noisy as loadNoisy, resolveLate, runLate, type End, type LateReport, type LateResolvedFile, type LoadSample } from './late';
 import { perf064Lines, spanEnd, spanStart, spanText, type LoadSpan, type Perf064Report } from './perfrow';
-import { build as buildEngine, engineAt } from '../missions/check/engine';
+import { SKY_STEPS, behindCommand, goesOn, judgeSmoke, logBuilt, readSmoke, skyLines, skySkips, smokeArgs, smokePlan, startBehind, stopAsked, stopBehind, verdict } from './batch-sky';
 import { DEFAULT_FILE, ROOT, expectedFiles, fileResolver, pngFileSize, resolveShots, type ResolvedFile } from './shots';
 import { judgeProofBudget, loadProofSet, type ProofBudget } from './proofset';
 import { walkFileState } from './walkfile';
 import { changedPaths, gateFile, ledgerFile, loadMap, picturesJudged, planLines, planProof, readLedger, recordPictures, recordSteps, shotsGate, snapshot, stepGate, writeLedger, writePlan, planFile, emptyLedger, type Ledger, type Plan, type Snapshot } from './proofdelta';
 
-const UNITY = join(ROOT, 'unity'), OUT = process.env.SUBORNED_BATCH_OUT ? resolve(process.env.SUBORNED_BATCH_OUT) : join(ROOT, 'out/batch'), /* SUBORNED_BATCH_OUT: the tests' scratch folder */ APP = join(ROOT, 'out/build/play/The Suborned.app'), PROOF = join(ROOT, 'out/build/play/proof/proof.json');
-const BUILD_DIR = dirname(dirname(PROOF));
+import { APP, AFTER_WORLD, BUILD_DIR, OUT, OWN_PLAYER, PROOF, STAMP, UNITY, env, readJson, rel, unityExe } from './batch-paths';
+import { LATE_FILE, LATE_MARKER, PERF064_MARKER, TPLONG_FILE, engineEnd, playerHasLate, playerHasPerf064, playerHasTpLong, watchLoad } from './batch-player';
+export { playerHasLate, playerHasPerf064, playerHasTpLong } from './batch-player';
 /** Sky 2026-10-30: the game plays the old town: the swap of the old builders round our Handover zone, from the scene just built, then the host installed. Null when it worked, else why. */
 async function oldTown(t0: number): Promise<string | null> {
   const run = async (log: string, ...args: string[]) => { const f = join(OUT, 'logs', log); const r = await sh(log, ['bun', join(ROOT, 'briefs/075/oldbuild/swap/tools/unityrun.ts'), f, '--', ...args], { timeoutMs: 3600000 }); return r.code === 0 ? null : `${log} exit ${r.code}; log ${f}`; };
@@ -71,7 +78,6 @@ export function zoneProblem(z: any): string | null {
 const TOWN = join(UNITY, 'Assets/Scenes/OldTown.unity');
 const SCENE = join(UNITY, 'Assets/Scenes/HarbourDistrict.unity'), MATCH = join(ROOT, 'out/sim-unity/unity-editor.json');
 const FILES = ['ShotRunner.cs', 'CaptureSize.cs'].map(f => [join(ROOT, 'tools/game/unity', f), join(UNITY, 'Assets/Suborned/Runtime/Play', f)] as const);
-const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1', ...(process.env.DOTNET_ROOT || !existsSync('/opt/homebrew/opt/dotnet/libexec') ? {} : { DOTNET_ROOT: '/opt/homebrew/opt/dotnet/libexec' }) };
 
 export type StepResult = { ok: boolean; detail: string; /** the step has nothing to run yet: shown as skipped, with the reason, and the batch goes on */ skipped?: boolean; /** what the time budget says it spent its time on */ why?: string };
 export type Ctx = {
@@ -88,6 +94,8 @@ export type Ctx = {
   fullProof?: string;
   /** --spots: the frame-time spots in the proof */
   spots?: boolean;
+  /** --sky: the build for Sky with the smoke, not the proof (batch-sky.ts); --verdict: a frame-time step that fails on a NOISY machine does not stop the batch */
+  sky?: boolean; goOnNoisy?: boolean;
   /** the tree at the start of the batch: without it (the tests' stubs) every step runs */
   tree?: Snapshot;
   /** --only: these run whatever changed */
@@ -193,7 +201,7 @@ export function installRunner(staged = FILES[0]![0], installed = FILES[0]![1]): 
 }
 
 /** The steps that only an engine, world or kit change can affect, and the whole-game frame-time measures (proofdelta.ts stepGate); recorded when they pass. */
-const gated = (c: Ctx, id: string): When => { if (!c.tree) return { run: true, why: 'always' }; return stepGate(loadMap(), c.tree, readLedger(ledgerFile(BUILD_DIR)), id, c.fullProof); };
+const gated = (c: Ctx, id: string): When => { if (!c.tree) return { run: true, why: 'always' }; const after = AFTER_WORLD.includes(id) && !c.dry && c.facts.kitOrWorldRan; return stepGate(loadMap(), after ? (c.facts.afterWorld ??= snapshot(ROOT, loadMap())) as Snapshot : c.tree, readLedger(ledgerFile(BUILD_DIR)), id, c.fullProof); }; // after the kit or world step ran, the steps after them read its output by content (a candidate added re-catalogues kit.json#rest, copies nothing, moves no export: no scene rebuild)
 export const STEPS: Step[] = [
   {
     id: 'sim', when: c => gated(c, 'sim'), title: 'engine into Unity', plan: () => ['bun tools/sim/unity.ts --tree'],
@@ -225,12 +233,12 @@ export const STEPS: Step[] = [
   },
   {
     id: 'kit', when: c => gated(c, 'kit'), title: 'kit catalogue and import', plan: () => ['bun run kit'],
-    async run() { const r = await sh('kit', ['bun', 'run', 'kit']); return r.code === 0 ? { ok: true, detail: tail(r.out, 1).slice(0, 110) } : fail('bun run kit failed', r); },
+    async run(c) { const r = await sh('kit', ['bun', 'run', 'kit']); c.facts.kitOrWorldRan = true; c.facts.afterWorld = undefined; return r.code === 0 ? { ok: true, detail: tail(r.out, 1).slice(0, 110) } : fail('bun run kit failed', r); },
   },
   {
     id: 'world', when: c => gated(c, 'world'), title: 'plan to world export', plan: () => ['bun run world', 'then, only when out/world/harbour-district.walk.json is not made from that export (the Unity step refuses a stale one): bun tools/geometry/cli.ts --no-shots'],
-    async run() {
-      const r = await sh('world', ['bun', 'run', 'world']);
+    async run(c) {
+      const r = await sh('world', ['bun', 'run', 'world']); c.facts.kitOrWorldRan = true; c.facts.afterWorld = undefined;
       if (r.code !== 0) return fail('bun run world failed', r);
       let walk = walkFileState(ROOT), mended = '';
       if (!walk.fresh) { // a world run that moved the export leaves the walk file behind; geometry writes it again (2 s with the kit cached)
@@ -284,14 +292,15 @@ export const STEPS: Step[] = [
     },
   },
   {
-    id: 'game-build', title: 'player build', plan: c => [c.rebuild ? 'bun tools/game/cli.ts --build --proof-plan out/build/play/proofplan.json  (--rebuild)' : 'skipped when nothing under unity/Assets, ProjectSettings or Packages is newer than the app; else bun tools/game/cli.ts --build --proof-plan out/build/play/proofplan.json'],
+    id: 'game-build', title: 'player build', plan: c => c.sky ? [`${c.rebuild ? '' : 'when anything under unity/Assets, ProjectSettings or Packages is newer than the app: '}bun tools/game/cli.ts --build --proof-plan ${rel(planFile(BUILD_DIR))}  (the smoke: the proof's base alone, -proofOnly base, behind)`, `else the smoke on the app as it stands: "${rel(APP)}/Contents/MacOS/The Suborned" ${smokeArgs(rel(join(BUILD_DIR, 'smoke'))).join(' ')}  (open -g)`, 'judged: the frame drew, briefing up, play to a tick past 0, the play shot with HUD elements, no Exception in the log, OldTown.unity in the build'] : [c.rebuild ? 'bun tools/game/cli.ts --build --proof-plan out/build/play/proofplan.json  (--rebuild)' : 'skipped when nothing under unity/Assets, ProjectSettings or Packages is newer than the app; else bun tools/game/cli.ts --build --proof-plan out/build/play/proofplan.json'],
     async run(c) {
       const cur = c.rebuild ? undefined : appCurrent() ?? playerUnchanged(c);
       c.facts.snap = snapshot(ROOT, loadMap()); // what this build reads: after the world steps, before Unity
-      if (cur) { c.facts.build = readJson(join(ROOT, 'out/build/play/build.json')); c.facts.rebuildSkipped = cur; return { ok: true, detail: `NOT REBUILT, no build number spent: ${cur}` }; }
+      if (cur && !c.sky) { c.facts.build = readJson(STAMP); c.facts.rebuildSkipped = cur; return { ok: true, detail: `NOT REBUILT, no build number spent: ${cur}` }; }
+      if (c.sky) return skySmoke(c, cur);
       const plan = makePlan(c); c.facts.plan = plan; for (const l of planLines(plan)) c.say(l); // the snapshot is taken here, on what this build reads: after the world steps, before Unity
       const t0 = Date.now(), r = await sh('game-build', ['bun', 'tools/game/cli.ts', '--build', '--proof-plan', planFile(BUILD_DIR), ...(c.spots ? ['--spots'] : [])], { timeoutMs: 3600000 });
-      const b = readJson(join(ROOT, 'out/build/play/build.json'));
+      const b = readJson(STAMP);
       if (r.code !== 0 || !b || b.result !== 'Succeeded' || Date.parse(b.at) < t0 - 5000) return fail('game build failed', r);
       c.facts.build = b;
       return { ok: true, detail: `Build ${b.version} (${b.recording}, ${b.sha}${b.dirty ? '+' : ''}) in ${b.seconds} s, ${b.errors} errors; ${planLines(plan)[0]}`, why: `proof ${r.out.match(/game: proof took (\d+) s/)?.[1] ?? '?'} s; ${plan.why}` };
@@ -430,26 +439,20 @@ export function newestInput(roots: string[]): { at: number; what: string } {
 }
 /** The app is current by content: no path the player reads changed since the build the ledger knows (an Editor capture tool's edit or a scene written byte for byte moves the clock, not the player). */
 function playerUnchanged(c: Ctx): string | undefined {
-  const b = readJson(join(ROOT, 'out/build/play/build.json')), l = readLedger(ledgerFile(BUILD_DIR)), m = loadMap(), now = snapshot(ROOT, m);
+  const b = readJson(STAMP), l = readLedger(ledgerFile(BUILD_DIR)), m = loadMap(), now = snapshot(ROOT, m);
   if (!c.tree || b?.result !== 'Succeeded' || !existsSync(APP)) return undefined;
   const mine = Object.values(l.sections).filter(p => p.build === b.version).map(p => l.snapshots[p.snapshot]).find(Boolean);
   return mine && !changedPaths(mine, now.files).length ? `${b.version}: nothing the player reads changed since it was built; --rebuild to build anyway` : undefined;
 }
 /** Why the built app is current (nothing under unity/Assets, ProjectSettings or Packages is newer than its build), or undefined when it needs building. */
 export function appCurrent(o: { app?: string; stamp?: string; roots?: string[] } = {}): string | undefined {
-  const app = o.app ?? APP, stamp = o.stamp ?? join(ROOT, 'out/build/play/build.json');
+  const app = o.app ?? APP, stamp = o.stamp ?? STAMP;
   if (!existsSync(app) || !existsSync(stamp)) return undefined;
   const b = readJson(stamp); if (b?.result !== 'Succeeded') return undefined;
   const at = statSync(stamp).mtimeMs, n = newestInput(o.roots ?? ['Assets', 'ProjectSettings', 'Packages'].map(d => join(UNITY, d)));
   return n.at > at ? undefined : `${b.version ?? 'the app'} is newer than every file under unity/Assets, ProjectSettings and Packages (latest ${rel(n.what) || 'none'}); --rebuild to build anyway`;
 }
 
-function unityExe(): string {
-  const ver = readFileSync(join(UNITY, 'ProjectSettings/ProjectVersion.txt'), 'utf8').match(/m_EditorVersion: (\S+)/)?.[1];
-  return `/Applications/Unity/Hub/Editor/${ver}/Unity.app/Contents/MacOS/Unity`;
-}
-const rel = (p: string) => p.startsWith(ROOT + '/') ? p.slice(ROOT.length + 1) : p;
-const readJson = (f: string): any => { try { return JSON.parse(readFileSync(f, 'utf8')); } catch { return undefined; } };
 
 /** The proof sets (tools/game/proofset.json) the proof has a section for, judged at 1x by the HUD budget; a set whose section the proof lacks is an older build's, said and not failed.
  *  `proof` is proof.json; `dir` the folder its pictures are in. */
@@ -465,6 +468,15 @@ export function judgeProofSets(proof: any, dir = dirname(PROOF), stage = join(OU
 
 /** What cli.ts leaves after a check with a plan (proofgate.json). */
 export type ProofGate = { mode: 'full' | 'delta'; why: string; build?: string; ran: string[]; skips: Record<string, string>; failed: string[]; notReached: string[] };
+/** --sky's game build (batch-sky.ts): built when anything it is made from moved, with the proof's base alone as the smoke; else the smoke on the app as it stands. */
+async function skySmoke(c: Ctx, cur: string | undefined): Promise<StepResult> {
+  const t0 = Date.now(), dir = join(BUILD_DIR, cur ? 'smoke' : 'proof'), snap = c.facts.snap as Snapshot;
+  if (!cur) { writePlan(BUILD_DIR, smokePlan(loadMap(), snap.id), snap); const r = await sh('game-build', ['bun', 'tools/game/cli.ts', '--build', '--proof-plan', planFile(BUILD_DIR)], { timeoutMs: 3600000 }), b = readJson(STAMP); if (r.code !== 0 || b?.result !== 'Succeeded' || Date.parse(b.at) < t0 - 5000) return fail('game build failed', r); }
+  else { c.facts.rebuildSkipped = cur; rmSync(dir, { recursive: true, force: true }); mkdirSync(dir, { recursive: true }); await launchPlayer(c, 'game-build', smokeArgs(dir), [1920, 1080], { timeoutMs: 180000 }); }
+  const b = (c.facts.build = readJson(STAMP)), j = judgeSmoke(readSmoke(dir, BUILD_DIR, t0, (Date.now() - t0) / 1000));
+  return j.ok ? { ok: true, detail: `${cur ? 'NOT REBUILT; ' : `Build ${b.version} (${b.recording}, ${b.sha}${b.dirty ? '+' : ''}) in ${b.seconds} s; `}${j.detail}`, why: cur ? 'the smoke on the app as it stands' : 'build and smoke' } : fail(`${j.detail}
+logs: ${rel(dir)}/player.log, out/batch/logs/game-build.log`);
+}
 const makePlan = (c: Ctx): Plan => { const m = loadMap(), s = (c.facts.snap as Snapshot | undefined) ?? snapshot(ROOT, m); c.facts.snap = s; const p = planProof(m, s, readLedger(ledgerFile(BUILD_DIR)), { force: c.fullProof }); writePlan(BUILD_DIR, p, s); return p; };
 /** The game-check row's words for the two replays, from the check's log. */
 export function sessionWords(out: string): string {
@@ -584,54 +596,6 @@ export function onlyRows<T extends { rows: { name: string }[] }>(raw: T, names?:
 /** The window a list opens at: its first row's size (CaptureSize then sets each row's own). */
 const sizeOf = (rows: { w: number; h: number }[]): [number, number] => [rows[0]?.w ?? 1920, rows[0]?.h ?? 1080];
 
-const LATE_FILE = join(ROOT, 'tools/game/late.json'), LATE_MARKER = 'suborned.late.report/1';
-/** Does the built player carry the -late mode? Its report's schema literal is in its code only when Latch's hook is. (Without the hook the player would just open the game and sit; this stops that after a second.) */
-export function playerHasLate(managed = join(APP, 'Contents/Resources/Data/Managed/Suborned.Runtime.dll')): boolean {
-  if (!existsSync(managed)) return false;
-  return readFileSync(managed).includes(Buffer.from(LATE_MARKER, 'utf16le'));
-}
-const PERF064_MARKER = 'suborned.perf064/1';
-/** Does the built player carry the -perf064 probe? Its report's schema literal is in its code only when the probe is. */
-export function playerHasPerf064(managed = join(APP, 'Contents/Resources/Data/Managed/Suborned.Runtime.dll')): boolean {
-  if (!existsSync(managed)) return false;
-  return readFileSync(managed).includes(Buffer.from(PERF064_MARKER, 'utf16le'));
-}
-const TPLONG_FILE = join(ROOT, 'tools/game/tplong.json');
-/** Does the built player carry the -tplong mode? Its report's schema literal is in its code only when Latch's hook is. */
-export function playerHasTpLong(managed = join(APP, 'Contents/Resources/Data/Managed/Suborned.Runtime.dll')): boolean {
-  if (!existsSync(managed)) return false;
-  return readFileSync(managed).includes(Buffer.from(TPLONG_MARKER, 'utf16le'));
-}
-/** Where a script's mission ends, from the working tree's engine (`play --json`: the tick and outcome the player's drive must reach too). */
-function engineEnd(path: string): End {
-  const dll = buildEngine(engineAt('tree'));
-  const r = Bun.spawnSync(['dotnet', dll, 'play', path, '--json'], { cwd: ROOT, env, stdout: 'pipe', stderr: 'pipe' });
-  const line = r.stdout.toString().split('\n').find(l => l.startsWith('{'));
-  if (!line) throw new Error(`the engine could not play ${rel(path)}: ${r.stderr.toString().trim().slice(0, 200)}`);
-  const j = JSON.parse(line);
-  return { tick: j.tick, outcome: j.outcome, fail: j.fail ?? '' };
-}
-
-/** Machine load while a player runs: the 1-minute load average at the start, its peak while sampled (every 2 s), at the end; and the busiest other processes at the peak. */
-function watchLoad(): { stop(): Promise<LoadSample> } {
-  const ncpu = cpus().length, start = loadavg()[0]!; let peak = start, top: string[] = [], busy = false;
-  const sample = async () => {
-    if (busy) return; busy = true;
-    try {
-      const l = loadavg()[0]!;
-      if (l >= peak) {
-        peak = l;
-        const p = Bun.spawn(['ps', '-Ao', 'pcpu=,pid=,comm=', '-r'], { stdout: 'pipe', stderr: 'ignore' });
-        const text = await new Response(p.stdout).text();
-        top = text.split('\n').slice(0, 8).map(x => x.trim().match(/^([\d.]+)\s+(\d+)\s+(.*)$/)).filter((m): m is RegExpMatchArray => !!m && Number(m[1]) >= 25 && !/The Suborned|\/ps$/.test(m[3]!))
-          .slice(0, 3).map(m => `${m[3]!.split('/').pop()} ${Math.round(Number(m[1]))}%`);
-      }
-    } finally { busy = false; }
-  };
-  const timer = setInterval(sample, 2000);
-  return { async stop() { clearInterval(timer); await sample(); return { ncpu, start: Math.round(start * 10) / 10, peak: Math.round(Math.max(peak, loadavg()[0]!) * 10) / 10, end: Math.round(loadavg()[0]! * 10) / 10, top }; } };
-}
-
 // ---------------------------------------------------------------- the run and the screen
 
 export function pick(ids: string[], o: { from?: string; only?: string[]; skip?: string[] }): { run: string[]; unknown: string[] } {
@@ -659,7 +623,7 @@ export async function runSteps(steps: Step[], c: Ctx, run: string[]): Promise<Ro
     const span0 = s.perf && !c.dry ? spanStart() : undefined; // the load average when a perf step starts and ends (Redline R7)
     try { r = c.dry ? { ok: true, detail: s.plan(c).join('\n') } : await s.run(c); } catch (e) { r = { ok: false, detail: `threw: ${(e as Error).message}` }; }
     rows.push({ id: s.id, title: s.title, status: r.ok ? (r.skipped ? 'skipped' : 'ok') : 'FAILED', seconds: (performance.now() - t0) / 1000, detail: r.skipped ? `skipped: ${r.detail}` : r.detail, why: r.why ?? (c.explicit?.includes(s.id) ? 'asked for' : w?.why), ...(span0 && !r.skipped ? { load: spanEnd(span0) } : {}) });
-    if (!r.ok) stopped = true;
+    if (!r.ok && !goesOn(c.goOnNoisy, s.perf, rows[rows.length - 1]!.load)) stopped = true; // the behind batch (--verdict): a frame-time failure on a NOISY machine is said, not a stop
   }
   return rows;
 }
@@ -716,20 +680,21 @@ if (import.meta.main) {
   try { takeGuardFlags(args); } catch (e) { console.error((e as Error).message); process.exit(2); }
   const from = flag('--from'), only = flag('--only')?.split(','), skipArg = flag('--skip')?.split(','), shotsFile = resolve(flag('--shots') ?? DEFAULT_FILE), shotsOut = resolve(flag('--shots-out') ?? join(OUT, 'shots'));
   const dry = bool('--dry-run'), noShots = bool('--no-shots'), forceEditor = bool('--editor'), forceBatch = bool('--batchmode'), rebuild = bool('--rebuild'), perf064 = bool('--perf064') || !!only?.includes('perf064'), rowsArg = flag('--rows')?.split(','), behind = bool('--behind'), full = bool('--full'), submission = bool('--submission'), restart = bool('--restart'), spots = bool('--spots'); if (behind) Object.assign(env, { SUBORNED_BEHIND: '1' }); // the proof's own launch too (cli.ts through launch.ts)
-  if (args.length || (forceEditor && forceBatch)) { console.error(`unknown or conflicting argument ${args.join(' ') || '--editor --batchmode'}; see the usage line at the top of tools/game/batch.ts`); process.exit(2); }
-  const skip = [...(skipArg ?? []), ...(noShots ? ['shots', 'budget'] : [])];
+  const sky = bool('--sky'), thenFull = bool('--then-full'), verdictFile = flag('--verdict'); if (sky) Object.assign(env, { SUBORNED_BEHIND: '1' }); // --sky: Sky's build and its smoke, its players behind (batch-sky.ts)
+  if (args.length || (forceEditor && forceBatch) || (thenFull && !sky) || (sky && (full || submission))) { console.error(`unknown or conflicting argument ${args.join(' ') || (thenFull && !sky ? '--then-full without --sky' : sky && (full || submission) ? '--sky with --full or --submission' : '--editor --batchmode')}; see the usage line at the top of tools/game/batch.ts`); process.exit(2); }
+  const skip = [...(skipArg ?? []), ...(noShots ? ['shots', 'budget'] : []), ...(sky ? skySkips(STEPS.map(s => s.id)) : [])];
   // a bare run after a failure goes on from the failed step on the same player, while the sources are the ones it failed on (brief 078)
   const lastFile = join(OUT, 'last.json'), proofMap = loadMap(), start = snapshot(ROOT, proofMap), tree = () => snapshot(ROOT, proofMap).id;
-  const bare = !from && !only && !skipArg && !noShots && !rebuild && !full && !submission && !restart;
-  const last = readJson(lastFile) as LastRun | undefined, resumed = bare && last ? resumeFrom(last, start.id, readJson(join(BUILD_DIR, 'build.json'))?.version) : undefined;
+  const bare = !from && !only && !skipArg && !noShots && !rebuild && !full && !submission && !restart && !sky;
+  const last = readJson(lastFile) as LastRun | undefined, resumed = bare && last ? resumeFrom(last, start.id, readJson(STAMP)?.version) : undefined;
   if (resumed) console.error(`going on from ${resumed} on the same player: nothing changed since it failed (${last!.at.slice(0, 16)}); --restart runs from the top`);
   const { run, unknown } = pick(STEPS.map(s => s.id), { from: from ?? resumed, only, skip });
   if (unknown.length) { console.error(`unknown step ${unknown.join(', ')}; steps: ${STEPS.map(s => s.id).join(' ')}`); process.exit(2); }
   const mode: Ctx['mode'] = forceEditor ? 'editor' : forceBatch ? 'batchmode' : editorOpen() ? 'editor' : 'batchmode';
   const c: Ctx = {
-    dry, mode, rebuild, perf064, rows: rowsArg, behind, shotsFile, shotsOut, facts: {}, say: m => console.error(m), fullProof: submission ? 'a submission build always runs the whole proof' : full ? '--full' : undefined, tree: start, explicit: only, spots,
+    dry, mode, rebuild, perf064, rows: rowsArg, behind: behind || sky, sky, goOnNoisy: !!verdictFile, shotsFile, shotsOut, facts: {}, say: m => console.error(m), fullProof: submission ? 'a submission build always runs the whole proof' : full ? '--full' : undefined, tree: start, explicit: only, spots,
     // nothing heavy runs while Sky plays: wait before each step (a look at the process list when nobody does), stop after the timeout (playing.ts)
-    guard: async id => { const w = await waitForSky(`batch ${id}`, { cfg: guardConfig }); return w.timedOut ? timeoutText(w) : undefined; },
+    guard: async id => { const stop = stopAsked(); if (stop) return stop; const w = await waitForSky(`batch ${id}`, { cfg: guardConfig }); return w.timedOut ? timeoutText(w) : undefined; }, // the behind batch: asked to stop for the next build
   };
   if (!dry && run.includes('shots')) { // a bad row stops the batch now, not after the build
     try { resolveShots(JSON.parse(readFileSync(shotsFile, 'utf8')), shotsOut, fileResolver(() => undefined)); } catch (e) { const m = (e as Error).message; if (!/no engine scenario/.test(m)) { console.error(m); process.exit(2); } }
@@ -737,17 +702,21 @@ if (import.meta.main) {
   if (dry && run.includes('shots')) { // the file is checked even when nothing runs
     try { const r = resolveShots(JSON.parse(readFileSync(shotsFile, 'utf8')), shotsOut, fileResolver(() => undefined)); console.error(`shots: ${rel(shotsFile)} is valid, ${r.shots.length} shots`); } catch (e) { const m = (e as Error).message; if (!/no engine scenario/.test(m)) { console.error(m); process.exit(1); } }
   }
+  if (!dry && !OWN_PLAYER) try { const w = await stopBehind(m => console.error(m)); if (w) console.error(`the full batch behind stopped after ${w.toFixed(0)} s`); } catch (e) { console.error((e as Error).message); process.exit(2); } // one Unity project lock
   const rows = await runSteps(STEPS, c, run);
-  if (dry) { console.log(`bun run batch --dry-run · Unity ${mode === 'editor' ? 'Editor open' : 'batchmode'}\n`); for (const r of rows) console.log(r.status === 'ok' ? `${r.id}  ${r.title}\n${r.detail.split('\n').map(l => '    ' + l).join('\n')}` : `${r.id}  (${r.status})`); if (run.includes('game-build') || run.includes('game-check')) for (const l of planLines(planProof(proofMap, snapshot(ROOT, proofMap), readLedger(ledgerFile(BUILD_DIR)), { force: c.fullProof }))) console.log(l); process.exit(rows.some(r => r.status === 'FAILED') ? 1 : 0); }
+  if (dry && sky) console.log(`--sky: steps ${SKY_STEPS.join(', ')}, each only when its gate says; ${thenFull ? `then behind: SUBORNED_PLAYER_DIR=out/build/full SUBORNED_BATCH_OUT=out/batch/full-behind ${behindCommand().join(' ')}` : 'no full batch behind (--then-full starts one)'}`);
+  if (dry) { console.log(`bun run batch --dry-run · Unity ${mode === 'editor' ? 'Editor open' : 'batchmode'}\n`); for (const r of rows) console.log(r.status === 'ok' ? `${r.id}  ${r.title}${r.why ? `  [runs: ${r.why}]` : ''}\n${r.detail.split('\n').map(l => '    ' + l).join('\n')}` : `${r.id}  (${r.status}${r.why ? `: ${r.why}` : ''})`); if (!sky && (run.includes('game-build') || run.includes('game-check'))) for (const l of planLines(planProof(proofMap, snapshot(ROOT, proofMap), readLedger(ledgerFile(BUILD_DIR)), { force: c.fullProof }))) console.log(l); process.exit(rows.some(r => r.status === 'FAILED') ? 1 : 0); }
   const failed = rows.find(r => r.status === 'FAILED'), gate = c.facts.gate as ProofGate | undefined;
   mkdirSync(OUT, { recursive: true });
   // what passed goes on the ledger, against the tree the build read; before the build there is no such tree and nothing is recorded
   const snapOfBuild = c.facts.snap as Snapshot | undefined, passed = rows.filter(r => r.status === 'ok').map(r => r.id).filter(id => ['sim', 'words', 'kit', 'world', 'unity-world', 'unity-match', 'late-fight', 'tp-long'].includes(id) || (id === 'shots' && c.facts.shotsJudged)); // shots: only once the budget judged them
   if (c.facts.scenariosRan && rows.find(r => r.id === 'game-check')?.status === 'ok') passed.push('scenarios');
   const openFail = failed && ['late-fight', 'tp-long'].includes(failed.id) ? { step: failed.id, problem: failed.detail.split('\n').slice(1, 2).join('').slice(0, 160) } : undefined; // the whole-game measures: a finding stays open on the screen, it does not stop every delta after it until the world changes
-  if (snapOfBuild && (passed.length || openFail)) { const b = readJson(join(BUILD_DIR, 'build.json')); writeLedger(ledgerFile(BUILD_DIR), recordSteps(readLedger(ledgerFile(BUILD_DIR)), snapOfBuild, passed, { version: b?.version ?? '?', commit: `${b?.sha ?? '?'}${b?.dirty ? '+' : ''}` }, openFail)); }
-  if (failed) writeFileSync(lastFile, JSON.stringify({ failedStep: failed.id, failedSections: failed.id === 'game-check' ? gate?.failed ?? [] : [], build: readJson(join(BUILD_DIR, 'build.json'))?.version, snapshot: tree(), at: new Date().toISOString() } satisfies LastRun, null, 1) + '\n');
+  if (snapOfBuild && (passed.length || openFail)) { const b = readJson(STAMP); writeLedger(ledgerFile(BUILD_DIR), recordSteps(readLedger(ledgerFile(BUILD_DIR)), snapOfBuild, passed, { version: b?.version ?? '?', commit: `${b?.sha ?? '?'}${b?.dirty ? '+' : ''}` }, openFail)); }
+  if (failed) writeFileSync(lastFile, JSON.stringify({ failedStep: failed.id, failedSections: failed.id === 'game-check' ? gate?.failed ?? [] : [], build: readJson(STAMP)?.version, snapshot: tree(), at: new Date().toISOString() } satisfies LastRun, null, 1) + '\n');
   else rmSync(lastFile, { force: true });
-  console.log(screen(rows, { gate, when: new Date().toISOString().slice(0, 16).replace('T', ' '), mode, build: c.facts.build ?? readJson(join(ROOT, 'out/build/play/build.json')), proof: c.facts.proof, shots: c.facts.shots as Report | undefined, shotsOut, skipped: c.facts.rebuildSkipped as string | undefined, late: c.facts.late as LateReport | undefined, lateNotes: c.facts.lateNotes as string[] | undefined, tplong: c.facts.tplong as string[] | undefined, perf064: c.facts.perf064 as string[] | undefined }));
+  console.log(screen(rows, { gate, when: new Date().toISOString().slice(0, 16).replace('T', ' '), mode, build: c.facts.build ?? readJson(STAMP), proof: c.facts.proof, shots: c.facts.shots as Report | undefined, shotsOut, skipped: c.facts.rebuildSkipped as string | undefined, late: c.facts.late as LateReport | undefined, lateNotes: c.facts.lateNotes as string[] | undefined, tplong: c.facts.tplong as string[] | undefined, perf064: c.facts.perf064 as string[] | undefined }));
+  if (verdictFile) writeFileSync(verdictFile, JSON.stringify(verdict(rows.map(r => ({ ...r, perf: STEPS.find(s => s.id === r.id)?.perf, lateNoisy: r.id === 'late-fight' && !!readJson(join(OUT, 'late.verdict.json'))?.noisy })), { build: readJson(STAMP), stopped: rows.find(r => r.detail.startsWith('stopped for the next build'))?.detail }), null, 1) + '\n');
+  if (sky && !failed) { for (const l of skyLines(rows)) console.log(l); const b = readJson(STAMP); console.log(`for Sky  ${APP}  ${b?.version ?? '?'}; ${logBuilt(b)}`); if (thenFull) { const h = startBehind(b?.version); console.log(`behind   the full batch, pid ${h.pid} (log ${rel(h.log)}; verdict ${rel(h.verdict)}; its player out/build/full)`); } }
   process.exit(rows.some(r => r.status === 'FAILED') ? 1 : 0);
 }

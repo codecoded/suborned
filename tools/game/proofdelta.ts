@@ -74,6 +74,16 @@ export function missionParts(text: string): Record<string, string> {
   for (const [k, v] of Object.entries(j)) (parts[MISSION_PARTS[k] ?? 'rest'] ??= {})[k] = v;
   return Object.fromEntries(['listenPartners', 'points', 'note', 'rest'].map(p => [`${MISSION_FILE}#${p}`, sha(parts[p] ?? null)]));
 }
+/** kit.json by reader (Splice, 2026-11-11; Sky: "kit changes rebake only what changed"): Unity's builders read every top-level table, the adopted rows and the rejected
+ *  generated rows (KitPlacer, KitImport.Generated removes their prefabs); the candidates and the other rejected rows only the kit and world tools, whose output (Kit/**, the
+ *  export) the steps after them read by content. So a candidate added or re-catalogued is `#rest`: the kit and world steps, no scene rebuild, no proof section. */
+export const KIT_FILE = 'contracts/world/kit.json';
+export function kitParts(text: string): Record<string, string> {
+  const sha = (v: unknown) => 'sha256:' + createHash('sha256').update(JSON.stringify(v) ?? '').digest('hex'), unity = (a: any) => a?.status === 'adopted' || (a?.status === 'rejected' && a?.source === 'generated');
+  let j: any; try { j = JSON.parse(text); } catch { return { [`${KIT_FILE}#unity`]: sha(text), [`${KIT_FILE}#rest`]: sha(null) }; } // unreadable: all of it is Unity's, and the kit step says why
+  const assets: any[] = Array.isArray(j?.assets) ? j.assets : [];
+  return { [`${KIT_FILE}#unity`]: sha({ ...j, assets: assets.filter(unity) }), [`${KIT_FILE}#rest`]: sha(assets.filter(a => !unity(a))) };
+}
 export type Snapshot = { id: string; files: Record<string, string> };
 export const snapshotOf = (files: Map<string, string>): Snapshot => ({ id: fingerprint(files).slice(0, 16), files: Object.fromEntries(files) });
 /** The tree by content, leaving out what the table says the player cannot read (so the evidence under briefs/ is not even hashed). */
@@ -92,7 +102,7 @@ export function snapshot(root = ROOT, m = loadMap()): Snapshot {
     if (item.endsWith('.json')) files.set(item, 'sha256:' + createHash('sha256').update(readFileSync(p)).digest('hex'));
     else for (const [f, h] of item === KIT_DIR ? kitFiles(root) : ignoredFiles(root, [item])) files.set(f, h);
   }
-  if (files.has(MISSION_FILE) && existsSync(join(root, MISSION_FILE))) for (const [f, h] of Object.entries(missionParts(readFileSync(join(root, MISSION_FILE), 'utf8')))) files.set(f, h);
+  for (const [file, parts] of [[MISSION_FILE, missionParts], [KIT_FILE, kitParts]] as const) if (files.has(file) && existsSync(join(root, file))) for (const [f, h] of Object.entries(parts(readFileSync(join(root, file), 'utf8')))) files.set(f, h);
   return snapshotOf(files);
 }
 /** A field path new since `was`, whose whole file has not moved, is the same bytes as before (a ledger written before the file was split): not a change. A Unity-owned kit
