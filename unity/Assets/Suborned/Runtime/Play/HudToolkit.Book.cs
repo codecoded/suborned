@@ -143,7 +143,7 @@ namespace Suborned.Play
                     case BookSlot.City: BkCity(body, pg.City[it.Index], it, dl.CityHead[it.Index], dl.CityLine[it.Index]); break;
                     case BookSlot.Again: keep.Add(BkAgain(body, pg, it)); break;
                 }
-            BkSigns(body, pg); BkChrome(body, pg); if (pg.Fold != null) BkFoldVeil(body, keep);
+            BkSigns(body, pg); BkChrome(body, pg); BkLook(body, pg); if (pg.Fold != null) BkFoldVeil(body, keep); // brief 107: BkLook, the start's look pill beside the clock (HudToolkit.Look107)
         }
 
         void BkHero(VisualElement body, BookPage pg, Rect at)

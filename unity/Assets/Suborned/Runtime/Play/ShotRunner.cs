@@ -22,6 +22,8 @@ namespace Suborned.Play
         /// <summary>Brief 070 (the briefing's stills, tools/game/briefstills.ts): `nocut` turns the play camera's architecture cut off for the capture; `doorN`
         /// (a block-frame unit normal, x south, y east) with yaw -1 picks the quarter step that best faces that outward side.</summary>
         public bool nocut; public float[] doorN = new float[0];
+        /// <summary>Brief 107 (Glyph): a briefing still with the start's look card open (HudToolkit.LookMenuPin).</summary>
+        public bool lookMenu;
         /// <summary>Brief 070 (Glyph N1, N4): `bare` takes the 3D world only, with no world marks (ground rings, route marks, bay outlines, cones, lines):
         /// rendered once, by the camera, into a texture. `doorS` (block frame) is the pose offset's along-the-face axis instead of up x normal. `keyLight`
         /// (intensity; 0 none) adds a warm key light beside the pose camera for this render only, on the person it looks at (a guard in his door's shade
@@ -116,7 +118,7 @@ namespace Suborned.Play
                     res.Tick = h.Game.Tick;
                     if (h.Game.Over && h.Game.Tick < s.tick) res.Error = $"the run ended at tick {h.Game.Tick} ({h.Game.Result}), before tick {s.tick}";
                     if (s.setNight && !h.SetNight(s.night)) res.Error = "the shot asks for night, but this scene has no night (no LightPhase): not drawn as day"; // brief 107: no hidden fallback
-                    h.IntelOpen = s.intel; h.ConesAll = s.eye; HudToolkit.WhyMeterPin(s.why); // the cones round: the eye button latched for the shot; brief 100: the meter's list pinned
+                    h.IntelOpen = s.intel; h.ConesAll = s.eye; HudToolkit.WhyMeterPin(s.why); HudToolkit.LookMenuPin(s.briefing && s.lookMenu); // the cones round: the eye button latched for the shot; brief 100: the meter's list pinned
                     HandoverHost.PointerOverride = s.hasPointer ? new Vector2(Screen.width * s.px, Screen.height * s.py) : (Vector2?)null;
                     h.ClearHover();
                     if (s.select.Length > 0) h.Select(Suborned.Sim.Op.Parse(s.select), false);
