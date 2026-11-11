@@ -1,0 +1,73 @@
+{
+ "schema": "suborned.shots/1",
+ "note": "Vela 109: the patrol robot's green by day, as built",
+ "defaults": {
+  "hud": false
+ },
+ "shots": [
+  {
+   "name": "patrol-t200-z10",
+   "script": "route-a-board",
+   "night": false,
+   "tick": 200,
+   "focus": "patrol",
+   "zoom": 10
+  },
+  {
+   "name": "patrol-t200-z4",
+   "script": "route-a-board",
+   "night": false,
+   "tick": 200,
+   "focus": "patrol",
+   "zoom": 4
+  },
+  {
+   "name": "patrol-t400-z10",
+   "script": "route-a-board",
+   "night": false,
+   "tick": 400,
+   "focus": "patrol",
+   "zoom": 10
+  },
+  {
+   "name": "patrol-t400-z4",
+   "script": "route-a-board",
+   "night": false,
+   "tick": 400,
+   "focus": "patrol",
+   "zoom": 4
+  },
+  {
+   "name": "patrol-t600-z10",
+   "script": "route-a-board",
+   "night": false,
+   "tick": 600,
+   "focus": "patrol",
+   "zoom": 10
+  },
+  {
+   "name": "patrol-t600-z4",
+   "script": "route-a-board",
+   "night": false,
+   "tick": 600,
+   "focus": "patrol",
+   "zoom": 4
+  },
+  {
+   "name": "patrol-t800-z10",
+   "script": "route-a-board",
+   "night": false,
+   "tick": 800,
+   "focus": "patrol",
+   "zoom": 10
+  },
+  {
+   "name": "patrol-t800-z4",
+   "script": "route-a-board",
+   "night": false,
+   "tick": 800,
+   "focus": "patrol",
+   "zoom": 4
+  }
+ ]
+}

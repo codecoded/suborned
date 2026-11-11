@@ -11,6 +11,7 @@ the screen shows a face texture from faces.py (render-only: the game swaps face 
   hatch_open                       a close look at the open hatch and the sidearm (same pose), 1200 px/m
   hatch_front / hatch_side         the same, from nearly in front and from the robot's left
   play / play_person               the play camera (ortho size 10 on 1080 px = 54 px/m, 38 deg down, yaw 30), alone and beside a 1.8 m figure, the beacon lit
+  play_close                       the play camera's angle (yaw 30, 38 deg down), close (400 px/m): brief 109's colour board beside an in-game crop
   play_ball                        the same, two robots: the kit's gunmetal ball (right) and the cream-halves variant (left: halves and band swapped), beacons lit
   beacon_unlit / beacon_lit        the beacon close (1400 px/m); lit = the glass's emission on (DK_PatrolBot104_Beacon x LIT) and a small red point light in the dome
 Writes <shot>.png and pivots.json (each part's pivot as imported)."""
@@ -53,6 +54,8 @@ SHOTS = {
     "play": (30.0, 38.0, 54.0, (3.0, 2.4), (0.4, 0.0, 0.8), "calm", False),
     "play_person": (30.0, 38.0, 54.0, (3.0, 2.4), (0.4, 0.0, 0.8), "calm", False),
     "play_ball": (30.0, 38.0, 54.0, (3.6, 2.4), (0.1, 0.0, 0.8), "calm", False),
+    "play_close": (30.0, 38.0, 400.0, (1.2, 1.5), (0.0, 0.0, 0.62), "calm", False),  # brief 109: the play camera's angle at 400 px/m, for the in-game colour board
+    "play_close_60": (60.0, 38.0, 400.0, (1.2, 1.5), (0.0, 0.0, 0.62), "calm", False),  # the same, 60 deg round: the patrol's heading in the 0.2.330 stills
     "beacon_unlit": (30.0, 14.0, 1400.0, (0.34, 0.26), (0.0, 0.0, 1.165), "calm", False),
     "beacon_lit": (30.0, 14.0, 1400.0, (0.34, 0.26), (0.0, 0.0, 1.165), "calm", False),
 }

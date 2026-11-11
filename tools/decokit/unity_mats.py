@@ -290,10 +290,20 @@ def emitmap_text(row):
     return t
 
 
+# Vela, brief 109 (Sky, 0.2.330: "our patrol robots green doesn't quite look right compared to the blender model"; board briefs/109/vela/patrolbot-green/). A robot enamel
+# whose Unity albedo is solved under the day play look, so the game shows the colour the row (and the Blender references, AgX) holds: the play grade (ACES, saturation
+# +25, contrast +10) on the warm sun took the sheets' sage #7E8C54, a low-blue yellow-green, to chartreuse (#7F8106 measured, hue 61, sat 0.91). #789682 shows as #7F8D53
+# there (hue 74, sat 0.26), the sheets' sage. Solved by tools/decokit/play_look.py (URP's grading order, ACES by Hill's fit, the light fitted on the robot's cream).
+GAME_ALBEDO_109 = {"DK_RobotEnamel_Sage": "#789682"}
+
+
 def robot_enamel_text(row):
     """DK_RobotEnamel_*: the enamel .mat (Complex Lit, clear coat) with the robot detail pair: albedo (linear, x2) and normal at the row's bump, tiled 0.5 m x 2 m."""
     d = row["robotDetail"]
     base = mat_text(row)
+    if row["name"] in GAME_ALBEDO_109:  # brief 109: the albedo the play look shows as the row's colour (above)
+        r, g, b = (int(GAME_ALBEDO_109[row["name"]].lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
+        base = re.sub(r"(- _BaseColor: )\{[^}]*\}", rf"\g<1>{{r: {_f(r)}, g: {_f(g)}, b: {_f(b)}, a: 1}}", base)
     sx, sy = 1 / d["tile"][0], 1 / d["tile"][1]
     for slot, file in (("_DetailAlbedoMap", d["detail"]), ("_DetailNormalMap", d["detailNormal"])):
         old = f"    - {slot}:\n        m_Texture: {{fileID: 0}}\n        m_Scale: {{x: 1, y: 1}}\n"
