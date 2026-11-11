@@ -1,0 +1,157 @@
+{
+ "off": {
+  "schema": "suborned.shots.report/1",
+  "status": "ok",
+  "screen": "1920x1080",
+  "build": "Build 0.2.325-scratch · c064 · sim 0.54.0 · 2531e2319+",
+  "shots": [
+   {
+    "name": "juice-perf",
+    "status": "ok",
+    "tick": 491,
+    "error": "",
+    "files": [
+     "juice-perf.png",
+     "juice-perf.hud.png",
+     "juice-perf.manifest.json",
+     "juice-perf.parts.json"
+    ],
+    "audit": {
+     "clean": true,
+     "issues": []
+    },
+    "frames": {
+     "count": 1730,
+     "meanMs": 4.625,
+     "fps": 216.196,
+     "p99Ms": 9.004,
+     "gpuMs": 1.534
+    }
+   }
+  ]
+ },
+ "on-idle": {
+  "schema": "suborned.shots.report/1",
+  "status": "ok",
+  "screen": "1920x1080",
+  "build": "Build 0.2.325-scratch · c064 · sim 0.54.0 · 2531e2319+",
+  "shots": [
+   {
+    "name": "juice-perf",
+    "status": "ok",
+    "tick": 491,
+    "error": "",
+    "files": [
+     "juice-perf.png",
+     "juice-perf.hud.png",
+     "juice-perf.manifest.json",
+     "juice-perf.parts.json"
+    ],
+    "audit": {
+     "clean": true,
+     "issues": []
+    },
+    "frames": {
+     "count": 1582,
+     "meanMs": 5.058,
+     "fps": 197.705,
+     "p99Ms": 9.125,
+     "gpuMs": 1.59
+    }
+   }
+  ]
+ },
+ "order": {
+  "schema": "suborned.shots.report/1",
+  "status": "ok",
+  "screen": "1920x1080",
+  "build": "Build 0.2.325-scratch · c064 · sim 0.54.0 · 2531e2319+",
+  "shots": [
+   {
+    "name": "juice-perf",
+    "status": "ok",
+    "tick": 491,
+    "error": "",
+    "files": [
+     "juice-perf.png",
+     "juice-perf.hud.png",
+     "juice-perf.manifest.json",
+     "juice-perf.parts.json"
+    ],
+    "audit": {
+     "clean": true,
+     "issues": []
+    },
+    "frames": {
+     "count": 1516,
+     "meanMs": 5.279,
+     "fps": 189.434,
+     "p99Ms": 9.596,
+     "gpuMs": 1.758
+    }
+   }
+  ]
+ },
+ "takedown": {
+  "schema": "suborned.shots.report/1",
+  "status": "ok",
+  "screen": "1920x1080",
+  "build": "Build 0.2.325-scratch · c064 · sim 0.54.0 · 2531e2319+",
+  "shots": [
+   {
+    "name": "juice-perf",
+    "status": "ok",
+    "tick": 491,
+    "error": "",
+    "files": [
+     "juice-perf.png",
+     "juice-perf.hud.png",
+     "juice-perf.manifest.json",
+     "juice-perf.parts.json"
+    ],
+    "audit": {
+     "clean": true,
+     "issues": []
+    },
+    "frames": {
+     "count": 1611,
+     "meanMs": 4.968,
+     "fps": 201.269,
+     "p99Ms": 9.309,
+     "gpuMs": 1.572
+    }
+   }
+  ]
+ },
+ "getaway": {
+  "schema": "suborned.shots.report/1",
+  "status": "ok",
+  "screen": "1920x1080",
+  "build": "Build 0.2.325-scratch · c064 · sim 0.54.0 · 2531e2319+",
+  "shots": [
+   {
+    "name": "juice-perf",
+    "status": "ok",
+    "tick": 491,
+    "error": "",
+    "files": [
+     "juice-perf.png",
+     "juice-perf.hud.png",
+     "juice-perf.manifest.json",
+     "juice-perf.parts.json"
+    ],
+    "audit": {
+     "clean": true,
+     "issues": []
+    },
+    "frames": {
+     "count": 1574,
+     "meanMs": 5.084,
+     "fps": 196.679,
+     "p99Ms": 9.403,
+     "gpuMs": 1.539
+    }
+   }
+  ]
+ }
+}

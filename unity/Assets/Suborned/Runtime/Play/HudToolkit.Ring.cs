@@ -96,7 +96,7 @@ namespace Suborned.Play
 
         void RingFrame()
         {
-            var rs = host.Ring; bool on = rs != null && !m.Ended; Show(ringRoot, on);
+            var rs = host.Ring; bool on = rs != null && !m.Ended; Show(ringRoot, on); JuiceRing(on); // brief 109
             if (!on) { ringFor = null; if (ringFocusEl != null) Show(ringFocusEl, false); RingFocusName = ""; return; }
             var c = RuntimePanelUtils.ScreenToPanel(root.panel, rs.Gui);
             ringRoot.style.left = c.x; ringRoot.style.top = c.y; ringRoot.BringToFront();

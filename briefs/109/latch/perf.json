@@ -1,0 +1,7 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 round 1 (Latch): the cost table. One calm moment (route-a-board, 0:40, the scout at the café, play zoom, yaw 210), 8 s of frame times with the clock running, launched once per variant: -juice off, -juice on (idle: the brain and listener only), and -juice on -juicedemo order|takedown|getaway (one moment repeated without end). Cost = variant minus off.",
+  "shots": [
+    { "name": "juice-perf", "script": "route-a-board", "tick": 400, "focus": "op/scout", "yaw": 2, "hud": true, "perf": 8 }
+  ]
+}

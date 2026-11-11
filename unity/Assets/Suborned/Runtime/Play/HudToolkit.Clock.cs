@@ -121,7 +121,7 @@ namespace Suborned.Play
             bool fast = host.Speed > 1; speedK.Set(fast ? $"x{host.Speed}" : ""); Show(speedK.Root, fast);
             int a = m.Alert; alertIc.Look(a > 0 ? "ki-hot" : "ki-ink", "ki-key");
             for (int i = 0; i < 3; i++) { var c = i < a ? BkOrange : StPage; if (lamps[i].style.backgroundColor.value != c) lamps[i].style.backgroundColor = c; }
-            trailK.Set(Stress ? "12" : m.Trail.Replace("T ", "")); cashK.Set(m.Cash);
+            trailK.Set(Stress ? "12" : m.Trail.Replace("T ", "")); cashK.Set(JuiceCash(m.Cash)); JuiceTrail(m.Trail); // brief 109: the figures tick (juice on)
             bool unknown = m.NextLabel == "?", has = m.NextTime.Length > 0; Show(nextRow, has);
             string word = host.Text != null && host.Text.TimelineShort.TryGetValue(m.NextTime, out var sl) && sl.Length > 0 ? sl : m.NextLabel;
             Show(nextUnknown, unknown); Show(nextWordK.Root, !unknown && word.Length > 0); nextWordK.Set(word); nextTimeK.Set(Stress ? "7:30" : m.NextTime);

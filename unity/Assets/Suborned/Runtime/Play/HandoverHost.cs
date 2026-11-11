@@ -348,7 +348,7 @@ namespace Suborned.Play
         void Drain()
         {
             if (Game.Log.Count <= lastLog) return;
-            for (int i = lastLog; i < Game.Log.Count; i++) { var x = Game.Log[i]; HintLog(x); AudioLog(x); /* brief 059: Chime's cues by log code */ if (x.Code.StartsWith("shot.")) { Shot(x); continue; } if (x.Code.StartsWith("fire.camera-")) { CameraShot(x); continue; } FeedEvent(x); SayLanded(x); }
+            for (int i = lastLog; i < Game.Log.Count; i++) { var x = Game.Log[i]; HintLog(x); AudioLog(x); /* brief 059: Chime's cues by log code */ JuiceLog(x); /* brief 109: view only */ if (x.Code.StartsWith("shot.")) { Shot(x); continue; } if (x.Code.StartsWith("fire.camera-")) { CameraShot(x); continue; } FeedEvent(x); SayLanded(x); }
             var l = Game.Log[Game.Log.Count - 1]; Status = $"{Report.Clock(l.Tick)} {l.Text}"; lastLog = Game.Log.Count;
         }
 
@@ -1060,7 +1060,7 @@ namespace Suborned.Play
                 if (screen.HasValue && target.HasValue) Pulses.Add((target.Value, Feedback.Refused, Time.unscaledTime));
             }
             if (!r.ok && o.Do == "call" && r.code.StartsWith("summon-")) FeedSummonRefused(o.Target, o, r); // the contact and their lover say why not; brief 102 step 4: call-saw-violence rings nothing (no card, no line: the pop above is its lock)
-            if (r.ok) { var keep = Status; Drain(); Status = keep; OrderTaken(); }
+            if (r.ok) { var keep = Status; Drain(); Status = keep; OrderTaken(); JuiceOrder(o, target); } // brief 109: the order's juice (view only)
             Save();
             views.Tick(); views.Frame(1f); intentKey = ""; Track();
             if (Game.Over && Ending.Length == 0) End();

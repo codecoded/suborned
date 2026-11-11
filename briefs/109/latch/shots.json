@@ -1,0 +1,59 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 round 1 (Latch): moments 1-3 before (-juice off) and after (-juice on), each a short clip at play zoom on the route scripts' own orders. The Office front is played at yaw 210 (step 2). Run by briefs/109/latch/clips.ts, which launches the player twice and encodes each clip to mp4. A clip frame steps the game by its real frame time (about 27 ms), so clips.ts encodes each at the rate its ticks say (true speed).",
+  "defaults": {
+    "yaw": 2,
+    "settle": 0.2
+  },
+  "shots": [
+    {
+      "name": "juice-orders",
+      "script": "route-a-board",
+      "tick": 200,
+      "focus": "op/scout",
+      "hud": true,
+      "clip": {
+        "seconds": 6,
+        "fps": 15
+      },
+      "note": "206: the Scout's Listen on the waitress: she walks in (dust where she sets off) and the waitress pulses (the order's target); the caf\u00e9, in the open",
+      "zoom": 12
+    },
+    {
+      "name": "juice-cash",
+      "script": "fight-safe-rivals-reach-vale",
+      "tick": 1210,
+      "focus": "op/fixer",
+      "hud": true,
+      "clip": {
+        "seconds": 4,
+        "fps": 15
+      },
+      "note": "1217: the Fixer pays the driver: the money counts down in the clock bar instead of jumping"
+    },
+    {
+      "name": "juice-takedown",
+      "script": "route-g",
+      "tick": 1562,
+      "focus": "op/enforcer",
+      "hud": true,
+      "clip": {
+        "seconds": 6,
+        "fps": 15
+      },
+      "note": "1570: the Enforcer's knockout of the door guard lands (takedown.out): the bump and the vignette"
+    },
+    {
+      "name": "juice-getaway",
+      "script": "route-a-board",
+      "tick": 2528,
+      "focus": "car/getaway",
+      "hud": false,
+      "clip": {
+        "seconds": 24,
+        "fps": 15
+      },
+      "note": "2534: the cell's Go; the car pulls away (tyre smoke, exhaust, headlight flares) and the view follows it out (no HUD: the end card covers the street)"
+    }
+  ]
+}

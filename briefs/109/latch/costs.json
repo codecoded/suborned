@@ -1,0 +1,150 @@
+{
+ "note": "brief 109 round 1 (Latch), after the idle fix (the brain stepped only while a shake is live; the tyre VFX on only in a launch). The Studio (Mac Studio M5 Max), 1920x1080 windowed, route-a-board 0:40 at play zoom, 8 s of frame times with the clock running, three launches per variant, medians and the difference from -juice off. A -juicedemo variant repeats one moment without end (an order every 0.5 s; a takedown every 0.6 s; the getaway launch: tyre bursts every 0.09 s, exhaust and flares), so it is the worst case, not a moment in play. Load average 7 to 20 (other agents): differences under about 0.3 ms are within the noise.",
+ "rows": {
+  "off": {
+   "median": {
+    "meanMs": 4.625,
+    "p99Ms": 9.003,
+    "gpuMs": 1.534
+   },
+   "delta": {
+    "meanMs": 0.0,
+    "p99Ms": 0.0,
+    "gpuMs": 0.0
+   },
+   "runs": {
+    "meanMs": [
+     4.718,
+     4.37,
+     4.625
+    ],
+    "p99Ms": [
+     9.003,
+     8.996,
+     9.004
+    ],
+    "gpuMs": [
+     1.485,
+     1.542,
+     1.534
+    ]
+   }
+  },
+  "on-idle": {
+   "median": {
+    "meanMs": 4.805,
+    "p99Ms": 9.093,
+    "gpuMs": 1.517
+   },
+   "delta": {
+    "meanMs": 0.18,
+    "p99Ms": 0.09,
+    "gpuMs": -0.017
+   },
+   "runs": {
+    "meanMs": [
+     4.805,
+     4.641,
+     5.058
+    ],
+    "p99Ms": [
+     9.093,
+     9,
+     9.125
+    ],
+    "gpuMs": [
+     1.427,
+     1.517,
+     1.59
+    ]
+   }
+  },
+  "order": {
+   "median": {
+    "meanMs": 4.583,
+    "p99Ms": 8.915,
+    "gpuMs": 1.497
+   },
+   "delta": {
+    "meanMs": -0.042,
+    "p99Ms": -0.088,
+    "gpuMs": -0.037
+   },
+   "runs": {
+    "meanMs": [
+     4.473,
+     4.583,
+     5.279
+    ],
+    "p99Ms": [
+     8.915,
+     8.805,
+     9.596
+    ],
+    "gpuMs": [
+     1.374,
+     1.497,
+     1.758
+    ]
+   }
+  },
+  "takedown": {
+   "median": {
+    "meanMs": 4.264,
+    "p99Ms": 8.703,
+    "gpuMs": 1.69
+   },
+   "delta": {
+    "meanMs": -0.361,
+    "p99Ms": -0.3,
+    "gpuMs": 0.156
+   },
+   "runs": {
+    "meanMs": [
+     4.264,
+     4.209,
+     4.968
+    ],
+    "p99Ms": [
+     8.703,
+     8.498,
+     9.309
+    ],
+    "gpuMs": [
+     1.691,
+     1.69,
+     1.572
+    ]
+   }
+  },
+  "getaway": {
+   "median": {
+    "meanMs": 4.688,
+    "p99Ms": 9.196,
+    "gpuMs": 1.581
+   },
+   "delta": {
+    "meanMs": 0.063,
+    "p99Ms": 0.193,
+    "gpuMs": 0.047
+   },
+   "runs": {
+    "meanMs": [
+     4.688,
+     4.284,
+     5.084
+    ],
+    "p99Ms": [
+     9.196,
+     8.601,
+     9.403
+    ],
+    "gpuMs": [
+     1.581,
+     1.648,
+     1.539
+    ]
+   }
+  }
+ }
+}
