@@ -1819,6 +1819,39 @@
     ]
    },
    {
+    "material": "DK_Inlay_SeafoamNight",
+    "unlit": "#72B5A7",
+    "note": "brief 107 (Vela): DK_Inlay_Seafoam's twin, the same row by day; the night light raises its emission (tools/decokit/glows107.py)",
+    "used_by": [
+     "InlayBand_06_2",
+     "InlayBand_12_2",
+     "InlayArc_R2_W06",
+     "InlayArc_R4_W06",
+     "InlayArc_R9_W12"
+    ]
+   },
+   {
+    "material": "DK_Glow_PlanterFoot",
+    "unlit": "#FFD49A",
+    "note": "brief 107 (Vela): the planter-foot light pool (kind glow, Suborned/Cross Glow mode 3, additive, alpha 0 by day: draws nothing until the night light turns it up)",
+    "used_by": [
+     "PlanterRun_2_A",
+     "PlanterRun_2_B",
+     "PlanterRun_2_C",
+     "PlanterRun_4_A",
+     "PlanterRun_4_B",
+     "PlanterRun_4_C",
+     "PlanterRun_Corner_A",
+     "PlanterRun_Corner_B",
+     "PlanterRun_Corner_C",
+     "PlanterRun_End_A",
+     "PlanterRun_End_B",
+     "PlanterRun_End_C",
+     "PlanterArc",
+     "CafeTerrace"
+    ]
+   },
+   {
     "material": "DK_Lamp",
     "unlit": "#FFE2A6",
     "used_by": [

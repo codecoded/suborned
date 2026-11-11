@@ -7,12 +7,15 @@ DK_Pave_Civic  stone, 4 m metric tile (pave_sheet.py sheet "pave_civic": albedo 
                café terrace and the office apron (world UVs, Asphalt_Fine's way).
 Inlay*         flat seafoam faience strips 4 mm proud of the slab: the band design is out/decokit-008/paving-bands.json.
                Straight bands are 2 m modules; arcs are quarter turns with the pivot at the arc centre (lamp or fountain),
-               sweeping from +X to +Y; rotate about Z to set the start angle."""
+               sweeping from +X to +Y; rotate about Z to set the start angle.
+               Brief 107 (Vela): drawn in DK_Inlay_SeafoamNight, DK_Inlay_Seafoam's twin (glows107.py): the same look by day, emission black;
+               the night light raises it, so the bands glow as light set in the ground."""
 
 import math
 
 from geo import arc
 from kit import asset
+import glows107
 import mats
 from mats import pal, register
 
@@ -28,19 +31,19 @@ PROUD = 0.004
 
 @asset("InlayBand_06_2", "Ground", bevel=0.0)
 def inlay_band_06(s):
-    s.extrude([(-1.0, -0.3), (1.0, -0.3), (1.0, 0.3), (-1.0, 0.3)], 0.0, PROUD, pal.Inlay_Seafoam, bottom=False)
+    s.extrude([(-1.0, -0.3), (1.0, -0.3), (1.0, 0.3), (-1.0, 0.3)], 0.0, PROUD, pal.Inlay_SeafoamNight, bottom=False)
 
 
 @asset("InlayBand_12_2", "Ground", bevel=0.0)
 def inlay_band_12(s):
-    s.extrude([(-1.0, -0.6), (1.0, -0.6), (1.0, 0.6), (-1.0, 0.6)], 0.0, PROUD, pal.Inlay_Seafoam, bottom=False)
+    s.extrude([(-1.0, -0.6), (1.0, -0.6), (1.0, 0.6), (-1.0, 0.6)], 0.0, PROUD, pal.Inlay_SeafoamNight, bottom=False)
 
 
 def _arc_band(s, radius, width, n):
     r0, r1 = radius - width / 2, radius + width / 2
     outer = arc(0, 0, r1, 0, 90, n)
     inner = arc(0, 0, r0, 0, 90, n)[::-1]
-    s.extrude(outer + inner, 0.0, PROUD, pal.Inlay_Seafoam, bottom=False)
+    s.extrude(outer + inner, 0.0, PROUD, pal.Inlay_SeafoamNight, bottom=False)
 
 
 @asset("InlayArc_R2_W06", "Ground", bevel=0.0)
