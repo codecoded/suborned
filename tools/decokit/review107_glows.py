@@ -37,9 +37,12 @@ INLAYS = {"InlayBand_06_2", "InlayBand_12_2", "InlayArc_R2_W06", "InlayArc_R4_W0
 
 # glows107's values without importing it (it registers through mats, which needs the generator's modules): read them from its source
 _G = {}
-exec("\n".join(l for l in (HERE / "glows107.py").read_text().splitlines() if l.startswith(("FOOT_HEX", "INLAY_HEX"))), _G)
+exec("\n".join(l for l in (HERE / "glows107.py").read_text().splitlines() if l.startswith(("FOOT_HEX", "INLAY_HEX", "EDGE_HEX", "EDGE_W"))), _G)
 FOOT_HEX, FOOT_STRENGTH, FOOT_NIGHT = _G["FOOT_HEX"], _G["FOOT_STRENGTH"], _G["FOOT_ALPHA_NIGHT"]
-INLAY_HEX, INLAY_NIGHT = _G["INLAY_HEX"], _G["INLAY_NIGHT"]
+INLAY_HEX = _G["INLAY_HEX"]
+EDGE_HEX, EDGE_STRENGTH, EDGE_NIGHT, EDGE_W = _G["EDGE_HEX"], _G["EDGE_STRENGTH"], _G["EDGE_ALPHA_NIGHT"], _G["EDGE_W"]
+# the band's own glow as the game draws it now (roadlight.json: 0 since 0.2.317, Sky's "that blue circle"), not glows107's first values
+INLAY_NIGHT = next((g["night"] for g in json.loads((REPO / "unity/Assets/Suborned/Resources/Atmosphere/roadlight.json").read_text())["glow"] if g["material"] == "DK_Inlay_SeafoamNight"), 0.0)
 # the dusk multipliers RoadLight already puts on the kit's emitters at night (roadlight.json glow, mode emission): the café interior is x0.1
 NIGHT_MULT = {g["material"]: g["night"] for g in json.loads((REPO / "unity/Assets/Suborned/Resources/Atmosphere/roadlight.json").read_text())["glow"] if g["mode"] == "emission"}
 
@@ -82,20 +85,30 @@ def material(m, has_col, night, debug):
     for n in list(nt.nodes):
         nt.nodes.remove(n)
     o = nt.nodes.new("ShaderNodeOutputMaterial")
-    if nm == "DK_Glow_PlanterFoot":   # Cross Glow mode 3: c = colour x strength x alpha x k, k = (1 - v)^1.5 (floor 0), added over what is beneath
+    if nm in ("DK_Glow_PlanterFoot", "DK_Glow_InlayEdge"):   # Cross Glow: c = colour x strength x alpha x k, added over what is beneath
+        edge = nm == "DK_Glow_InlayEdge"   # mode 2 (field): k = (1 - |v| / _Radius)^1.5, _Radius = EDGE_W; mode 3 (pool): k = (1 - v)^1.5 (floor 0)
         m.surface_render_method = "BLENDED"
         uv, sep, inv, pw, mul = (nt.nodes.new(t) for t in ("ShaderNodeUVMap", "ShaderNodeSeparateXYZ", "ShaderNodeMath", "ShaderNodeMath", "ShaderNodeMath"))
         inv.operation, inv.inputs[0].default_value = "SUBTRACT", 1.0
         pw.operation, pw.inputs[1].default_value = "POWER", 1.5
         mul.operation = "MULTIPLY"
-        alpha = 1.0 if debug else (FOOT_NIGHT if night else 0.0)
-        mul.inputs[1].default_value = FOOT_STRENGTH * alpha * (4.0 if debug else 1.0)
+        alpha = 1.0 if debug else ((EDGE_NIGHT if edge else FOOT_NIGHT) if night else 0.0)
+        mul.inputs[1].default_value = (EDGE_STRENGTH if edge else FOOT_STRENGTH) * alpha * (4.0 if debug else 1.0)
         nt.links.new(uv.outputs["UV"], sep.inputs[0])
-        nt.links.new(sep.outputs["Y"], inv.inputs[1])
+        if edge:
+            ab, dv, cl = (nt.nodes.new("ShaderNodeMath") for _ in range(3))
+            ab.operation, dv.operation, cl.operation = "ABSOLUTE", "DIVIDE", "MINIMUM"
+            dv.inputs[1].default_value, cl.inputs[1].default_value = EDGE_W, 1.0
+            nt.links.new(sep.outputs["Y"], ab.inputs[0])
+            nt.links.new(ab.outputs[0], dv.inputs[0])
+            nt.links.new(dv.outputs[0], cl.inputs[0])
+            nt.links.new(cl.outputs[0], inv.inputs[1])
+        else:
+            nt.links.new(sep.outputs["Y"], inv.inputs[1])
         nt.links.new(inv.outputs[0], pw.inputs[0])
         nt.links.new(pw.outputs[0], mul.inputs[0])
         em, tr, add = nt.nodes.new("ShaderNodeEmission"), nt.nodes.new("ShaderNodeBsdfTransparent"), nt.nodes.new("ShaderNodeAddShader")
-        em.inputs["Color"].default_value = (1, 0, 0, 1) if debug else (*hexlin(FOOT_HEX), 1)
+        em.inputs["Color"].default_value = (1, 0, 0, 1) if debug else (*hexlin(EDGE_HEX if edge else FOOT_HEX), 1)
         nt.links.new(mul.outputs[0], em.inputs["Strength"])
         nt.links.new(tr.outputs[0], add.inputs[0])
         nt.links.new(em.outputs[0], add.inputs[1])
@@ -285,6 +298,7 @@ def shot(sc, name):
 
 VIEW = dict(target=(-158.0, -229.0, 0.18), height=20.0, yaw=45.0)
 CLOSE = dict(target=(-160.5, -226.6, 0.18), height=8.0, yaw=45.0)
+RING = dict(target=(-153.5, -237.5, 0.18), height=10.0, yaw=45.0)   # round 2: the fountain's rings and a sphere lamp's ring, for the inlay edge light
 
 
 def main():
@@ -295,6 +309,9 @@ def main():
         if new and night:
             camera(sc, CLOSE["target"], CLOSE["height"], CLOSE["yaw"])
             shot(sc, "night_close.png")
+        if night:
+            camera(sc, RING["target"], RING["height"], RING["yaw"])
+            shot(sc, "night_ring_glow.png" if new else "night_ring_today.png")
     sc = build(True, False, debug=True)
     top(sc, (-160.0, -232.0), 44.0)
     shot(sc, "plan_glow.png")

@@ -1852,6 +1852,18 @@
     ]
    },
    {
+    "material": "DK_Glow_InlayEdge",
+    "unlit": "#B4F5E2",
+    "note": "brief 107 round 2 (Vela): the seafoam inlays' edge light, a thin line along each long edge inside the band (kind glow, Suborned/Cross Glow mode 2, _Radius 0.06, additive, alpha 0 by day: draws nothing until the night light turns it up; tools/decokit/glows107.py EDGE)",
+    "used_by": [
+     "InlayBand_06_2",
+     "InlayBand_12_2",
+     "InlayArc_R2_W06",
+     "InlayArc_R4_W06",
+     "InlayArc_R9_W12"
+    ]
+   },
+   {
     "material": "DK_Lamp",
     "unlit": "#FFE2A6",
     "used_by": [

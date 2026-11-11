@@ -236,6 +236,8 @@ def main():
             fx, fz = kit.REGISTRY[n]["footprint"]
             row["size"][0], row["size"][2] = round(fx, 4), round(fz, 4)
             row["bounds"] = [round(-fx / 2, 3), round(fx / 2, 3), round(-fz / 2, 3), round(fz / 2, 3)]
+        if kit.REGISTRY[n].get("height") is not None:  # brief 107: a glow lying over the thing is no part of its height (kit.asset height=)
+            row["size"][1] = round(kit.REGISTRY[n]["height"], 4)
         if src.get("dk_volumes"):  # volumes the builder declared (geo.Shape.solid), builder frame -> kit frame
             row["collide"] = [dict(shape="box", min=[round(-v["max"][0], 4), round(v["min"][2], 4), round(-v["max"][1], 4)], max=[round(-v["min"][0], 4), round(v["max"][2], 4), round(-v["min"][1], 4)],
                                    **({"stand": True} if v["stand"] else {})) for v in json.loads(src["dk_volumes"])]

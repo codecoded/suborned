@@ -81516,9 +81516,10 @@
     -1.15
    ],
    "front": "+Z",
-   "tris": 64,
+   "tris": 104,
    "materials": [
-    "DK_Inlay_SeafoamNight"
+    "DK_Inlay_SeafoamNight",
+    "DK_Glow_InlayEdge"
    ],
    "lodCategory": "street",
    "files": [
@@ -81526,8 +81527,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayArc_R2_W06.fbx",
-     "sha256": "1f25cb44fe79cfa1b061b3f423da310b66568a6717c8a63e82650fbf46579abe",
-     "bytes": 16028
+     "sha256": "cf3e892decd5c315af9f33de6bad9d0d2c172b0eac79c15dfc0deb117ca78d46",
+     "bytes": 18572
     },
     {
      "root": "generated",
@@ -81600,9 +81601,10 @@
     -2.3
    ],
    "front": "+Z",
-   "tris": 88,
+   "tris": 144,
    "materials": [
-    "DK_Inlay_SeafoamNight"
+    "DK_Inlay_SeafoamNight",
+    "DK_Glow_InlayEdge"
    ],
    "lodCategory": "street",
    "files": [
@@ -81610,8 +81612,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayArc_R4_W06.fbx",
-     "sha256": "3111677e7ed1ce1eafbca4afe118cd076df32dad9994d00d153e2bb638500dc1",
-     "bytes": 16524
+     "sha256": "2f677fb764f5fcd393f5b00f523cb10efaccc27973973aacaa7b293bbff7149b",
+     "bytes": 19484
     },
     {
      "root": "generated",
@@ -81684,9 +81686,10 @@
     -4.6
    ],
    "front": "+Z",
-   "tris": 124,
+   "tris": 204,
    "materials": [
-    "DK_Inlay_SeafoamNight"
+    "DK_Inlay_SeafoamNight",
+    "DK_Glow_InlayEdge"
    ],
    "lodCategory": "street",
    "files": [
@@ -81694,8 +81697,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayArc_R9_W12.fbx",
-     "sha256": "1731a1a528da6adf5a35456b94cd7bf4625ff9dc8045c55960a7dbd42e7151cd",
-     "bytes": 17180
+     "sha256": "29b154d8145056eebabb58d53931691555c83b45e9fad1f8b5fcf4136cf479fc",
+     "bytes": 20924
     },
     {
      "root": "generated",
@@ -81764,9 +81767,10 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 10,
+   "tris": 26,
    "materials": [
-    "DK_Inlay_SeafoamNight"
+    "DK_Inlay_SeafoamNight",
+    "DK_Glow_InlayEdge"
    ],
    "lodCategory": "street",
    "files": [
@@ -81774,8 +81778,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayBand_06_2.fbx",
-     "sha256": "957b7bd86b5dd8cf0f3a40b2f855ac4834c937171d60f4a9127645c6bb9a1faf",
-     "bytes": 15116
+     "sha256": "557373693ceea6222d1a99ceb2385f5119fcd8fe3578cda19a0527af3e40223c",
+     "bytes": 16684
     },
     {
      "root": "generated",
@@ -81844,9 +81848,10 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 10,
+   "tris": 26,
    "materials": [
-    "DK_Inlay_SeafoamNight"
+    "DK_Inlay_SeafoamNight",
+    "DK_Glow_InlayEdge"
    ],
    "lodCategory": "street",
    "files": [
@@ -81854,8 +81859,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayBand_12_2.fbx",
-     "sha256": "64193b3dc9c6f89c5e114b96608562184d0b18397e96e124d5dae7367c59108c",
-     "bytes": 15116
+     "sha256": "36de6f792a6083f66540b6f8f9f6406580527f20f5bcaa0e38af884ebfeef5d6",
+     "bytes": 16684
     },
     {
      "root": "generated",

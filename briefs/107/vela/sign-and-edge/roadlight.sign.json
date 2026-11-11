@@ -1,0 +1,254 @@
+{
+ "schema": "suborned.roadlight/1",
+ "note": "Glint, brief 048 (2026-10-24; Sky: 'modern strip lighting around the road edges, like a futuristic city would'). The kerb strip light by phase, LOOK ONLY (no rule, sight or replay reads it). RoadLight (Runtime/RoadLight.cs) reads LightPhase.Current (Day, Evening, Night) and eases the lens emission and the road pool toward the level below, on RUNTIME COPIES of the two materials (the Kit .mat and the Glow .mat are never written, so the hash-checked kit stays as shipped). lens: DK_Road_Lens (Vela, tools/decokit/road_ribbon.py), levels are the .mat's own emission-strength scale: the kit writes _EmissionColor rgb as (linear(#FFE6B5) x level) ^ (1 / gamma) with the level in alpha, so a level L is the material's day rgb x (L / day) ^ (1 / gamma); `day` must equal the .mat's alpha (RoadLight warns if it does not). The numbers mirror light.json emissive (night.roadLens 5.0, dayResidual.roadLens 1.4, evening.roadLens 3.0); change both. pool: DK_Road_Pool (Materials/Glow, Suborned/Cross Glow mode 3, additive, one quad band per kerb, no light): _Alpha, off by day (the .mat is 0), 0.22 at night is the kit's own value (road_ribbon.py register alpha). Cost: no light, no extra pass; the lens is one emissive line, the pool one additive quad per combined batch. Signals are never touched (they draw on their own camera, outside the grade).",
+ "lens": {
+  "material": "DK_Road_Lens",
+  "gamma": 2.2,
+  "day": 1.4,
+  "evening": 3.0,
+  "night": 2.0
+ },
+ "pool": {
+  "material": "DK_Road_Pool",
+  "day": 0.0,
+  "evening": 0.14,
+  "night": 0.22
+ },
+ "easeSeconds": 1.5,
+ "glowNote": "Glint 2026-10-24 (the evening phase; the road strip's own levels above are unchanged). glow: the other lights that come up at dusk, each on its own RUNTIME COPY (the kit .mat never written), eased like the strip. mode lit: a Suborned/DecoKit/GlassSky pane (DK_GlassDark: the facade windows, 972 renderers in the Handover scene); evening and night are the SHARE of panes with their interior light on (shader _Lit, 0 by day), colour the warm light (_LitColour): about a third of the panes at evening, three in four at night, a pane being a cell of 6 m by 3.6 m on the facade. mode emission: a material that already glows; evening and night are multipliers on its own emission (1 by day). The kit's signs (the DK_Neon set, lightbox, billboard and screens) are listed; the Handover scene draws none of them yet (0 references in HarbourDistrict.unity), so nothing changes there until Vela lays one. A material not in the scene, or without what its mode drives, is skipped (RoadLight logs which were found).",
+ "glow": [
+  {
+   "material": "DK_GlassDark",
+   "mode": "lit",
+   "colour": "#ffc27a",
+   "evening": 0.35,
+   "night": 0.85
+  },
+  {
+   "material": "DK_GlassDark",
+   "prefix": true,
+   "mode": "night",
+   "colour": "#ffd9a8",
+   "evening": 0.12,
+   "night": 0.35,
+   "share": 0.65,
+   "note": "Glint 107: the old art's glass (not a GlassSky pane; its paint variants by prefix): two in three buildings' glass lit warm, picked by where they stand"
+  },
+  {
+   "material": "DK_Window_Tower",
+   "prefix": true,
+   "mode": "night",
+   "colour": "#ffdcae",
+   "evening": 0.12,
+   "night": 0.35,
+   "share": 0.7,
+   "note": "Glint 107: the towers, sky rail cars and bridges, kit and old art"
+  },
+  {
+   "material": "DK_Window_Teal",
+   "mode": "night",
+   "colour": "#ffdcae",
+   "evening": 0.12,
+   "night": 0.35,
+   "share": 0.7
+  },
+  {
+   "material": "DK_Window_Film",
+   "mode": "night",
+   "colour": "#ffd6a0",
+   "evening": 0.15,
+   "night": 0.45,
+   "share": 0.75,
+   "note": "Glint 107: the zone's shopfronts (side bays, stream bays)"
+  },
+  {
+   "material": "DK_Cabin",
+   "mode": "night",
+   "colour": "#ffd49a",
+   "evening": 0.3,
+   "night": 0.8,
+   "note": "Glint 107: tram interiors"
+  },
+  {
+   "material": "DK_Neon_Coral",
+   "mode": "emission",
+   "evening": 1.25,
+   "night": 2.4
+  },
+  {
+   "material": "DK_Neon_Cream",
+   "mode": "emission",
+   "evening": 1.25,
+   "night": 2.4
+  },
+  {
+   "material": "DK_Neon_Gold",
+   "mode": "emission",
+   "evening": 1.25,
+   "night": 2.4
+  },
+  {
+   "material": "DK_Neon_Red",
+   "mode": "emission",
+   "evening": 1.25,
+   "night": 2.4
+  },
+  {
+   "material": "DK_Neon_Teal",
+   "mode": "emission",
+   "evening": 1.25,
+   "night": 2.4
+  },
+  {
+   "material": "DK_Lightbox_Travel",
+   "mode": "emission",
+   "evening": 1.25,
+   "night": 1.7
+  },
+  {
+   "material": "DK_Billboard_Ads_Lit",
+   "mode": "emission",
+   "evening": 1.25,
+   "night": 1.7
+  },
+  {
+   "material": "DK_Screen",
+   "mode": "emission",
+   "evening": 1.25,
+   "night": 1.7
+  },
+  {
+   "material": "DK_Screen_Amber",
+   "mode": "emission",
+   "evening": 1.25,
+   "night": 1.7
+  },
+  {
+   "material": "DK_Cafe_BackBar",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_Bakelite",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_Coral",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_Floor",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.25
+  },
+  {
+   "material": "DK_Cafe_Ivory",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_Leaf",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_Mural",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_PetrolEnamel",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_Plaster",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_Seafoam",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_TB_Counter",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_Velvet",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Cafe_Walnut",
+   "mode": "emission",
+   "evening": 0.8,
+   "night": 0.4
+  },
+  {
+   "material": "DK_Lamp_Table_Lilac",
+   "mode": "tint",
+   "colour": "#ff9fb8",
+   "evening": 1.0,
+   "night": 1.0
+  },
+  {
+   "material": "DK_Lamp_Table_Teal",
+   "mode": "tint",
+   "colour": "#ffc890",
+   "evening": 0.85,
+   "night": 0.85,
+   "note": "Glint 107 (Aster: one table lamp glows cyan beside the warm ones): the testbed's teal lamp leans warm at dusk and night; its light is re-hued in weather107.json night"
+  },
+  {
+   "material": "DK_Inlay_SeafoamNight",
+   "mode": "night",
+   "colour": "#6FE3C8",
+   "evening": 0,
+   "night": 0,
+   "note": "Sky 2026-11-11 (\"horrible paving colors at night ... that blue circle\"): a whole band lit flat reads as a decal and fights the teal rings; off until Vela makes the concept's thin edge light"
+  },
+  {
+   "material": "DK_Glow_PlanterFoot",
+   "mode": "alpha",
+   "evening": 0.25,
+   "night": 0.42
+  },
+  {
+   "material": "DK_Enamel_Ivory",
+   "renderer": "CafeBay_v2",
+   "mode": "night",
+   "colour": "#ffeccc",
+   "evening": 1.2,
+   "night": 3.2,
+   "unbake": true,
+   "note": "Vela 107 round 2 (Sky: 'the cafe sign needs lighting at night as well'): the caf\u00e9's CAFE fin (CafeBay_v2's stacked sign: DK_Enamel_Teal body, DK_Enamel_Ivory letters, the piece's only Ivory slot, its own renderer, not merged) lit on the letters only; the testbed's channel letters are 3.2 at night"
+  }
+ ],
+ "peopleNote": "Glint 2026-10-24 (Glyph, 0.2.115 night with the HUD: passers-by are black cut-outs, the cell shows by its rings). people: a night fill on every figure (a SkinnedMeshRenderer), as a runtime copy of its materials whose emission is its own albedo (the base map as the emission map) times colour times the level: evening 0, night 0.07 (linear). No light, no pass, no rim mesh; a figure with a glowing material of its own is left as built. The 0.2.115 strip light at night was 5.0 and the brightest line on screen: now 3.4 (evening 3.0 unchanged). DK_Cafe_*: the interior's own materials are self-lit (emission about their albedo x 0.55), which is what the cutaway shows as a white block above the pools: x0.1 at night (linear, as the kit's HDR colours are). The lilac table lamp is tinted flamingo (#ff9fb8) at evening and night (violet is the rivals' signal colour); its light is turned in LightPhase.NightFloor.",
+ "people": {
+  "colour": "#a9e2dc",
+  "evening": 0.0,
+  "night": 0.07,
+  "scanSeconds": 0.3,
+  "smoothness": 0.55,
+  "albedo": false
+ },
+ "glowNote107": "Glint 2026-11-11 (brief 107 testbed port): entries are matched per material INSTANCE (the kit's and the old art's DK_GlassDark, DK_Neon_* were sharing one copy, so in some runs no window lit); the first entry a material can take is used; prefix, renderer and share filters (RoadLight.cs Glowp). Neon x1.7 -> x2.4 at night; the caf\u00e9 interior's self-light x0.1 -> x0.4 (the testbed's room reads warm through the glass); lit kit panes 0.75 -> 0.85."
+}
