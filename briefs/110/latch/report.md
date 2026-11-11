@@ -4,7 +4,7 @@ Engine 0.55.0 (Keel, `briefs/110/keel/orders.md`). Sky:
 - "If I order a listen command, then it should be actioned. No commands should be waiting. It either is accepted or not available."
 - "Scout can always listen and watch"
 
-**The build:** BUILD_LINE
+**The build:** **0.2.332** (`out/build/play/The Suborned.app`; `bun run batch --sky`, 1,005 s, BATCH OK). Engine 0.55.0 (sim 493/493 scenarios, identical replay).
 
 ## 1 · The three host waits, gone (Keel's audit)
 All three were in `HandoverHost.cs`.
@@ -51,7 +51,18 @@ All three were in `HandoverHost.cs`.
 - The clip tool gained `clip.track` (`shots.schema.ts`, `shots.ts`, `ShotRunner.cs`): the camera eases after the shot's `focus` every frame, so a clip can hold people who move.
 
 ## Checks
-CHECKS
+- `bun run batch --sky` (0.2.332): sim 493/493; words ok (after Motive's H2 row in `briefs/011/motive-fights.md` was brought to the same trigger; its test pins the text to that table); compile ok; host logic **211 pass, 0 fail**; the town rebaked (744 s); the build's smoke ok.
+- **r083 with r085 on 0.2.332:** 104 of 106 rows green. Every Listen row is green:
+  - `r085listenSpot`: in reach, never waiting.
+  - `r085partnerOut`, `r085scoutSideOn`, `r085partnerBack`.
+  - `r085listenApart`: profile, Milena 1.36 m from Inez.
+  - `r085scoutChair` and `r085chairStep`: "no chair offered" until Keel's 0.56.0.
+- **The 2 red rows,** `r085clipTopSpeed` and `r085clipFindsHim`:
+  - They are the Enforcer's door clip at 8x: "not prepared 3 s before the end: skipped", then the camera click on a clip that never showed.
+  - Keel's sim tests were running on every core in his worktree during this proof. On the scratch run an hour earlier, with the same engine, host code and clip code, both rows passed.
+  - **Rerun once Keel's tests had finished (proof5): r083 106 of 106 green**, the two clip rows included.
+- **The proof's fail-fast,** tested: the scratch app linked from outside the repo stopped with exit 2 after 12 s, Unity's start included. `proof.json` said `error` and listed the three paths it looked for.
+- `bun test tools/game/shots.test.ts`: 14 pass (`clip.track`). `bun test contracts/missions/handover/text.test.ts`: 179 pass. `bun tools/game/proofwhat.ts unplaced`: only `Clause.cs` (not mine, untracked).
 
 ## Files
 - `HandoverHost.cs` (the three waits), `HostHints.cs` (H2), `HudModel.cs` (Next), `PlayText.cs` (one fallback line), `HostViews.Listen.cs` (Milena)
