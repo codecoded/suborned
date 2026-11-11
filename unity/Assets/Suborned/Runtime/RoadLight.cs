@@ -21,8 +21,13 @@ namespace Suborned
         /// <summary>Another material the dusk lights (Glint 2026-10-24, the evening phase). mode "emission": the material already glows; `evening` and `night` are multipliers on its own emission (the .mat's level is 1, by day too, so day is untouched).
         /// mode "tint" (Glint 2026-10-24, the lilac table lamp read violet beside the rivals' rings): the emission leans toward `colour` (keeping its own strength) by the share `evening` / `night` (0..1; 0 by day).
         /// Brief 107 (Vela's glows): mode "night": emission = linear(`colour`) x level from black (0 by day); mode "alpha": a Cross Glow pool's `_Alpha` from 0 (0 by day).
-        /// mode "lit": a Suborned/DecoKit/GlassSky pane (DK_GlassDark, the facade windows); `evening` and `night` are the share of panes with their interior light on (_Lit, 0 by day), `colour` the light (_LitColour).</summary>
-        [Serializable] public sealed class Glowp { public string material, mode, colour; public float evening, night; }
+        /// mode "lit": a Suborned/DecoKit/GlassSky pane (DK_GlassDark, the facade windows); `evening` and `night` are the share of panes with their interior light on (_Lit, 0 by day), `colour` the light (_LitColour).
+        /// Brief 107 (Glint, Sky 2026-11-11 "this city should thrive at night"): several entries may name one material, the first whose mode the material can take is used (the kit's
+        /// DK_GlassDark is a GlassSky pane, the old art's is not: `lit`, then `night`); `prefix` matches every material whose name starts with `material` (the old art's paint variants);
+        /// `renderer` only renderers whose own or a parent's name (3 up) holds it (the café's blade sign, never every cream enamel); `share` 0..1 (0 = all) only that share of renderers,
+        /// picked by a stable hash of where they stand (some buildings lit, some dark), the rest keep their material. Night copies drop _DETAIL_MULX2 and _ENVIRONMENTREFLECTIONS_OFF, so the
+        /// copy draws with a variant the build holds ({_EMISSION}, DK_Lamp's). `unbake`: the renderer drops its lightmap for the night (probe-lit), as no lightmapped emissive variant ships (the café blade sign).</summary>
+        [Serializable] public sealed class Glowp { public string material, mode, colour, renderer; public float evening, night, share; public bool prefix, unbake; }
         /// <summary>People at dusk and night (Glint 2026-10-24, Glyph's 0.2.115 check: passers-by are black cut-outs): every SkinnedMeshRenderer's materials get a runtime copy whose emission is the
         /// `colour` times the phase's level (`evening`, `night`: linear; flat, or the albedo times it when `albedo`, which keeps the texture but lifts dark clothes (albedo 0.03) by nothing), and `smoothness` (night): the figure takes the
         /// dark environment's Fresnel at its edges, a faint rim from the reflection cube's horizon band. A fill and a rim, not a light: no pass, no rim mesh. A material whose name has "visor" is left as built (the cell's visor glow). `scanSeconds`: how often new figures are found.</summary>
@@ -41,7 +46,7 @@ namespace Suborned
         float lensTarget, poolTarget;
         // the other materials (roadlight.json `glow`): one runtime copy each, the value eased like the strip's (emission: a multiplier from 1; lit: a share from 0)
         sealed class Glow { public Glowp g; public Material m; public Color e0; public float level0 = 1f, now = -1f, target; public bool lit, tint, fromBlack, alpha; }
-        readonly Dictionary<string, Glow> glowByName = new();
+        readonly Dictionary<(Material, int), Glow> glowByName = new(); // one copy per source material and entry (the kit's and the old art's same-named materials are different)
         // people (roadlight.json `people`): one runtime copy per source material, found again every scanSeconds while the look is not day
         readonly Dictionary<Material, Material> peopleCopy = new(); readonly HashSet<Material> peopleMade = new();
         float peopleNext, peopleLevel = -1f; Color peopleTint; int peopleLogged = -1; float peopleShare;
@@ -54,7 +59,8 @@ namespace Suborned
         static void Install()
         {
             if (Instance) return;
-            var text = Resources.Load<TextAsset>(ResourcePath);
+            var text = Resources.Load<TextAsset>(ResourcePath); var loose = GameBoot.ArgValue("-roadlightJson"); // tuning without a rebuild (Glint, brief 107): a loose copy of roadlight.json
+            if (loose != null && System.IO.File.Exists(loose)) { text = new TextAsset(System.IO.File.ReadAllText(loose)); Debug.Log("RoadLight: read " + loose); }
             if (!text) { Debug.LogError($"RoadLight: Resources/{ResourcePath}.json not found; the strip light stays at its day level"); return; }
             Data d;
             try { d = JsonUtility.FromJson<Data>(text.text); } catch (Exception e) { Debug.LogError($"RoadLight: roadlight.json: {e.Message}"); return; }
@@ -78,6 +84,7 @@ namespace Suborned
                 foreach (var g in d.glow)
                 {
                     if (g == null || string.IsNullOrEmpty(g.material)) return "glow: material";
+                    if (g.share < 0f || g.share > 1f) return $"glow {g.material}: share 0..1 (0 = every renderer)";
                     if (g.mode == "emission") { if (g.evening < 0f || g.evening > 10f || g.night < 0f || g.night > 10f) return $"glow {g.material}: emission needs evening and night in 0..10 (multipliers on the material's own emission; below 1 dims it)"; }
                     else if (g.mode == "tint") { if (g.evening < 0f || g.evening > 1f || g.night < 0f || g.night > 1f || !ColorUtility.TryParseHtmlString(g.colour, out _)) return $"glow {g.material}: tint needs evening and night in 0..1 and a #rrggbb colour"; }
                     else if (g.mode == "night") { if (g.evening < 0f || g.night < 0f || g.night > 10f || !ColorUtility.TryParseHtmlString(g.colour, out _)) return $"glow {g.material}: night needs evening and night in 0..10 and a #rrggbb colour"; } // brief 107: emission from black
@@ -133,17 +140,17 @@ namespace Suborned
                     var m = ms[i]; if (!m) continue;
                     if (m.name == d.lens.material) { if (!lens) Copy(m); ms[i] = lens; any = true; roadRenderers++; }
                     else if (m.name == d.pool.material) { if (!pool) { pool = new Material(m) { name = m.name + " (phase)" }; } ms[i] = pool; any = true; roadRenderers++; }
-                    else if (d.glow != null && FindGlow(m.name) is { } gp)
+                    else if (d.glow != null && PickGlow(r, m) is { } gl)
                     {
-                        if (!byName.TryGetValue(m.name, out var gl)) { gl = MakeGlow(gp, m); byName[m.name] = gl; }
-                        if (gl != null) { ms[i] = gl.m; any = true; glowRenderers++; }
+                        ms[i] = gl.m; any = true; glowRenderers++;
+                        if (gl.g.unbake && r.lightmapIndex >= 0 && r.lightmapIndex < 0xFFFE) { r.lightmapIndex = -1; r.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.BlendProbes; }
                     }
                 }
                 if (any) { r.SetSharedMaterials(ms); Renderers++; }
             }
             if (roadRenderers == 0) Debug.Log($"RoadLight: no renderer draws {d.lens.material} or {d.pool.material} in this scene (the strip light is not laid)");
             else Debug.Log($"RoadLight: {roadRenderers} material slots on {(lens ? d.lens.material : "-")} / {(pool ? d.pool.material : "-")} (runtime copies); lens {d.lens.day} / {d.lens.evening} / {d.lens.night}, pool alpha {d.pool.day} / {d.pool.evening} / {d.pool.night}");
-            var found = new List<string>(); foreach (var g in glowByName.Values) if (g != null) found.Add(g.g.material);
+            var found = new List<string>(); foreach (var kv in glowByName) if (kv.Value != null) found.Add($"{kv.Key.Item1.name}:{kv.Value.g.mode}");
             Debug.Log($"RoadLight: {glowRenderers} material slots on the other dusk lights ({(found.Count > 0 ? string.Join(", ", found) : "none drawn in this scene")}; roadlight.json lists {(d.glow != null ? d.glow.Length : 0)})");
         }
 
@@ -193,7 +200,22 @@ namespace Suborned
             return new Color(peopleTint.r * v, peopleTint.g * v, peopleTint.b * v, 1f);
         }
 
-        Glowp FindGlow(string name) { foreach (var g in d.glow) if (g.material == name) return g; return null; }
+        /// <summary>The glow copy this renderer's slot takes: the first entry naming the material (exactly, or by prefix) that passes the renderer's filters and whose mode the material can take; null leaves the slot as built.</summary>
+        Glow PickGlow(Renderer r, Material m)
+        {
+            for (int k = 0; k < d.glow.Length; k++)
+            {
+                var g = d.glow[k]; if (m.name.EndsWith(" (phase)")) return null;
+                if (!(g.prefix ? m.name.StartsWith(g.material) : m.name == g.material)) continue;
+                if (!string.IsNullOrEmpty(g.renderer) && !Named(r.transform, g.renderer)) continue;
+                if (g.share > 0f && g.share < 1f && Spot(r.bounds.center) >= g.share) return null; // this one stays dark
+                if (!glowByName.TryGetValue((m, k), out var gl)) { gl = MakeGlow(g, m); glowByName[(m, k)] = gl; }
+                if (gl != null) return gl;
+            }
+            return null;
+        }
+        static bool Named(Transform t, string part) { for (int i = 0; t && i < 4; i++, t = t.parent) if (t.name.Contains(part)) return true; return false; }
+        static float Spot(Vector3 p) { float h = Mathf.Sin(Mathf.Round(p.x) * 12.9898f + Mathf.Round(p.y) * 4.1414f + Mathf.Round(p.z) * 78.233f) * 43758.5453f; return h - Mathf.Floor(h); }
 
         /// <summary>One runtime copy of a material the dusk lights. A material the entry cannot drive (an emission entry with no emission, a lit entry on another shader) is left alone (null).</summary>
         Glow MakeGlow(Glowp g, Material m)
@@ -228,7 +250,7 @@ namespace Suborned
             gl.m = new Material(m) { name = m.name + " (phase)" };
             if (gl.alpha) gl.m.SetFloat(idAlpha, 0f);
             else if (gl.lit) { gl.m.SetColor(idLitColour, ColorUtility.TryParseHtmlString(g.colour, out var c) ? c : Color.white); gl.m.SetFloat(idLit, 0f); }
-            else gl.m.EnableKeyword("_EMISSION");
+            else { gl.m.EnableKeyword("_EMISSION"); if (gl.fromBlack) { gl.m.DisableKeyword("_DETAIL_MULX2"); gl.m.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF"); } }
             return gl;
         }
 

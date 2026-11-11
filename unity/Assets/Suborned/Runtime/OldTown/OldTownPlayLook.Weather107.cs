@@ -35,7 +35,8 @@ namespace Suborned.OldTown
             Color sun = night ? s.sun : w107Day.sun, sky = night ? s.sky : w107Day.sky, eq = night ? s.eq : w107Day.eq, gr = night ? s.ground : w107Day.ground;
             sun = Color.Lerp(sun, new Color(sun.grayscale, sun.grayscale, sun.grayscale), desat);
             if (!night) { var cool = new Color(0.94f, 0.98f, 1.06f); sky = Color.Lerp(sky, sky * cool, desat) * ambK; eq = Color.Lerp(eq, eq * cool, desat) * ambK; gr *= ambK; }
-            sunRotation = night ? s.rot : w107Day.rot; sunColour = sun; sunIntensity = (night ? s.intensity : w107Day.intensity) * sunK; shadowScale = p[4];
+            if (night) { var n = Night107(); sky *= n.ambient; eq *= n.ambient; gr *= n.ambient; } // Glint's testbed port: a darker base under the pools
+            sunRotation = night ? s.rot : w107Day.rot; sunColour = sun; sunIntensity = (night ? s.intensity * Night107().moon : w107Day.intensity) * sunK; shadowScale = p[4];
             ambientSky = sky; ambientEquator = eq; ambientGround = gr; ambientIntensity = w107AmbInt;
             bool plain = !night && Mathf.Approximately(sunK, 1f) && Mathf.Approximately(ambK, 1f) && desat <= 0f;
             ambientProbe = plain ? w107Probe : TimeOfDay097.Probe(sky, eq, gr);
@@ -43,18 +44,9 @@ namespace Suborned.OldTown
             var nightRoot = GameObject.Find(NightRoot);
             var nightGrade = nightRoot ? nightRoot.transform.Find("grade-night") : null;
             if (playVolume) playVolume.enabled = !(night && nightGrade);
-            Exposure107(night ? (p.Length > 5 ? p[5] : s.ev) : 0f); // weather107.json nightExposure (0: the carried night grade has its own)
+            Grade107(night, night ? (p.Length > 5 ? p[5] : s.ev) : 0f, nightGrade); // weather107.json nightExposure (0: the carried night grade has its own) and its night block's grade
+            Uplights107(night);
             Cap107();
-        }
-
-        void Exposure107(float ev)
-        {
-            if (!w107Ev)
-            {
-                var go = new GameObject("play light exposure (brief 107)") { hideFlags = HideFlags.DontSave }; w107Ev = go.AddComponent<Volume>(); w107Ev.isGlobal = true; w107Ev.priority = 1001f;
-                var prof = ScriptableObject.CreateInstance<VolumeProfile>(); prof.hideFlags = HideFlags.DontSave; w107Adj = prof.Add<ColorAdjustments>(false); w107Ev.sharedProfile = prof;
-            }
-            w107Adj.postExposure.Override(ev); w107Ev.enabled = ev > 0.001f;
         }
 
         void Lamps107()
@@ -71,7 +63,7 @@ namespace Suborned.OldTown
                 if (near) continue;
                 var go = new GameObject("lamp"); go.transform.SetParent(parent, false); go.transform.position = head;
                 var l = go.AddComponent<Light>(); l.type = LightType.Point; l.color = new Color(1f, 0.74f, 0.46f); l.range = table ? 3.5f : 9f; l.shadows = LightShadows.None; l.enabled = false;
-                l.intensity = table ? 1.2f : 6f; w107Lamps.Add(l);
+                l.intensity = table ? 1.2f : 6f; NightLamp107(l); w107Lamps.Add(l);
             }
         }
 

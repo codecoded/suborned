@@ -17,7 +17,21 @@ namespace Suborned.Play
             public float nightExposure;
             /// <summary>The share of indirect light (the lightmaps' day bounce, the ambient, the reflections) our shaders take away at night (_SubornedNight.x, DK_Wet107.hlsl).</summary>
             public float nightIndirect;
+            /// <summary>Brief 107, Glint's testbed port (Sky 2026-11-11: "this city should thrive at night"): the night's lamps, uplights and grade. The old town's play look reads the same block (OldTownPlayLook.Night107.cs).</summary>
+            public NightLook night = new();
             public Kind Of(string name) { foreach (var k in kinds) if (k.name == name) return k; return Clear; }
+        }
+        /// <summary>The night look (weather107.json `night`). Lamps: every night lamp (the carried LightPhase's and the play look's) at x`lampScale`, range x`lampRange`, its colour leaned toward
+        /// `lampColour` by `lampShare`; a lamp whose hue is in `rehueFrom`..`rehueTo` degrees (the teal table lamp's pool) takes `rehueColour`; `liveCap` (0 = as built) lamps lit at once.
+        /// Uplights (`up*`): a shadowless spot at the foot of each tree whose name starts with one of `upNames` (comma separated), aimed up the trunk. Grade (a volume over the night grade):
+        /// `exposure` stops, `temperature`, `tint`, `saturation`, `contrast`, `filter` (colour), `shadowsNeutral` 0..1 (how far the night grade's teal shadow tint goes back to neutral).
+        /// `ambient` and `moon`: x the old town's night trilight and moon. Look only.</summary>
+        [Serializable] public sealed class NightLook
+        {
+            public float ambient = 1f, moon = 1f, lampScale = 1f, lampRange = 1f, lampShare = 0f; public string lampColour = "#ffc27e"; public int liveCap;
+            public float rehueFrom, rehueTo; public string rehueColour = "";
+            public float upIntensity, upRange = 7f, upAngle = 40f; public string upColour = "#ffe6b8", upNames = "";
+            public float exposure, temperature, tint, saturation, contrast, shadowsNeutral; public string filter = "#ffffff";
         }
         static readonly Kind Clear = new();
         static readonly int WetId = Shader.PropertyToID("_SubornedWet"), NightId = Shader.PropertyToID("_SubornedNight");

@@ -10,5 +10,7 @@
  "mistDay": "#f3e8d4",
  "mistNight": "#22323a",
  "nightExposure": 0,
- "nightIndirect": 0.6
+ "nightIndirect": 0.85,
+ "nightNote": "Glint 2026-11-11, the testbed port (Sky: 'horrible paving colors at night', 'look at the test bed ... cafe', 'this city should thrive at night'; briefs/107/glint/testbed-port/). The testbed's café night is a dark base under many warm pools (moon 0.18, sky 0.12, exposure 1.05, warm lamps, terrace wall lights, palm uplights, sign emissive 3.2). nightIndirect 0.6 -> 0.8: less of the day's baked bounce (the grey dusk). night: ambient and moon x the old town's night trilight and moon; lamps (every night lamp, carried and the play look's) x lampScale, range x lampRange, leaned to lampColour by lampShare, teal-hued pools (rehueFrom..rehueTo deg, the teal table lamp) to rehueColour; uplights at the foot of each tree named upNames; the grade over the carried night grade: shadowsNeutral takes its teal shadow tint back toward neutral (the teal wash on the paving), temperature warms the pools, contrast and saturation are added to the grade's own. Tune on a built player with -weatherJson <loose copy> -night.",
+ "night": { "ambient": 0.55, "moon": 0.6, "lampScale": 1.6, "lampRange": 1.25, "lampShare": 0.55, "lampColour": "#ffc890", "liveCap": 0, "rehueFrom": 150, "rehueTo": 215, "rehueColour": "#ffc890", "upIntensity": 10, "upRange": 7.5, "upAngle": 50, "upColour": "#ffe2b0", "upNames": "palm/civic/", "exposure": 0.0, "temperature": 7, "tint": 0, "saturation": 4, "contrast": 8, "shadowsNeutral": 0.85, "filter": "#ffffff" }
 }

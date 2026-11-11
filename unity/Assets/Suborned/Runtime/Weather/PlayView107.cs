@@ -67,7 +67,7 @@ namespace Suborned.Play
         void Apply()
         {
             nightApplied = night; weatherApplied = weather;
-            if (phase) { phase.Focus = () => host ? host.FocusPoint : (Vector3?)null; if (phase.Night != night) phase.Set(night); }
+            if (phase) { phase.Focus = () => host ? host.FocusPoint : (Vector3?)null; if (phase.Night != night) phase.Set(night); NightLamps107.Apply(phase, data.night, night); } // Glint's testbed port: the lamps warm and stronger
             Weather107.Apply(weather, night, data);
             Shader.SetGlobalVector("_DKRoomsNight", night ? new Vector4(Look097.RoomsNight.x, Look097.RoomsNight.y, 0, 0) : Vector4.zero); // the lit rooms behind the glass (look097.json)
             var w = data.Of(weather);
