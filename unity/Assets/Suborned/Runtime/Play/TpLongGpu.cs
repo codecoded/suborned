@@ -12,12 +12,12 @@ namespace Suborned.Play
     /// the platform has GPU recorders, how many samplers the player names, every render-pass sampler that answered and its mean ms a frame. A sampler with no GPU blocks reads -1, so "not available" never reads as zero.</summary>
     public static class TpLongGpu
     {
-        static readonly Regex Passes = new("shadow|opaque|transparent|bloom|smaa|final|blit|uber|post|depth|ssao|skybox|ui|overlay|render ?graph|draw", RegexOptions.IgnoreCase);
+        static readonly Regex Passes = new("shadow|opaque|transparent|bloom|smaa|final|blit|uber|post|depth|ssao|skybox|ui|overlay|render ?graph|draw|stp|upscal|taa|temporal|occlu|cull|pyramid", RegexOptions.IgnoreCase); // 106: stp..pyramid, so a row shows STP and the occlusion test ran
 
         public static IEnumerator Sample(string row, float seconds, string dir)
         {
             var names = new List<string>(); Sampler.GetNames(names);
-            var pick = names.Where(n => Passes.IsMatch(n)).Distinct().Take(200).ToList();
+            var pick = names.Where(n => Passes.IsMatch(n)).Distinct().Take(300).ToList();
             var recs = new List<(string name, Recorder r)>(); foreach (var n in pick) { var r = Recorder.Get(n); if (r != null && r.isValid) { r.enabled = true; recs.Add((n, r)); } }
             var gpu = new double[recs.Count]; var cpu = new double[recs.Count]; var blocks = new long[recs.Count]; int frames = 0; float t0 = Time.realtimeSinceStartup;
             while (Time.realtimeSinceStartup - t0 < seconds)

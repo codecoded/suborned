@@ -9,7 +9,7 @@ namespace Suborned.Play
     /// <summary>Brief 086 (Redline's plan section 1.3, the Air sitting): what a `-tplong` row can switch, for that row only. Nothing else calls this, so no normal run ever does. Every row sets every switch, so the
     /// order of rows never matters. softShadows off: the lights' soft shadows hard. bloom off: a top volume sets its intensity to 0. leavesAlpha off: the leaf materials' alpha test off (the cards draw solid: a price, not a look).
     /// shadows off: the play camera renders none. oldFar off: old-art renderers beyond 150 m not drawn, the most a LOD pass on them could give. planting off: the lodAtPlay groups not drawn.
-    /// upscale, renderScalePct: URP's filter and the render scale. Each says what it touched in the player's log, line `TpLongVariants:`, and bloom as the camera resolved it.</summary>
+    /// upscale, renderScalePct: URP's filter and the render scale. Brief 106: occlusion, meshLod, stp (+ stpScalePct): the BuiltIns switches. Each says what it touched in the player's log, line `TpLongVariants:`, and bloom as the camera resolved it.</summary>
     public static class TpLongVariants
     {
         static readonly List<(Light l, LightShadows was)> softLights = new();
@@ -17,7 +17,8 @@ namespace Suborned.Play
         static readonly List<Material> leaves = new();
         static readonly List<Renderer> hiddenOld = new(), hiddenPlanting = new();
         static readonly List<(UniversalAdditionalCameraData d, bool was)> shadowCams = new();
-        static TpLongRun.RowVariant now; static bool filterSaved; static UpscalingFilterSelection filterWas; static float scaleWas = -1f;
+        static TpLongRun.RowVariant now; static bool filterSaved; static float scaleWas = -1f;
+        static bool? occlusionWas, meshLodWas; static bool lookForced; static float thresholdWas = -1f; static (bool on, float scale)? stpWas; // brief 106
         /// <summary>What the last row's switches touched, for the row's report.</summary>
         public static string Touched { get; private set; } = "";
 
@@ -30,12 +31,20 @@ namespace Suborned.Play
             if (Off(v.leavesAlpha, "leavesAlpha")) { var seen = new HashSet<Material>(); int none = 0; foreach (var r in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include, FindObjectsSortMode.None)) foreach (var m in r.sharedMaterials) if (m != null && m.name.Contains("Leaf") && seen.Add(m)) { if (m.IsKeywordEnabled("_ALPHATEST_ON")) { m.DisableKeyword("_ALPHATEST_ON"); leaves.Add(m); } else none++; } Touched += $"alpha test off on {leaves.Count} leaf materials, {none} with no such keyword; "; }
             if (Off(v.planting, "planting")) { int groups = 0; foreach (var g in UnityEngine.Object.FindObjectsByType<LODGroup>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) if (IsPlanting(g.name)) { groups++; foreach (var r in g.GetComponentsInChildren<Renderer>()) if (!r.forceRenderingOff) { r.forceRenderingOff = true; hiddenPlanting.Add(r); } } Touched += $"planting off: {groups} groups, {hiddenPlanting.Count} renderers; "; }
             if (!string.IsNullOrEmpty(v.upscale) || v.renderScalePct > 0f)
-            {
-                if (UniversalRenderPipeline.asset is not UniversalRenderPipelineAsset urp) throw new InvalidOperationException("no URP asset");
-                if (!string.IsNullOrEmpty(v.upscale)) { filterWas = urp.upscalingFilter; filterSaved = true; urp.upscalingFilter = v.upscale switch { "auto" => UpscalingFilterSelection.Auto, "linear" => UpscalingFilterSelection.Linear, "point" => UpscalingFilterSelection.Point, "fsr" => UpscalingFilterSelection.FSR, "stp" => UpscalingFilterSelection.STP, _ => throw new InvalidOperationException($"row variant upscale `{v.upscale}`: auto, linear, point, fsr or stp") }; }
+            {   // brief 106: RenderCap owns the filter in use; a row's filter is its override
+                if (!string.IsNullOrEmpty(v.upscale)) { filterSaved = true; RenderCap.FilterOverride = v.upscale switch { "auto" => UpscalingFilterSelection.Auto, "linear" => UpscalingFilterSelection.Linear, "point" => UpscalingFilterSelection.Point, "fsr" => UpscalingFilterSelection.FSR, "stp" => UpscalingFilterSelection.STP, _ => throw new InvalidOperationException($"row variant upscale `{v.upscale}`: auto, linear, point, fsr or stp") }; }
                 if (v.renderScalePct > 0f) { scaleWas = RenderCap.UserScale; RenderCap.UserScale = v.renderScalePct / 100f; }
-                Touched += $"filter {urp.upscalingFilter}, user scale {RenderCap.UserScale:0.00}; ";
+                Touched += $"filter {RenderCap.FilterOverride?.ToString() ?? "by rule"}, user scale {RenderCap.UserScale:0.00}; ";
             }
+            // brief 106: the built-ins, each "" = the build's default (BuiltIns), "on" | "off" for this row; stpScalePct the STP pass scale (0 = the default)
+            if (!string.IsNullOrEmpty(v.occlusion)) { occlusionWas = BuiltIns.Occlusion; BuiltIns.SetOcclusion(!Off(v.occlusion, "occlusion")); }
+            if (!string.IsNullOrEmpty(v.meshLod)) { meshLodWas = BuiltIns.MeshLod; if (v.meshLod == "low") BuiltIns.SetMeshLodLowest(); else BuiltIns.SetMeshLod(!Off(v.meshLod, "meshLod")); }
+            if (v.meshLodThreshold > 0f) { thresholdWas = BuiltIns.MeshLodThreshold; BuiltIns.SetMeshLodThreshold(v.meshLodThreshold); }
+            if (!string.IsNullOrEmpty(v.stp) || v.stpScalePct > 0f) { stpWas = (BuiltIns.Stp, BuiltIns.StpScale); BuiltIns.SetStp(string.IsNullOrEmpty(v.stp) ? BuiltIns.Stp : !Off(v.stp, "stp"), v.stpScalePct > 0f ? v.stpScalePct / 100f : BuiltIns.StpScale); }
+            // brief 107: the weather and the night (PlayView107's overrides), released on the next row
+            if (!string.IsNullOrEmpty(v.weather)) { PlayView107.ForceWeather(v.weather); lookForced = true; Touched += $"weather {v.weather}; "; }
+            if (!string.IsNullOrEmpty(v.night)) { PlayView107.ForceNight(!Off(v.night, "night")); lookForced = true; Touched += $"night {v.night} (drawn {(PlayView107.Night ? "night" : "day")}); "; }
+            if (!string.IsNullOrEmpty(v.occlusion) || !string.IsNullOrEmpty(v.meshLod) || v.meshLodThreshold > 0f || !string.IsNullOrEmpty(v.stp) || v.stpScalePct > 0f) Touched += BuiltIns.Describe() + "; ";
         }
 
         /// <summary>The window is about to start: the camera stands where the row measures, so what is far and which camera renders are known.</summary>
@@ -74,7 +83,8 @@ namespace Suborned.Play
             foreach (var r in hiddenOld) if (r) r.forceRenderingOff = false; hiddenOld.Clear();
             foreach (var r in hiddenPlanting) if (r) r.forceRenderingOff = false; hiddenPlanting.Clear();
             foreach (var (d, was) in shadowCams) if (d) d.renderShadows = was; shadowCams.Clear();
-            if (filterSaved && UniversalRenderPipeline.asset is UniversalRenderPipelineAsset urp) urp.upscalingFilter = filterWas; filterSaved = false;
+            if (filterSaved) RenderCap.FilterOverride = null; filterSaved = false;
+            if (occlusionWas is bool o) BuiltIns.SetOcclusion(o); if (meshLodWas is bool ml) BuiltIns.SetMeshLod(ml); if (stpWas is { } st) BuiltIns.SetStp(st.on, st.scale); occlusionWas = meshLodWas = null; stpWas = null; if (lookForced) { PlayView107.Release(); lookForced = false; } if (thresholdWas > 0f) BuiltIns.SetMeshLodThreshold(thresholdWas); thresholdWas = -1f;
             if (scaleWas >= 0f) RenderCap.UserScale = scaleWas; scaleWas = -1f;
         }
 

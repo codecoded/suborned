@@ -15,6 +15,8 @@ namespace Suborned
     {
         [Serializable] sealed class WindCfg { public float dirDeg = 35, height = 4, speed = 1.1f, gust = 0.55f, gustScale = 0.045f, flutter = 9, strength = 1; }
         [Serializable] sealed class CloudCfg { public bool enabled = true; public float size = 90, drift = 1.4f, cover = 0.38f, soft = 0.2f, shade = 0.3f; public int seed = 97, res = 256; }
+        /// <summary>Brief 107: look097.json rooms nightShare and night, which PlayView107 writes to _DKRoomsNight at night only.</summary>
+        public static Vector2 RoomsNight { get; private set; }
         [Serializable] sealed class RoomCfg { public float width = 3.6f, storey = 3.4f, depth = 4.5f, day = 0.55f, nightShare = 0f, night = 0f; }
         [Serializable] sealed class Cfg { public WindCfg wind = new(); public CloudCfg clouds = new(); public RoomCfg rooms = new(); public float bakedContact = 0.55f, bakedExposure = 0.4f; public float variation = 0.85f, variationTile = 9f; }
 
@@ -40,7 +42,7 @@ namespace Suborned
             float a = cfg.wind.dirDeg * Mathf.Deg2Rad; dir = new Vector2(Mathf.Cos(a), Mathf.Sin(a));
             Shader.SetGlobalVector(WindId, new Vector4(dir.x, dir.y, cfg.wind.height, cfg.wind.speed));
             Shader.SetGlobalVector(GustId, new Vector4(cfg.wind.gust, cfg.wind.gustScale, cfg.wind.flutter, noWind ? 0f : cfg.wind.strength));
-            var rc = cfg.rooms; Shader.SetGlobalVector("_DKRooms", new Vector4(rc.width, rc.storey, rc.depth, rc.day)); Shader.SetGlobalVector("_DKRoomsNight", new Vector4(rc.nightShare, rc.night, 0, 0)); // DK_Interior097.hlsl
+            var rc = cfg.rooms; Shader.SetGlobalVector("_DKRooms", new Vector4(rc.width, rc.storey, rc.depth, rc.day)); RoomsNight = new Vector2(rc.nightShare, rc.night); Shader.SetGlobalVector("_DKRoomsNight", Vector4.zero); // DK_Interior097.hlsl; brief 107: dark by day, PlayView107 lights them at night
             if (Array.IndexOf(args, "-norooms") >= 0) { Shader.SetGlobalFloat("_DKInteriorOff", 1f); Shader.SetGlobalFloat("_DKInteriorOff097", 1f); }
             if (Array.IndexOf(args, "-noao") >= 0) Shader.SetGlobalFloat("_DKVertexAOOff", 1f);
             // DK_Variation097: the painted wash, made here in linear (an imported PNG went through sRGB and darkened the city ~9 %). Kept in a field and

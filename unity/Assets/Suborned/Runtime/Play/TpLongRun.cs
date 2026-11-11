@@ -19,7 +19,7 @@ namespace Suborned.Play
     /// means, the Render ProfilerRecorders' Triangles, SetPass Calls and Shadow Casters means, then a census of what the camera draws (LOD- and
     /// static-batch-aware, as briefs/048/probe/Probe.cs). Writes `tplong.json` (suborned.tplong.report/1) after every row; exits 0 every row ran,
     /// 1 a row did not, 2 the file would not read.</summary>
-    public sealed class TpLongRun : MonoBehaviour
+    public sealed partial class TpLongRun : MonoBehaviour
     {
         public const string Schema = "suborned.tplong.report/1";
 
@@ -27,13 +27,13 @@ namespace Suborned.Play
         /// <summary>Brief 072-E (Redline's tplong-072.json): the every-face A/B before a row. everyFace "on" | "off" (EveryFace; off needs the
         /// development build's `today` walls), moduleShadows "proxy" | "lod0" (the modules' L2 proxies on, or the modules cast from their own LODs); 072-F surfaceDetail "on" | "off"
         /// (LookLab: the surface-detail fetches skipped by a global float, same materials); "" = as built.</summary>
-        [Serializable] public class RowVariant { public string everyFace = "", moduleShadows = "", surfaceDetail = "", softShadows = "", bloom = "", leavesAlpha = "", shadows = "", oldFar = "", planting = "", upscale = "", gpuSplit = ""; public float renderScalePct; /* brief 086: TpLongVariants, TpLongGpu; all default to as built */ }
+        [Serializable] public class RowVariant { public string everyFace = "", moduleShadows = "", surfaceDetail = "", softShadows = "", bloom = "", leavesAlpha = "", shadows = "", oldFar = "", planting = "", upscale = "", gpuSplit = "", occlusion = "", meshLod = "", stp = "", stills = "", weather = "", night = ""; public float renderScalePct, stpScalePct, meshLodThreshold; /* brief 086: TpLongVariants, TpLongGpu; 106: BuiltIns; all default to as built */ }
         [Serializable] public class FileData { public string schema = "", outDir = ""; public Row[] rows; }
 
         sealed class Res
         {
             public string Name = "", Status = "ok", Error = ""; public int W, H; public float Heading = float.NaN;
-            public int Count; public double Mean, P99, Max, Gpu = -1, Main = -1, Render = -1, Tris, SetPass, Casters, GrdMs = -1; public int Drawn, Beyond150;
+            public int Count; public double Mean, P99, Max, Gpu = -1, Main = -1, Render = -1, Tris, SetPass, Casters, GrdMs = -1, Median, P95, Draws = -1, Batches = -1; public int Drawn, Beyond150; public string BuiltIns = ""; /* 106: median, p95, draw calls, batches, the switches */
         }
 
         string path, dir; readonly List<Res> results = new(); HandoverHost h;
@@ -107,7 +107,7 @@ namespace Suborned.Play
                 h.SetPaused(true);
                 // brief 048 (Glint's checklist, for Glyph and Sky): a picture of each row as timed; at the first follow row also the sky teal
                 // (Shift+F9) and the atmosphere off (Shift+F10) for the A/B, and the long tier (far > 900 m: the flyby's look) 60 m above it
-                yield return Picture(row.name);
+                yield return Picture(row.name); if (row.variant?.stills == "on") yield return TpLongStills.Pair(h, dir, row.name, row.variant.stpScalePct / 100f); // brief 106
                 if (row.view == "follow" && !extras)
                 {
                     extras = true;
@@ -501,7 +501,7 @@ namespace Suborned.Play
 
         IEnumerator Time_(Res res, float seconds)
         {
-            var tris = Counter("Triangles Count"); var sp = Counter("SetPass Calls Count"); var sc = Counter("Shadow Casters Count");
+            var tris = Counter("Triangles Count"); var sp = Counter("SetPass Calls Count"); var sc = Counter("Shadow Casters Count"); var dc = Counter("Draw Calls Count"); var bc = Counter("Batches Count"); double dSum = 0, bSum = 0; res.BuiltIns = Suborned.Play.BuiltIns.Describe();
             // brief 045 F6: the GPU Resident Drawer's draw-list rebuild, when the player exposes the marker (development builds); -1 when not
             ProfilerRecorder grd = default; var hs = new List<ProfilerRecorderHandle>(); ProfilerRecorderHandle.GetAvailable(hs);
             foreach (var hh in hs) { var d = ProfilerRecorderHandle.GetDescription(hh); if (d.Name.Contains("RebuildDrawLists")) { grd = new ProfilerRecorder(hh, 1, ProfilerRecorderOptions.Default); grd.Start(); break; } }
@@ -514,79 +514,15 @@ namespace Suborned.Play
                 yield return null; double now = Time.realtimeSinceStartupAsDouble; ms.Add((now - last) * 1000.0); last = now;
                 FrameTimingManager.CaptureFrameTimings();
                 if (FrameTimingManager.GetLatestTimings(1, ft) == 1) { if (ft[0].gpuFrameTime > 0) { gpu += ft[0].gpuFrameTime; gn++; } main += ft[0].cpuMainThreadFrameTime; rt += ft[0].cpuRenderThreadFrameTime; }
-                if (tris.Valid) tSum += tris.LastValue; if (sp.Valid) spSum += sp.LastValue; if (sc.Valid) scSum += sc.LastValue;
+                if (tris.Valid) tSum += tris.LastValue; if (sp.Valid) spSum += sp.LastValue; if (sc.Valid) scSum += sc.LastValue; if (dc.Valid) dSum += dc.LastValue; if (bc.Valid) bSum += bc.LastValue;
                 if (grd.Valid) { grdSum += grd.LastValue / 1e6; grdN++; }
             }
             int n = Math.Max(1, ms.Count); var sorted = ms.OrderBy(x => x).ToList();
-            res.Count = ms.Count; res.Mean = ms.Count > 0 ? ms.Average() : 0; res.P99 = ms.Count > 0 ? sorted[Math.Max(0, (int)Math.Ceiling(0.99 * sorted.Count) - 1)] : 0; res.Max = ms.Count > 0 ? sorted[^1] : 0;
+            double Q(double q) => sorted.Count > 0 ? sorted[Math.Max(0, (int)Math.Ceiling(q * sorted.Count) - 1)] : 0;
+            res.Count = ms.Count; res.Mean = ms.Count > 0 ? ms.Average() : 0; res.P99 = Q(0.99); res.P95 = Q(0.95); res.Median = Q(0.5); res.Max = ms.Count > 0 ? sorted[^1] : 0; res.Draws = dc.Valid ? dSum / n : -1; res.Batches = bc.Valid ? bSum / n : -1;
             res.Gpu = gn > 0 ? gpu / gn : -1; res.Main = main / n; res.Render = rt / n;
             res.Tris = tSum / n; res.SetPass = spSum / n; res.Casters = scSum / n; res.GrdMs = grdN > 0 ? grdSum / grdN : -1;
-            tris.Dispose(); sp.Dispose(); sc.Dispose(); if (grd.Valid) grd.Dispose();
-        }
-
-        // ---------------------------------------------------------------- census: renderers this camera draws (LOD-aware), and those beyond 150 m
-
-        void Census(Res res)
-        {
-            var cam = h.View; if (!cam) throw new InvalidOperationException("no camera");
-            var planes = GeometryUtility.CalculateFrustumPlanes(cam); var cp = cam.transform.position;
-            float tanHalf = Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad), bias = QualitySettings.lodBias;
-            // as briefs/048/probe/Probe.cs (the spec, Splice 2026-10-23): a renderer in a LOD group counts only when its own level (the first it is
-            // listed in) is the group's active one; a culled group counts nothing; the frustum alone decides distance (no straight-line far test)
-            var active = new Dictionary<Renderer, bool>();
-            foreach (var g in FindObjectsByType<LODGroup>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
-            {
-                var lods = g.GetLODs(); if (lods.Length == 0) continue;
-                int a = -1;
-                if (g.enabled)
-                {
-                    var t = g.transform; var refp = t.TransformPoint(g.localReferencePoint); var ls = t.lossyScale;
-                    float size = g.size * Mathf.Max(Mathf.Abs(ls.x), Mathf.Abs(ls.y), Mathf.Abs(ls.z));
-                    float rel = cam.orthographic ? size * 0.5f / cam.orthographicSize : size * 0.5f / (Mathf.Max(0.001f, Vector3.Distance(refp, cp)) * tanHalf);
-                    rel *= bias;
-                    for (int i = 0; i < lods.Length; i++) if (rel >= lods[i].screenRelativeTransitionHeight) { a = i; break; }
-                }
-                for (int i = 0; i < lods.Length; i++) foreach (var r in lods[i].renderers) if (r && !active.ContainsKey(r)) active[r] = i == a;
-            }
-            int drawn = 0, far = 0;
-            foreach (var r in FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
-            {
-                if (!r.enabled || r.forceRenderingOff || !(r is MeshRenderer || r is SkinnedMeshRenderer) || (cam.cullingMask & (1 << r.gameObject.layer)) == 0) continue;
-                if (active.TryGetValue(r, out var on) && !on) continue;
-                var b = r.bounds; if (!GeometryUtility.TestPlanesAABB(planes, b)) continue;
-                drawn++; bool beyond = b.SqrDistance(cp) >= 150f * 150f; if (beyond) far++;
-                Tally(byBranch, Branch(r.transform), beyond); Tally(byPiece, Piece(r.transform), beyond);
-            }
-            res.Drawn = drawn; res.Beyond150 = far;
-            WriteCensus(res.Name, drawn, far);
-        }
-
-        // what the census counted, by scene branch (root / child / grandchild) and by piece (the nearest LODGroup owner, else the object's name
-        // without its index): `census-<row>.json` beside the report, for Redline's and Splice's reading of the counts (not judged)
-        readonly Dictionary<string, (int all, int far)> byBranch = new(), byPiece = new();
-        static void Tally(Dictionary<string, (int all, int far)> d, string k, bool far) { d.TryGetValue(k, out var v); d[k] = (v.all + 1, v.far + (far ? 1 : 0)); }
-        static string Branch(Transform t)
-        {
-            var parts = new List<string>(); for (var p = t; p; p = p.parent) parts.Add(p.name); parts.Reverse();
-            return string.Join("/", parts.Take(Math.Min(3, Math.Max(1, parts.Count - 1))));
-        }
-        static string Piece(Transform t)
-        {
-            for (var p = t; p; p = p.parent) if (p.GetComponent<LODGroup>()) return Stem(p.name);
-            return Stem(t.name);
-        }
-        static string Stem(string n) => System.Text.RegularExpressions.Regex.Replace(n.Replace("(Clone)", ""), @"[\s_#-]*\(?\d+\)?$|[|@].*$", "").Trim();
-        void WriteCensus(string row, int drawn, int far)
-        {
-            string Top(Dictionary<string, (int all, int far)> d) => string.Join(",\n   ", d.OrderByDescending(kv => kv.Value.far).ThenByDescending(kv => kv.Value.all).Take(30)
-                .Select(kv => "{\"key\": \"" + Esc(kv.Key) + "\", \"drawn\": " + kv.Value.all + ", \"beyond150\": " + kv.Value.far + "}"));
-            try
-            {
-                File.WriteAllText(Path.Combine(dir, "census-" + row + ".json"), "{\n \"schema\": \"suborned.tplong.census/1\", \"row\": \"" + Esc(row) + "\", \"drawn\": " + drawn + ", \"beyond150\": " + far +
-                    ",\n \"byBranch\": [\n   " + Top(byBranch) + "\n ],\n \"byPiece\": [\n   " + Top(byPiece) + "\n ]\n}\n");
-            }
-            catch (Exception e) { Debug.LogError("TpLongRun: census: " + e.Message); }
-            byBranch.Clear(); byPiece.Clear();
+            tris.Dispose(); sp.Dispose(); sc.Dispose(); dc.Dispose(); bc.Dispose(); if (grd.Valid) grd.Dispose();
         }
 
         static string Guard(Action a) { try { a(); return null; } catch (Exception e) { return e.GetType().Name + ": " + e.Message; } }
@@ -605,9 +541,9 @@ namespace Suborned.Play
                 if (r.Error.Length > 0) sb.Append(", \"error\": \"").Append(Esc(r.Error)).Append('"');
                 sb.Append(", \"screen\": [").Append(r.W).Append(", ").Append(r.H).Append(']');
                 if (!float.IsNaN(r.Heading)) sb.Append(", \"faceHeading\": ").Append(F(r.Heading));
-                sb.Append(", \"frames\": {\"count\": ").Append(r.Count).Append(", \"meanMs\": ").Append(F(r.Mean)).Append(", \"p99Ms\": ").Append(F(r.P99)).Append(", \"maxMs\": ").Append(F(r.Max)).Append('}')
+                sb.Append(", \"frames\": {\"count\": ").Append(r.Count).Append(", \"meanMs\": ").Append(F(r.Mean)).Append(", \"medianMs\": ").Append(F(r.Median)).Append(", \"p95Ms\": ").Append(F(r.P95)).Append(", \"p99Ms\": ").Append(F(r.P99)).Append(", \"maxMs\": ").Append(F(r.Max)).Append('}')
                   .Append(", \"gpuMs\": ").Append(F(r.Gpu)).Append(", \"mainMs\": ").Append(F(r.Main)).Append(", \"renderMs\": ").Append(F(r.Render))
-                  .Append(", \"counters\": {\"triangles\": ").Append(F(r.Tris)).Append(", \"setPass\": ").Append(F(r.SetPass)).Append(", \"shadowCasters\": ").Append(F(r.Casters)).Append('}')
+                  .Append(", \"counters\": {\"triangles\": ").Append(F(r.Tris)).Append(", \"setPass\": ").Append(F(r.SetPass)).Append(", \"shadowCasters\": ").Append(F(r.Casters)).Append(", \"drawCalls\": ").Append(F(r.Draws)).Append(", \"batches\": ").Append(F(r.Batches)).Append('}').Append(", \"builtIns\": \"").Append(Esc(r.BuiltIns)).Append('"')
                   .Append(", \"drawn\": {\"renderers\": ").Append(r.Drawn).Append(", \"beyond150\": ").Append(r.Beyond150).Append('}')
                   .Append(", \"grdRebuildMs\": ").Append(F(r.GrdMs)).Append('}');
             }

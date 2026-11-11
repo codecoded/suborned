@@ -66930,7 +66930,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra"
+   "extra": "out/decokit-107-extra"
   },
   {
    "id": "CafeTerrace_TB",
@@ -66946,19 +66946,20 @@
     2.166
    ],
    "front": "+Z",
-   "tris": 352,
+   "tris": 480,
    "materials": [
-    "DK_Limestone"
+    "DK_Limestone",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_CafeTerrace_TB_L1.fbx",
-     "tris": 216,
+     "tris": 344,
      "screen": 0.008
     },
     {
      "file": "Models/Plaza/DK_CafeTerrace_TB_L2.fbx",
-     "tris": 64,
+     "tris": 192,
      "screen": 0.003
     }
    ],
@@ -66971,6 +66972,13 @@
       "DK_Limestone"
      ],
      "shadows": "on"
+    },
+    {
+     "name": "DK_CafeTerrace_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -66979,24 +66987,24 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_CafeTerrace_TB.fbx",
      "src": "Models/Plaza/DK_CafeTerrace.fbx",
-     "sha256": "c185c77f9b61c89e90130968b7856fc271c83436e825905b357c11100e8c99b0",
-     "bytes": 24860
+     "sha256": "557c1b889ea1e370e44841e1459d8489bf389cef719c8ccecca35128428842b2",
+     "bytes": 32060
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_CafeTerrace_TB_L1.fbx",
      "src": "Models/Plaza/DK_CafeTerrace_L1.fbx",
-     "sha256": "30041aa7f4e105383efc1db23b5075e4a3e65cc687af67851407561444c77e7d",
-     "bytes": 23036
+     "sha256": "5fb51ba5b1cfb023f611c98683a5acd871296396c7e140714634b9b48a78f7a9",
+     "bytes": 29932
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_CafeTerrace_TB_L2.fbx",
      "src": "Models/Plaza/DK_CafeTerrace_L2.fbx",
-     "sha256": "24cf897066c804751eb54d097bf7d89c3a7eebfb901dfadb0238484f700d086e",
-     "bytes": 20028
+     "sha256": "e8d2a12f49c3b4555c525e7c4effbd110e4585d23b6d620439c7059f1dad61fb",
+     "bytes": 26892
     },
     {
      "root": "generated",
@@ -67054,7 +67062,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "CafeTerrace"
   },
   {
@@ -67651,7 +67659,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra"
+   "extra": "out/decokit-107-extra"
   },
   {
    "id": "CafeUpper_3_TB",
@@ -67981,7 +67989,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "CafeUpper_3"
   },
   {
@@ -68578,7 +68586,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra"
+   "extra": "out/decokit-107-extra"
   },
   {
    "id": "CafeUpper_4_TB",
@@ -68908,7 +68916,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "CafeUpper_4"
   },
   {
@@ -69137,7 +69145,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra"
+   "extra": "out/decokit-107-extra"
   },
   {
    "id": "CivicBedPlanting_facade-southeast",
@@ -69361,7 +69369,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra"
+   "extra": "out/decokit-107-extra"
   },
   {
    "id": "CivicBedPlanting_facade-southwest",
@@ -69585,7 +69593,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra"
+   "extra": "out/decokit-107-extra"
   },
   {
    "id": "CivicBedPlanting_office-north",
@@ -69809,7 +69817,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra"
+   "extra": "out/decokit-107-extra"
   },
   {
    "id": "CivicBedPlanting_office-west",
@@ -70037,7 +70045,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra"
+   "extra": "out/decokit-107-extra"
   },
   {
    "id": "CivicCabinet",
@@ -78108,7 +78116,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra"
+   "extra": "out/decokit-107-extra"
   },
   {
    "id": "Ground_RoadAsphaltSwatch",
@@ -81510,30 +81518,29 @@
    "front": "+Z",
    "tris": 64,
    "materials": [
-    "DK_Inlay_Seafoam"
+    "DK_Inlay_SeafoamNight"
    ],
    "lodCategory": "street",
-   "sourceScript": "tools/decokit/civic_paving.py",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayArc_R2_W06.fbx",
-     "sha256": "324596ee35e3cb251c455b4f21af266dd4449bb51edbdc1e035d0505eb061b49",
+     "sha256": "1f25cb44fe79cfa1b061b3f423da310b66568a6717c8a63e82650fbf46579abe",
      "bytes": 16028
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Inlay_Seafoam.mat",
-     "sha256": "8650188107f40394c1268e2a47281bb1487c5f7f7b0051de3ceacec8fc73a947",
-     "bytes": 4044
+     "path": "Materials/DK_Inlay_SeafoamNight.mat",
+     "sha256": "a1a497994f0a0b981592ae599aa92e669ceab1bb5f92514060d7c12b0f69b440",
+     "bytes": 4049
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Inlay_Seafoam.mat.meta",
-     "sha256": "ad420e746091f5d09447fcfea97207861b61f5422c55dc2fc5328ee8792d5f17",
+     "path": "Materials/DK_Inlay_SeafoamNight.mat.meta",
+     "sha256": "2ab3e26d302b0f6c9ba63e6f3dd97cf80c12bedc40132bcd478b8a370185cb66",
      "bytes": 188
     },
     {
@@ -81567,15 +81574,14 @@
    ],
    "tags": {
     "use": [
-     "inlay:arc"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
-    "wave": 2,
-    "sight": "open"
+    "wave": 2
    },
    "status": "adopted",
    "source": "generated"
@@ -81596,30 +81602,29 @@
    "front": "+Z",
    "tris": 88,
    "materials": [
-    "DK_Inlay_Seafoam"
+    "DK_Inlay_SeafoamNight"
    ],
    "lodCategory": "street",
-   "sourceScript": "tools/decokit/civic_paving.py",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayArc_R4_W06.fbx",
-     "sha256": "b273dd8a688ed0c066111074d71502307659ff23ded02f2be70116e25a5077f9",
+     "sha256": "3111677e7ed1ce1eafbca4afe118cd076df32dad9994d00d153e2bb638500dc1",
      "bytes": 16524
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Inlay_Seafoam.mat",
-     "sha256": "8650188107f40394c1268e2a47281bb1487c5f7f7b0051de3ceacec8fc73a947",
-     "bytes": 4044
+     "path": "Materials/DK_Inlay_SeafoamNight.mat",
+     "sha256": "a1a497994f0a0b981592ae599aa92e669ceab1bb5f92514060d7c12b0f69b440",
+     "bytes": 4049
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Inlay_Seafoam.mat.meta",
-     "sha256": "ad420e746091f5d09447fcfea97207861b61f5422c55dc2fc5328ee8792d5f17",
+     "path": "Materials/DK_Inlay_SeafoamNight.mat.meta",
+     "sha256": "2ab3e26d302b0f6c9ba63e6f3dd97cf80c12bedc40132bcd478b8a370185cb66",
      "bytes": 188
     },
     {
@@ -81653,15 +81658,14 @@
    ],
    "tags": {
     "use": [
-     "inlay:arc"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
-    "wave": 2,
-    "sight": "open"
+    "wave": 2
    },
    "status": "adopted",
    "source": "generated"
@@ -81682,30 +81686,29 @@
    "front": "+Z",
    "tris": 124,
    "materials": [
-    "DK_Inlay_Seafoam"
+    "DK_Inlay_SeafoamNight"
    ],
    "lodCategory": "street",
-   "sourceScript": "tools/decokit/civic_paving.py",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayArc_R9_W12.fbx",
-     "sha256": "e189ccc2b8f16bdaa0fa35255cb52d61ce02ef168639115d36a93fdccdc5075b",
-     "bytes": 17164
+     "sha256": "1731a1a528da6adf5a35456b94cd7bf4625ff9dc8045c55960a7dbd42e7151cd",
+     "bytes": 17180
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Inlay_Seafoam.mat",
-     "sha256": "8650188107f40394c1268e2a47281bb1487c5f7f7b0051de3ceacec8fc73a947",
-     "bytes": 4044
+     "path": "Materials/DK_Inlay_SeafoamNight.mat",
+     "sha256": "a1a497994f0a0b981592ae599aa92e669ceab1bb5f92514060d7c12b0f69b440",
+     "bytes": 4049
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Inlay_Seafoam.mat.meta",
-     "sha256": "ad420e746091f5d09447fcfea97207861b61f5422c55dc2fc5328ee8792d5f17",
+     "path": "Materials/DK_Inlay_SeafoamNight.mat.meta",
+     "sha256": "2ab3e26d302b0f6c9ba63e6f3dd97cf80c12bedc40132bcd478b8a370185cb66",
      "bytes": 188
     },
     {
@@ -81739,15 +81742,14 @@
    ],
    "tags": {
     "use": [
-     "inlay:arc"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
-    "wave": 2,
-    "sight": "open"
+    "wave": 2
    },
    "status": "adopted",
    "source": "generated"
@@ -81764,30 +81766,29 @@
    "front": "+Z",
    "tris": 10,
    "materials": [
-    "DK_Inlay_Seafoam"
+    "DK_Inlay_SeafoamNight"
    ],
    "lodCategory": "street",
-   "sourceScript": "tools/decokit/civic_paving.py",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayBand_06_2.fbx",
-     "sha256": "3fcba2e8b2d78a65b9c6d2517964d6c7b42ffc848ed8c479180c9d3aace3e900",
+     "sha256": "957b7bd86b5dd8cf0f3a40b2f855ac4834c937171d60f4a9127645c6bb9a1faf",
      "bytes": 15116
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Inlay_Seafoam.mat",
-     "sha256": "8650188107f40394c1268e2a47281bb1487c5f7f7b0051de3ceacec8fc73a947",
-     "bytes": 4044
+     "path": "Materials/DK_Inlay_SeafoamNight.mat",
+     "sha256": "a1a497994f0a0b981592ae599aa92e669ceab1bb5f92514060d7c12b0f69b440",
+     "bytes": 4049
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Inlay_Seafoam.mat.meta",
-     "sha256": "ad420e746091f5d09447fcfea97207861b61f5422c55dc2fc5328ee8792d5f17",
+     "path": "Materials/DK_Inlay_SeafoamNight.mat.meta",
+     "sha256": "2ab3e26d302b0f6c9ba63e6f3dd97cf80c12bedc40132bcd478b8a370185cb66",
      "bytes": 188
     },
     {
@@ -81821,15 +81822,14 @@
    ],
    "tags": {
     "use": [
-     "inlay:band"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
-    "wave": 2,
-    "sight": "open"
+    "wave": 2
    },
    "status": "adopted",
    "source": "generated"
@@ -81846,30 +81846,29 @@
    "front": "+Z",
    "tris": 10,
    "materials": [
-    "DK_Inlay_Seafoam"
+    "DK_Inlay_SeafoamNight"
    ],
    "lodCategory": "street",
-   "sourceScript": "tools/decokit/civic_paving.py",
    "files": [
     {
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayBand_12_2.fbx",
-     "sha256": "a0c698cd4cfba0edd16f666973d207810c13dcda229b68d03ca618f6ee37c1cd",
+     "sha256": "64193b3dc9c6f89c5e114b96608562184d0b18397e96e124d5dae7367c59108c",
      "bytes": 15116
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Inlay_Seafoam.mat",
-     "sha256": "8650188107f40394c1268e2a47281bb1487c5f7f7b0051de3ceacec8fc73a947",
-     "bytes": 4044
+     "path": "Materials/DK_Inlay_SeafoamNight.mat",
+     "sha256": "a1a497994f0a0b981592ae599aa92e669ceab1bb5f92514060d7c12b0f69b440",
+     "bytes": 4049
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Inlay_Seafoam.mat.meta",
-     "sha256": "ad420e746091f5d09447fcfea97207861b61f5422c55dc2fc5328ee8792d5f17",
+     "path": "Materials/DK_Inlay_SeafoamNight.mat.meta",
+     "sha256": "2ab3e26d302b0f6c9ba63e6f3dd97cf80c12bedc40132bcd478b8a370185cb66",
      "bytes": 188
     },
     {
@@ -81899,157 +81898,18 @@
      "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
      "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
      "bytes": 2718
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Pave_Civic.mat",
-     "sha256": "ecca13cb5eb7e361ba21c5ea0269f1b0ed0a8e5317f4d95fde93b1ff27697d7c",
-     "bytes": 4241
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Pave_Civic.mat.meta",
-     "sha256": "8bd69289eac85075b6dbe6d65241148d506df0fee699fc0c774d400f21216bf6",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "texture",
-     "path": "Textures/pave_civic_v1.png",
-     "sha256": "0e4ef5ee93eddfb744dade148419762405f82e16bd53d96c81148031a1245061",
-     "bytes": 11684317
-    },
-    {
-     "root": "generated",
-     "role": "texture-meta",
-     "path": "Textures/pave_civic_v1.png.meta",
-     "sha256": "70030a3e8fa9c103fb698a6ca387e7c7a15f0d67acfa7f684e6d324a4713a4e4",
-     "bytes": 2714
-    },
-    {
-     "root": "generated",
-     "role": "texture",
-     "path": "Textures/pave_civic_v1_mask.png",
-     "sha256": "8c442b61578cb7e7c4e1bafdce22217155335c4331ef6a8290e66a0672b2953f",
-     "bytes": 3638496
-    },
-    {
-     "root": "generated",
-     "role": "texture-meta",
-     "path": "Textures/pave_civic_v1_mask.png.meta",
-     "sha256": "1c6c27b390ea2956305fd71ed60e8bfa8b9b1a8113264ba6a58485919514b7e2",
-     "bytes": 2714
-    },
-    {
-     "root": "generated",
-     "role": "texture",
-     "path": "Textures/pave_civic_v1_normal.png",
-     "sha256": "53da11e94bf214fd90d7bf70cddb49dc4b48d5b1504be7f81a267e3a73361381",
-     "bytes": 3591605
-    },
-    {
-     "root": "generated",
-     "role": "texture-meta",
-     "path": "Textures/pave_civic_v1_normal.png.meta",
-     "sha256": "bcf8e8fdfc6acb9ae8b5c5601adb20df2f3644245dd76a34fbb7481fff423608",
-     "bytes": 2714
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Pool_Civic.mat",
-     "sha256": "efff2fb48678e37093baad35232d22f3ed8e6df8ad230dbb1b7534e71b18f7f8",
-     "bytes": 3832
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Pool_Civic.mat.meta",
-     "sha256": "daf118782700f84895207235927534692349e83c061e97c17ad50837a67a9786",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Flower_CoralSoft.mat",
-     "sha256": "f5359879015e2579f226e10f00eeb26624a3fd99eaf2db4cadc8081da04fa13d",
-     "bytes": 4083
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Flower_CoralSoft.mat.meta",
-     "sha256": "6ad9b0b2c99e0097d6e4de4225ce2cf220f165c83e4ae32b5cfa3d8ce73440d7",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "texture",
-     "path": "Textures/flower_cluster_coralsoft_v1_alpha.png",
-     "sha256": "e69b17be2a191cb741919b7f66ee8fdf72018754c75262ba9a32bef1933c1a56",
-     "bytes": 1488586
-    },
-    {
-     "root": "generated",
-     "role": "texture-meta",
-     "path": "Textures/flower_cluster_coralsoft_v1_alpha.png.meta",
-     "sha256": "368e176928c66eb97d978cb60d03cb65b70c0c80ecdde34718dadeaef3e898fb",
-     "bytes": 2714
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Flower_Flamingo.mat",
-     "sha256": "ac4032081e3437baa513c5513052cb012f444adcf192c87d1590899521f54095",
-     "bytes": 4082
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Flower_Flamingo.mat.meta",
-     "sha256": "9b440072ee176e7d2bb32c8925efc207d0fb20058b6f1c79e2bd1ee5b0984a39",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "texture",
-     "path": "Textures/flower_cluster_flamingo_v1_alpha.png",
-     "sha256": "3521ad88d854364094042ede3291fe397a76627345cc80b40fb01abd72e984a2",
-     "bytes": 1477935
-    },
-    {
-     "root": "generated",
-     "role": "texture-meta",
-     "path": "Textures/flower_cluster_flamingo_v1_alpha.png.meta",
-     "sha256": "3dd3cac92faf55999b95cd215bac091d4c82646da6218045b39397cba1dbba09",
-     "bytes": 2714
-    },
-    {
-     "role": "material",
-     "path": "Materials/DK_Face_Teal.mat",
-     "sha256": "ba00c589282fcda4ba6492a32321ee4e3c9a2df8c170ad690bc6ada973e2072d",
-     "bytes": 850
-    },
-    {
-     "role": "material-meta",
-     "path": "Materials/DK_Face_Teal.mat.meta",
-     "sha256": "33008a68ed1e8a70595e241ccd3816a07345298c36c06e3de47c7d5613023e13",
-     "bytes": 188
     }
    ],
    "tags": {
     "use": [
-     "inlay:band"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
-    "wave": 2,
-    "sight": "open"
+    "wave": 2
    },
    "status": "adopted",
    "source": "generated"
@@ -88413,7 +88273,7 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 12284,
+   "tris": 12508,
    "materials": [
     "DK_Limestone",
     "DK_Limestone_Tex",
@@ -88421,17 +88281,18 @@
     "DK_Accent_Gold",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterArc_TB_L1.fbx",
-     "tris": 6236,
+     "tris": 6460,
      "screen": 0.3442
     },
     {
      "file": "Models/Plaza/DK_PlanterArc_TB_L2.fbx",
-     "tris": 4016,
+     "tris": 4240,
      "screen": 0.1878
     }
    ],
@@ -88456,6 +88317,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterArc_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -88464,24 +88332,24 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterArc_TB.fbx",
      "src": "Models/Plaza/DK_PlanterArc.fbx",
-     "sha256": "c2cafdf48aa083e25b9d7b95cc560317905f08039fb2eb4f7de8c4cf890ad2d5",
-     "bytes": 899052
+     "sha256": "db97e205254ea9c38313d5052a07a678df7e868f8340817ca028215785056b74",
+     "bytes": 910108
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterArc_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterArc_L1.fbx",
-     "sha256": "59ca8970539f908f581e61fb3230b27d8093672353e1bb968c58d32c32d7dd8b",
-     "bytes": 452012
+     "sha256": "d8840af553fbbf5113d848e5895eabb4f6ae5d10e0625aabaa9a8053b78b38d4",
+     "bytes": 461468
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterArc_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterArc_L2.fbx",
-     "sha256": "3da76ecdecffe6258458794b6e93bd3f5fdc7e7155b6053c15977fb39f81343c",
-     "bytes": 287756
+     "sha256": "4825ad48c4cc460af1b558407d73c0c5edfb074a99fbb44c0a4c8e147d67b44e",
+     "bytes": 297148
     },
     {
      "root": "generated",
@@ -88797,7 +88665,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterArc"
   },
   {
@@ -88968,27 +88836,28 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 2758,
+   "tris": 2782,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_2_A_TB_L1.fbx",
-     "tris": 1784,
+     "tris": 1808,
      "screen": 0.3333
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_2_A_TB_L2.fbx",
-     "tris": 1232,
+     "tris": 1256,
      "screen": 0.1481
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_2_A_TB_L3.fbx",
-     "tris": 716,
+     "tris": 740,
      "screen": 0.0833
     }
    ],
@@ -89010,6 +88879,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_2_A_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -89018,32 +88894,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_2_A_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_A.fbx",
-     "sha256": "5b8e6d8cb0d2bd1af9396b22e1a0d0a561970e05296aaf06624390b60170424d",
-     "bytes": 224396
+     "sha256": "fbdc6864d4e972ebd10741ea9266f7a23af6cc5e4d60f196029d4e9123894f47",
+     "bytes": 228300
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_2_A_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_A_L1.fbx",
-     "sha256": "81e70a90b0ad8757dbab7d92dccbd4e1079c0334a757c1cc2ed53a8d753fa94d",
-     "bytes": 163468
+     "sha256": "def0ec412dba2257e1a600ee280ee5d87a7b775052b6025f49fc1e0bb8bff8e9",
+     "bytes": 167260
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_2_A_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_A_L2.fbx",
-     "sha256": "551a2a7f60de0c2243bec1a229d1029a85a72ef7a6a9555daaa6c64d9e726827",
-     "bytes": 120540
+     "sha256": "f4b0dded36bdc595ac2b0335e564667bd3bba3f60a7d571271863b4c8eaffad7",
+     "bytes": 124380
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_2_A_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_A_L3.fbx",
-     "sha256": "3392676fe504bd5bf1967732c6faedc5f192db59dff81427f5bff1df4a261c7a",
-     "bytes": 80572
+     "sha256": "7eab1457b10b796f2c3de48b984b7695c2ddcdb58f728f05fb8cb1cf960caa0c",
+     "bytes": 84492
     },
     {
      "root": "generated",
@@ -89227,7 +89103,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_2_A"
   },
   {
@@ -89398,27 +89274,28 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 2985,
+   "tris": 3009,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_2_B_TB_L1.fbx",
-     "tris": 1933,
+     "tris": 1957,
      "screen": 0.3333
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_2_B_TB_L2.fbx",
-     "tris": 1325,
+     "tris": 1349,
      "screen": 0.1481
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_2_B_TB_L3.fbx",
-     "tris": 775,
+     "tris": 799,
      "screen": 0.0833
     }
    ],
@@ -89440,6 +89317,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_2_B_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -89448,32 +89332,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_2_B_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_B.fbx",
-     "sha256": "4f25ed8ba378f68a3b36e9028b8921bcb9cbbe396542545258f777ff2f02d334",
-     "bytes": 240492
+     "sha256": "74eb5ff0561d62c24430c9e6c44d6221e92e963074173bb9fb53334fc1b05f88",
+     "bytes": 244588
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_2_B_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_B_L1.fbx",
-     "sha256": "14e1b57c8e3c38cd5edb72352551cf4cdf143ff6ffe704997b41c17ac72a2ba2",
-     "bytes": 174716
+     "sha256": "3b1370002b21e16b2ddcaf1168bfeac929ae2569d64d260752dc33dcaa34c98c",
+     "bytes": 178460
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_2_B_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_B_L2.fbx",
-     "sha256": "c8febd45daf4ada11f711dccc719389a0d3e0ea87a3f781c913f61a4f58626e1",
-     "bytes": 128092
+     "sha256": "d338ae7a48a6cd197b9cc7431f76b8473def1736cecb9d02700772e6f6d11516",
+     "bytes": 132060
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_2_B_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_B_L3.fbx",
-     "sha256": "a4e60105be704fcc41e088ac0aac33eac3a09955ce5011ef7860ba277efdcd2d",
-     "bytes": 85532
+     "sha256": "629347fcd32c8978a8b7149b073899fc14ba679ef6e41a4c89112438a0261f86",
+     "bytes": 89420
     },
     {
      "root": "generated",
@@ -89657,7 +89541,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_2_B"
   },
   {
@@ -89814,27 +89698,28 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 2808,
+   "tris": 2832,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_2_C_TB_L1.fbx",
-     "tris": 1790,
+     "tris": 1814,
      "screen": 0.3333
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_2_C_TB_L2.fbx",
-     "tris": 1238,
+     "tris": 1262,
      "screen": 0.1481
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_2_C_TB_L3.fbx",
-     "tris": 718,
+     "tris": 742,
      "screen": 0.0833
     }
    ],
@@ -89856,6 +89741,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_2_C_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -89864,32 +89756,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_2_C_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_C.fbx",
-     "sha256": "4be65bf6d87c7a506484ae4af414c422d36f885231c641133e86f7b16b21daac",
-     "bytes": 227244
+     "sha256": "7b9557c0e90a65864701e54ff9f8f1d6a05020ec25c6f7836f81662a53cda6e9",
+     "bytes": 231004
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_2_C_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_C_L1.fbx",
-     "sha256": "a62daefc4e63ac131b17a171ad53e9bdf79d947185e9c78b3de1b1b8f73a516c",
-     "bytes": 163820
+     "sha256": "165fffc92dbcaebc8eabf54fccf52a4a091631f11265a4a98144b4101b5fa3a9",
+     "bytes": 167548
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_2_C_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_C_L2.fbx",
-     "sha256": "1bdbdfa0b2e8c871f1a4c8018ceaee688686648435ac98e354e116e77278ebaf",
-     "bytes": 120924
+     "sha256": "f61b9bfe47a8f022863b79a9ea107449ee2953482b3e204f53c2699e9b259219",
+     "bytes": 124764
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_2_C_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_2_C_L3.fbx",
-     "sha256": "4d0c5c03ec248e71a539d64c62a11dbd9482768674455cd2f210972956cef886",
-     "bytes": 80684
+     "sha256": "796d8b530fb01693ba7fc08cfcb0c7bd544a43472876bf9188e993b79d3046e6",
+     "bytes": 84620
     },
     {
      "root": "generated",
@@ -90073,7 +89965,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_2_C"
   },
   {
@@ -90244,27 +90136,28 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 6139,
+   "tris": 6171,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_4_A_TB_L1.fbx",
-     "tris": 3837,
+     "tris": 3869,
      "screen": 0.6667
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_4_A_TB_L2.fbx",
-     "tris": 2657,
+     "tris": 2689,
      "screen": 0.2963
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_4_A_TB_L3.fbx",
-     "tris": 1547,
+     "tris": 1579,
      "screen": 0.1667
     }
    ],
@@ -90286,6 +90179,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_4_A_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -90294,32 +90194,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_4_A_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_A.fbx",
-     "sha256": "1f84c6c4b1a6d4c81ad8d039c98e6c284e28ccf0a69d09bdbaef58de848a0055",
-     "bytes": 465596
+     "sha256": "2b4c67b9dc622dd4239289ef9f9628e06d2c83549d57a69e7d5e3ee6ebb74ee7",
+     "bytes": 470060
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_4_A_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_A_L1.fbx",
-     "sha256": "f333e9638167663fb94ae9f8bdc462b1491ae09690e4a53618874f6e84afc963",
-     "bytes": 319612
+     "sha256": "3126dbe097dd30bbd0235bf0474d782f5662fddd9a14f4619a3cb8fa5f7bd32f",
+     "bytes": 323724
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_4_A_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_A_L2.fbx",
-     "sha256": "301ae22b0fe8a6b30bb5dba7d6e5be91f4f152fb764fbff5039890871109cd64",
-     "bytes": 229132
+     "sha256": "1a2e2e6e5982205568be903201715f47a8fb5f5ed3530d4afcc68b018c72fe77",
+     "bytes": 233500
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_4_A_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_A_L3.fbx",
-     "sha256": "d47e16fcdfd544f5edd879193eb08ae87789a067bd4e7a836eeda1eacfe1eb58",
-     "bytes": 143564
+     "sha256": "d35c4653fb1c27bc78d777808ae48ccf403f9cae357c58455a3992766da3f239",
+     "bytes": 147756
     },
     {
      "root": "generated",
@@ -90503,7 +90403,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_4_A"
   },
   {
@@ -90674,27 +90574,28 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 5393,
+   "tris": 5425,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_4_B_TB_L1.fbx",
-     "tris": 3541,
+     "tris": 3573,
      "screen": 0.6667
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_4_B_TB_L2.fbx",
-     "tris": 2417,
+     "tris": 2449,
      "screen": 0.2963
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_4_B_TB_L3.fbx",
-     "tris": 1415,
+     "tris": 1447,
      "screen": 0.1667
     }
    ],
@@ -90716,6 +90617,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_4_B_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -90724,32 +90632,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_4_B_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_B.fbx",
-     "sha256": "423b9de4b3f213dcc886ffb3e098260f5a779ec580c1c273976be2e86c942b7e",
-     "bytes": 410076
+     "sha256": "cbc702ec1ff5f96630f414e31e6c7a44200c03204acc794522429ed12bc4fa7a",
+     "bytes": 414540
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_4_B_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_B_L1.fbx",
-     "sha256": "85fc8722ba46d591f2ab6096f590745c4239cf4c913b67a4c5a20a7ece171b13",
-     "bytes": 297164
+     "sha256": "b460145d8ffa14807d72245593983cea94ffc281d84339166bd4bc186e0446c9",
+     "bytes": 301372
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_4_B_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_B_L2.fbx",
-     "sha256": "9b4791ec64432744a4210ec03ca24eba21ff245a8f9c89ebf9bbac4805fb1d0d",
-     "bytes": 210876
+     "sha256": "4743f1b7d99bf96f63cb8c1bd3fe999b73181fb30ccac909305ff313a711e2db",
+     "bytes": 215212
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_4_B_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_B_L3.fbx",
-     "sha256": "5e335c6991165b52ca218f22387545d92ce68bab8132b841b28433fb64067305",
-     "bytes": 133916
+     "sha256": "11d2fa54ec8a85576a4bcd16b3b6e5e279be2a419e6934697d1b3c82137e999e",
+     "bytes": 138156
     },
     {
      "root": "generated",
@@ -90933,7 +90841,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_4_B"
   },
   {
@@ -91104,27 +91012,28 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 6476,
+   "tris": 6508,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_4_C_TB_L1.fbx",
-     "tris": 3906,
+     "tris": 3938,
      "screen": 0.6667
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_4_C_TB_L2.fbx",
-     "tris": 2726,
+     "tris": 2758,
      "screen": 0.2963
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_4_C_TB_L3.fbx",
-     "tris": 1578,
+     "tris": 1610,
      "screen": 0.1667
     }
    ],
@@ -91146,6 +91055,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_4_C_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -91154,32 +91070,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_4_C_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_C.fbx",
-     "sha256": "ca1421ad451d4e2711cfc18dc0eabfa46ce4bcb1bb7ce696763a52e226ac0d21",
-     "bytes": 488716
+     "sha256": "e0d67f7c9552c04be71ea692bb2b643f049503c8ddedc1bc4cf1d9335b255584",
+     "bytes": 493404
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_4_C_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_C_L1.fbx",
-     "sha256": "5094f5c3e7c6f19ec5c5c77b55a058a38fbf085d73f48e85c94a4e63b9cb9d34",
-     "bytes": 324172
+     "sha256": "3460773b7ed97d36d6f3c6f83beb9cfe6c418e4063bfa90b15fbb256d91a36bd",
+     "bytes": 328124
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_4_C_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_C_L2.fbx",
-     "sha256": "a7dd0bd37b3153a76431992df3335acc224cce3beb46d8b2e6715da366325ec4",
-     "bytes": 234332
+     "sha256": "6f93332a5fb519342b7d6ee882965b8316da377df3c2827e813368f3c90cb989",
+     "bytes": 238204
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_4_C_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_4_C_L3.fbx",
-     "sha256": "bd7eeec477fba5eca021159cc8eeaa29ba95c3c879041e968579a10c7151e191",
-     "bytes": 145468
+     "sha256": "e1d5bcffea3344a04019bff23ca334ee585b86e19a1ffa71defc4569072e2505",
+     "bytes": 149724
     },
     {
      "root": "generated",
@@ -91363,7 +91279,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_4_C"
   },
   {
@@ -91542,27 +91458,28 @@
     0.17
    ],
    "front": "+Z",
-   "tris": 5109,
+   "tris": 5189,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_Corner_A_TB_L1.fbx",
-     "tris": 3257,
+     "tris": 3337,
      "screen": 0.39
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_Corner_A_TB_L2.fbx",
-     "tris": 2281,
+     "tris": 2361,
      "screen": 0.1733
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_Corner_A_TB_L3.fbx",
-     "tris": 1399,
+     "tris": 1479,
      "screen": 0.0975
     }
    ],
@@ -91584,6 +91501,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_Corner_A_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -91592,32 +91516,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_Corner_A_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_A.fbx",
-     "sha256": "46f2c5bfcb6040a2acc5f2c7dc301fd5f289365c0b6f9c78644cc61f83971d87",
-     "bytes": 378588
+     "sha256": "a97f0698517280d3a87dd90d936e41b00e390b471a543a32e2e4ec6f337fb9c3",
+     "bytes": 384620
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_Corner_A_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_A_L1.fbx",
-     "sha256": "500bfe344bd727866ce4efbf72a23de279ee37a087f8b10b2fbfc119f07286f1",
-     "bytes": 269484
+     "sha256": "9ff7b530ed11c1d33533df3913ea9a8f905837e3bb6cec1d623f335da6fe3074",
+     "bytes": 275132
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_Corner_A_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_A_L2.fbx",
-     "sha256": "d8d46b63fd865ff885821aea46fc7792c914b6440c442cee81bfd1823b777fe0",
-     "bytes": 194988
+     "sha256": "66e9a3e577b9c1b554c92af17e1092f698dbf19dc449f7c0b24d9ebe72c3020a",
+     "bytes": 200668
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_Corner_A_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_A_L3.fbx",
-     "sha256": "db447446cf5d364efed35e84019c96640dc47180c250d4c2a32e9e01dbcccecb",
-     "bytes": 127132
+     "sha256": "4edfcc181a5cea450030b818830a3d3debbaeefcdb018913dd625a31185f869f",
+     "bytes": 132716
     },
     {
      "root": "generated",
@@ -91801,7 +91725,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_Corner_A"
   },
   {
@@ -91980,27 +91904,28 @@
     0.17
    ],
    "front": "+Z",
-   "tris": 5711,
+   "tris": 5791,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_Corner_B_TB_L1.fbx",
-     "tris": 3321,
+     "tris": 3401,
      "screen": 0.39
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_Corner_B_TB_L2.fbx",
-     "tris": 2401,
+     "tris": 2481,
      "screen": 0.1733
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_Corner_B_TB_L3.fbx",
-     "tris": 1443,
+     "tris": 1523,
      "screen": 0.0975
     }
    ],
@@ -92022,6 +91947,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_Corner_B_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -92030,32 +91962,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_Corner_B_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_B.fbx",
-     "sha256": "37ed1c21fb4e1de2ad006007e9e22e8df365ef8f2da847421ced32e237b7b9bb",
-     "bytes": 422700
+     "sha256": "0aba65499eb6f1cb4715d8fd731b894d8e075e35b3194a064e60ed8cdb9deebd",
+     "bytes": 429116
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_Corner_B_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_B_L1.fbx",
-     "sha256": "5bed6799d5a597c59d97c5f26874b9e55690e1d8cbed32bfb4f2c1bd33ed1ef3",
-     "bytes": 273036
+     "sha256": "d5a74c68d3c330479eebffa7e93289e4190486d665bce191ccfa274a7af35704",
+     "bytes": 278972
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_Corner_B_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_B_L2.fbx",
-     "sha256": "2101093d1908be39a069d490ec7d5ec78c3bc1149642145fb085101f7a45f5df",
-     "bytes": 202732
+     "sha256": "8b8816823ecfa046068e54b4806ef3011da52eebadfe82251b06d5aa48bba176",
+     "bytes": 208524
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_Corner_B_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_B_L3.fbx",
-     "sha256": "f328f7d495252ef123f369229b22829e91328046295790040815affe608d5d96",
-     "bytes": 129276
+     "sha256": "35f2f880704f504d717162295da9ed6407a5e1aced9069fb4814ac6a3ce245cb",
+     "bytes": 135020
     },
     {
      "root": "generated",
@@ -92239,7 +92171,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_Corner_B"
   },
   {
@@ -92388,27 +92320,28 @@
     0.17
    ],
    "front": "+Z",
-   "tris": 5338,
+   "tris": 5418,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_Corner_C_TB_L1.fbx",
-     "tris": 3216,
+     "tris": 3296,
      "screen": 0.39
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_Corner_C_TB_L2.fbx",
-     "tris": 2296,
+     "tris": 2376,
      "screen": 0.1733
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_Corner_C_TB_L3.fbx",
-     "tris": 1392,
+     "tris": 1472,
      "screen": 0.0975
     }
    ],
@@ -92430,6 +92363,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_Corner_C_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -92438,32 +92378,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_Corner_C_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_C.fbx",
-     "sha256": "bbc68d2c351a1a099e80d0c44d189008928c89071073ca454b96aa915d3b8031",
-     "bytes": 394268
+     "sha256": "0ab83654bb99eb850ae65cf7472f158ff1d89b1a00f7b504fcc73941c2eeadef",
+     "bytes": 400140
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_Corner_C_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_C_L1.fbx",
-     "sha256": "1c7e9562ad3c553c701e367bd972eab1ded5f070731e66a3819761fb20370082",
-     "bytes": 265612
+     "sha256": "55a2dd3d299842c5650dfe01e40871777d722cc8f93be14663c6e2967c29d212",
+     "bytes": 271260
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_Corner_C_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_C_L2.fbx",
-     "sha256": "3a71fdbdf73a3a0b3c07b959537ea984cd67d58d74cdbd257c00c87e6c1512a6",
-     "bytes": 195020
+     "sha256": "1d00cf4a12a0786cbb83d97bbcb8444296102a2e3dd71bc0970adde642e0843e",
+     "bytes": 200860
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_Corner_C_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_Corner_C_L3.fbx",
-     "sha256": "b81af049d27eef175ab9b70ca36f3a5e580032d46ad5ceb26c6eb26a32e303eb",
-     "bytes": 125804
+     "sha256": "27cc3f1ef5259bd00219d838f2233d48ffa0e8e9234e91fe6cbd960be281de7a",
+     "bytes": 131516
     },
     {
      "root": "generated",
@@ -92647,7 +92587,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_Corner_C"
   },
   {
@@ -92826,27 +92766,28 @@
     0
    ],
    "front": "+Z",
-   "tris": 1959,
+   "tris": 2015,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_End_A_TB_L1.fbx",
-     "tris": 1449,
+     "tris": 1505,
      "screen": 0.2733
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_End_A_TB_L2.fbx",
-     "tris": 1025,
+     "tris": 1081,
      "screen": 0.1215
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_End_A_TB_L3.fbx",
-     "tris": 689,
+     "tris": 745,
      "screen": 0.0683
     }
    ],
@@ -92868,6 +92809,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_End_A_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -92876,32 +92824,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_End_A_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_A.fbx",
-     "sha256": "70604bc9ed0fc101035c56c140accd868bc5035ba36d01e02ff518252ac4b0fb",
-     "bytes": 158412
+     "sha256": "88ffd2d462ca0fd405dfd79e7ca87d210cc08b6d9e6f792e0aee0febebbe0ef6",
+     "bytes": 163692
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_End_A_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_A_L1.fbx",
-     "sha256": "225d76c158b82c7e760dd735b7a2a6d57c156d08bf8a7a5756878ca893f8a48c",
-     "bytes": 130796
+     "sha256": "ef47a315c9c012e24379b406c3183f63260da762de5c959d4aa5de2b15c4defc",
+     "bytes": 135788
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_End_A_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_A_L2.fbx",
-     "sha256": "3e40e9f27c64810ac3e665b8e2184c05b6e594450f30fc9796878ac61d0a886f",
-     "bytes": 97708
+     "sha256": "5a1c79923e1154e1fb13d812520a816c71a912c45aec0a3eb3f4fbea75fa9c1d",
+     "bytes": 102828
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_End_A_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_A_L3.fbx",
-     "sha256": "ecec8ce5f3af4ba5a4c333917436fff4f5e74aa902aaf6d049f20a04d849828e",
-     "bytes": 71756
+     "sha256": "e22f3fcc4da2d8c7c9859bd875ddb1982fb62fc2c402678861d1af8fce11d6a3",
+     "bytes": 76684
     },
     {
      "root": "generated",
@@ -93085,7 +93033,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_End_A"
   },
   {
@@ -93264,27 +93212,28 @@
     0
    ],
    "front": "+Z",
-   "tris": 2115,
+   "tris": 2171,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
     "DK_Petal_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_End_B_TB_L1.fbx",
-     "tris": 1589,
+     "tris": 1645,
      "screen": 0.2761
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_End_B_TB_L2.fbx",
-     "tris": 1109,
+     "tris": 1165,
      "screen": 0.1227
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_End_B_TB_L3.fbx",
-     "tris": 745,
+     "tris": 801,
      "screen": 0.069
     }
    ],
@@ -93306,6 +93255,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_End_B_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -93314,32 +93270,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_End_B_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_B.fbx",
-     "sha256": "75c58267200c33972e18c86d47d5066c232a035e35df6ae0c09bdafd33790182",
-     "bytes": 170476
+     "sha256": "aaa20a8a147bd0f14d0b89df582b7dbb60867d31a0e0a1892dacb40ef8e8e799",
+     "bytes": 175596
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_End_B_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_B_L1.fbx",
-     "sha256": "16b2c6f13d18dbcdbf31bf0089271fd563eb06ac6ee7ed6ccc7e584781e9c9eb",
-     "bytes": 142300
+     "sha256": "74bc9e43bc994111e6f514319c364325075dcae1cfa307644584286448a21648",
+     "bytes": 147228
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_End_B_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_B_L2.fbx",
-     "sha256": "3c7cfd07aa56579f293aea184d851e264ae6e1843a5384fb1e8ce9ea9c7f7c77",
-     "bytes": 104828
+     "sha256": "168068a2600a0088547f6eaeaba63c4894a35e626a1773dcf461f1418607add4",
+     "bytes": 109756
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_End_B_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_B_L3.fbx",
-     "sha256": "9d80148b8c2f7a4295b11eaf91ae09f0dcb386844f8d33aa58e28fbdb7e0ec44",
-     "bytes": 76364
+     "sha256": "8bf283cfb8c9b52631a4da469b928e02638bbf589fc137390bfd8d0943637e2d",
+     "bytes": 81324
     },
     {
      "root": "generated",
@@ -93523,7 +93479,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_End_B"
   },
   {
@@ -93702,26 +93658,27 @@
     0
    ],
    "front": "+Z",
-   "tris": 1379,
+   "tris": 1435,
    "materials": [
     "DK_Limestone",
     "DK_Leaf_TB",
-    "DK_Soil_TB"
+    "DK_Soil_TB",
+    "DK_Glow_PlanterFoot"
    ],
    "lods": [
     {
      "file": "Models/Plaza/DK_PlanterRun_End_C_TB_L1.fbx",
-     "tris": 1207,
+     "tris": 1263,
      "screen": 0.2733
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_End_C_TB_L2.fbx",
-     "tris": 839,
+     "tris": 895,
      "screen": 0.1215
     },
     {
      "file": "Models/Plaza/DK_PlanterRun_End_C_TB_L3.fbx",
-     "tris": 583,
+     "tris": 639,
      "screen": 0.0683
     }
    ],
@@ -93742,6 +93699,13 @@
       "DK_Soil_TB"
      ],
      "shadows": "off"
+    },
+    {
+     "name": "DK_PlanterRun_End_C_glow",
+     "materials": [
+      "DK_Glow_PlanterFoot"
+     ],
+     "shadows": "off"
     }
    ],
    "files": [
@@ -93750,32 +93714,32 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_PlanterRun_End_C_TB.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_C.fbx",
-     "sha256": "21abfc4ec2c524ec6c85c50deb1b99660dfc24227ad17cbaa6f7a28f216fa965",
-     "bytes": 115164
+     "sha256": "79177065a2183377bf7532f58364914b9baecdf600879a79ef967e0c87b98f4f",
+     "bytes": 120188
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_End_C_TB_L1.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_C_L1.fbx",
-     "sha256": "5f7535fe2d18834fb5d1369108935852ec699c5fb9aa00eb07631d72c0a2535c",
-     "bytes": 110396
+     "sha256": "db9dd8088c87be01780f551975db726bfe7897fc43daa1489402e0f888583000",
+     "bytes": 115356
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_End_C_TB_L2.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_C_L2.fbx",
-     "sha256": "6fd5eceb3f6af57be60f41b3f5050df19bf71a89f91a069f5dded11afcb31a6f",
-     "bytes": 81612
+     "sha256": "22a4ac2151b2a4a12c79a6975c0d71acc83475051671cb979b05213762ada3e3",
+     "bytes": 86572
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_PlanterRun_End_C_TB_L3.fbx",
      "src": "Models/Plaza/DK_PlanterRun_End_C_L3.fbx",
-     "sha256": "48525ed74c40e2553c1388c10964f5816d475a3a5da8df0f3e91ff1a8a257651",
-     "bytes": 61676
+     "sha256": "d295ce9956b27ba1735685dff9bb857b1849015eebeab412d98dc64206fe4ce4",
+     "bytes": 66620
     },
     {
      "root": "generated",
@@ -93945,7 +93909,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "PlanterRun_End_C"
   },
   {
@@ -97659,7 +97623,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra"
+   "extra": "out/decokit-107-extra"
   },
   {
    "id": "RecordsTower_TB",
@@ -97968,7 +97932,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "RecordsTower"
   },
   {
@@ -104471,7 +104435,7 @@
    },
    "status": "adopted",
    "source": "generated",
-   "extra": "out/decokit-097-extra",
+   "extra": "out/decokit-107-extra",
    "replaces": "ShrubMound"
   },
   {

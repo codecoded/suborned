@@ -135,6 +135,7 @@ namespace Suborned.World.Play
                 PlayerSettings.enableFrameTimingStats = true; // brief 020: the proof reads the GPU's frame time (FrameTimingManager); the project's setting comes back after
                 PlayerSettings.productName = AppName; // the binary, the menu bar and the player's data folder; the project's own name comes back after
                 using var todPipeline = tod ? TimeOfDay097Bake.UsePipeline() : null; // the player built on the probe-volume pipeline copy, the project's put back after
+                using var stp = BuiltInsBuild.CarryStp(); // brief 106: STP's shaders ride along (the project's asset stays Automatic; RenderCap picks the filter)
                 using var strictVariants = ShaderTrace098.Strict(); // brief 098: a traced scratch player with -strictVariants draws a missing variant with the error shader
                 report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {

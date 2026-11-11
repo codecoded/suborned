@@ -5,6 +5,6 @@
   "bakedExposure": 0.0,
   "variation": 0.5,
   "variationTile": 9,
-  "rooms": { "width": 4.2, "storey": 3.4, "depth": 5.0, "day": 0.62, "nightShare": 0, "night": 0 },
+  "rooms": { "width": 4.2, "storey": 3.4, "depth": 5.0, "day": 0.62, "nightShare": 0.5, "night": 1.4 },
   "clouds": { "enabled": true, "size": 90, "drift": 1.4, "cover": 0.38, "soft": 0.2, "shade": 0.3, "seed": 97, "res": 256 }
 }

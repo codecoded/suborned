@@ -1,0 +1,518 @@
+{
+ "schema": "suborned.tplong.resolved/1",
+ "outDir": "",
+ "rows": [
+  {
+   "name": "warm",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 2.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.base",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.occ",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.stp75",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "play.mlod",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.mlod-low",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "low",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.mlod-t4",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 4
+   }
+  },
+  {
+   "name": "play.mlod-t16",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 16
+   }
+  },
+  {
+   "name": "tp-street.base",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-street.occ",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-street.stp75",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "tp-street.mlod",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-street.mlod-low",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "low",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-street.mlod-t4",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 4
+   }
+  },
+  {
+   "name": "tp-street.mlod-t16",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 16
+   }
+  },
+  {
+   "name": "tp-worst.base",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-worst.occ",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-worst.stp75",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "tp-worst.mlod",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-worst.mlod-low",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "low",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-worst.mlod-t4",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 4
+   }
+  },
+  {
+   "name": "tp-worst.mlod-t16",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 4.0,
+   "w": 2880,
+   "h": 1864,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 16
+   }
+  }
+ ]
+}

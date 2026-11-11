@@ -1,0 +1,14 @@
+{
+ "schema": "suborned.weather/1",
+ "note": "Brief 107 (Latch, from Glint's page briefs/107/glint/weather.html; Glint tunes). Look only: no rule reads any of it. Per kind: sun (x the sun's intensity), ambient (x the trilight by day), desaturate (0..1: the sun's colour toward grey, the ambient a little cooler), shadow (x the sun's shadow strength), wet (0..1: porous ground darker and glossier), puddles (0..1: the share of flat ground at the plan's levels under water), ripples (0..1), rain (0..1: the falling streaks' density), streaks (0..1: the lamps' reflections in the wet), mist (0..1: the ground mist). mistDay and mistNight: the mist's colour.",
+ "kinds": [
+  { "name": "clear", "sun": 1.0, "ambient": 1.0, "desaturate": 0.0, "shadow": 1.0, "wet": 0.0, "puddles": 0.0, "ripples": 0.0, "rain": 0.0, "streaks": 0.0, "mist": 0.0 },
+  { "name": "overcast", "sun": 0.45, "ambient": 1.15, "desaturate": 0.35, "shadow": 0.45, "wet": 0.0, "puddles": 0.0, "ripples": 0.0, "rain": 0.0, "streaks": 0.0, "mist": 0.0 },
+  { "name": "rain", "sun": 0.35, "ambient": 1.1, "desaturate": 0.45, "shadow": 0.35, "wet": 1.0, "puddles": 0.7, "ripples": 1.0, "rain": 1.0, "streaks": 1.0, "mist": 0.25 },
+  { "name": "mist", "sun": 0.7, "ambient": 1.08, "desaturate": 0.2, "shadow": 0.7, "wet": 0.25, "puddles": 0.0, "ripples": 0.0, "rain": 0.0, "streaks": 0.0, "mist": 1.0 }
+ ],
+ "mistDay": "#f3e8d4",
+ "mistNight": "#22323a",
+ "nightExposure": 0,
+ "nightIndirect": 0.6
+}

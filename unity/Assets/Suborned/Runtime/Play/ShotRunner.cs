@@ -115,7 +115,7 @@ namespace Suborned.Play
                     if (s.tick > h.Game.Tick && !h.Game.Over) h.RunTo(s.tick);
                     res.Tick = h.Game.Tick;
                     if (h.Game.Over && h.Game.Tick < s.tick) res.Error = $"the run ended at tick {h.Game.Tick} ({h.Game.Result}), before tick {s.tick}";
-                    if (s.setNight) h.SetNight(s.night);
+                    if (s.setNight && !h.SetNight(s.night)) res.Error = "the shot asks for night, but this scene has no night (no LightPhase): not drawn as day"; // brief 107: no hidden fallback
                     h.IntelOpen = s.intel; h.ConesAll = s.eye; HudToolkit.WhyMeterPin(s.why); // the cones round: the eye button latched for the shot; brief 100: the meter's list pinned
                     HandoverHost.PointerOverride = s.hasPointer ? new Vector2(Screen.width * s.px, Screen.height * s.py) : (Vector2?)null;
                     h.ClearHover();

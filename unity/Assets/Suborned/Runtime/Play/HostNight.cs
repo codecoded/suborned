@@ -2,35 +2,42 @@ using UnityEngine;
 
 namespace Suborned.Play
 {
-    /// <summary>Brief 026 round 2: the Handover by day or by night, chosen on the briefing. LOOK ONLY (Glint's light.json `night`; LightPhase):
-    /// the same mission, the same start, the same orders and the same replay; nothing is saved in the session. The choice is kept between
-    /// runs (PlayerPrefs). The night lamps count from the play camera's focus.</summary>
+    /// <summary>Brief 026 round 2, brief 107: the Handover by day or by night. LOOK ONLY. Since engine 0.54.0 the light is the game's (Game.Light: rolled
+    /// from the seed, changed at the briefing by the `light` order, kept by Replay), and PlayView107 draws it; the briefing's Day / Night tab gives the
+    /// order (ChooseLight). SetNight is the view's override for a shot, `-night` and the proofs: it never touches the game, and it is REFUSED, with an
+    /// error, in a scene that has no night (no LightPhase): a night asked for is never quietly drawn as day (Glint's finding, brief 107).
+    /// The old PlayerPrefs choice is retired: the roll decides.</summary>
     public sealed partial class HandoverHost
     {
-        const string NightPref = "suborned.handover.night";
-        public bool NightLook { get; private set; }
+        /// <summary>Night is drawn now.</summary>
+        public bool NightLook => PlayView107.Night;
+        /// <summary>This scene can draw a night (the briefing offers Night only then).</summary>
+        public bool CanNight => PlayView107.CanNight;
+        /// <summary>The camera's focus on the ground (the lamps' cap, the rain's box, the mist's clear ring).</summary>
+        public Vector3 FocusPoint => focus;
 
-        public void SetNight(bool night)
+        /// <summary>The view's night or day, whatever the game says (a shot, `-night`). False, with an error, when night is asked and the scene has none.</summary>
+        public bool SetNight(bool night)
         {
-            NightLook = night; if (!GameBoot.Automation) PlayerPrefs.SetInt(NightPref, night ? 1 : 0); // 0.2.115: a proof, shot or bot run never stores Sky's choice (the night shots left his game at night, and every later run with it)
-            var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>();
-            if (!lp) { NightLook = false; return; } // the old town has no night phase yet: it stays day
-            lp.Focus = () => cam ? focus : (Vector3?)null;
-            lp.Set(night);
+            if (night && !CanNight) { Debug.LogError("HostNight: night was asked for, but this scene has no night (no LightPhase): drawn as day, and the caller is told"); PlayView107.ForceNight(false); return false; }
+            PlayView107.ForceNight(night); return true;
         }
 
-        /// <summary>At start: the phase the player chose last time (day when never chosen);
-        /// `-night` on the command line (the app's proof at night): night for this launch, the stored choice untouched.</summary>
+        /// <summary>The briefing's Day / Night: the game's `light` order (before the clock runs), so it is saved and replayed.</summary>
+        public void ChooseLight(bool night) { if (night && !CanNight) return; PlayView107.Release(); SetLook("light", night ? "night" : "day"); }
+        /// <summary>The briefing's weather: the game's `weather` order (before the clock runs), saved and replayed.</summary>
+        public void ChooseWeather(string kind) { PlayView107.Release(); SetLook("weather", kind); }
+
+        /// <summary>At start: `-evening` (the day look with the dusk lights on, HarbourDistrict's LightPhase) and `-night` (night for this launch, the view only).</summary>
         void NightAtStart()
         {
-            if (GameBoot.Arg("-evening")) // brief 048 (Glint, item 21): the day look with the dusk lights on (RoadLight's evening level), for the proof's shots; the stored choice untouched
+            if (GameBoot.Arg("-evening"))
             {
-                NightLook = false; var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>();
-                if (lp) { lp.Focus = () => cam ? focus : (Vector3?)null; lp.SetEvening(); } else Debug.LogWarning("HostNight: -evening with no LightPhase in the scene");
+                var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>();
+                if (lp) { lp.Focus = () => cam ? focus : (Vector3?)null; lp.SetEvening(); } else Debug.LogError("HostNight: -evening with no LightPhase in the scene");
                 return;
             }
-            if (GameBoot.Arg("-night")) { int keep = PlayerPrefs.GetInt(NightPref, 0); SetNight(true); PlayerPrefs.SetInt(NightPref, keep); return; }
-            if (!GameBoot.Automation && PlayerPrefs.GetInt(NightPref, 0) == 1) SetNight(true); else NightLook = false; // an automated run starts by day unless it says -night
+            if (GameBoot.Arg("-night")) SetNight(true);
         }
     }
 }

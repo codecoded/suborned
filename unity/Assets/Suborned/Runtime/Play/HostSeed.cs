@@ -26,15 +26,19 @@ namespace Suborned.Play
 
         int seedAgain = -1;
         /// <summary>The next Begin plays this seed once (Replay, Restart mission), over a pin or a roll; brief 098: and the dial's counts it was played with (HostDial).</summary>
-        public void BeginSameSeed() { seedAgain = Game != null ? Game.Seed : -1; DialKeep(); Begin(); }
+        public void BeginSameSeed() { seedAgain = Game != null ? Game.Seed : -1; DialKeep(); LookKeep(); Begin(); } // brief 107: and its weather and light (HostLook)
 
         /// <summary>1..2^31-1, never 0 (0 is the neutral start, for tests). The roll is the host's: nothing in the run reads it but Start.Seed.</summary>
         public static int RollSeed() { int s = System.Guid.NewGuid().GetHashCode() & int.MaxValue; return s == 0 ? 1 : s; }
 
+        /// <summary>Brief 107: the last Begin's seed was rolled here (a new game), not kept, pinned or given: only then is the look rolled (HostLook).</summary>
+        bool seedRolled;
         int SeedForBegin()
         {
+            seedRolled = false;
             if (seedAgain >= 0) { int s = seedAgain; seedAgain = -1; return s; }
-            return SeedPin ?? RollSeed();
+            if (SeedPin is int pin) return pin;
+            seedRolled = true; return RollSeed();
         }
     }
 }

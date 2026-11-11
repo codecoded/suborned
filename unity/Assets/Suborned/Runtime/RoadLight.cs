@@ -20,6 +20,7 @@ namespace Suborned
         [Serializable] public sealed class Poolp { public string material; public float day, evening, night; }
         /// <summary>Another material the dusk lights (Glint 2026-10-24, the evening phase). mode "emission": the material already glows; `evening` and `night` are multipliers on its own emission (the .mat's level is 1, by day too, so day is untouched).
         /// mode "tint" (Glint 2026-10-24, the lilac table lamp read violet beside the rivals' rings): the emission leans toward `colour` (keeping its own strength) by the share `evening` / `night` (0..1; 0 by day).
+        /// Brief 107 (Vela's glows): mode "night": emission = linear(`colour`) x level from black (0 by day); mode "alpha": a Cross Glow pool's `_Alpha` from 0 (0 by day).
         /// mode "lit": a Suborned/DecoKit/GlassSky pane (DK_GlassDark, the facade windows); `evening` and `night` are the share of panes with their interior light on (_Lit, 0 by day), `colour` the light (_LitColour).</summary>
         [Serializable] public sealed class Glowp { public string material, mode, colour; public float evening, night; }
         /// <summary>People at dusk and night (Glint 2026-10-24, Glyph's 0.2.115 check: passers-by are black cut-outs): every SkinnedMeshRenderer's materials get a runtime copy whose emission is the
@@ -39,7 +40,7 @@ namespace Suborned
         bool needScan = true, scanned, first = true;
         float lensTarget, poolTarget;
         // the other materials (roadlight.json `glow`): one runtime copy each, the value eased like the strip's (emission: a multiplier from 1; lit: a share from 0)
-        sealed class Glow { public Glowp g; public Material m; public Color e0; public float level0 = 1f, now = -1f, target; public bool lit, tint; }
+        sealed class Glow { public Glowp g; public Material m; public Color e0; public float level0 = 1f, now = -1f, target; public bool lit, tint, fromBlack, alpha; }
         readonly Dictionary<string, Glow> glowByName = new();
         // people (roadlight.json `people`): one runtime copy per source material, found again every scanSeconds while the look is not day
         readonly Dictionary<Material, Material> peopleCopy = new(); readonly HashSet<Material> peopleMade = new();
@@ -79,6 +80,8 @@ namespace Suborned
                     if (g == null || string.IsNullOrEmpty(g.material)) return "glow: material";
                     if (g.mode == "emission") { if (g.evening < 0f || g.evening > 10f || g.night < 0f || g.night > 10f) return $"glow {g.material}: emission needs evening and night in 0..10 (multipliers on the material's own emission; below 1 dims it)"; }
                     else if (g.mode == "tint") { if (g.evening < 0f || g.evening > 1f || g.night < 0f || g.night > 1f || !ColorUtility.TryParseHtmlString(g.colour, out _)) return $"glow {g.material}: tint needs evening and night in 0..1 and a #rrggbb colour"; }
+                    else if (g.mode == "night") { if (g.evening < 0f || g.night < 0f || g.night > 10f || !ColorUtility.TryParseHtmlString(g.colour, out _)) return $"glow {g.material}: night needs evening and night in 0..10 and a #rrggbb colour"; } // brief 107: emission from black
+                    else if (g.mode == "alpha") { if (g.evening < 0f || g.evening > 1f || g.night < 0f || g.night > 1f) return $"glow {g.material}: alpha needs evening and night in 0..1"; } // brief 107: a Cross Glow pool's _Alpha from 0
                     else if (g.mode == "lit") { if (g.evening < 0f || g.night < g.evening || g.night > 1f || !ColorUtility.TryParseHtmlString(g.colour, out _)) return $"glow {g.material}: lit needs 0 <= evening <= night <= 1 and a #rrggbb colour"; }
                     else return $"glow {g.material}: mode emission | lit";
                 }
@@ -201,6 +204,16 @@ namespace Suborned
                 if (!m.HasProperty(idEmission)) { Debug.LogWarning($"RoadLight: {m.name} has no _EmissionColor; left as it is"); return null; }
                 gl.e0 = m.GetColor(idEmission); gl.level0 = 0f; gl.tint = true;
             }
+            else if (g.mode == "night")
+            {
+                if (!m.HasProperty(idEmission)) { Debug.LogWarning($"RoadLight: {m.name} has no _EmissionColor; left as it is"); return null; }
+                gl.e0 = ColorUtility.TryParseHtmlString(g.colour, out var nc) ? nc.linear : Color.white; gl.level0 = 0f; gl.fromBlack = true;
+            }
+            else if (g.mode == "alpha")
+            {
+                if (!m.HasProperty(idAlpha)) { Debug.LogWarning($"RoadLight: {m.name} has no _Alpha (not Suborned/Cross Glow); left as it is"); return null; }
+                gl.level0 = 0f; gl.alpha = true;
+            }
             else if (g.mode == "lit")
             {
                 if (!m.HasProperty(idLit) || !m.HasProperty(idLitColour)) { Debug.LogWarning($"RoadLight: {m.name} has no _Lit / _LitColour (not Suborned/DecoKit/GlassSky); left as it is"); return null; }
@@ -213,7 +226,8 @@ namespace Suborned
                 if (gl.e0.r + gl.e0.g + gl.e0.b <= 0.0001f) { Debug.LogWarning($"RoadLight: {m.name} has no emission to scale; left as it is"); return null; }
             }
             gl.m = new Material(m) { name = m.name + " (phase)" };
-            if (gl.lit) { gl.m.SetColor(idLitColour, ColorUtility.TryParseHtmlString(g.colour, out var c) ? c : Color.white); gl.m.SetFloat(idLit, 0f); }
+            if (gl.alpha) gl.m.SetFloat(idAlpha, 0f);
+            else if (gl.lit) { gl.m.SetColor(idLitColour, ColorUtility.TryParseHtmlString(g.colour, out var c) ? c : Color.white); gl.m.SetFloat(idLit, 0f); }
             else gl.m.EnableKeyword("_EMISSION");
             return gl;
         }
@@ -234,6 +248,8 @@ namespace Suborned
                     gl.m.SetColor(idEmission, new Color(Mathf.Lerp(gl.e0.r, c.r * mx / cm, v), Mathf.Lerp(gl.e0.g, c.g * mx / cm, v), Mathf.Lerp(gl.e0.b, c.b * mx / cm, v), gl.e0.a));
                 }
                 else if (gl.lit) gl.m.SetFloat(idLit, v);
+                else if (gl.alpha) gl.m.SetFloat(idAlpha, v);
+                else if (gl.fromBlack) gl.m.SetColor(idEmission, new Color(gl.e0.r * v, gl.e0.g * v, gl.e0.b * v, v));
                 else gl.m.SetColor(idEmission, new Color(gl.e0.r * v, gl.e0.g * v, gl.e0.b * v, gl.e0.a * v)); // linear: the kit's HDR emission colours are the light itself (only the road lens is written as (linear x level)^(1/gamma))
                 gl.now = v;
             }

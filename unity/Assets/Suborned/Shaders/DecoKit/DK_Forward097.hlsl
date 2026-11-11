@@ -12,6 +12,7 @@ float _DKInteriorOff;                 // global: 1 = no rooms behind the glass (
 #endif
 #include "DK_Interior097.hlsl"
 #include "DK_Variation097.hlsl"
+#include "DK_Wet107.hlsl"
 #ifndef UNIVERSAL_FORWARD_LIT_PASS_INCLUDED
 #define UNIVERSAL_FORWARD_LIT_PASS_INCLUDED
 
@@ -276,6 +277,7 @@ void LitPassFragment(
 #endif
     // DK 097: the painted variation (DK_Variation097.hlsl), world space, one fetch; off unless Suborned.Look097 sets it
     surfaceData.albedo *= DKVariation(ComputeWorldSpacePosition(GetNormalizedScreenSpaceUV(input.positionCS), input.positionCS.z, UNITY_MATRIX_I_VP), normalize(input.normalWS));
+    DKWet(surfaceData, DKWetPos(input.positionCS), normalize(input.normalWS)); // brief 107: wet ground and puddles (DK_Wet107.hlsl), nothing while _SubornedWet.x is 0
 #if defined(_DK_INTERIOR)
     { // DK 097: a room behind the glass (DK_Interior097.hlsl), as emission under the glass's Fresnel; the pane's own colour darkened to tinted glass
         float3 dkP = ComputeWorldSpacePosition(GetNormalizedScreenSpaceUV(input.positionCS), input.positionCS.z, UNITY_MATRIX_I_VP);

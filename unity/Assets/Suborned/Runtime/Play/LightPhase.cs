@@ -32,6 +32,10 @@ namespace Suborned.Play
         [Tooltip("night.lamps: every spawned light, its night intensity")] public Light[] lamps = Array.Empty<Light>();
         public float[] lampIntensity = Array.Empty<float>();
         public int liveCap = 32; public float liveRadius = 60f;
+        /// <summary>Brief 107: a phase carried into another scene (SwapNight107, the old town): its day is that scene's own sky, reflection and fog, read the
+        /// first time it goes to night and put back on day; the `day` State's sky, reflection and fog are not used.</summary>
+        public bool sceneDay;
+        bool dayRead; Material daySky; DefaultReflectionMode dayRefMode; Texture dayRefTex; float dayRefInt; Color dayFogCol; float dayFogStart, dayFogEnd, dayFogDensity;
         float[] lampBase; // the lamps' built intensities, kept by NightFloor when a group is scaled
 
         /// <summary>Brief 077 (Latch; Glint, light.json night.emissive globeOpal): a glow driven at an ABSOLUTE level per phase, _EmissionColor = colour x level
@@ -80,6 +84,8 @@ namespace Suborned.Play
 
         void Apply(bool toNight)
         {
+            if (sceneDay && toNight && !dayRead) { dayRead = true; daySky = RenderSettings.skybox; dayRefMode = RenderSettings.defaultReflectionMode; dayRefTex = RenderSettings.customReflectionTexture; dayRefInt = RenderSettings.reflectionIntensity; dayFogCol = RenderSettings.fogColor; dayFogStart = RenderSettings.fogStartDistance; dayFogEnd = RenderSettings.fogEndDistance; dayFogDensity = RenderSettings.fogDensity; }
+            if (sceneDay && !toNight && dayRead) { Night = false; RenderSettings.skybox = daySky; RenderSettings.defaultReflectionMode = dayRefMode; RenderSettings.customReflectionTexture = dayRefTex; RenderSettings.reflectionIntensity = dayRefInt; RenderSettings.fogColor = dayFogCol; RenderSettings.fogStartDistance = dayFogStart; RenderSettings.fogEndDistance = dayFogEnd; RenderSettings.fogDensity = dayFogDensity; if (night.grade) night.grade.enabled = false; DynamicGI.UpdateEnvironment(); foreach (var l in lamps) if (l) l.enabled = false; LiveLamps = 0; return; }
             Night = toNight; var s = toNight ? night : day;
             if (sun) { sun.color = s.sunColour; sun.intensity = s.sunIntensity; sun.transform.rotation = s.sunRotation; }
             RenderSettings.ambientMode = AmbientMode.Trilight;

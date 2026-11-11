@@ -11,13 +11,16 @@ namespace Suborned.OldTown.Editor.DecoKit
     /// The 2 m ground modules (flags, kerbs, tram rail) are ~45% of what the boulevard camera draws (DecoKitDrawCost,
     /// city_g): one renderer per tile, kerbs with four materials each. Merge their meshes into square chunks with one
     /// submesh per material; the tiles keep their colliders, their renderers are switched off.
+    /// Brief 106: the chunks get Mesh LOD levels later, after the town's Editor bakes (MeshLod106: with the levels in place the reflection-probe bake
+    /// hung the GPU); `keep` lets a caller merge only part of a root.
     internal static class DecoKitTileMerge
     {
         const float Chunk = 48f;
         static readonly string[] Tiles = { "DK_Pave_", "DK_Kerb_", "DK_TreePit_", "DK_Tile_TramRail" };
 
         /// `name` names the merged group and its mesh asset (one per call site: a second merge must not replace the first's).
-        internal static void Merge(Transform root, string name = "Ground tiles merged", Transform parentTo = null)
+        /// `keep` (brief 106) leaves a tile out when it says no: the network's merge takes only what the zone check never reads.
+        internal static void Merge(Transform root, string name = "Ground tiles merged", Transform parentTo = null, System.Func<MeshRenderer, bool> keep = null)
         {
             var parts = new Dictionary<Vector2Int, Dictionary<Material, List<CombineInstance>>>();
             int tiles = 0;
@@ -25,7 +28,7 @@ namespace Suborned.OldTown.Editor.DecoKit
             {
                 var piece = PrefabUtility.GetOutermostPrefabInstanceRoot(r.gameObject);
                 var mesh = r.GetComponent<MeshFilter>()?.sharedMesh;
-                if (!piece || !mesh || !r.enabled || !Tiles.Any(t => piece.name.StartsWith(t))) continue;
+                if (!piece || !mesh || !r.enabled || !Tiles.Any(t => piece.name.StartsWith(t)) || (keep != null && !keep(r))) continue;
                 var p = r.bounds.center;
                 var key = new Vector2Int(Mathf.FloorToInt(p.x / Chunk), Mathf.FloorToInt(p.z / Chunk));
                 if (!parts.TryGetValue(key, out var byMat)) parts[key] = byMat = new();
@@ -68,7 +71,7 @@ namespace Suborned.OldTown.Editor.DecoKit
                 submeshes += mats.Length;
             }
             AssetDatabase.SaveAssets();
-            Debug.Log($"[DecoKit] tile merge: {tiles} tile renderers -> {parts.Count} chunks, {submeshes} submeshes");
+            Debug.Log($"[DecoKit] tile merge ({name}): {tiles} tile renderers -> {parts.Count} chunks, {submeshes} submeshes");
         }
     }
 }

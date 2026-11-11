@@ -543,7 +543,7 @@ namespace Suborned.Play
                 {
                     bool night = i == 1; var w = FrontEnd.Word(ph, night ? "Night" : "Day", LL.type.tab, float.NaN, 34, 0f, 0f, 0f, 29f, false, false);
                     if (i == 1) w.Root.style.marginLeft = 22;
-                    FrontEnd.Hook(w, null, () => host.SetNight(night)); briefPhase[i] = w.Root; briefPhaseW[i] = w;
+                    FrontEnd.Hook(w, null, () => host.ChooseLight(night)); briefPhase[i] = w.Root; briefPhaseW[i] = w; // brief 107: the game's light order
                 }
             }
             var ways = E(brief); ways.style.flexDirection = FlexDirection.Row; ways.style.marginTop = 12;
@@ -785,7 +785,7 @@ namespace Suborned.Play
                 Text(briefClose, host.Text != null ? "Closes " + host.Text.Close : m.BriefClock); Text(briefPurse, m.Cash.Length > 0 ? "Purse " + m.Cash : m.BriefPurse); Text(briefAlert, $"Alert {m.Alert} of 3"); Text(briefArms, "Cell armed");
                 for (int i = 0; i < 2; i++) { bool has = i < m.BriefWays.Count; Show(briefWays[i].title.parent, has); if (has) { Text(briefWays[i].title, $"Approach {(char)('A' + i)}: {m.BriefWays[i].title}"); Text(briefWays[i].body, m.BriefWays[i].body); } }
                 Text(briefBeginKey, m.BeginKey);
-                for (int i = 0; i < 2; i++) if (briefPhaseW[i] is { } pw) { bool on = (i == 1) == host.NightLook; if (pw.Focused != on) { pw.Focused = on; FrontEnd.PaintWord(pw); } } // the chosen one: full cream and the line (the tab grammar)
+                for (int i = 0; i < 2; i++) if (briefPhaseW[i] is { } pw) { bool on = (i == 1) == host.NightLook; if (pw.Focused != on) { pw.Focused = on; FrontEnd.PaintWord(pw); } } if (briefPhase[1] != null) briefPhase[1].style.display = host.CanNight ? DisplayStyle.Flex : DisplayStyle.None; // brief 107: Night only where the scene has one // the chosen one: full cream and the line (the tab grammar)
             }
             // the end card
             Show(end, m.Ended && !host.DebriefOwnsEnd); // brief 099: the debrief page is the end (HostDebrief); the card stays for a host without it

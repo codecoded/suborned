@@ -20,7 +20,7 @@ namespace Suborned.OldTown
     /// brief 085, the player's shade matched the old ambient, on Glint's reading because the GPU Resident Drawer reads it outside the camera callbacks), goes back on disable, and any other
     /// camera that renders meanwhile (a presentation or pose camera) gets the old ambient for its own render.</summary>
     [ExecuteAlways, RequireComponent(typeof(Camera))]
-    public sealed class OldTownPlayLook : MonoBehaviour
+    public sealed partial class OldTownPlayLook : MonoBehaviour
     {
         /// <summary>The layer the swap puts the old town's baked crowd and traffic on (unnamed in the TagManager; the play camera's culling mask leaves it out).</summary>
         public const int CrowdLayer = 29;
@@ -36,6 +36,8 @@ namespace Suborned.OldTown
         public Quaternion sunRotation = Quaternion.identity;
         public Color sunColour = Color.white;
         public float sunIntensity = 1f, sunShadowStrength = 1f;
+        [Tooltip("Brief 107: the weather's share of the shadow strength (PlayView107; 1 = as built), on top of the lens's or this look's own.")]
+        public float shadowScale = 1f;
         public AmbientMode ambientMode = AmbientMode.Trilight;
         public Color ambientSky, ambientEquator, ambientGround;
         public float ambientIntensity = 1f;
@@ -102,7 +104,7 @@ namespace Suborned.OldTown
             if (presentationLens && Lens() is { } lv) { lensWeight = lv.weight; lv.weight = 1f; }
             if (lightSwap)
             {
-                if (sun) { sunRot0 = sun.transform.rotation; sunCol0 = sun.color; sunInt0 = sun.intensity; sunShadow0 = sun.shadowStrength; sun.transform.rotation = sunRotation; sun.color = sunColour; sun.intensity = sunIntensity; sun.shadowStrength = Shader.GetGlobalFloat(LensSunShadowId) is var ls and > 0f ? ls : sunShadowStrength; } // brief 096: the lens's shadow strength (lens.json sun.shadowStrength) wins when it is running
+                if (sun) { sunRot0 = sun.transform.rotation; sunCol0 = sun.color; sunInt0 = sun.intensity; sunShadow0 = sun.shadowStrength; sun.transform.rotation = sunRotation; sun.color = sunColour; sun.intensity = sunIntensity; sun.shadowStrength = (Shader.GetGlobalFloat(LensSunShadowId) is var ls and > 0f ? ls : sunShadowStrength) * shadowScale; } // brief 096: the lens's shadow strength (lens.json sun.shadowStrength) wins when it is running
                 amb0 = RenderSettings.ambientMode; sky0 = RenderSettings.ambientSkyColor; eq0 = RenderSettings.ambientEquatorColor; gr0 = RenderSettings.ambientGroundColor; ambInt0 = RenderSettings.ambientIntensity; probe0 = RenderSettings.ambientProbe;
                 PlayAmbient();
             }

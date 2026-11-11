@@ -36,7 +36,7 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { compile as runtimeCompile } from './runtime-compile';
+import { compile as runtimeCompile } from './runtime-compile'; import { withNights } from './nightcheck';
 import { guardConfig, takeGuardFlags, timeoutText, waitForSky } from './playing';
 import { hostLogic } from './hostlogic';
 import { GATES, MARKER as TPLONG_MARKER, judgeTpLong, resolveTpLong, type TpLongReport } from './tplong';
@@ -333,7 +333,7 @@ export const STEPS: Step[] = [
       const rep = readJson(join(c.shotsOut, 'shots.json')) as Report | undefined;
       if (!rep) return fail(`the player wrote no shots.json (exit ${r.code}); see ${rel(c.shotsOut)}/player.log`);
       c.facts.shots = rep; c.facts.resolved = resolved;
-      const j = judgeShots(resolved, rep, c.shotsOut, (Date.now() - t0) / 1000);
+      const j = withNights(judgeShots(resolved, rep, c.shotsOut, (Date.now() - t0) / 1000), c.shotsOut, rep.shots.map(s => s.name)); // brief 107: night vs its day pair (nightcheck.ts)
       return { ...j, detail: `${j.detail}\n${launchText('shots')}` };
     },
   },

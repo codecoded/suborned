@@ -107,6 +107,8 @@ namespace Suborned
 
         // ---- the runtime clock ----
         static float fixedHour = -1f, fromHour = -1f, speed = 0.75f; static bool keepAz;
+        /// <summary>Brief 107: the dev clock owns the play light (PlayView107 writes none of it meanwhile).</summary>
+        public static bool Running => fixedHour >= 0f || fromHour >= 0f;
         OldTownPlayLook look; Base b; bool bound; float clock, nextLog; bool started; string scenarioA;
         Volume evVolume; ColorAdjustments ev; readonly List<(ReflectionProbe p, float i)> probes = new();
         readonly List<(Light l, float i)> lamps = new(); static readonly string[] LampNames = { "Streetlamp", "SphereLamp", "GlobeLamp", "BackDoorLamp", "CafeLamp" };

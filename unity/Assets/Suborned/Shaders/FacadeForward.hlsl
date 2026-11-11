@@ -17,6 +17,7 @@
 #endif
 
 #include "Assets/Suborned/Shaders/FacadeSurface.hlsl"
+#include "DecoKit/DK_Wet107.hlsl" // brief 107
 
 struct Attributes
 {
@@ -251,6 +252,7 @@ void LitPassFragment(
     float3 facadeN = normalize(input.normalWS);
     float facadeBump = 0;
     FacadeSurface(input.positionWS, facadeN, input.col, surfaceData, facadeBump);
+    DKWet(surfaceData, input.positionWS, facadeN); // brief 107: wet ground, puddles and the night's indirect (DecoKit/DK_Wet107.hlsl); nothing by a dry day
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);

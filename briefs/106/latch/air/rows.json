@@ -1,0 +1,1358 @@
+{
+ "schema": "suborned.tplong.resolved/1",
+ "outDir": "/Users/sky/suborned-perf/106/air/res",
+ "rows": [
+  {
+   "name": "warm-base",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 2.0,
+   "seconds": 2.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "warm-occ",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 2.0,
+   "seconds": 2.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "warm-mlod16",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 2.0,
+   "seconds": 2.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "warm-mlod8",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 2.0,
+   "seconds": 2.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 8
+   }
+  },
+  {
+   "name": "warm-stp75",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 2.0,
+   "seconds": 2.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "warm-stp70",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 2.0,
+   "seconds": 2.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 70
+   }
+  },
+  {
+   "name": "warm-all75",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 2.0,
+   "seconds": 2.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "on",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "play.base.1",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.occ.1",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.mlod16.1",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.mlod8.1",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 8
+   }
+  },
+  {
+   "name": "play.stp75.1",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "play.stp70.1",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 70
+   }
+  },
+  {
+   "name": "play.all75.1",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "on",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "tp-street.base.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-street.occ.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-street.mlod16.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-street.mlod8.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 8
+   }
+  },
+  {
+   "name": "tp-street.stp75.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "tp-street.stp70.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 70
+   }
+  },
+  {
+   "name": "tp-street.all75.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "on",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "tp-worst.base.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-worst.occ.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-worst.mlod16.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-worst.mlod8.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 8
+   }
+  },
+  {
+   "name": "tp-worst.stp75.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "tp-worst.stp70.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 70
+   }
+  },
+  {
+   "name": "tp-worst.all75.1",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "on",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "play.all75.2",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "on",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "play.stp70.2",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 70
+   }
+  },
+  {
+   "name": "play.stp75.2",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "play.mlod8.2",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 8
+   }
+  },
+  {
+   "name": "play.mlod16.2",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.occ.2",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.base.2",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-street.all75.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "on",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "tp-street.stp70.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 70
+   }
+  },
+  {
+   "name": "tp-street.stp75.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "tp-street.mlod8.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 8
+   }
+  },
+  {
+   "name": "tp-street.mlod16.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-street.occ.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-street.base.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-worst.all75.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "on",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "tp-worst.stp70.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 70
+   }
+  },
+  {
+   "name": "tp-worst.stp75.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "on",
+    "stpScalePct": 75
+   }
+  },
+  {
+   "name": "tp-worst.mlod8.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 8
+   }
+  },
+  {
+   "name": "tp-worst.mlod16.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-worst.occ.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "tp-worst.base.2",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    -10,
+    -25
+   ],
+   "faceHeading": 90,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0
+   }
+  },
+  {
+   "name": "play.stills",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 75,
+    "stills": "on"
+   }
+  },
+  {
+   "name": "play-y210.stills",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 210,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 75,
+    "stills": "on"
+   }
+  },
+  {
+   "name": "tp-street.stills",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 75,
+    "stills": "on"
+   }
+  },
+  {
+   "name": "play.occ.gpu",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0,
+    "gpuSplit": "on"
+   }
+  },
+  {
+   "name": "play.mlod16.gpu",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "gpuSplit": "on"
+   }
+  },
+  {
+   "name": "play.mlod8.gpu",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 8,
+    "gpuSplit": "on"
+   }
+  },
+  {
+   "name": "tp-street.occ.gpu",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "on",
+    "meshLod": "off",
+    "stp": "off",
+    "stpScalePct": 0,
+    "gpuSplit": "on"
+   }
+  },
+  {
+   "name": "tp-street.mlod16.gpu",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "gpuSplit": "on"
+   }
+  },
+  {
+   "name": "tp-street.mlod8.gpu",
+   "view": "follow",
+   "kind": "third",
+   "agent": "scout",
+   "walk": [
+    0,
+    -20
+   ],
+   "faceHeading": 180,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 3.0,
+   "seconds": 8.0,
+   "w": 0,
+   "h": 0,
+   "variant": {
+    "occlusion": "off",
+    "meshLod": "on",
+    "stp": "off",
+    "stpScalePct": 0,
+    "meshLodThreshold": 8,
+    "gpuSplit": "on"
+   }
+  }
+ ]
+}

@@ -254,6 +254,7 @@ namespace Suborned.OldTown.Editor.Swap
                 SwapExport.Ground(rep);  // kerbs, pavement cells and roads as placed, before the merge folds them into tiles
                 DecoKitTileMerge.Merge(street);
                 SwapTramAudit.Run(rep, world, Path.Combine(outDir, "tram-audit.json"));  // E12 evidence: what lies on, or level with, our bed
+                DecoKitTileMerge.Merge(net.Root, "Network tiles merged", net.Root);  // brief 106: the network's tram rails and kerbs (tp-street's most drawn far pieces) in the same Mesh LOD chunks, after the audit reads them
                 DecoKitCutawayTags.Apply();
                 for (float z = L.Z.x + 20f; z < L.Z.y; z += 40f)
                     DecoKitAtmosphere.Probe($"Street probe {z:0}", new Vector3(0f, 5f, z), new Vector3(2f * L.FrontX, 22f, 44f));

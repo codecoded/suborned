@@ -59,6 +59,7 @@ namespace Suborned.Play
         /// <summary>The window at w x h pixels (windowed), a few frames to settle. Already that size: nothing happens. Check Screen.width afterwards: a size the display cannot give is left as it came.</summary>
         public static IEnumerator Apply(int w, int h)
         {
+            if (w <= 0 || h <= 0) yield break; // brief 106: a row of size 0 x 0 keeps the screen as it comes (the Air's real full screen)
             if (Screen.width == w && Screen.height == h && Screen.fullScreenMode == FullScreenMode.Windowed) yield break;
             int rw = Mathf.RoundToInt(w / ratio), rh = Mathf.RoundToInt(h / ratio);
             for (int attempt = 0; attempt < 3; attempt++)

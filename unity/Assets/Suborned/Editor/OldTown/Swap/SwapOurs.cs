@@ -73,6 +73,7 @@ namespace Suborned.OldTown.Editor.Swap
             var vol = s.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<UnityEngine.Rendering.Volume>(true)).FirstOrDefault(v => v.isGlobal && v.sharedProfile);
             if (vol) o.PlayGrade = vol.sharedProfile;
             rep.Log($"ours: play look read from our scene: TacticalShadows {(ts ? $"on {ts.name} (near {ts.nearBand}, far {ts.farBand}, {ts.cascades} cascades, fade {ts.fade})" : "MISSING")}, grade {(vol ? AssetDatabase.GetAssetPath(vol.sharedProfile) : "MISSING")}");
+            SwapNight107.Carry(rep, s, target); // brief 107: our night (LightPhase, lamps, night grade) before `lighting` goes
             foreach (var r in s.GetRootGameObjects()) if (Array.IndexOf(SkipRoots, r.name) >= 0) UnityEngine.Object.DestroyImmediate(r);
             foreach (var r in s.GetRootGameObjects()) { var hz = r.transform.Find("horizon"); if (hz) UnityEngine.Object.DestroyImmediate(hz.gameObject); }
             int unpacked = 0;

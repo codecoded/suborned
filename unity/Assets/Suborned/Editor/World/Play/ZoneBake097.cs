@@ -36,7 +36,7 @@ namespace Suborned.World.Play
         /// <summary>Batch: the played OldTown.unity's zone baked and saved (after OldTownPlay.Install; tools/game/batch.ts unity-world, once it is in).</summary>
         public static void BakeTown()
         {
-            try { EditorSceneManager.OpenScene(OldTownPlay.ScenePath, OpenSceneMode.Single); Debug.Log(Bake()); EditorApplication.Exit(LightmapSettings.lightmaps.Length > 0 ? 0 : 1); }
+            try { EditorSceneManager.OpenScene(OldTownPlay.ScenePath, OpenSceneMode.Single); Debug.Log(Bake()); bool ok = LightmapSettings.lightmaps.Length > 0; if (ok) Debug.Log(MeshLod106.Apply()); EditorApplication.Exit(ok ? 0 : 1); } // brief 106: the chunks' Mesh LOD levels after the last bake (they hang the probe bake)
             catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
         }
 
