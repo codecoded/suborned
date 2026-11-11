@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rules Architecture Plan</title>
+<style>
+:root{
+  --bg:#f7f4ee; --panel:#fffdf9; --ink:#24211c; --muted:#6b645a; --line:#e2dbcf;
+  --accent:#2f7f78; --low:#2f7f5a; --med:#a8711c; --high:#b0463c; --chip:#efe9de;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1a18; --panel:#24221f; --ink:#ece6dc; --muted:#a59d90; --line:#3a3631;
+    --accent:#6cc2b9; --low:#7fc79c; --med:#e0b062; --high:#e88a80; --chip:#302d29;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1a18; --panel:#24221f; --ink:#ece6dc; --muted:#a59d90; --line:#3a3631;
+  --accent:#6cc2b9; --low:#7fc79c; --med:#e0b062; --high:#e88a80; --chip:#302d29;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1180px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:26px;margin:0 0 6px}
+h2{font-size:19px;margin:0}
+p{margin:8px 0}
+.lede{color:var(--muted);max-width:760px}
+.answer{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:14px 16px;margin:18px 0 22px;max-width:860px}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--chip)}
+tr:last-child td{border-bottom:none}
+td.n{font-weight:700;color:var(--accent);white-space:nowrap}
+td.h{white-space:nowrap}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:600;background:var(--chip)}
+.low{color:var(--low)} .med{color:var(--med)} .high{color:var(--high)}
+.ger td.n{color:var(--med)}
+.group td{background:var(--chip);font-weight:600;font-size:13px;color:var(--muted)}
+details{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin:12px 0;padding:0 16px}
+summary{cursor:pointer;padding:14px 0;font-weight:600}
+details[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+details>div{padding-bottom:14px}
+ul{margin:6px 0;padding-left:20px} li{margin:4px 0}
+.small{font-size:13px;color:var(--muted)}
+code{font-size:13px;background:var(--chip);padding:1px 4px;border-radius:4px}
+.first{margin:24px 0 8px;font-weight:600}
+</style>
+</head>
+<body>
+<main>
+<h1>Rules architecture: a staged plan</h1>
+<p class="lede">Redline, brief 111, 12 Nov 2026. Your question: is the code built well for a rules system, and could adding and changing rules be easier, with tests worked out quickly and no risk to the game?</p>
+
+<div class="answer">
+<p><strong>Short answer.</strong> The base is good: the engine is exact, runs outside Unity, and rejects anything it doesn't know. Three things make rule changes slow:</p>
+<ul>
+<li><strong>Every run's fingerprint includes every word of the rulebook.</strong> A note edit looks like a game change, and the recorded drive test was re-recorded 45 times in four weeks. 40 of those were for no change in play.</li>
+<li><strong>The game decides some rules a second time.</strong> The Unity side has its own copy of "can this order go now". Most of the Listen-and-Watch trouble came from there and from crew-made rules with no ruling behind them.</li>
+<li><strong>Some tests check clock ticks, not fairness.</strong> A faster act pace "breaks" 9 route scripts when no rule is wrong.</li>
+</ul>
+<p>None of this needs a rewrite. Twelve steps, about 140 agent-hours in all. The first four take about 17 hours and pay off at once.</p>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>#</th><th>Step</th><th>What it changes</th><th>Effort</th><th>Risk</th><th>What it unlocks</th><th>How we'd know it worked</th></tr></thead>
+<tbody>
+<tr class="group"><td colspan="7">Now: quick, safe, pays off at once</td></tr>
+<tr><td class="n">1</td><td><strong>Test tiers</strong></td><td>A rules-only change runs only the rule checks. The engine-health checks (same result in every language and on every replay) run when engine code changes, and every night.</td><td class="h">3–4 h<br><span class="small">Splice</span></td><td><span class="tag low">low</span><br><span class="small">the full suite still runs behind</span></td><td>A rule value judged in about 1½ min instead of about 3½. 72% of the suite's time checks things a rule edit can't break.</td><td>A rulebook-only edit runs the rule checks and the seed sweep in under 90 s on the Studio.</td></tr>
+<tr><td class="n">2</td><td><strong>Behaviour fingerprint</strong></td><td>Run fingerprints hash only what the engine reads, and only what happens in play. Notes, sources and reasons drop out.</td><td class="h">6–8 h<br><span class="small">Keel, Splice</span></td><td><span class="tag med">medium-low</span><br><span class="small">every pinned record is re-recorded once; old runs still replay from their own version</span></td><td>"Did this change the game?" gets a yes/no from maths. It's the safety net for every later step.</td><td>A note edit moves no fingerprint, re-runs no proof and retakes no pictures. A real change lists exactly which runs moved.</td></tr>
+<tr><td class="n">3</td><td><strong>Ring-vs-engine check</strong></td><td>A test compares, at every moment of every scenario, what the ring offers with what the engine would accept.</td><td class="h">3–4 h<br><span class="small">Latch</span></td><td><span class="tag low">none</span><br><span class="small">a test only</span></td><td>Any rule the game decides differently from the engine is caught the day it appears.</td><td>It passes, or it lists the mismatches. I expect a few: the Turn locks, the door "seen", firing on Vale.</td></tr>
+<tr><td class="n">4</td><td><strong>Source check (no AI)</strong></td><td>Every rule <em>condition</em> carries its own source. A changed condition, refusal or law with no ruling of yours behind it is flagged "crew invention — ask Sky".</td><td class="h">3–4 h<br><span class="small">Splice, Aster</span></td><td><span class="tag low">none</span></td><td>Watch-before-Listen can't slip in quietly again.</td><td>Run on the rulebook before brief 110, it flags Listen's "routine known" (its source was an old prototype test, not you).</td></tr>
+<tr class="group"><td colspan="7">Next: the rules move fully into the engine</td></tr>
+<tr><td class="n">5</td><td><strong>One judge of orders</strong></td><td>The engine answers "can this order go, and if not, why" for every order. The game draws the answer and adds the words. What the cell knows (is the door watched?) and "a new order replaces the act in hand" become engine rules too.</td><td class="h">18–30 h<br><span class="small">Keel, Latch, in verb groups</span></td><td><span class="tag med">medium</span><br><span class="small">the game's side changes; checked by step 3</span></td><td>A rule change needs no Unity round. Brief 110 left 8 Unity follow-ups. Bots and you play by the same rules.</td><td>The game's own lock code shrinks to words. A brief-110-type change touches 0 Unity files.</td></tr>
+<tr><td class="n">6</td><td><strong>Fair bands, not clock ticks</strong></td><td>Route scripts become bot plans or report-only examples. Scenario checks read act times from the rulebook.</td><td class="h">10–16 h<br><span class="small">Waymark, Keel</span></td><td><span class="tag low">low</span></td><td>You can change a speed dial without a re-planning round.</td><td>Act pace 50 fails no hard check. Moved outcomes show as band reports.</td></tr>
+<tr class="ger"><td class="n">7</td><td><strong>Exploit hunter</strong> <span class="small">(GER)</span></td><td>An AI writes nasty bot plans (shoot through, rush the car, bribe everyone). The seed sweep scores them by maths, and the AI sharpens them toward the easiest win.</td><td class="h">10–14 h<br><span class="small">Splice, Motive</span></td><td><span class="tag low">none to the game</span><br><span class="small">build time only</span></td><td>Evidence for Motive on cheap wins, before you find them by playing.</td><td>It finds the "I shot my way through" plan you found, beating the crew's loud plan (68% wins, 5:53), or shows across 100 seeds that none exists.</td></tr>
+<tr><td class="n">8</td><td><strong>Tests picked by what they read</strong></td><td>A map from every rule value to the code and tests that read it. A change re-runs only those.</td><td class="h">10–14 h<br><span class="small">Splice, Keel</span></td><td><span class="tag low">low</span><br><span class="small">unmapped means run everything</span></td><td>A "what does this touch" list for every change. Pays most for side systems (traffic, bodies, rivals). Listen alone touches 16 of 18 bot plans.</td><td>A traffic dial re-runs a few tests in seconds. Checked against 20 past changes, it never misses a test whose result changed.</td></tr>
+<tr class="ger"><td class="n">9</td><td><strong>Source check with AI search</strong> <span class="small">(GER + RAG)</span></td><td>The existing search database also holds the decision log, every rule with its source, and your quotes from the briefs. A rule change pulls up the rulings that bear on it. The AI points out conflicts, and code confirms every quote is real.</td><td class="h">11–15 h<br><span class="small">Splice, Fable</span></td><td><span class="tag low">none</span><br><span class="small">flags only</span></td><td>Catches the rule that contradicts a ruling, not only one with no source.</td><td>The Watch-before-Listen change pulls up your 11 Nov rulings ("Scout can always listen and watch", "No commands should be waiting").</td></tr>
+<tr class="group"><td colspan="7">Later: the big one, once the safety net is in</td></tr>
+<tr><td class="n">10</td><td><strong>Orders as data</strong></td><td>Each cell order becomes one rulebook entry: what it needs, costs, takes and changes, and why it can be refused. Complex systems (sight, fights, traffic) stay code, each listing the dials it reads.</td><td class="h">30–50 h<br><span class="small">Keel, 4–6 rounds</span></td><td><span class="tag high">medium-high</span><br><span class="small">safe only one verb group at a time, with step 2 proving nothing moved</span></td><td>"Listen needs no Watch" becomes a one-line data edit. New mechanics (like Take car) still need code.</td><td>Each round moves no behaviour fingerprint. In time, about half of rule changes need no engine round.</td></tr>
+<tr class="ger"><td class="n">11</td><td><strong>Rule-to-data drafts</strong> <span class="small">(GER, optional)</span></td><td>From your plain-English ruling, the AI drafts the data entry. Schema, tests, sweep and the source check judge it. Keel reviews it.</td><td class="h">6–10 h</td><td><span class="tag low">low</span></td><td>Faster first drafts after step 10.</td><td>A draft passes the checks, and Keel accepts it with small edits.</td></tr>
+<tr><td class="n">12</td><td><strong>Retire old paths</strong></td><td>Drop the engine's "play as an old version" branches once old runs replay from their own version.</td><td class="h">4–6 h a pass<br><span class="small">Keel</span></td><td><span class="tag low">low-medium</span></td><td>Less code to read for every rule change.</td><td>Old saved runs still replay exactly from their own version.</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="first">Recommended first step: 1 and 2 together (Splice on the tiers, Keel on the fingerprint), then 3 and 4.</p>
+<p class="small">Hours are agent-hours. Steps 7, 9 and 11 use AI at build time only. Nothing reaches the running game, and right and wrong are still judged by maths.</p>
+
+<details>
+<summary>Where rules live today</summary>
+<div>
+<ul>
+<li><strong>In the rulebook (data):</strong> 547 numbers, all used, and 37 events with their conditions. Two-thirds of the file is notes and sources.</li>
+<li><strong>In engine code:</strong> 34 rulebook sections describe their rule in prose. The behaviour is hand-written to match (the takedown, sight, police, fights, traffic, the getaway). Only Watch, Listen and the four approaches are read straight from the data.</li>
+<li><strong>In the Unity game:</strong> its own "can this order go" for the ring, quiet order fixes (cancel what an agent is doing, nudge a move, queue a Watch), its own idea of what the cell knows (the door), and hints that suggest an order of play.</li>
+<li><strong>In the words file:</strong> which orders each refusal applies to, restated.</li>
+<li><strong>In the tests:</strong> 491 engine scenarios, 42 fixed-tick route scripts, 18 bot plans judged in bands, one pinned drive recording.</li>
+</ul>
+<p><strong>Brief 110 as an example.</strong> "Listen needs no Watch" was a one-line rulebook edit. The round still touched 32 files and left 8 Unity follow-ups (hint, "Next" suggestion, a waiting plate, proofs, words), plus re-plans if the speed dial moves. The "follow her while listening" part is new behaviour and would be engine code under any design.</p>
+<p><strong>Brief 105:</strong> five agents, about 114 files. Take car is new behaviour, so it stays code. Steps 5 and 10 would remove the Unity copy of its locks and the restated word lists.</p>
+</div>
+</details>
+
+<details>
+<summary>The AI loop (GER) and the search database (RAG): where they help, and where they don't</summary>
+<div>
+<p>The loop in <code>tools/style-agent</code>: one agent writes, another scores, code checks, the writer revises. Runs take about 2 minutes and 50–100k tokens, on the existing subscriptions.</p>
+<ul>
+<li><strong>Source check (steps 4 and 9).</strong> Code does the main work: no ruling, flag it. The AI adds "this conflicts with what Sky said on…", backed by a quote that code checks word for word. It catches rules in the rulebook. A rule hidden in Unity code is only caught once step 5 has moved it into the engine.</li>
+<li><strong>Exploit hunter (step 7).</strong> The bots may only read what a player sees on screen, and the plan format rejects anything else, so the AI can't cheat. Its findings go to Motive as evidence.</li>
+<li><strong>Rule-to-data drafts (step 11).</strong> Only after step 10, and only as a first draft for Keel.</li>
+</ul>
+<p><strong>The search database (SurrealDB, tools/rag)</strong> is the right tool for one job here: finding the rulings that bear on a change, by meaning, across the GDD, the decision log and the briefs. Cost for step 9:</p>
+<ul>
+<li><strong>Build:</strong> 5–7 h for three new sources (decision-log entries tagged Sky or crew; each rule with its source and reason; your quotes from the briefs).</li>
+<li><strong>Risk:</strong> none to the game. One cost: any rulebook edit changes the corpus, so the rulings go in their own database (or update piece by piece). Otherwise every rule commit re-indexes the whole GDD.</li>
+<li><strong>Wrong tool for:</strong> the rules themselves. They stay exact structured data the engine reads, never searched or paraphrased. It is also the wrong tool for crew coding, which uses exact text search (rg) on file and line. And it never judges whether a rule is right.</li>
+</ul>
+<p><strong>Not for:</strong> auto-tuning numbers until the bands pass. That goes against "laws, not sums" and "don't tune to win one replay". Also not for scoring whether the game is correct, since a 10/10 from a model is not proof, and nothing at runtime.</p>
+</div>
+</details>
+
+<details>
+<summary>What not to change</summary>
+<div>
+<ul>
+<li>The exact, Unity-free engine: whole numbers, fixed ticks, the same result on every machine and in every language.</li>
+<li>"Unknown = reject" when loading rules and plans. Stable refusal codes, with the words kept apart.</li>
+<li>Every number with a source and a reason; no unused numbers.</li>
+<li>Bots that see only what a player sees, and the hard-line vs band split in the mission checker.</li>
+<li>The seed sweep (about 26 s for 18 plans × 100 seeds) and the split test runner.</li>
+<li>No rewrite, no outside rules engine, no scripting language, no AI in the running game.</li>
+</ul>
+</div>
+</details>
+
+<details>
+<summary>Checked numbers</summary>
+<div>
+<ul>
+<li>Engine: 185 files, 39,760 lines. Unity game side: 121 Host files, 20,125 lines.</li>
+<li>Rulebook: 547 numbers (all used), 37 events, 34 prose sections. Notes and sources are 67% of the text.</li>
+<li>Since 15 Oct: 56 rulebook commits, 8 of them notes only. Drive recording re-recorded 45 times, 40 with the same play and the same result.</li>
+<li>Engine test suite: 3,425 tests, about 53 CPU-minutes, about 3 minutes on the Studio. Two single tests take 160 s each and set the floor.</li>
+<li>Crew detail with file and line references: <code>briefs/111/redline/notes.md</code>.</li>
+</ul>
+</div>
+</details>
+</main>
+</body>
+</html>
