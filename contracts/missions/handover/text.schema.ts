@@ -60,7 +60,7 @@ export const MOVE_VERBS = ['mark', 'talk-down', 'steam', 'covering-fire'] as con
 export const PARKED = 'parked: moves off, Sky 2026-10-26';
 const Parked = z.string().startsWith(PARKED).optional().describe('engine 0.35.1: the word is unused while the four moves are off (weapons.moves.on false); kept for when Sky takes them up');
 /** brief 025 (the playground): `drive` is a control, not a panel order. The player moves an agent by hand and `release` hands control back (both are Order.Do "drive"); it has an action entry (label, Alt line) but no acknowledgement, no exchange and no price line, since a sample goes in every tick. */
-export const CONTROL_VERBS = ['drive', 'trigger', 'follow', 'free'] as const; // free: weapons free (engine 0.19.0, tuning.md §14)
+export const CONTROL_VERBS = ['drive', 'trigger', 'follow', 'free', 'weather', 'light'] as const; // free: weapons free (engine 0.19.0, tuning.md §14); weather, light: the briefing's look (engine 0.54.0, brief 107)
 /** Brief 096 (Sky 2026-11-04: a tester boarded without Popovic and couldn't get out): ways the host builds from an engine verb, with their own
  *  words. `step-out` is a move on a boarded operative (GDD §06 Board: steps out at the car's side, 1 s; Popovic stays in), offered on the car's
  *  ring for everyone aboard (HostGetaway.CarStepOutRows reads actions.step-out). Not an engine verb, so not in VERBS. */

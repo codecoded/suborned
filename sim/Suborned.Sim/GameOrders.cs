@@ -65,7 +65,7 @@ namespace Suborned.Sim
             if (OneInputOn && (o.Do == "panic" || o.Do == "free" || o.Do == "cease" || o.Do == "stance")) return No("unknown-verb", $"'{o.Do}' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses"); // unknown = reject
             if (o.Do == "panic") return Panic(o);
             if (o.Do == "follow") return FollowSet(o); // tuning.md §11.5 (engine 0.17.0): the follow setting, op "cell"
-            if (o.Do == "free") return FreeSet(o); // tuning.md §14 (engine 0.19.0): weapons free, op "cell"
+            if (o.Do == "free") return FreeSet(o); if (o.Do == "weather" || o.Do == "light") return LookSet(o); // tuning.md §14 (engine 0.19.0): weapons free, op "cell"; brief 107 (GameLook.cs): the briefing's weather and light, op "cell", at tick 0 only
             if (o.Do == "go") return Go(o); // brief 018: anyone, from the car's card (GameGetaway.cs)
             var op = OpOf(Sim.Op.Parse(o.Op));
             if (op.Down) return No("agent-down", $"the {o.Op} is down");

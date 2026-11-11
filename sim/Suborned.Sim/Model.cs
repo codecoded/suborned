@@ -274,6 +274,7 @@ namespace Suborned.Sim
             "fire-carrying", "no-target", "fire-on-cell", "target-unknown", "civilian-target", "out-of-range", "no-clear-line", "carry-vale",
             "already-carrying", "carry-names-downed", "carry-self", "not-down", "already-carried", "nothing-to-cancel", "keeps-vale", "holstering",
             "stand-beside-op",
+            "look-unknown", "look-fixed", // brief 107 (engine 0.54.0, GameLook.cs): the briefing's weather and light
             "no-leverage", "summon-off-street", "summon-busy", "summon-too-far", "summon-alert", "summon-saw-violence", "summon-came-once", "summon-no-visit", "call-saw-violence", /* brief 102 (step 4): the one called holds a memory of the cell's violence */
             "needs-tier", "needs-reach", "needs-need-is", "needs-standing", "needs-fit", "needs-scale", "needs-trail",
             // brief 013: takedowns, bodies and stashes, the doors at lockdown

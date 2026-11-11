@@ -6,7 +6,7 @@
 // is restated here, and checkRulebook() rejects any id that file does not know (GDD §01: unknown = reject).
 import { z } from 'zod';
 import type { PeopleRules } from '../people/people.rules.schema.ts';
-import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; import { BlastStanding, RivalsBlock, RivalsLookout, RivalsTurn, Unclaimed } from './rulebook.schema096r.ts'; import { CarLend, CarTake } from './rulebook.schema096l.ts'; import { Bodies, FightCover } from './rulebook.schema098b.ts'; import { CarGo } from './rulebook.schema096m.ts'; // brief 096 (engine 0.40.0, 0.41.0, 0.42.0, 0.43.0)
+import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; import { BlastStanding, RivalsBlock, RivalsLookout, RivalsTurn, Unclaimed } from './rulebook.schema096r.ts'; import { CarLend, CarTake } from './rulebook.schema096l.ts'; import { Bodies, FightCover } from './rulebook.schema098b.ts'; import { Look } from './rulebook.schema107.ts'; import { CarGo } from './rulebook.schema096m.ts'; // brief 096 (engine 0.40.0, 0.41.0, 0.42.0, 0.43.0)
 
 const id = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const eventId = z.string().regex(/^[a-z][a-z0-9-]*\.[a-z][a-z0-9-]*$/);
@@ -499,7 +499,7 @@ export const Rulebook = z.strictObject({
       rule: text }),
     rule: text,
   }).optional(),
-  investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }), bodies: Bodies.optional(), // brief 098 L9 (engine 0.46.0): optional only for runs pinned before it (rulebook098b.test.ts holds the live one to it)
+  investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }), bodies: Bodies.optional(), look: Look.optional(), /* brief 107 (engine 0.54.0): the weather and light dial, a look only (rulebook.schema107.ts) */ // brief 098 L9 (engine 0.46.0): optional only for runs pinned before it (rulebook098b.test.ts holds the live one to it)
   preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),
   // brief 080 (engine 0.37.0): the seeded start. Optional only so a rulebook pinned before it parses.
   seed: ground({

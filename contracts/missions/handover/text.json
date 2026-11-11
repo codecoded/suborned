@@ -405,7 +405,9 @@
   "drive": {"label":"Take control","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive"},"does":"Walk this agent yourself, at their pace. Anyone nearby still sees them.","ways":{"release":{"label":"Back to map","does":"Back to the map. Whatever they are doing carries on."}}},
   "trigger": {"label":"Trigger","by":["scout","fixer","tech","enforcer"],"engine":{"do":"trigger"},"does":"Fire by hand from the agent you drive: hold to keep firing, let go to stop."},
   "follow": {"label":"Follow fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"follow"},"does":"Agents near you fire at your target. On: they keep firing till it is down."},
-  "free": {"label":"Weapons free","by":["scout","fixer","tech","enforcer"],"engine":{"do":"free"},"does":"In a fight, drawn agents pick their own targets. Off: they only return fire."}
+  "free": {"label":"Weapons free","by":["scout","fixer","tech","enforcer"],"engine":{"do":"free"},"does":"In a fight, drawn agents pick their own targets. Off: they only return fire."},
+  "weather": {"label":"Weather","by":["scout","fixer","tech","enforcer"],"engine":{"do":"weather"},"does":"Set the weather at the briefing. It is only how the street looks."},
+  "light": {"label":"Day or night","by":["scout","fixer","tech","enforcer"],"engine":{"do":"light"},"does":"Set day or night at the briefing. It is only how the street looks."}
  },
  "cancelCosts": {
   "stop": "Stops where they stand. Nothing is lost.",
@@ -561,6 +563,8 @@
   "fire-running": {"line":"Can't fire while running. Walk or stop first.","short":"Not while running","verbs":["fire"]},
   "not-driven": {"line":"Only the agent you drive has a trigger. Take control first.","short":"Take control first","verbs":["trigger"]},
   "follow-not-cell": {"line":"Follow fire is for the whole cell, not one agent.","short":"Whole cell only","verbs":["follow"]},
+  "look-unknown": {"line":"Pick clear, overcast, rain or mist, and day or night.","short":"Pick one","verbs":["weather","light"]},
+  "look-fixed": {"line":"Weather and light are set at the briefing, for the whole mission.","short":"Set at the briefing","verbs":["weather","light"]},
   "free-not-cell": {"line":"Weapons free is for the whole cell, not one agent.","short":"Whole cell only","verbs":["free"]},
   "fire-carrying-vale": {"line":"The Enforcer is carrying Popovic. Get Popovic in the car; let the others fire.","short":"Hands full · Popovic","verbs":["fire"]},
   "fire-carrying": {"line":"Can't fire while carrying. Put them down, or let another shoot.","short":"Hands full","verbs":["fire"]},
@@ -1325,6 +1329,8 @@
   "down": "a hostile who is down speaks nothing"
  },
  "silentLogs": {
+  "start.weather": "engine 0.54.0 (brief 107; Keel): log only: the weather the game starts with, or the briefing's pick; a look only, the host draws it, no card",
+  "start.light": "engine 0.54.0 (brief 107; Keel): log only: day or night, as the game starts or the briefing picks; a look only, the host draws it, no card",
   "patrol.resumes": "brief 102's sweep (Fable 2026-11-08): the loop cut patrol-resumes's last line: Turning back already conveys the moment, and another polite announcement would be filler.",
   "camera.recorded": "engine 0.40.0 (brief 096; rulebook camera): card only (cards.items, brief 100): a camera has the Pay or Pressure on tape; the marked reporter shows it until the record lands (camera.record-lands)",
   "camera.record-lands": "engine 0.40.0 (brief 096): card only (cards.items, Fable 2026-11-05): the camera's record reaches the desk (Alert up), or is on file at the end",
