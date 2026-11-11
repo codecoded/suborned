@@ -82,6 +82,7 @@ briefs/**/*.mov
 !briefs/009/concepts/**/*.jpeg
 !briefs/009/concepts/**/*.webp
 !briefs/104/concepts/**/*.png
+!briefs/107/concepts/**/*.png
 !briefs/009/options/**/*.png
 !briefs/009/options/**/*.jpg
 !briefs/009/options/**/*.jpeg
