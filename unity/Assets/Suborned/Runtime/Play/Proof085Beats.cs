@@ -18,8 +18,8 @@ namespace Suborned.Play
             // brief 110 (engine 0.55.0): no spot ahead, no wait: the Listen starts on the first tick in reach and keeps to her (it follows, then settles)
             var spot = g.ListenSpotNow("scout"); int tick0 = g.Tick; var inezAt = g.PersonPos(g.PersonByRole("waitress")); bool inReach = inezAt.HasValue && G.Within(g.Ops[0].Pos, inezAt.Value, 520);
             row("r085listenSpot", g.Ops[0].Busy?.Do == "listen" && inReach && !waited, $"under way at {HandoverHost.MissionClock(g.Tick)}, in reach ({(inezAt.HasValue ? G.Dist(g.Ops[0].Pos, inezAt.Value) / 100f : -1f):0.0} m in the engine), never waiting {!waited}; spot now {spot?.at} '{spot?.chair}', walking {g.Ops[0].Walk != null}; Scout {Vector3.Distance(sc.position, inez.position):0.0} m from Inez drawn");
-            // the partner steps out once the Scout has settled by Inez standing (HostViews.Listen): play on until then
-            for (int i = 0; i < 400 && g.Ops[0].Busy?.Do == "listen" && !(g.Ops[0].Walk == null && g.ListenSpotNow("scout") != null) && !g.Over && !h.ConvoPending; i++) Step(h, r, g.Tick + 1);
+            // the partner steps out once the Scout is listening and still (HostViews.Listen): play on until then
+            for (int i = 0; i < 400 && g.Ops[0].Busy?.Do == "listen" && g.Ops[0].Walk != null && !g.Over && !h.ConvoPending; i++) Step(h, r, g.Tick + 1); // engine 0.56.0: she may listen in reach with no spot; still is enough (HostViews.Listen)
             h.LookAt(inez.position); h.SetSpeed(1); h.SetPaused(false); float t0 = Time.unscaledTime; bool midShot = false; while (h.Views.ListenPartnerAlong < 1f && Time.unscaledTime - t0 < 12f) { if (!midShot && h.Views.ListenPartnerAlong > 0.45f) { midShot = true; h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r085-partner-walking", log); h.SetPaused(false); } yield return null; }
             float took = Time.unscaledTime - t0; yield return new WaitForSecondsRealtime(0.7f); h.SetPaused(true); yield return Frames(3); yield return Shoot(dir, "r085-partner-talking", log);
             var mil = h.Views.Find(h.Views.ListenPartnerUp("waitress") ?? ""); float gap = mil ? Vector3.Distance(mil.position, inez.position) : 99f; var inezFace = Quaternion.Euler(0f, h.Views.FigureYaw("waitress") ?? 0f, 0f) * Vector3.forward; float toMil = mil ? Vector3.Angle(inezFace, mil.position - inez.position) : 180f; var scFace = Quaternion.Euler(0f, h.Views.FigureYaw("op/scout") ?? 0f, 0f) * Vector3.forward; var scTo = inez.position - sc.position; scTo.y = 0f; float scAt = Vector3.Angle(scFace, scTo);
@@ -74,7 +74,7 @@ namespace Suborned.Play
             while (!h.Views.SeatedDrawn("op/scout") && Time.unscaledTime - t0 < 8f && !g.Over)
             {
                 yield return null; var now0 = Feet(); var mv = now0 - was; mv.y = 0f; was = now0; if (g.Tick >= from) most = Mathf.Max(most, mv.magnitude / Mathf.Max(Time.unscaledDeltaTime, 1e-4f));
-                var c0 = h.Views.FigureClip("op/scout").Item1; if (c0.StartsWith("walk")) walked = c0;
+                var c0 = h.Views.FigureClip("op/scout").Item1; if (c0.StartsWith("walk")) walked = c0; if (clips.Count == 0 || clips[^1] != c0) clips.Add(c0); // from the walk in: the stand_to_sit can start the frame the seat is drawn
                 if (!stepShot && G.Within(g.Ops[0].Pos, seat, 120)) { stepShot = true; h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r085-chair-step", log); h.SetPaused(false); was = Feet(); from = g.Tick + 2; }
             }
             // seated: the stand-to-sit, then the loop; and Inez in earshot (cell.listen.earshot: she serves only the tables in the Scout's reach) for the rest of the Listen
@@ -91,8 +91,11 @@ namespace Suborned.Play
             h.SetPaused(true); yield return Frames(2);
             var at = Feet(); at.y = seatW.y; float off = Vector3.Distance(at, seatW); var clip = h.Views.FigureClip("op/scout").Item1; var now = g.ListenSpotNow("scout"); bool seated = h.Views.SeatedDrawn("op/scout");
             row("r085chairStep", walked.Length > 0 && most <= 2.7f, $"the last 3 m into {got} drawn on {(walked.Length > 0 ? walked : "no walk clip")}, the figure at most {most:0.00} m/s (the cell walks 1.8; 2.7 is a stride over: a slide or a jump would pass it)");
-            bool standToSit = clips.Contains("stand_to_sit") || !h.Views.HasClip("op/scout", "stand_to_sit"); int sitAt = clips.FindIndex(c => c is "sit" or "sit_alt");
-            row("r085sitClips", standToSit && sitAt >= 0 && (clips.IndexOf("stand_to_sit") < sitAt || !clips.Contains("stand_to_sit")), $"the figure's clips from the seat on: {string.Join(" → ", clips)} (stand_to_sit {(h.Views.HasClip("op/scout", "stand_to_sit") ? "in its set" : "not in its set")})");
+            // the sit-down: with HostViews.SeatTransitions on, stand_to_sit then the loop; off (the game's setting since brief 022: Forma's clip stands inside the chair
+            // and ends 11-15 cm high), the walk cross-fades straight into the loop, as every seated customer does
+            bool trans = HostViews.SeatTransitions && h.Views.HasClip("op/scout", "stand_to_sit"); int sitAt = clips.FindIndex(c => c is "sit" or "sit_alt"), walkAt = clips.FindIndex(c => c.StartsWith("walk"));
+            bool sat = sitAt >= 0 && walkAt >= 0 && walkAt < sitAt && !clips.Contains("sit_talk") && (!trans || clips.IndexOf("stand_to_sit") is int ts && ts >= 0 && ts < sitAt);
+            row("r085sitClips", sat, $"the figure's clips from the walk in: {string.Join(" → ", clips)}; seat transitions {(HostViews.SeatTransitions ? "on" : "off (brief 022: the walk cross-fades into the loop)")}, stand_to_sit {(h.Views.HasClip("op/scout", "stand_to_sit") ? "in its set" : "not in its set")}; alone: never sit_talk");
             row("r085scoutChair", clip.Contains("sit") && seated && off < 0.05f && g.SeatedAt("scout")?.chair == got, $"chair {got}, clip {clip}, seated {seated}, {off * 100f:0} cm off the seat, engine seated in '{g.SeatedAt("scout")?.chair}'; now: spot {now?.at} '{now?.chair}' waiting {now?.waiting}, walk {g.Ops[0].Walk != null}, busy {g.Ops[0].Busy?.Do}, act {g.Ops[0].Act?.Do}, at {g.Ops[0].Pos} tick {g.Tick}; plate '{h.PlateWords(0)}'");
         }
 

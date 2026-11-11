@@ -94,3 +94,14 @@ Sky: "the scout (she) prefers a chair. Once someone has got to someone to listen
 - She's drawn as the covered-figure silhouette while the umbrella is over her. The ear (Listen) icon is above her.
 - Inez stays at her post and serves the table beside the Scout, within earshot.
 - The first take had the Scout idling on the terrace from 0:00, and the mast camera reported her (a "reported" chip). So she now walks over at 1:55. Keel's open question about a seated operative in a camera's view is separate.
+
+## The 0.56.0 / 0.57.0 builds and the proof
+- **0.2.333:** engine 0.56.0, the chair clip.
+- **0.2.334:** the first r083 run (108 rows, 7 red). The rows had leaned on a settle spot that 0.56.0 often doesn't give: the Scout listens in reach with no chair or wall free.
+  - **The Scout's side-on facing** (`HostViews.Listen.cs`): now whenever she is listening and still, spot or not. It fixed `r085scoutSideOn` and `r085listenFrame` (she was 35° off looking at Inez; now 105°).
+  - **Milena:** she steps out once the Scout is listening and still. The proof's `ListenOnStreet` steps only until the Scout is still; it had run headless until a spot, so the Listen landed before Milena came out. It fixed `r085partnerOut` (out in 1.8 s, talking) and `r085viewBack` (back within 0 m).
+  - **`r085listenApart`:** with no partner at the scene it now fails with a reason instead of throwing. The fail-fast caught that throw at once on 0.2.333's run.
+  - **`r085sitClips`:** stand-to-sit is off across the game (`HostViews.SeatTransitions = false`, brief 022: Forma's clip stands inside the chair and ends 11–15 cm high). So the walk cross-fades straight into the sitting loop, as for every seated customer. The row checks the walk in, then `sit` or `sit_alt` (never `sit_talk`, as she sits alone), and `stand_to_sit` only when transitions are on. A visible sit-down is Forma's clip first, then the switch: open for Aster.
+- **0.2.335:** engine 0.57.0 (`attention.seated`), the sim step only, no rebake. Sim 495/495, host logic 211/0.
+- **0.2.336:** the `r085sitClips` row, proof code only, the same engine. **r083 with r085: 108 of 108 green**, on a quiet machine (the run waited 32 min for a Blender job).
+  - The door-clip rows (`r085clipOut`, `r085clipTopSpeed`, `r085clipFindsHim`) failed on 0.2.335's run while Blender used every core. They pass here: load, as before.

@@ -30,8 +30,10 @@ namespace Suborned.Play
             // the listener: side on, never at the person; turned once, and again only if the person ends up in front of him or dead behind him
             for (int k = 0; k < 4; k++)
             {
-                string key = OpKeys[k]; if (g.ListenSpotNow(Op.Name((OpId)k)) is not { } n || g.Ops[k].Walk != null || !things.TryGetValue(key, out var me) || !me.shown || !figs.TryGetValue(key, out var f)) { if (key == scoutFaceFor) { scoutFaceFor = ""; scoutFaceYaw = float.NaN; } continue; }
-                if (!things.TryGetValue(n.target, out var them)) continue; var to = them.t.position - me.t.position; to.y = 0f; if (to.sqrMagnitude < 0.01f) continue;
+                // engine 0.56.0: she may listen in reach with no spot (no chair or wall free); still and listening is enough
+                string key = OpKeys[k]; string tgt = g.ListenSpotNow(Op.Name((OpId)k))?.target ?? (g.Ops[k].Busy is { Do: "listen" } lb ? lb.Target : null);
+                if (tgt == null || g.Ops[k].Walk != null || !things.TryGetValue(key, out var me) || !me.shown || !figs.TryGetValue(key, out var f)) { if (key == scoutFaceFor) { scoutFaceFor = ""; scoutFaceYaw = float.NaN; } continue; }
+                if (!things.TryGetValue(tgt, out var them)) continue; var to = them.t.position - me.t.position; to.y = 0f; if (to.sqrMagnitude < 0.01f) continue;
                 float toYaw = Mathf.Atan2(to.x, to.z) * Mathf.Rad2Deg, off = Mathf.Abs(Mathf.DeltaAngle(float.IsNaN(scoutFaceYaw) ? f.yaw : scoutFaceYaw, toYaw));
                 if (float.IsNaN(scoutFaceYaw) || off < 80f || off > 150f) { float side = Mathf.DeltaAngle(toYaw, f.yaw) >= 0f ? 105f : -105f; scoutFaceYaw = toYaw + side; scoutFaceFor = key; }
                 faces[key] = Quaternion.Euler(0f, scoutFaceYaw, 0f) * Vector3.forward;
