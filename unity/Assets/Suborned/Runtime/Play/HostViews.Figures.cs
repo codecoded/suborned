@@ -322,6 +322,8 @@ namespace Suborned.Play
             return rifle && Has(f, "aim") ? "aim" : Has(f, "aim_pistol") ? "aim_pistol" : Has(f, "aim") ? "aim" : "idle";
         }
 
+        /// <summary>For checks (brief 110's r085sitClips): whether the figure drawn for `key` has the clip `state` in its set.</summary>
+        public bool HasClip(string key, string state) => figs.TryGetValue(key, out var f) && Has(f, state);
         static bool Has(Fig f, string state) => f.anim.runtimeAnimatorController != null && f.anim.HasState(0, Animator.StringToHash(state));
 
         /// <summary>Brief 020: a kit model as the visual of a box or drum view (the view's collider stays the click target); the view's own

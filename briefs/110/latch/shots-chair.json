@@ -1,0 +1,8 @@
+{
+ "schema": "suborned.shots/1",
+ "note": "Brief 110, engine 0.56.0 (Aster): the Scout taking a chair and listening while Inez serves the tables near her. From 2:09, the camera keeping the Scout (clip.track), zoom 9, 35 s at 30 fps.",
+ "defaults": { "settle": 0.3 },
+ "shots": [
+  { "name": "listen-chair", "script": "briefs/110/latch/listen-chair.script.json", "tick": 1290, "focus": "op/scout", "zoom": 9, "hud": true, "clip": { "seconds": 35, "fps": 30, "track": true } }
+ ]
+}

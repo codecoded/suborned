@@ -39,7 +39,9 @@ namespace Suborned.Play
             var spot = g.ListenSpotNow("scout"); h.SetPaused(false); float t0 = Time.unscaledTime; while (h.Views.ListenPartnerAlong < 1f && Time.unscaledTime - t0 < 14f) yield return null; yield return new WaitForSecondsRealtime(0.5f); h.SetPaused(true); yield return Frames(3); yield return Shoot(dir, "r085-apart-street", log);
             float dist = Vector3.Distance(sc.position, inez.position); var clip = h.Views.FigureClip("op/scout").Item1; var got = new bool[1]; yield return ToSceneDrawn(h, r, g.Tick + 900, got); var c = h.ConvoNow;
             if (!got[0] || c == null) { row("r085listenApart", false, $"no scene: {h.ConvoLast}; {dist:0.0} m, spot {spot?.at} '{spot?.chair}'"); yield return EndScene(h); yield break; }
-            var mil = h.Views.Find(h.Views.ListenPartnerUp("waitress") ?? ""); Vector3 VP(Transform t) => cam.WorldToViewportPoint(t.position + Vector3.up * 1.2f); var vm = VP(mil); var vi = VP(inez); var vs = VP(sc); bool pairIn = vm.z > 0f && vi.z > 0f && vm.x > 0.05f && vm.x < 0.95f && vi.x > 0.05f && vi.x < 0.95f, inWay = vs.z > 0f && vs.z < Mathf.Min(vm.z, vi.z) && vs.x > Mathf.Min(vm.x, vi.x) - 0.08f && vs.x < Mathf.Max(vm.x, vi.x) + 0.08f;
+            var mil = h.Views.Find(h.Views.ListenPartnerUp("waitress") ?? "");
+            if (!mil) { row("r085listenApart", false, $"no partner out at the scene ({c.Id}; Scout {dist:0.0} m from Inez, walking {g.Ops[0].Walk != null}, spot {spot?.at} '{spot?.chair}', partner along {h.Views.ListenPartnerAlong:0.00})"); yield return EndScene(h); yield break; }
+            Vector3 VP(Transform t) => cam.WorldToViewportPoint(t.position + Vector3.up * 1.2f); var vm = VP(mil); var vi = VP(inez); var vs = VP(sc); bool pairIn = vm.z > 0f && vi.z > 0f && vm.x > 0.05f && vm.x < 0.95f && vi.x > 0.05f && vi.x < 0.95f, inWay = vs.z > 0f && vs.z < Mathf.Min(vm.z, vi.z) && vs.x > Mathf.Min(vm.x, vi.x) - 0.08f && vs.x < Mathf.Max(vm.x, vi.x) + 0.08f;
             yield return Shoot(dir, "r085-apart-shot", log);
             // GDD §10 (Aster's ruling, 2026-11-10): the profile two-shot when a side angle holds the pair clear, else the play camera's pitch at 7 m, else (past 6 m) the intercut: the rule's pick for the geometry as it stands
             var (clear, of) = h.ConvoProfileClear(c); float gap = Vector3.Distance(mil.position, inez.position), pitch = cam.transform.eulerAngles.x; string want = gap > HandoverHost.ConvoTwoShotM ? "intercut" : clear > 0 ? "profile" : "high";
@@ -53,27 +55,21 @@ namespace Suborned.Play
         /// a customer does, facing the table, by Forma's clips (HostSeats.OpSeat).</summary>
         static IEnumerator ListenOnChair(HandoverHost h, string dir, List<string> log, System.Action<string, bool, string> row)
         {
-            // brief 110 (engine 0.55.0): no Watch first, no spot ahead: the Listen walks in at once, follows her, and settles when she stands, a free chair first
-            // the settle takes a chair only where she stands with a free one in reach (else a wall, or the Scout stays in reach: LS-CHAIR), so the Listen is given at a run of
-            // moments of her round, each on a fresh run, headless, until one settles in a chair; then the drawn checks below
-            Game g = null; string got = ""; var tried = new List<string>();
-            foreach (int startS in new[] { 0, 15, 30, 45, 60, 80, 100, 125, 150, 180 })
-            {
-                yield return Fresh(h, ConversationScenes.Never); g = h.Game; if (startS > 0) h.RunTo(startS * Game.Hz);
-                h.Issue(new Order { Op = "scout", Do = "listen", Target = "waitress" }); string how = "never settled";
-                for (int i = 0; i < 3000 && got.Length == 0 && !g.Over && (g.Ops[0].Busy != null || g.Ops[0].Act != null || i < 20); i++)
-                { h.RunTo(g.Tick + 1); if (g.ListenSpotNow("scout") is { } sp) { if (sp.chair.Length > 0) got = sp.chair; else how = "settled by a wall"; } }
-                tried.Add($"{startS} s: {(got.Length > 0 ? got : how)}"); if (got.Length > 0) break;
-            }
-            if (got.Length == 0)
-            {   // engine 0.55.0 settles a Listen in a chair, by a wall, or in reach where she stood (Keel's LS-CHAIR takes any; Sky: the Scout prefers a chair, Keel's 0.56.0): with no chair offered there is no seat to draw
-                var none = $"no chair offered at any moment tried ({string.Join("; ", tried)}): the settle chose a wall or reach; the seated drawing is checked when the engine offers one (Sky: the Scout prefers a chair; Keel's 0.56.0)";
-                row("r085scoutChair", true, none); row("r085chairStep", true, none); log.Add("r085 chair: " + none); yield break;
-            }
-            log.Add($"r085 chair: {string.Join("; ", tried)}");
+            // brief 110, engine 0.56.0 (Sky: "the scout (she) prefers a chair. Once someone has got to someone to listen to them, the other person should remain in earshot"):
+            // the café often starts full, so the run plays on until a chair is free for her by Inez (Game.ListenChairFor), then the Listen; she must sit in a chair
+            yield return Fresh(h, ConversationScenes.Never); var g = h.Game; string free = null;
+            // a chair free while Inez stands (at her post or serving): one free only while she walks past is gone by the time she stops (the run's first free one stands at 2:10)
+            for (int i = 0; i < 900 && free == null && !g.Over; i++) { h.RunTo(g.Tick + 5); if (g.PersonPose(g.PersonByRole("waitress"))?.phase is "at post" or "serving") free = g.ListenChairFor("scout", "waitress"); }
+            if (free == null) { row("r085scoutChair", false, $"no chair came free by Inez by {HandoverHost.MissionClock(g.Tick)} (Game.ListenChairFor)"); yield break; }
+            int freeAt = g.Tick; h.Issue(new Order { Op = "scout", Do = "listen", Target = "waitress" }); string got = "";
+            for (int i = 0; i < 3000 && got.Length == 0 && !g.Over && (g.Ops[0].Busy != null || g.Ops[0].Act != null || i < 20); i++)
+            { h.RunTo(g.Tick + 1); if (g.ListenSpotNow("scout") is { } sp && sp.chair.Length > 0) got = sp.chair; }
+            if (got.Length == 0) { row("r085scoutChair", false, $"a chair was free at {HandoverHost.MissionClock(freeAt)} ({free}) but the Listen settled without one (spot {g.ListenSpotNow("scout")?.at}, busy {g.Ops[0].Busy?.Do})"); yield break; }
+            log.Add($"r085 chair: {free} free at {HandoverHost.MissionClock(freeAt)}; the Listen settled in {got}");
             var seat = g.People2.Places[got]; for (int i = 0; i < 1500 && g.Ops[0].Walk != null && !G.Within(g.Ops[0].Pos, seat, 300) && !g.Over; i++) h.RunTo(g.Tick + 1); // headless to her last 3 m
             var sc = h.Views.Find("op/scout"); var seatW = h.frame.World(seat); h.LookAt(sc.position); h.SetSpeed(1); h.SetPaused(false);
             Vector3 Feet() { foreach (var (k, feet, _) in h.Views.FigureFeet()) if (k == "op/scout") return feet; return sc.position; }
+            var clips = new List<string>(); // the figure's clips from the step into the seat on: stand_to_sit, then a sitting loop (sit, sit_alt)
             float most = 0f, t0 = Time.unscaledTime; var was = Feet(); string walked = ""; bool stepShot = false; int from = g.Tick + 2; // the view catches up the headless ticks first (one lerp over them): measured from the second tick played in time
             while (!h.Views.SeatedDrawn("op/scout") && Time.unscaledTime - t0 < 8f && !g.Over)
             {
@@ -81,9 +77,22 @@ namespace Suborned.Play
                 var c0 = h.Views.FigureClip("op/scout").Item1; if (c0.StartsWith("walk")) walked = c0;
                 if (!stepShot && G.Within(g.Ops[0].Pos, seat, 120)) { stepShot = true; h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r085-chair-step", log); h.SetPaused(false); was = Feet(); from = g.Tick + 2; }
             }
-            yield return new WaitForSecondsRealtime(0.6f); h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r085-chair-sitting", log);
+            // seated: the stand-to-sit, then the loop; and Inez in earshot (cell.listen.earshot: she serves only the tables in the Scout's reach) for the rest of the Listen
+            float s0 = Time.unscaledTime; float farM = 0f; int reach = 500;
+            while (Time.unscaledTime - s0 < 4f && !g.Over) { yield return null; var c1 = h.Views.FigureClip("op/scout").Item1; if (clips.Count == 0 || clips[^1] != c1) clips.Add(c1); }
+            yield return new WaitForSecondsRealtime(0.1f); h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r085-chair-sitting", log); h.SetPaused(false); h.SetSpeed(4);
+            float e0 = Time.unscaledTime; int seatedTicks = 0;
+            while (g.Ops[0].Busy?.Do == "listen" && Time.unscaledTime - e0 < 40f && !g.Over)
+            {
+                yield return null; var her = g.PersonPos(g.PersonByRole("waitress")); if (her.HasValue && g.SeatedAt("scout") != null) { seatedTicks++; farM = Mathf.Max(farM, G.Dist(g.Ops[0].Pos, her.Value) / 100f); }
+            }
+            h.SetSpeed(1); h.SetPaused(true);
+            row("r085inezNear", seatedTicks > 0 && farM <= reach / 100f + 0.3f, $"while the Scout listened seated ({seatedTicks} frames), Inez at most {farM:0.0} m from her (reach {reach / 100f:0.0} m); the Listen {(g.Ops[0].Busy?.Do == "listen" ? "still running" : "landed")} at {HandoverHost.MissionClock(g.Tick)}");
+            h.SetPaused(true); yield return Frames(2);
             var at = Feet(); at.y = seatW.y; float off = Vector3.Distance(at, seatW); var clip = h.Views.FigureClip("op/scout").Item1; var now = g.ListenSpotNow("scout"); bool seated = h.Views.SeatedDrawn("op/scout");
             row("r085chairStep", walked.Length > 0 && most <= 2.7f, $"the last 3 m into {got} drawn on {(walked.Length > 0 ? walked : "no walk clip")}, the figure at most {most:0.00} m/s (the cell walks 1.8; 2.7 is a stride over: a slide or a jump would pass it)");
+            bool standToSit = clips.Contains("stand_to_sit") || !h.Views.HasClip("op/scout", "stand_to_sit"); int sitAt = clips.FindIndex(c => c is "sit" or "sit_alt");
+            row("r085sitClips", standToSit && sitAt >= 0 && (clips.IndexOf("stand_to_sit") < sitAt || !clips.Contains("stand_to_sit")), $"the figure's clips from the seat on: {string.Join(" → ", clips)} (stand_to_sit {(h.Views.HasClip("op/scout", "stand_to_sit") ? "in its set" : "not in its set")})");
             row("r085scoutChair", clip.Contains("sit") && seated && off < 0.05f && g.SeatedAt("scout")?.chair == got, $"chair {got}, clip {clip}, seated {seated}, {off * 100f:0} cm off the seat, engine seated in '{g.SeatedAt("scout")?.chair}'; now: spot {now?.at} '{now?.chair}' waiting {now?.waiting}, walk {g.Ops[0].Walk != null}, busy {g.Ops[0].Busy?.Do}, act {g.Ops[0].Act?.Do}, at {g.Ops[0].Pos} tick {g.Tick}; plate '{h.PlateWords(0)}'");
         }
 

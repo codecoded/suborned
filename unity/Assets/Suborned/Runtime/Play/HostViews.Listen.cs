@@ -42,10 +42,10 @@ namespace Suborned.Play
         {
             var who = host.ListenPartners; if (who == null) return;
             if (listenP != null && listenP.For != g) { var old = things[listenP.Key]; things[listenP.Key] = (old.t, old.to, old.to, false); listenP = null; }
-            // brief 110 (engine 0.55.0): a Listen holds nobody and the listener follows. The partner steps out only once the listener has settled by the person standing
-            // (the listener's spot, no walk); once out she stays with the person while the Listen runs, walking beside them if they move on (was: on any Listen, the person held)
+            // brief 110 (engine 0.55.0): a Listen holds nobody and the listener follows. The partner steps out once the listener is listening and still
+            // (no walk; engine 0.56.0's earshot keeps the person near); once out she stays with the person while the Listen runs, walking beside them if they move on (was: on any Listen, the person held)
             string role = null;
-            for (int k = 0; k < 4; k++) if (g.Ops[k].Busy is { Do: "listen" } b && (!g.R.ListenFollowOn || listenP != null && listenP.Role == b.Target || g.Ops[k].Walk == null && g.ListenSpotNow(Op.Name((OpId)k)) != null)) role = b.Target;
+            for (int k = 0; k < 4; k++) if (g.Ops[k].Busy is { Do: "listen" } b && (!g.R.ListenFollowOn || listenP != null && listenP.Role == b.Target || g.Ops[k].Walk == null)) role = b.Target; // engine 0.56.0: listening and still (in a chair, by a wall, or in reach where she stands; earshot keeps the person near)
             bool fight = g.FightOn || g.Alert >= 2, talk = role != null && who.ContainsKey(role) && !fight;
             if (listenP == null) { if (!talk || !ListenPartnerOut(g, role, who[role])) return; }
             var p = listenP; float dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f), pace = host.ConvoOn || host.Paused || g.Over ? 0f : host.Speed;

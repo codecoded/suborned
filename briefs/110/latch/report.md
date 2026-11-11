@@ -69,3 +69,28 @@ All three were in `HandoverHost.cs`.
 - `Proof085Beats.cs` (rows), `GameBoot.cs` (two lines), `GameProof.FailFast.cs` (new), `HostFightLab.cs` (the search depth)
 - `contracts/missions/handover/text.json` (H2's trigger line), `tools/game/proofmap.json` (`GameProof.FailFast.cs`)
 - `briefs/110/latch/listen-inez.script.json`, `shots-listen.json`, this report
+
+# 0.56.0: the Scout prefers a chair, the person stays in earshot (Keel, ac8f379b4)
+Sky: "the scout (she) prefers a chair. Once someone has got to someone to listen to them, the other person should remain in earshot."
+
+**The build:** **0.2.333** (`bun run batch --sky`, 334 s, BATCH OK; the town not rebaked, nothing it reads changed). Engine 0.56.0: sim 494/494 scenarios, identical replay; host logic 211 pass, 0 fail.
+
+**When a chair is free.** Headless, on the 0.56.0 engine (a throwaway console against `Suborned.Sim`):
+- **The café starts full.** A chair by Inez shows free only while she walks between tables, and is gone by the time she stops.
+- **From 2:10, chairs come free while she stands:**
+  - at her post, 2:10–2:34, 3:00–3:28, 3:48–4:13 and 4:51–5:25;
+  - serving, 2:40–2:54 and 3:31–3:45.
+- **A Listen given at 2:10** seats the Scout in `cafe-table-1-seat-1` at 2:12. She stays seated for 29 s until it lands, and Inez never goes past 4.4 m from her (earshot: Inez skips the far tables and waits at her post).
+- **Given at 0:33,** when a chair showed free as Inez walked past, the Scout stood by a wall and then stayed in reach. That's the full-café case, which Keel's notes describe.
+
+**r085 rows** (`Proof085Beats.ListenOnChair`):
+- **`r085scoutChair`:** a fresh run plays on until a chair is free (`Game.ListenChairFor`) while Inez stands at her post or serving. Then the Listen is given, and the Scout must sit in a chair: seated drawn, on the seat within 5 cm, the engine's seat the one drawn.
+- **`r085chairStep`:** her last 3 m into the seat is drawn on a walk clip, never faster than a stride (2.7 m/s).
+- **`r085sitClips` (new):** the figure's clips from the seat on are `stand_to_sit`, then a sitting loop (`sit` or `sit_alt`). A figure without `stand_to_sit` in its set can skip that step; the row says which. `HostViews.HasClip` is new for it.
+- **`r085inezNear` (new):** while the Scout listens seated (the clock at 4x to the Listen's end), Inez stays within her reach (5 m, plus 0.3 m of slack).
+
+**Clip:** `briefs/110/latch/clips/listen-chair.mp4` (30 fps, 35 s from 2:09; `shots-chair.json` with `listen-chair.script.json`; the camera keeps the Scout).
+- She walks onto the terrace at 1:55 and is told to Listen at 2:10. She walks to the free chair under the umbrella by Inez's post and sits.
+- She's drawn as the covered-figure silhouette while the umbrella is over her. The ear (Listen) icon is above her.
+- Inez stays at her post and serves the table beside the Scout, within earshot.
+- The first take had the Scout idling on the terrace from 0:00, and the mast camera reported her (a "reported" chip). So she now walks over at 1:55. Keel's open question about a seated operative in a camera's view is separate.
