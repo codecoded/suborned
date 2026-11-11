@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Suborned.Play
 {
-    /// <summary>Brief 109: the host's few words to the juice (Juice109), all view only: an order taken, a takedown landing from the log, and the camera
+    /// <summary>Brief 109: the host's few words to the juice (Juice109), all view only: an order taken, a turn landing, a shot, and the camera
     /// following the getaway out after the Go. Nothing here changes an order, a tick or a decision; with the juice off (or in the host logic) each
     /// call returns at its first line.</summary>
     public sealed partial class HandoverHost
@@ -18,12 +18,20 @@ namespace Suborned.Play
             Juice109.Order(from, to, o.Do);
         }
 
-        /// <summary>A new log line (Drain): a takedown landing shakes the view where the Enforcer stands.</summary>
+        /// <summary>A new log line (Drain): a turn landing (turn.<approach>.turned) puts a warm flare on the person turned, named in the line's "(role)".</summary>
         void JuiceLog(LogLine x)
         {
-            if (!Juice109.Live || x.Code is not ("takedown.out" or "takedown.dead")) return;
-            var at = views?.Find("op/enforcer") is Transform t ? t.position : focus;
-            Juice109.Takedown(at, x.Tick);
+            if (!Juice109.Live || !x.Code.StartsWith("turn.", System.StringComparison.Ordinal) || !x.Code.EndsWith(".turned", System.StringComparison.Ordinal)) return;
+            int a = x.Text.IndexOf('('), b = a >= 0 ? x.Text.IndexOf(')', a + 1) : -1; if (b <= a + 1) return;
+            if (views?.Find(x.Text.Substring(a + 1, b - a - 1)) is not Transform w0 || !w0.gameObject.activeInHierarchy) Debug.Log($"Juice109: {x.Code}: no drawn \"{x.Text.Substring(a + 1, b - a - 1)}\" for the flare");
+            if (views?.Find(x.Text.Substring(a + 1, b - a - 1)) is Transform who && who.gameObject.activeInHierarchy) Juice109.Turned(who);
+        }
+
+        /// <summary>HostFight.Shot: every engine shot, at the gun and where it went; glass when it hit a car or a camera.</summary>
+        void JuiceShot(Vector3 src, Vector3 dst, bool hit, bool covered, string target)
+        {
+            if (!Juice109.Live) return; var k = ViewKey(target);
+            Juice109.Shot(src, dst, hit, covered, k.StartsWith("car/", System.StringComparison.Ordinal) || k.StartsWith("camera/", System.StringComparison.Ordinal));
         }
 
         bool juiceFollowing;

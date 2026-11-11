@@ -28,7 +28,7 @@ public class Juice109Cases
         Assert.That(to.HasValue, Is.True);
         Assert.That(h.Issue(new Order { Op = "scout", Do = "move", Point = to }), Is.True, "the order is taken (JuiceOrder returns at once)");
         h.RunTo(200);
-        Juice109.Order(null, null, "go"); Juice109.Takedown(default, g.Tick); // the facade's own guards
+        Juice109.Order(null, null, "go"); // the facade's own guard
         var saved = Script.Parse(Script.Write(g, h.PlayInputs.Hash));
         var again = Engine.Play(h.PlayInputs, saved.Start, saved.Orders, saved.Until);
         Assert.That(saved.Verify(again, h.PlayInputs.Hash), Is.Empty, "the run replays hash for hash");

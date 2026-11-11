@@ -5,11 +5,12 @@
     { "graph": "Test/Juice_Glow_v1", "loaded": true, "compileError": false, "passes": 6, "properties": ["_Tint", "_BaseMap", "_QueueOffset", "_QueueControl", "unity_Lightmaps", "unity_LightmapsInd", "unity_ShadowMasks"], "tintDefault": "1.000 0.800 0.500 1.000", "pixel": "1.000 0.800 0.500 2.000", "fileRewrittenByImporter": false, "messages": [] },
     { "graph": "Test/Juice_Glow_v2", "loaded": true, "compileError": false, "passes": 6, "properties": ["_Tint", "_BaseMap", "_QueueOffset", "_QueueControl", "unity_Lightmaps", "unity_LightmapsInd", "unity_ShadowMasks"], "tintDefault": "0.400 0.900 1.000 1.000", "pixel": "0.400 0.900 1.000 2.000", "fileRewrittenByImporter": false, "messages": [] },
     { "graph": "Test/Juice_Glow_v3", "loaded": true, "compileError": false, "passes": 6, "properties": ["_Tint", "_BaseMap", "_QueueOffset", "_QueueControl", "unity_Lightmaps", "unity_LightmapsInd", "unity_ShadowMasks"], "tintDefault": "1.000 1.000 1.000 1.000", "pixel": "1.000 0.500 0.250 2.000", "fileRewrittenByImporter": false, "messages": [] },
-    { "graph": "Juice_Glow", "loaded": true, "compileError": false, "passes": 6, "properties": ["_Tint", "_BaseMap", "_QueueOffset", "_QueueControl", "unity_Lightmaps", "unity_LightmapsInd", "unity_ShadowMasks"], "tintDefault": "1.000 1.000 1.000 1.000", "pixel": "1.000 0.500 0.250 2.000", "fileRewrittenByImporter": false, "messages": [] }
+    { "graph": "Juice_Glow", "loaded": true, "compileError": false, "passes": 6, "properties": ["_Tint", "_BaseMap", "_QueueOffset", "_QueueControl", "unity_Lightmaps", "unity_LightmapsInd", "unity_ShadowMasks"], "tintDefault": "1.000 1.000 1.000 1.000", "pixel": "1.000 0.500 0.250 2.000", "fileRewrittenByImporter": false, "messages": [] },
+    { "graph": "Juice_TiltShift", "loaded": true, "compileError": false, "passes": 2, "properties": ["_TiltBand", "_TiltBlur", "unity_Lightmaps", "unity_LightmapsInd", "unity_ShadowMasks"], "tintDefault": "", "pixel": "", "fileRewrittenByImporter": false, "messages": [] }
   ],
   "vfxGraphs": [
     { "graph": "Test/Juice_Puff_v1", "loaded": true, "burstCountInFile": "128", "exposed": 0, "aliveAfterSimulate": 0, "fileRewrittenByImporter": false, "messages": [] },
     { "graph": "Test/Juice_Puff_v2", "loaded": true, "burstCountInFile": "24", "exposed": 0, "aliveAfterSimulate": 0, "fileRewrittenByImporter": false, "messages": [] }
   ],
-  "gameAssetsWritten": 3
+  "gameAssetsWritten": 1
 }

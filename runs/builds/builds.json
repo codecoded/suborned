@@ -387,6 +387,36 @@
    "zip": null,
    "sent": [],
    "whatsNew": ""
+  },
+  {
+   "build": 326,
+   "version": "0.2.326",
+   "date": "2026-11-11T13:01:01.068Z",
+   "builtAt": "2026-11-11T13:00:45.6527550Z",
+   "sha": "de12bfdb3",
+   "dirty": true,
+   "engine": "0.54.0",
+   "engineSource": "working tree on de12bfdb382e",
+   "dllSha256": "971798e39c9c27b7b765ec5194b52800787305de17ba995adf56fc8d42dbc503",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": ""
+  },
+  {
+   "build": 327,
+   "version": "0.2.327",
+   "date": "2026-11-11T13:48:25.206Z",
+   "builtAt": "2026-11-11T13:48:09.5817920Z",
+   "sha": "de12bfdb3",
+   "dirty": true,
+   "engine": "0.54.0",
+   "engineSource": "working tree on de12bfdb382e",
+   "dllSha256": "971798e39c9c27b7b765ec5194b52800787305de17ba995adf56fc8d42dbc503",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": ""
   }
  ]
 }

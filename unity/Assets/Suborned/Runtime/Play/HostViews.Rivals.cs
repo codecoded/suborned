@@ -66,7 +66,7 @@ namespace Suborned.Play
         }
 
         /// <summary>The rival car's engine heading as a world direction, else null (it keeps its last).</summary>
-        Vector3? RivalCarFacing() => TakenLeaving("car/rivals") ? lentHeading : rivalHeading;
+        Vector3? RivalCarFacing() => rivalLeaveHeading ?? (TakenLeaving("car/rivals") ? lentHeading : rivalHeading); // brief 109 round 2: along its way out after the end (HostViews.LeavingRivals)
 
         /// <summary>The getaway car's engine heading as a world direction (along its Drive, else its stand's facing).</summary>
         Vector3? GetawayFacing()

@@ -41,7 +41,45 @@ namespace Suborned.World.Play
             string vfxFrom = Path.Combine(root, "Assets/Suborned/Generated/Juice109/Juice_TyreSmoke.vfx"), vfxTo = $"{Dir}/Juice_TyreSmoke.vfx";
             if (File.Exists(vfxFrom) && (!File.Exists(Path.Combine(root, vfxTo)) || File.ReadAllText(vfxFrom) != File.ReadAllText(Path.Combine(root, vfxTo))))
             { File.Copy(vfxFrom, Path.Combine(root, vfxTo), true); AssetDatabase.ImportAsset(vfxTo, ImportAssetOptions.ForceUpdate); n++; }
+            n += Lamps(root);
+            // moment 8's tilt-shift (Juice109Tilt, -tiltshift): its Fullscreen Shader Graph's material
+            var tilt = AssetDatabase.LoadAssetAtPath<Shader>("Assets/Suborned/Generated/Juice109/Juice_TiltShift.shadergraph");
+            if (tilt) { var tp = $"{Dir}/Juice-TiltShift.mat"; var tm = AssetDatabase.LoadAssetAtPath<Material>(tp); if (!tm) { AssetDatabase.CreateAsset(new Material(tilt) { name = "Juice-TiltShift" }, tp); n++; } else if (tm.shader != tilt) { tm.shader = tilt; EditorUtility.SetDirty(tm); n++; } }
+            else Debug.LogWarning("Juice109Assets: no Juice_TiltShift.shadergraph (run bun tools/juice/author.ts)");
             return n;
+        }
+
+        /// <summary>The getaway sedan's two headlamps, from its own model (round 2, Sky: "the cars headlights don't align properly when it drives off"):
+        /// the DK_Lamp sub-mesh's vertices in the model's frame (its front is +Z), the front half, split left and right, and on each side the upper
+        /// cluster (the headlamp; the parking lamp sits below it); its centre in x and y, its frontmost z. Written as "x,y,z;x,y,z" (model metres) to
+        /// Resources/Juice109/lamps-<model>.txt for Juice109Fx, which parents the flares to the drawn model at those points.</summary>
+        static int Lamps(string root)
+        {
+            const string model = "Assets/Suborned/Kit/Models/Vehicles/DK_Sedan_Getaway.fbx";
+            var go = AssetDatabase.LoadAssetAtPath<GameObject>(model); if (!go) { Debug.LogWarning($"Juice109Assets: no {model}"); return 0; }
+            var side = new[] { new System.Collections.Generic.List<Vector3>(), new System.Collections.Generic.List<Vector3>() };
+            foreach (var mf in go.GetComponentsInChildren<MeshFilter>())
+            {
+                var mr = mf.GetComponent<MeshRenderer>(); var mesh = mf.sharedMesh; if (!mr || !mesh) continue;
+                var mats = mr.sharedMaterials; var verts = mesh.vertices; var toRoot = go.transform.worldToLocalMatrix * mf.transform.localToWorldMatrix;
+                for (int sub = 0; sub < mesh.subMeshCount && sub < mats.Length; sub++)
+                {
+                    if (!mats[sub] || !mats[sub].name.StartsWith("DK_Lamp")) continue;
+                    foreach (int vi in mesh.GetTriangles(sub)) { var p = toRoot.MultiplyPoint3x4(verts[vi]); if (p.z > 0f) side[p.x < 0f ? 0 : 1].Add(p); }
+                }
+            }
+            var parts = new System.Collections.Generic.List<string>();
+            foreach (var pts in side)
+            {
+                if (pts.Count == 0) { Debug.LogWarning("Juice109Assets: no DK_Lamp vertices on one side of the getaway sedan's front"); return 0; }
+                float top = float.MinValue; foreach (var p in pts) top = Mathf.Max(top, p.y);
+                Vector3 lo = Vector3.one * float.MaxValue, hi = Vector3.one * float.MinValue;
+                foreach (var p in pts) if (p.y > top - 0.2f) { lo = Vector3.Min(lo, p); hi = Vector3.Max(hi, p); } // the headlamp: within 0.2 m of the lamps' top
+                parts.Add(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F3},{1:F3},{2:F3}", (lo.x + hi.x) / 2f, (lo.y + hi.y) / 2f, hi.z));
+            }
+            var text = string.Join(";", parts); var path = $"{Dir}/lamps-DK_Sedan_Getaway.txt"; var full = Path.Combine(root, path);
+            if (File.Exists(full) && File.ReadAllText(full) == text) return 0;
+            File.WriteAllText(full, text); AssetDatabase.ImportAsset(path); Debug.Log($"Juice109Assets: the getaway sedan's headlamps at {text} (model metres)"); return 1;
         }
 
         static int Mat(string path, Shader shader, Texture2D tex)

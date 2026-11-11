@@ -65,6 +65,7 @@ namespace Suborned.Play
             }
             for (int i = used; i < chipEls.Count; i++) { Show(chipEls[i].Root, false); chipEls[i].Id = -1; }
             ChipsShown = used; ChipWords = string.Join(" / ", words);
+            JuiceRail(); // brief 109: a takedown that drew no chip bumps the doer's rail portrait
         }
 
         /// <summary>The budget's cap (tools/hud-budget CHIP_MAX.onScreen).</summary>

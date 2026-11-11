@@ -26,13 +26,14 @@ namespace Suborned.Play
             if (!things.TryGetValue(GetawayKey, out var th)) return;
             if (leaveFor != g)
             {
-                leaveFor = g; leaveS = leaveV = 0f; leaveLen = 0f; leaveHeading = null; LeaveWay(g);
+                leaveFor = g; leaveS = leaveV = 0f; leaveLen = 0f; leaveHeading = null; LeaveSteerReset(); LeaveWay(g);
             }
             if (leaveWay.Count < 2) return;
             if (leaveS >= leaveLen) { if (th.shown) things[GetawayKey] = (th.t, th.to, th.to, false); return; } // out of the city's view
             float dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f);
-            leaveV = PushCap(GetawayKey, Mathf.Min(LeaveTop, leaveV + LeaveAccel * dt), dt); leaveS += leaveV * dt; // brief 098 step 1b: it brakes while it shoves a wreck aside (HostViews.TrafficShove)
-            var (at, dir) = LeaveAt(leaveS); leaveHeading = dir;
+            leaveV = PushCap(GetawayKey, Mathf.Min(LeaveTop, leaveV + LeaveAccel * dt), dt); // brief 098 step 1b: it brakes while it shoves a wreck aside (HostViews.TrafficShove)
+            leaveV = LeaveSteer(g, leaveV, dt); leaveS += leaveV * dt; // brief 109 round 2: round the other cars, or wait behind one (HostViews.LeavingSteer)
+            var (at, dir) = LeaveSteeredAt(leaveS); leaveHeading = dir;
             things[GetawayKey] = (th.t, at, at, true);
         }
 

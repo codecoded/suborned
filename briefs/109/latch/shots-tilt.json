@@ -1,0 +1,8 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 moment 8 (Latch): the miniature look trial. Before: -juice on; after: -juice on -tiltshift on (its own switch). The café at 0:40 at play zoom.",
+  "defaults": { "yaw": 2, "settle": 0.2 },
+  "shots": [
+    { "name": "juice-tiltshift", "script": "route-a-board", "tick": 400, "focus": "op/scout", "hud": true, "clip": { "seconds": 3, "fps": 30 } }
+  ]
+}

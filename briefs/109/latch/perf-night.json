@@ -1,0 +1,16 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 round 3 (Latch): the night variant of perf.json, the same moment with the night look: the living city's searchlights, neon and robot faces at full.",
+  "shots": [
+    {
+      "name": "juice-perf-night",
+      "script": "route-a-board",
+      "tick": 400,
+      "focus": "op/scout",
+      "yaw": 2,
+      "hud": true,
+      "perf": 8,
+      "night": true
+    }
+  ]
+}

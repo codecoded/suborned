@@ -23,7 +23,7 @@ namespace Suborned.World.Play
             var msgs = new List<string>(); void OnLog(string c, string st, LogType t) { if (t != LogType.Log) msgs.Add($"{t}: {c.Split('\n')[0]}"); }
             Application.logMessageReceived += OnLog;
             var sb = new StringBuilder("{\n  \"schema\": \"suborned.juice109-authoring/1\",\n  \"unity\": \"" + Application.unityVersion + "\",\n  \"shaderGraphs\": [\n");
-            string[] graphs = { "Test/Juice_Glow_v1", "Test/Juice_Glow_v2", "Test/Juice_Glow_v3", "Juice_Glow" };
+            string[] graphs = { "Test/Juice_Glow_v1", "Test/Juice_Glow_v2", "Test/Juice_Glow_v3", "Juice_Glow", "Juice_TiltShift" };
             for (int i = 0; i < graphs.Length; i++)
             {
                 string path = $"{Dir}/{graphs[i]}.shadergraph", full = Path.Combine(Application.dataPath, "..", path);
@@ -36,7 +36,7 @@ namespace Suborned.World.Play
                     for (int p = 0; p < sh.GetPropertyCount(); p++) props.Add(sh.GetPropertyName(p));
                     int ti = sh.FindPropertyIndex("_Tint"); if (ti >= 0) tint = V(sh.GetPropertyDefaultVectorValue(ti));
                     foreach (var m in ShaderUtil.GetShaderMessages(sh)) msgs.Add($"{m.severity}: {m.message}");
-                    if (!err) pixel = Pixel(sh);
+                    if (!err && !graphs[i].Contains("TiltShift")) pixel = Pixel(sh); // a fullscreen graph draws only in its pass: compiled is the check
                 }
                 bool rewritten = before != null && File.Exists(full) && File.ReadAllText(full) != before;
                 sb.Append($"    {{ \"graph\": \"{graphs[i]}\", \"loaded\": {B(sh)}, \"compileError\": {B(err)}, \"passes\": {(sh ? sh.passCount : 0)}, \"properties\": [{string.Join(", ", props.ConvertAll(Q))}], \"tintDefault\": {Q(tint)}, \"pixel\": {Q(pixel)}, \"fileRewrittenByImporter\": {B(rewritten)}, \"messages\": [{string.Join(", ", msgs.ConvertAll(Q))}] }}{(i < graphs.Length - 1 ? "," : "")}\n");

@@ -3,7 +3,7 @@
   "schema": "suborned.shots.report/1",
   "status": "ok",
   "screen": "1920x1080",
-  "build": "Build 0.2.325-scratch · c064 · sim 0.54.0 · 2531e2319+",
+  "build": "Build 0.2.327-scratch · c064 · sim 0.54.0 · de12bfdb3+",
   "shots": [
    {
     "name": "juice-perf",
@@ -21,11 +21,11 @@
      "issues": []
     },
     "frames": {
-     "count": 1730,
-     "meanMs": 4.625,
-     "fps": 216.196,
-     "p99Ms": 9.004,
-     "gpuMs": 1.534
+     "count": 1942,
+     "meanMs": 4.122,
+     "fps": 242.629,
+     "p99Ms": 8.306,
+     "gpuMs": 3.18
     }
    }
   ]
@@ -34,7 +34,7 @@
   "schema": "suborned.shots.report/1",
   "status": "ok",
   "screen": "1920x1080",
-  "build": "Build 0.2.325-scratch · c064 · sim 0.54.0 · 2531e2319+",
+  "build": "Build 0.2.327-scratch · c064 · sim 0.54.0 · de12bfdb3+",
   "shots": [
    {
     "name": "juice-perf",
@@ -52,20 +52,20 @@
      "issues": []
     },
     "frames": {
-     "count": 1582,
-     "meanMs": 5.058,
-     "fps": 197.705,
-     "p99Ms": 9.125,
-     "gpuMs": 1.59
+     "count": 1935,
+     "meanMs": 4.136,
+     "fps": 241.784,
+     "p99Ms": 8.2,
+     "gpuMs": 2.761
     }
    }
   ]
  },
- "order": {
+ "turn": {
   "schema": "suborned.shots.report/1",
   "status": "ok",
   "screen": "1920x1080",
-  "build": "Build 0.2.325-scratch · c064 · sim 0.54.0 · 2531e2319+",
+  "build": "Build 0.2.327-scratch · c064 · sim 0.54.0 · de12bfdb3+",
   "shots": [
    {
     "name": "juice-perf",
@@ -83,20 +83,20 @@
      "issues": []
     },
     "frames": {
-     "count": 1516,
-     "meanMs": 5.279,
-     "fps": 189.434,
-     "p99Ms": 9.596,
-     "gpuMs": 1.758
+     "count": 1921,
+     "meanMs": 4.166,
+     "fps": 240.047,
+     "p99Ms": 8.106,
+     "gpuMs": 2.842
     }
    }
   ]
  },
- "takedown": {
+ "shot": {
   "schema": "suborned.shots.report/1",
   "status": "ok",
   "screen": "1920x1080",
-  "build": "Build 0.2.325-scratch · c064 · sim 0.54.0 · 2531e2319+",
+  "build": "Build 0.2.327-scratch · c064 · sim 0.54.0 · de12bfdb3+",
   "shots": [
    {
     "name": "juice-perf",
@@ -114,20 +114,20 @@
      "issues": []
     },
     "frames": {
-     "count": 1611,
-     "meanMs": 4.968,
-     "fps": 201.269,
-     "p99Ms": 9.309,
-     "gpuMs": 1.572
+     "count": 1920,
+     "meanMs": 4.168,
+     "fps": 239.904,
+     "p99Ms": 8.207,
+     "gpuMs": 2.828
     }
    }
   ]
  },
- "getaway": {
+ "tiltshift": {
   "schema": "suborned.shots.report/1",
   "status": "ok",
   "screen": "1920x1080",
-  "build": "Build 0.2.325-scratch · c064 · sim 0.54.0 · 2531e2319+",
+  "build": "Build 0.2.327-scratch · c064 · sim 0.54.0 · de12bfdb3+",
   "shots": [
    {
     "name": "juice-perf",
@@ -145,11 +145,73 @@
      "issues": []
     },
     "frames": {
-     "count": 1574,
-     "meanMs": 5.084,
-     "fps": 196.679,
-     "p99Ms": 9.403,
-     "gpuMs": 1.539
+     "count": 1934,
+     "meanMs": 4.137,
+     "fps": 241.714,
+     "p99Ms": 8.185,
+     "gpuMs": 3.51
+    }
+   }
+  ]
+ },
+ "night-off": {
+  "schema": "suborned.shots.report/1",
+  "status": "ok",
+  "screen": "1920x1080",
+  "build": "Build 0.2.327-scratch · c064 · sim 0.54.0 · de12bfdb3+",
+  "shots": [
+   {
+    "name": "juice-perf-night",
+    "status": "ok",
+    "tick": 517,
+    "error": "",
+    "files": [
+     "juice-perf-night.png",
+     "juice-perf-night.hud.png",
+     "juice-perf-night.manifest.json",
+     "juice-perf-night.parts.json"
+    ],
+    "audit": {
+     "clean": true,
+     "issues": []
+    },
+    "frames": {
+     "count": 1931,
+     "meanMs": 5.985,
+     "fps": 167.071,
+     "p99Ms": 8.001,
+     "gpuMs": 2.946
+    }
+   }
+  ]
+ },
+ "night-on": {
+  "schema": "suborned.shots.report/1",
+  "status": "ok",
+  "screen": "1920x1080",
+  "build": "Build 0.2.327-scratch · c064 · sim 0.54.0 · de12bfdb3+",
+  "shots": [
+   {
+    "name": "juice-perf-night",
+    "status": "ok",
+    "tick": 517,
+    "error": "",
+    "files": [
+     "juice-perf-night.png",
+     "juice-perf-night.hud.png",
+     "juice-perf-night.manifest.json",
+     "juice-perf-night.parts.json"
+    ],
+    "audit": {
+     "clean": true,
+     "issues": []
+    },
+    "frames": {
+     "count": 1857,
+     "meanMs": 6.25,
+     "fps": 160.002,
+     "p99Ms": 8.513,
+     "gpuMs": 3.488
     }
    }
   ]

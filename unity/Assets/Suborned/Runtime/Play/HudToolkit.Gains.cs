@@ -52,6 +52,7 @@ namespace Suborned.Play
                 bool has = i < ch.Unlocks.Count; Show(c.Pills[i].Root, has); if (!has) continue; var u = ch.Unlocks[i];
                 SetCapsule(c.Pills[i], u.Icon, u.Word, shut: u.Shut); c.Pills[i].Root.pickingMode = u.Shut ? PickingMode.Ignore : PickingMode.Position; c.Ways.Add((u.Icon, u.Word));
             }
+            JuiceChip(c, ch); // brief 109: a takedown's chip lands with a pop (HudToolkit.Juice109)
         }
     }
 }

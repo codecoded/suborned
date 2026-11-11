@@ -1,7 +1,7 @@
 {
     "name": "Suborned.Runtime",
     "rootNamespace": "Suborned",
-    "references": ["Unity.InputSystem", "UnityEngine.UI", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.GPUDriven.Runtime", "Unity.Cinemachine"],
+    "references": ["Unity.InputSystem", "UnityEngine.UI", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.GPUDriven.Runtime"],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

@@ -8,7 +8,7 @@ namespace Suborned.Play
     /// Juice_TyreSmoke (a GPU burst sent while the car pulls away), exhaust, two headlight flares while it drives, and after the Go the view
     /// follows the car out until the player moves it. Shuriken where Fx097 already uses it; the car's size from its own renderers.</summary>
     [DefaultExecutionOrder(100)]
-    public sealed class Juice109Fx : MonoBehaviour
+    public sealed partial class Juice109Fx : MonoBehaviour
     {
         public static HandoverHost Host { get; private set; }
         public static int Orders { get; private set; }
@@ -25,6 +25,8 @@ namespace Suborned.Play
             var ringSrc = Resources.Load<Material>("Juice109/Juice-Ring"); var glowSrc = Resources.Load<Material>("Juice109/Juice-Glow");
             var ringMat = ringSrc ? new Material(ringSrc) : add; if (ringSrc) ringMat.SetColor("_Tint", Color.white * 2.6f);
             glow = glowSrc ? new Material(glowSrc) : add; if (glowSrc) glow.SetColor("_Tint", new Color(2.3f, 2.1f, 1.8f, 1f));
+            var glowAdd = glowSrc ? new Material(glowSrc) { name = "Juice109 glow (white)" } : add; if (glowSrc) glowAdd.SetColor("_Tint", Color.white * 1.6f);
+            FightStart(blend, glowAdd); TurnStart(glowSrc, Resources.Load<Material>("Fx097/Fx097-Spark"), blend); // brief 109 moments 6 and 4 (Juice109Fx.Fight, .Turn)
             dust = Make("dust", blend, 160, ParticleSystemRenderMode.Billboard);
             Grow(dust, 0.7f, 2.4f);
             ring = Make("ring", ringMat, 24, ParticleSystemRenderMode.HorizontalBillboard);
@@ -37,12 +39,7 @@ namespace Suborned.Play
                 tyres = new VisualEffect[2];
                 for (int i = 0; i < 2; i++) { var go = new GameObject("Juice109 tyre smoke " + i); go.transform.SetParent(transform, false); var v = go.AddComponent<VisualEffect>(); v.visualEffectAsset = tyre; v.initialEventName = ""; tyres[i] = v; go.SetActive(false); } // on only while a car pulls away
             }
-            flares = new Transform[2];
-            for (int i = 0; i < 2; i++)
-            {
-                var q = GameObject.CreatePrimitive(PrimitiveType.Quad); q.name = "Juice109 headlight flare " + i; Destroy(q.GetComponent<Collider>()); q.transform.SetParent(transform, false);
-                var r = q.GetComponent<MeshRenderer>(); r.sharedMaterial = glow; r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; r.receiveShadows = false; q.SetActive(false); flares[i] = q.transform;
-            }
+            flares = new Transform[2]; // made on the car's body (ParentFlares)
             Debug.Log($"Juice109Fx: dust, ring ({(ringSrc ? "Shader Graph Juice_Glow" : "fallback Fx097-Add")}), exhaust, tyre smoke ({(tyre ? "VFX Graph Juice_TyreSmoke" : "none: no asset")}), flares");
         }
 
@@ -60,6 +57,7 @@ namespace Suborned.Play
         }
         static void Grow(ParticleSystem ps, float a, float b) { var s = ps.sizeOverLifetime; s.enabled = true; s.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, a, 0f, 2f * (b - a)), new Keyframe(1f, b, 0f, 0f))); }
         float R(float a, float b) => a + (float)rng.NextDouble() * (b - a);
+        Vector3 Ball() { Vector3 v; do v = new Vector3(R(-1f, 1f), R(-1f, 1f), R(-1f, 1f)); while (v.sqrMagnitude > 1f || v.sqrMagnitude < 1e-4f); return v; }
 
         /// <summary>An order taken: the puff where the agent sets off (only when it goes somewhere), the pulse where it goes; a Go arms the follow.</summary>
         public void Order(Vector3? from, Vector3? to, string verb)
@@ -88,21 +86,23 @@ namespace Suborned.Play
         }
 
         // ---------------------------------------------------------------- the getaway
-        Transform car; Bounds carLocal; Vector3 carLast; float front = 1f, speed, launchT = -1f, burstT, exhaustAcc, flareK; bool wasDriving, followArmed; float followT;
+        // `car` is the view's root (it only moves); `body` is the drawn model under it, which HostViews.Cars turns to the heading: every point on the car
+        // is taken in the body's frame (the kit's front is +Z) and the flares are its children, so they move and turn with it
+        Transform car, body; Bounds carLocal; Vector3[] lamps; Vector3 carLast; float speed, launchT = -1f, burstT, exhaustAcc, flareK; bool wasDriving, followArmed; float followT;
 
         void Update()
         {
             if (!Host && (findT -= Time.unscaledDeltaTime) <= 0f) { findT = 0.5f; Host = FindAnyObjectByType<HandoverHost>(); }
+            FightFrame();
             var h = Host; if (!h || h.Game == null || h.Views == null) { ShowFlares(false); return; }
             var c = h.Views.Find("car/getaway");
-            if (c != car) { car = c; if (car) { carLocal = LocalBounds(car); carLast = car.position; } }
+            if (c != car || car && !body) { car = c; body = car ? car.Find("model") ?? car : null; if (car) { carLocal = LocalBounds(body); carLast = car.position; ParentFlares(); } } // a new car, or its model rebuilt
             if (!car || !car.gameObject.activeInHierarchy) { ShowFlares(false); return; }
             // our car drives on the engine's Drive (GetawayDriving), or leaves after the Go, which the view draws after the end (HostViews.Leaving)
             bool driving = h.Game.GetawayDriving || h.Views.GetawayLeftM > 0f || DemoDriving; DemoTick(h, Time.unscaledDeltaTime);
             float dt = Mathf.Max(1e-4f, Time.unscaledDeltaTime), simDt = h.Paused && !driving || h.Game.Over && !driving ? 0f : dt * h.Speed;
             var mv = car.position - carLast; mv.y = 0f; carLast = car.position;
             float now = simDt > 0f ? mv.magnitude / simDt : 0f; speed = Mathf.Lerp(speed, now, 1f - Mathf.Exp(-dt / 0.12f));
-            if (now > 1f) front = Vector3.Dot(mv, car.forward) >= 0f ? 1f : -1f; // the view's car models differ in which way is +z: its nose is the way it drives
             if (driving && !wasDriving) { launchT = 0f; burstT = 0f; Launches++; TyresOn(true); }
             if (DemoDriving && launchT < 0f) { launchT = 0f; burstT = 0f; TyresOn(true); } // the demo: the launch's tyre smoke without end
             wasDriving = driving;
@@ -118,9 +118,9 @@ namespace Suborned.Play
             }
         }
 
-        // capture-only (`-juicedemo order|takedown|getaway`): one moment repeated on a fixed rhythm at the view's centre or the getaway car, so a perf
+        // capture-only (`-juicedemo order|getaway|turn|shot`): one moment repeated on a fixed rhythm at the view's centre or the getaway car, so a perf
         // window measures what it costs while it runs (the cost table), never in play
-        static readonly string Demo = GameBoot.ArgValue("-juicedemo") ?? ""; float demoT;
+        static readonly string Demo = GameBoot.ArgValue("-juicedemo") ?? ""; float demoT; int demoK; Transform demoSpot;
         void DemoTick(HandoverHost h, float dt)
         {
             if (Demo.Length == 0 || h.View == null) return; demoT += dt;
@@ -128,7 +128,8 @@ namespace Suborned.Play
             float gy = h.Views.Find("op/scout") is Transform sc ? sc.position.y : 0f; // the street's height (the play's ground is not at 0)
             if (new Plane(Vector3.up, new Vector3(0f, gy, 0f)).Raycast(ray, out var hit)) ctr = ray.GetPoint(hit);
             if (Demo == "order" && demoT >= 0.5f) { demoT = 0f; Order(ctr + new Vector3(-4f, 0f, 1f), ctr, "move"); }
-            if (Demo == "takedown" && demoT >= 0.6f) { demoT = 0f; if (Juice109.Cam) ((Juice109Cam)Juice109.Cam).Takedown(ctr, Time.frameCount); }
+            if (Demo == "turn" && demoT >= 0.8f) { demoT = 0f; if (!demoSpot) demoSpot = new GameObject("Juice109 demo spot").transform; demoSpot.position = ctr + new Vector3(4f, 0f, -3f); Turned(demoSpot); } // open paving beside the view's centre
+            if (Demo == "shot" && demoT >= 0.15f) { demoT = 0f; int k = demoK++ % 3; Shot(ctr + new Vector3(-6f, 1.3f, 2f), ctr + new Vector3(R(-1f, 1f), k == 1 ? 0.05f : 1.2f, R(-1f, 1f)), k != 1, false, k == 2); }
         }
         bool DemoDriving => Demo == "getaway";
 
@@ -157,8 +158,8 @@ namespace Suborned.Play
             for (int i = 0; i < 2; i++)
             {
                 var v = tyres[i]; if (!v) continue;
-                float x = (i == 0 ? -1f : 1f) * (carLocal.extents.x - 0.28f), z = carLocal.center.z - front * carLocal.extents.z * 0.6f; // the rear wheels
-                v.transform.position = car.TransformPoint(new Vector3(carLocal.center.x + x, carLocal.min.y + 0.12f, z));
+                float x = (i == 0 ? -1f : 1f) * (carLocal.extents.x - 0.28f), z = carLocal.center.z - carLocal.extents.z * 0.6f; // the rear wheels
+                v.transform.position = body.TransformPoint(new Vector3(carLocal.center.x + x, carLocal.min.y + 0.12f, z));
                 v.SendEvent("OnPlay"); TyreBursts++;
             }
         }
@@ -166,26 +167,49 @@ namespace Suborned.Play
         void Exhaust(float dt)
         {
             exhaustAcc += dt * 14f; var e = new ParticleSystem.EmitParams { applyShapeToPosition = false };
-            var pipe = car.TransformPoint(new Vector3(carLocal.center.x + carLocal.extents.x * 0.45f, carLocal.min.y + 0.32f, carLocal.center.z - front * (carLocal.extents.z + 0.05f)));
+            var pipe = body.TransformPoint(new Vector3(carLocal.center.x + carLocal.extents.x * 0.45f, carLocal.min.y + 0.32f, carLocal.center.z - (carLocal.extents.z + 0.05f)));
             while (exhaustAcc >= 1f)
             {
                 exhaustAcc -= 1f;
-                e.position = pipe; e.velocity = -front * car.forward * R(0.5f, 1.1f) + Vector3.up * R(0.12f, 0.3f) + new Vector3(R(-0.1f, 0.1f), 0f, R(-0.1f, 0.1f));
+                e.position = pipe; e.velocity = -body.forward * R(0.5f, 1.1f) + Vector3.up * R(0.12f, 0.3f) + new Vector3(R(-0.1f, 0.1f), 0f, R(-0.1f, 0.1f));
                 e.startSize = R(0.16f, 0.26f); e.startLifetime = R(0.7f, 1.1f); e.startColor = new Color(0.66f, 0.66f, 0.67f, 0.3f); exhaust.Emit(e, 1);
             }
         }
 
-        void ShowFlares(bool on)
+        /// <summary>The flares become children of the drawn body at its two headlamps (Editor Juice109Assets: from the model's own DK_Lamp geometry,
+        /// Resources/Juice109/lamps-DK_Sedan_Getaway.txt), a few centimetres proud of the lens, so they keep to the lamps through every move and turn.</summary>
+        void ParentFlares()
         {
-            if (flares == null) return;
+            if (flares == null || !body) return;
+            lamps = null; var t = Resources.Load<TextAsset>("Juice109/lamps-DK_Sedan_Getaway");
+            if (t) { var ps = t.text.Split(';'); if (ps.Length == 2) { lamps = new Vector3[2]; for (int i = 0; i < 2; i++) { var v = ps[i].Split(','); lamps[i] = new Vector3(F(v[0]), F(v[1]), F(v[2]) + 0.04f); } } }
+            if (lamps == null) Debug.LogWarning("Juice109Fx: no headlamp points for the getaway sedan (Resources/Juice109/lamps-DK_Sedan_Getaway.txt): no flares");
             for (int i = 0; i < 2; i++)
             {
-                var f = flares[i]; if (!f) continue; if (f.gameObject.activeSelf != on) f.gameObject.SetActive(on); if (!on || !car) continue;
-                float x = (i == 0 ? -1f : 1f) * (carLocal.extents.x - 0.32f);
-                f.position = car.TransformPoint(new Vector3(carLocal.center.x + x, carLocal.min.y + carLocal.size.y * 0.42f, carLocal.center.z + front * (carLocal.extents.z + 0.06f)));
-                var cam = Host ? Host.View : null; if (cam) f.rotation = cam.transform.rotation;
-                f.localScale = Vector3.one * (0.75f * flareK);
+                if (!flares[i]) // first time, or the view rebuilt the car and its children went with it
+                {
+                    var q = GameObject.CreatePrimitive(PrimitiveType.Quad); q.name = "Juice109 headlight flare " + i; Destroy(q.GetComponent<Collider>());
+                    var r = q.GetComponent<MeshRenderer>(); r.sharedMaterial = glow; r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; r.receiveShadows = false; q.SetActive(false); flares[i] = q.transform;
+                }
+                flares[i].SetParent(body, false); if (lamps != null) flares[i].localPosition = lamps[i];
             }
+            Debug.Log($"Juice109Fx: flares on {body.name} under {car.name} at {(lamps == null ? "-" : lamps[0].ToString("F3") + " and " + lamps[1].ToString("F3"))}");
+        }
+        static float F(string s) => float.Parse(s, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture);
+
+        void ShowFlares(bool on)
+        {
+            if (flares == null) return; on &= lamps != null && body;
+            for (int i = 0; i < 2; i++) { var f = flares[i]; if (f && f.gameObject.activeSelf != on) f.gameObject.SetActive(on); }
+        }
+
+        /// <summary>After every Update (the body's pose is set in the host's frame): the flares face the camera and keep their size on screen.</summary>
+        void LateUpdate()
+        {
+            var cam = Host ? Host.View : null; TurnLate(cam);
+            if (flares == null || !body || !cam) return;
+            float ls = Mathf.Max(1e-4f, body.lossyScale.x);
+            foreach (var f in flares) if (f && f.gameObject.activeSelf) { f.rotation = cam.transform.rotation; f.localScale = Vector3.one * (0.75f * flareK / ls); }
         }
     }
 }

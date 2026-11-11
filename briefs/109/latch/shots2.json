@@ -1,0 +1,10 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 round 2 (Latch; Sky on 0.2.325: no shake, no screen darkening; the takedown's juice on the bobble-head done chip; the flares on the lamps; the getaway never through the rival car). Before (-juice off) and after (-juice on), 30 fps. The Office front is played at yaw 210 (step 2). Run by briefs/109/latch/clips.ts --shots briefs/109/latch/shots2.json.",
+  "defaults": { "yaw": 2, "settle": 0.2 },
+  "shots": [
+    { "name": "juice-takedown", "script": "route-g", "tick": 1562, "focus": "op/enforcer", "hud": true, "clip": { "seconds": 4, "fps": 30 }, "note": "1570: the Enforcer's knockout of the door guard lands: the done chip over the guard pops (his bobble-head cameo) and its facts settle in" },
+    { "name": "juice-takedown-offscreen", "script": "route-g", "tick": 1562, "focus": "op/scout", "hud": true, "clip": { "seconds": 4, "fps": 30 }, "note": "1570: the same knockout with the view on the Scout far off: no chip on screen, so the Enforcer's rail portrait bumps" },
+    { "name": "juice-getaway", "script": "route-a-board", "tick": 2528, "focus": "car/getaway", "hud": false, "clip": { "seconds": 16, "fps": 30 }, "note": "2534: the cell's Go; the car pulls out, swerves round the rival car frozen on the road where the clock stopped, and leaves; tyre smoke, exhaust, the flares on its own lamps; the view follows (no HUD: the end card covers the street)" }
+  ]
+}

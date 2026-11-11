@@ -1,0 +1,11 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 round 3 (Latch; Sky: \"continue with the rest\"; no screen-wide effects for events): moments 4-7, before (-juice off) and after (-juice on), 30 fps, on the route scripts' and the loud pin's own events. The Office front is played at yaw 210 (step 2). Moment 8 (tilt-shift) is shots-tilt.json, run with --before \"-juice on\" --after \"-juice on -tiltshift on\".",
+  "defaults": { "yaw": 2, "settle": 0.2 },
+  "shots": [
+    { "name": "juice-turn", "script": "route-a-board", "tick": 1199, "focus": "waitress", "hud": true, "clip": { "seconds": 4, "fps": 30 }, "note": "1205: the Fixer's Turn (help) lands on Inez: the warm flare on her" },
+    { "name": "juice-alert", "script": "tools/game/pins/loud.seed3.json", "tick": 1520, "focus": "camera/entrance", "hud": true, "clip": { "seconds": 4, "fps": 30 }, "note": "2:33: the shot at the Office door raises Alert 2: the lamp it lights pops in the clock bar" },
+    { "name": "juice-gunfight", "script": "tools/game/pins/loud.seed3.json", "tick": 2262, "focus": "car/getaway", "hud": true, "clip": { "seconds": 4, "fps": 30 }, "note": "the loud fight at the car: muzzle light on the street, tracers, stone chips, glass off the cars" },
+    { "name": "juice-city-night", "script": "route-a-board", "tick": 400, "night": true, "focus": "op/scout", "zoom": 14, "hud": false, "clip": { "seconds": 6, "fps": 30 }, "note": "0:40 at night: the searchlights over the roofs, the robots' faces, the sky lanes' trails, the neon now and then" }
+  ]
+}

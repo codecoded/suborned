@@ -120,7 +120,7 @@ namespace Suborned.Play
             Keys096Frame(ended); pauseIcon.style.opacity = host.Frozen && !PlateOn ? 0.45f + 0.55f * (0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f)) : 1f; // brief 030: the pause glyph pulses while frozen
             bool fast = host.Speed > 1; speedK.Set(fast ? $"x{host.Speed}" : ""); Show(speedK.Root, fast);
             int a = m.Alert; alertIc.Look(a > 0 ? "ki-hot" : "ki-ink", "ki-key");
-            for (int i = 0; i < 3; i++) { var c = i < a ? BkOrange : StPage; if (lamps[i].style.backgroundColor.value != c) lamps[i].style.backgroundColor = c; }
+            for (int i = 0; i < 3; i++) { var c = i < a ? BkOrange : StPage; if (lamps[i].style.backgroundColor.value != c) lamps[i].style.backgroundColor = c; } JuiceAlert(a); // brief 109 moment 5: a lamp lit by a rise pops
             trailK.Set(Stress ? "12" : m.Trail.Replace("T ", "")); cashK.Set(JuiceCash(m.Cash)); JuiceTrail(m.Trail); // brief 109: the figures tick (juice on)
             bool unknown = m.NextLabel == "?", has = m.NextTime.Length > 0; Show(nextRow, has);
             string word = host.Text != null && host.Text.TimelineShort.TryGetValue(m.NextTime, out var sl) && sl.Length > 0 ? sl : m.NextLabel;
