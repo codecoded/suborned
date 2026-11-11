@@ -18,11 +18,11 @@ Sky, 2026-11-11: "what VFX does unity have to make our game 'pop' a little more 
 
 ## The moments (build three first, then the rest)
 1. **Orders:** the ring pops on click, the destination pulses, a dust puff where the agent sets off, HUD numbers tick instead of jump.
-2. **Takedown:** a short Impulse shake and a vignette pulse.
+2. **Takedown:** a pop on the Enforcer's bobble-head action pip, and on the edge marker or portrait rail when off screen. (Sky, 2026-11-11: "lose camera shake"; "not even sure if screen should darken on take down...since that can happen off camera"; "I do like our mini bobble head action PIPs".)
 3. **Getaway:** tyre smoke, exhaust, headlight flares, a camera that follows the car out.
 4. **Turning someone:** a warm flare on them.
-5. **Alert rising:** a screen-edge tint pulse, amber then red.
-6. **Gunfights:** muzzle flashes that light the street for a frame or two, tracers, stone chips, glass, shake scaled by distance.
+5. **Alert rising:** on the HUD's Alert pips, never a screen tint (no screen-wide effects for events).
+6. **Gunfights:** muzzle flashes that light the street for a frame or two, tracers, stone chips, glass. No shake.
 7. **The living city:** tram pantograph sparks, sky-traffic trails, night searchlights in the sky, the odd neon flicker, a soft glow on the robots' faces.
 8. **A miniature look trial:** tilt-shift depth of field (Gaussian) at play zoom, as a switch to judge.
 
