@@ -86,7 +86,7 @@ namespace Suborned.Sim
                     bool moving = op.Walk != null || (op.Driven && op.DriveMoved);
                     int c = row.C[k];
                     bool run = seen && moving && op.Running && R.AttnRun && !RunFree(op); // engine 0.34.0 (attention.run): a run in its sight, not loud, below Alert 2
-                    if (seen && AttnInAct(op)) { } // an act holds it (L1): the act's own seen-rules apply
+                    if (seen && (AttnInAct(op) || (R.AttnSeated && SeatOf(op) != null))) { } // an act holds it (L1): the act's own seen-rules apply; engine 0.57.0 (attention.seated): so does a public seat, a customer's
                     else if (seen && !moving) c++;
                     else if (run) c = Math.Max(c, nT) + 1; // engine 0.34.0 (brief 067, Motive M067-B2): the clock jumps to the notice mark on the run's first tick in sight, then counts each tick of it as standing still
                     else c = Math.Max(row.Wary[k] ? wT : 0, c - 1);

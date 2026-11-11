@@ -408,7 +408,7 @@ export const Rulebook = z.strictObject({
     report: z.strictObject({ scan: Ref, call: Ref }),
     // engine 0.34.0 (brief 067, Motive M067-B2): a run in a clock-keeping watcher's sight lifts its clock to the notice mark, then counts as
     // standing still; optional only for runs pinned before it (rulebook.test.ts holds the live rulebook to it)
-    run: ground({ at: z.literal('notice'), counts: z.literal('still'), rule: text }).optional(), parked: AttnParked.optional(), // brief 096: the parked car
+    run: ground({ at: z.literal('notice'), counts: z.literal('still'), rule: text }).optional(), parked: AttnParked.optional(), seated: ground({ counts: z.literal('customer'), rule: text }).optional() /* engine 0.57.0, brief 110: a seated operative is a customer */, // brief 096: the parked car
     rule: text,
   }).optional(),
   // Brief 013 (Sky 2026-10-16): takedowns, bodies, the people who report them, the response dial and what the campaign keeps. Optional here
