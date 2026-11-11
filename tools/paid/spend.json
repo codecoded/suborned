@@ -72,6 +72,10 @@
   "2026-11-10": {
    "calls": 72,
    "usd": 0.54331
+  },
+  "2026-11-11": {
+   "calls": 20,
+   "usd": 0.79904
   }
  },
  "by_model": {
@@ -84,8 +88,8 @@
    "usd": 0.045
   },
   "bytedance:seed-audio@1.0": {
-   "calls": 128,
-   "usd": 1.74456
+   "calls": 145,
+   "usd": 2.5436
   },
   "bytedance:seedance@2.0": {
    "calls": 20,
@@ -96,7 +100,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 197,
+   "calls": 200,
    "usd": 0.0
   },
   "fishaudio:s2.1@pro": {
@@ -148,7 +152,7 @@
    "usd": 2.8
   }
  },
- "calls": 809,
+ "calls": 829,
  "failed": 27,
  "jobs": {
   "007-concepts": {
@@ -1422,6 +1426,70 @@
    "used": 0,
    "used_usd": 0.0
   },
+  "107-weather": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-11": {
+     "calls": 3,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 3,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "pass1": {
+     "calls": 3,
+     "usd": 0.0
+    }
+   },
+   "calls": 3,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 3,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "107-weather-sound": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-11": {
+     "calls": 17,
+     "usd": 0.79904
+    }
+   },
+   "by_model": {
+    "bytedance:seed-audio@1.0": {
+     "calls": 17,
+     "usd": 0.79904
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": 2.0,
+     "calls": 15,
+     "usd": 0.68976
+    },
+    "2": {
+     "budget_usd": 0.2,
+     "calls": 2,
+     "usd": 0.10928
+    }
+   },
+   "calls": 17,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 17,
+   "total_usd": 0.79904,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
   "900-codexcheck": {
    "blocked": 0,
    "by_day": {
@@ -1457,6 +1525,6 @@
   }
  },
  "schema": "suborned.paid-spend/1",
- "total_usd": 76.60085,
+ "total_usd": 77.39989,
  "used": 72
 }

@@ -1,0 +1,1311 @@
+{
+ "schema": "suborned.audio-takes/1",
+ "brief": "107",
+ "made_by": "briefs/107/chime/make/build.py from paid/107-weather-sound/takes (Seed Audio 1.0 via Runware, bytedance:seed-audio@1.0)",
+ "note": "Measured numbers are not a judgement of how anything sounds: Chime cannot hear. Levels are per clip at gain 1, against the 087 pack in unity/Assets/Suborned/Resources/Audio/087.",
+ "listening_lift_db": 8.0,
+ "listening_limited_db": {
+  "drips_t12": 0.1,
+  "drips_t12_seam": 0.1,
+  "wet_steps_t13_walk": 2.0,
+  "wet_steps_t13_step3": 2.0,
+  "mix_day": 2.7,
+  "mix_rain": 2.9,
+  "mix_night": 2.4
+ },
+ "spent_usd": 0.799,
+ "sums": {
+  "street_bed_alone_lufs_i": -38.0,
+  "street_plus_rain_lufs_i": -35.9,
+  "rain_floor_lufs_i": -33.8,
+  "rain_floor_note": "street bed + rain bed + awning and drips each 6 dB down (a cafe about 15 m off)",
+  "night_bed_lufs_i": -40.0,
+  "mix_day_lufs_i": -33.3,
+  "mix_rain_lufs_i": -31.4,
+  "mix_night_lufs_i": -34.0
+ },
+ "clear_of": {
+  "street_bed (087, today)": {
+   "notice_1": {
+    "top_bands_hz": [
+     3200,
+     6400,
+     8064
+    ],
+    "margin_top3_db": 36.7,
+    "bands_clear_6db": 8,
+    "loudness_margin_lu": 12.0
+   },
+   "notice_2": {
+    "top_bands_hz": [
+     4032,
+     8064,
+     12801
+    ],
+    "margin_top3_db": 40.5,
+    "bands_clear_6db": 8,
+    "loudness_margin_lu": 16.0
+   },
+   "notice_3": {
+    "top_bands_hz": [
+     1270,
+     4032,
+     6400
+    ],
+    "margin_top3_db": 24.0,
+    "bands_clear_6db": 16,
+    "loudness_margin_lu": 19.0
+   },
+   "camera_click": {
+    "top_bands_hz": [
+     5080,
+     8064,
+     12801
+    ],
+    "margin_top3_db": 43.7,
+    "bands_clear_6db": 10,
+    "loudness_margin_lu": 8.0
+   },
+   "cafe_bell": {
+    "top_bands_hz": [
+     4032,
+     6400,
+     10160
+    ],
+    "margin_top3_db": 39.6,
+    "bands_clear_6db": 8,
+    "loudness_margin_lu": 12.0
+   },
+   "cafe_door": {
+    "top_bands_hz": [
+     100,
+     159,
+     200
+    ],
+    "margin_top3_db": 19.9,
+    "bands_clear_6db": 23,
+    "loudness_margin_lu": 10.0
+   },
+   "handover_chime": {
+    "top_bands_hz": [
+     800,
+     1008,
+     2016
+    ],
+    "margin_top3_db": 20.9,
+    "bands_clear_6db": 14,
+    "loudness_margin_lu": 18.0
+   },
+   "car_warn": {
+    "top_bands_hz": [
+     1270,
+     2016,
+     2540
+    ],
+    "margin_top3_db": 26.4,
+    "bands_clear_6db": 18,
+    "loudness_margin_lu": 14.2
+   },
+   "police_siren": {
+    "top_bands_hz": [
+     800,
+     1600,
+     2540
+    ],
+    "margin_top3_db": 21.1,
+    "bands_clear_6db": 8,
+    "loudness_margin_lu": 17.0
+   },
+   "patrol_break": {
+    "top_bands_hz": [
+     252,
+     318,
+     1600
+    ],
+    "margin_top3_db": 23.1,
+    "bands_clear_6db": 24,
+    "loudness_margin_lu": 16.0
+   }
+  },
+  "rain floor": {
+   "notice_1": {
+    "top_bands_hz": [
+     3200,
+     6400,
+     8064
+    ],
+    "margin_top3_db": 13.7,
+    "bands_clear_6db": 6,
+    "loudness_margin_lu": 7.8
+   },
+   "notice_2": {
+    "top_bands_hz": [
+     4032,
+     8064,
+     12801
+    ],
+    "margin_top3_db": 17.4,
+    "bands_clear_6db": 6,
+    "loudness_margin_lu": 11.8
+   },
+   "notice_3": {
+    "top_bands_hz": [
+     1270,
+     4032,
+     6400
+    ],
+    "margin_top3_db": 18.8,
+    "bands_clear_6db": 15,
+    "loudness_margin_lu": 14.8
+   },
+   "camera_click": {
+    "top_bands_hz": [
+     5080,
+     8064,
+     12801
+    ],
+    "margin_top3_db": 19.1,
+    "bands_clear_6db": 9,
+    "loudness_margin_lu": 3.8
+   },
+   "cafe_bell": {
+    "top_bands_hz": [
+     4032,
+     6400,
+     10160
+    ],
+    "margin_top3_db": 22.3,
+    "bands_clear_6db": 5,
+    "loudness_margin_lu": 7.8
+   },
+   "cafe_door": {
+    "top_bands_hz": [
+     100,
+     159,
+     200
+    ],
+    "margin_top3_db": 19.1,
+    "bands_clear_6db": 12,
+    "loudness_margin_lu": 5.8
+   },
+   "handover_chime": {
+    "top_bands_hz": [
+     800,
+     1008,
+     2016
+    ],
+    "margin_top3_db": 16.9,
+    "bands_clear_6db": 6,
+    "loudness_margin_lu": 13.8
+   },
+   "car_warn": {
+    "top_bands_hz": [
+     1270,
+     2016,
+     2540
+    ],
+    "margin_top3_db": 21.1,
+    "bands_clear_6db": 17,
+    "loudness_margin_lu": 10.0
+   },
+   "police_siren": {
+    "top_bands_hz": [
+     800,
+     1600,
+     2540
+    ],
+    "margin_top3_db": 8.3,
+    "bands_clear_6db": 3,
+    "loudness_margin_lu": 12.8
+   },
+   "patrol_break": {
+    "top_bands_hz": [
+     252,
+     318,
+     1600
+    ],
+    "margin_top3_db": 22.5,
+    "bands_clear_6db": 24,
+    "loudness_margin_lu": 11.8
+   }
+  },
+  "night bed": {
+   "notice_1": {
+    "top_bands_hz": [
+     3200,
+     6400,
+     8064
+    ],
+    "margin_top3_db": 27.8,
+    "bands_clear_6db": 9,
+    "loudness_margin_lu": 14.0
+   },
+   "notice_2": {
+    "top_bands_hz": [
+     4032,
+     8064,
+     12801
+    ],
+    "margin_top3_db": 34.1,
+    "bands_clear_6db": 8,
+    "loudness_margin_lu": 18.0
+   },
+   "notice_3": {
+    "top_bands_hz": [
+     1270,
+     4032,
+     6400
+    ],
+    "margin_top3_db": 26.5,
+    "bands_clear_6db": 16,
+    "loudness_margin_lu": 21.0
+   },
+   "camera_click": {
+    "top_bands_hz": [
+     5080,
+     8064,
+     12801
+    ],
+    "margin_top3_db": 33.2,
+    "bands_clear_6db": 12,
+    "loudness_margin_lu": 10.0
+   },
+   "cafe_bell": {
+    "top_bands_hz": [
+     4032,
+     6400,
+     10160
+    ],
+    "margin_top3_db": 38.1,
+    "bands_clear_6db": 7,
+    "loudness_margin_lu": 14.0
+   },
+   "cafe_door": {
+    "top_bands_hz": [
+     100,
+     159,
+     200
+    ],
+    "margin_top3_db": 22.1,
+    "bands_clear_6db": 22,
+    "loudness_margin_lu": 12.0
+   },
+   "handover_chime": {
+    "top_bands_hz": [
+     800,
+     1008,
+     2016
+    ],
+    "margin_top3_db": 24.7,
+    "bands_clear_6db": 15,
+    "loudness_margin_lu": 20.0
+   },
+   "car_warn": {
+    "top_bands_hz": [
+     1270,
+     2016,
+     2540
+    ],
+    "margin_top3_db": 28.9,
+    "bands_clear_6db": 18,
+    "loudness_margin_lu": 16.2
+   },
+   "police_siren": {
+    "top_bands_hz": [
+     800,
+     1600,
+     2540
+    ],
+    "margin_top3_db": 22.3,
+    "bands_clear_6db": 8,
+    "loudness_margin_lu": 19.0
+   },
+   "patrol_break": {
+    "top_bands_hz": [
+     252,
+     318,
+     1600
+    ],
+    "margin_top3_db": 26.0,
+    "bands_clear_6db": 24,
+    "loudness_margin_lu": 18.0
+   }
+  }
+ },
+ "mixes": {
+  "mix_day": "audio/mix_day.mp3",
+  "mix_rain": "audio/mix_rain.mp3",
+  "mix_night": "audio/mix_night.mp3"
+ },
+ "cues": [
+  {
+   "id": "rain_bed",
+   "label": "Summer shower",
+   "kind": "loop",
+   "level": -40,
+   "meter": "i",
+   "plays": "While it rains: over the street bed, not instead of it (the street keeps its murmur). 2D stereo, ambience bus.",
+   "spatial": "2d",
+   "pick": "rain_bed_t11",
+   "why": "The evenest take (0.8 LU swing over 4 s windows) with no gusts or rumbles once the lows are cut; take 2 has a low rumble at 17-18 s that could read as thunder; take 3 is thinner and swings 3.4 LU.",
+   "hp": 120,
+   "xf": 3.0,
+   "rate": 32000,
+   "optional": false,
+   "level_unit": "LUFS integrated",
+   "takes": [
+    {
+     "id": "rain_bed_t11",
+     "files": {
+      "loop": "audio/rain_bed_t11.mp3",
+      "seam": "audio/rain_bed_t11_seam.mp3"
+     },
+     "measured": {
+      "seconds": 16.7,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs_integrated": -40.0,
+      "lufs_momentary_max": -38.9,
+      "true_peak_dbtp": -17.1,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -13.3,
+       -4.5,
+       -4.1,
+       -6.8
+      ],
+      "centroid_hz": 2624,
+      "small_speaker_lufs_m": -39.0,
+      "swing_4s_lu": 0.9,
+      "low_events_s": [
+       14.5,
+       15.0
+      ],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.22,
+      "seam": {
+       "step_percentile": 6.3,
+       "step_ratio": 0.12,
+       "level_jump_db": 0.7,
+       "typical_jump_db_p95": 4.58,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "rain_bed_t11.wav",
+       "ledger_id": 1,
+       "cost_usd": 0.052667,
+       "prompt": "Sound effect only. A warm gentle summer shower falling on a clean stone city plaza: a soft steady patter of light rain on paving and shallow puddles, a fine even hiss, faint soft rain on rooftops further away. Calm and pleasant, steady and even for twenty seconds with no gusts, no change and no ending. No thunder, no wind, no traffic, no cars. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "rain_bed_t12",
+     "files": {
+      "loop": "audio/rain_bed_t12.mp3",
+      "seam": "audio/rain_bed_t12_seam.mp3"
+     },
+     "measured": {
+      "seconds": 18.2,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs_integrated": -40.0,
+      "lufs_momentary_max": -37.3,
+      "true_peak_dbtp": -18.7,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -8.4,
+       -6.6,
+       -5.0,
+       -5.0
+      ],
+      "centroid_hz": 3340,
+      "small_speaker_lufs_m": -37.8,
+      "swing_4s_lu": 3.5,
+      "low_events_s": [
+       4.0,
+       4.5,
+       17.5,
+       18.0,
+       18.5
+      ],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.24,
+      "seam": {
+       "step_percentile": 36.2,
+       "step_ratio": 0.69,
+       "level_jump_db": 3.78,
+       "typical_jump_db_p95": 3.25,
+       "clean": false
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "rain_bed_t12.wav",
+       "ledger_id": 2,
+       "cost_usd": 0.056617,
+       "prompt": "Sound effect only. A warm gentle summer shower falling on a clean stone city plaza: a soft steady patter of light rain on paving and shallow puddles, a fine even hiss, faint soft rain on rooftops further away. Calm and pleasant, steady and even for twenty seconds with no gusts, no change and no ending. No thunder, no wind, no traffic, no cars. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "rain_bed_t13",
+     "files": {
+      "loop": "audio/rain_bed_t13.mp3",
+      "seam": "audio/rain_bed_t13_seam.mp3"
+     },
+     "measured": {
+      "seconds": 16.7,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs_integrated": -40.0,
+      "lufs_momentary_max": -37.5,
+      "true_peak_dbtp": -19.4,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -21.8,
+       -6.1,
+       -3.6,
+       -5.1
+      ],
+      "centroid_hz": 3431,
+      "small_speaker_lufs_m": -37.5,
+      "swing_4s_lu": 3.2,
+      "low_events_s": [],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.17,
+      "seam": {
+       "step_percentile": 70.5,
+       "step_ratio": 1.58,
+       "level_jump_db": 1.96,
+       "typical_jump_db_p95": 3.59,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "rain_bed_t13.wav",
+       "ledger_id": 3,
+       "cost_usd": 0.052667,
+       "prompt": "Sound effect only. A warm gentle summer shower falling on a clean stone city plaza: a soft steady patter of light rain on paving and shallow puddles, a fine even hiss, faint soft rain on rooftops further away. Calm and pleasant, steady and even for twenty seconds with no gusts, no change and no ending. No thunder, no wind, no traffic, no cars. No voice, no speech, no music."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rain_awning",
+   "label": "Rain on awnings and parasols",
+   "kind": "loop",
+   "level": -36,
+   "meter": "i",
+   "plays": "While it rains: one 3D loop on each cafe awning or parasol cluster, start offset by hash so neighbours differ. Heard only near them.",
+   "spatial": "3d-near",
+   "pick": "rain_awning_t13",
+   "why": "Even (1.2 LU swing) with no events and the fewest tonal lines; take 1 has a low thump at 8.5 s; take 2 is the same texture but came out 13 dB quieter, so it carries more noise once raised. Every take has a few loud drops off the edge (12-15 dB over the patter); their peaks are held to -12 dBTP so none pops.",
+   "hp": 100,
+   "xf": 1.5,
+   "rate": 48000,
+   "optional": false,
+   "level_unit": "LUFS integrated",
+   "takes": [
+    {
+     "id": "rain_awning_t11",
+     "files": {
+      "loop": "audio/rain_awning_t11.mp3",
+      "seam": "audio/rain_awning_t11_seam.mp3"
+     },
+     "measured": {
+      "seconds": 19.7,
+      "sample_rate": 48000,
+      "channels": 1,
+      "lufs_integrated": -36.0,
+      "lufs_momentary_max": -33.6,
+      "true_peak_dbtp": -13.1,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -16.0,
+       -4.4,
+       -3.2,
+       -8.9
+      ],
+      "centroid_hz": 2035,
+      "small_speaker_lufs_m": -33.7,
+      "swing_4s_lu": 1.8,
+      "low_events_s": [
+       8.5
+      ],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.12,
+      "seam": {
+       "step_percentile": 31.2,
+       "step_ratio": 0.59,
+       "level_jump_db": 0.41,
+       "typical_jump_db_p95": 4.68,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "rain_awning_t11.wav",
+       "ledger_id": 4,
+       "cost_usd": 0.056617,
+       "prompt": "Sound effect only. Light summer rain pattering close on a taut striped canvas cafe awning and a cloth parasol: a soft dense drumming of small drops on stretched fabric, with a few drips running off the edge onto stone below. Steady and even for twenty seconds with no change. No thunder, no wind, no traffic. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "rain_awning_t12",
+     "files": {
+      "loop": "audio/rain_awning_t12.mp3",
+      "seam": "audio/rain_awning_t12_seam.mp3"
+     },
+     "measured": {
+      "seconds": 18.2,
+      "sample_rate": 48000,
+      "channels": 1,
+      "lufs_integrated": -36.0,
+      "lufs_momentary_max": -33.0,
+      "true_peak_dbtp": -12.5,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -18.0,
+       -3.8,
+       -3.3,
+       -10.2
+      ],
+      "centroid_hz": 1790,
+      "small_speaker_lufs_m": -33.1,
+      "swing_4s_lu": 1.3,
+      "low_events_s": [],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.12,
+      "seam": {
+       "step_percentile": 11.9,
+       "step_ratio": 0.22,
+       "level_jump_db": 11.15,
+       "typical_jump_db_p95": 5.88,
+       "clean": false
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "rain_awning_t12.wav",
+       "ledger_id": 5,
+       "cost_usd": 0.052667,
+       "prompt": "Sound effect only. Light summer rain pattering close on a taut striped canvas cafe awning and a cloth parasol: a soft dense drumming of small drops on stretched fabric, with a few drips running off the edge onto stone below. Steady and even for twenty seconds with no change. No thunder, no wind, no traffic. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "rain_awning_t13",
+     "files": {
+      "loop": "audio/rain_awning_t13.mp3",
+      "seam": "audio/rain_awning_t13_seam.mp3"
+     },
+     "measured": {
+      "seconds": 19.7,
+      "sample_rate": 48000,
+      "channels": 1,
+      "lufs_integrated": -36.0,
+      "lufs_momentary_max": -34.0,
+      "true_peak_dbtp": -11.9,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -14.4,
+       -4.8,
+       -3.2,
+       -8.2
+      ],
+      "centroid_hz": 2203,
+      "small_speaker_lufs_m": -34.2,
+      "swing_4s_lu": 1.8,
+      "low_events_s": [
+       19.5
+      ],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.09,
+      "seam": {
+       "step_percentile": 90.7,
+       "step_ratio": 2.73,
+       "level_jump_db": 0.86,
+       "typical_jump_db_p95": 5.8,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "rain_awning_t13.wav",
+       "ledger_id": 6,
+       "cost_usd": 0.056617,
+       "prompt": "Sound effect only. Light summer rain pattering close on a taut striped canvas cafe awning and a cloth parasol: a soft dense drumming of small drops on stretched fabric, with a few drips running off the edge onto stone below. Steady and even for twenty seconds with no change. No thunder, no wind, no traffic. No voice, no speech, no music."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "drips",
+   "label": "Drips from the eaves",
+   "kind": "loop",
+   "level": -36,
+   "meter": "m",
+   "plays": "After rain and in rain: a quiet 3D loop under eaves and awning edges, a few per block. Its loudest drip sits a little under a footstep.",
+   "spatial": "3d-near",
+   "pick": "drips_t11",
+   "why": "Separate bright drips all the way through (about one a second) at an even level (1.8 LU swing); take 2 has heavier splats and swings 5.8 LU; take 3 is near silence with few clear drops.",
+   "hp": 200,
+   "xf": 0.6,
+   "rate": 48000,
+   "optional": false,
+   "level_unit": "LUFS momentary max",
+   "takes": [
+    {
+     "id": "drips_t11",
+     "files": {
+      "loop": "audio/drips_t11.mp3",
+      "seam": "audio/drips_t11_seam.mp3"
+     },
+     "measured": {
+      "seconds": 14.1,
+      "sample_rate": 48000,
+      "channels": 1,
+      "lufs_integrated": -43.1,
+      "lufs_momentary_max": -36.0,
+      "true_peak_dbtp": -14.4,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -37.6,
+       -18.2,
+       -1.9,
+       -4.6
+      ],
+      "centroid_hz": 3860,
+      "small_speaker_lufs_m": -36.0,
+      "swing_4s_lu": 2.7,
+      "low_events_s": [],
+      "mid_events_s": [
+       1.0,
+       2.5,
+       3.0,
+       4.0,
+       5.5,
+       11.0,
+       12.5,
+       13.5
+      ],
+      "high_events_s": [
+       2.5,
+       5.5,
+       9.5,
+       13.0,
+       13.5
+      ],
+      "tonal_share": 0.25,
+      "seam": {
+       "step_percentile": 80.0,
+       "step_ratio": 2.06,
+       "level_jump_db": 1.05,
+       "typical_jump_db_p95": 13.52,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "drips_t11.wav",
+       "ledger_id": 8,
+       "cost_usd": 0.0395,
+       "prompt": "Sound effect only. Slow drips of rainwater falling from a building's eave onto wet stone paving and into a small puddle after a light shower: separate clear drops, soft plinks and small splats, about two a second at an uneven gentle rhythm, very quiet in between. Continuous for fifteen seconds. No rain hiss, no thunder, no traffic. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "drips_t12",
+     "files": {
+      "loop": "audio/drips_t12.mp3",
+      "seam": "audio/drips_t12_seam.mp3"
+     },
+     "measured": {
+      "seconds": 14.1,
+      "sample_rate": 48000,
+      "channels": 1,
+      "lufs_integrated": -44.4,
+      "lufs_momentary_max": -36.0,
+      "true_peak_dbtp": -8.7,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -29.8,
+       -3.6,
+       -4.0,
+       -7.8
+      ],
+      "centroid_hz": 2433,
+      "small_speaker_lufs_m": -36.0,
+      "swing_4s_lu": 5.8,
+      "low_events_s": [],
+      "mid_events_s": [
+       2.0,
+       4.0,
+       5.0,
+       6.0,
+       9.0,
+       11.5,
+       13.0,
+       13.5
+      ],
+      "high_events_s": [
+       9.0,
+       11.5
+      ],
+      "tonal_share": 0.28,
+      "seam": {
+       "step_percentile": 46.8,
+       "step_ratio": 0.92,
+       "level_jump_db": 0.39,
+       "typical_jump_db_p95": 13.3,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "drips_t12.wav",
+       "ledger_id": 7,
+       "cost_usd": 0.0395,
+       "prompt": "Sound effect only. Slow drips of rainwater falling from a building's eave onto wet stone paving and into a small puddle after a light shower: separate clear drops, soft plinks and small splats, about two a second at an uneven gentle rhythm, very quiet in between. Continuous for fifteen seconds. No rain hiss, no thunder, no traffic. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "drips_t13",
+     "files": {
+      "loop": "audio/drips_t13.mp3",
+      "seam": "audio/drips_t13_seam.mp3"
+     },
+     "measured": {
+      "seconds": 12.1,
+      "sample_rate": 48000,
+      "channels": 1,
+      "lufs_integrated": -40.8,
+      "lufs_momentary_max": -36.0,
+      "true_peak_dbtp": -10.5,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -17.6,
+       -6.3,
+       -4.6,
+       -3.9
+      ],
+      "centroid_hz": 3519,
+      "small_speaker_lufs_m": -36.0,
+      "swing_4s_lu": 0.8,
+      "low_events_s": [],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.12,
+      "seam": {
+       "step_percentile": 95.4,
+       "step_ratio": 4.45,
+       "level_jump_db": 1.23,
+       "typical_jump_db_p95": 8.88,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "drips_t13.wav",
+       "ledger_id": 10,
+       "cost_usd": 0.034056,
+       "prompt": "Sound effect only. Slow drips of rainwater falling from a building's eave onto wet stone paving and into a small puddle after a light shower: separate clear drops, soft plinks and small splats, about two a second at an uneven gentle rhythm, very quiet in between. Continuous for fifteen seconds. No rain hiss, no thunder, no traffic. No voice, no speech, no music."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wet_steps",
+   "label": "Wet footsteps",
+   "kind": "steps",
+   "level": -37,
+   "meter": "m",
+   "plays": "In rain and after: four single steps per set, played as foot_concrete would be (3D-near, alternating, pitch from the hash). Same level as foot_concrete.",
+   "spatial": "3d-near",
+   "pick": "wet_steps_t13",
+   "why": "Its steps stand 40.8 dB over the noise between them and come out within 2.1 dB of each other, at a steady pace. t11: 43.1 dB over, 6.7 dB spread; t12: 24.6 dB over, 3.5 dB spread.",
+   "hp": 120,
+   "xf": 0.0,
+   "rate": 48000,
+   "optional": false,
+   "level_unit": "LUFS momentary max",
+   "takes": [
+    {
+     "id": "wet_steps_t11",
+     "files": {
+      "walk": "audio/wet_steps_t11_walk.mp3",
+      "steps": [
+       "audio/wet_steps_t11_step1.mp3",
+       "audio/wet_steps_t11_step2.mp3",
+       "audio/wet_steps_t11_step3.mp3",
+       "audio/wet_steps_t11_step4.mp3"
+      ]
+     },
+     "measured": {
+      "steps_found": 25,
+      "steps_used_at_s": [
+       4.771,
+       6.39,
+       7.271,
+       7.992
+      ],
+      "over_floor_db": 43.1,
+      "step_lufs_spread_db": 6.7,
+      "step_seconds": [
+       0.3,
+       0.417,
+       0.388,
+       0.335
+      ],
+      "true_peak_dbtp": -12.6,
+      "score": 29.7
+     },
+     "source": [
+      {
+       "take": "wet_steps_t11.wav",
+       "ledger_id": 9,
+       "cost_usd": 0.030283,
+       "prompt": "Sound effect only. One person walking at a calm even pace in soft leather shoes on wet stone paving with shallow puddles: clear separate footsteps, each with a soft splash and a light wet slap, about two steps a second, close and dry. Continuous for ten seconds. No rain, no traffic. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "wet_steps_t12",
+     "files": {
+      "walk": "audio/wet_steps_t12_walk.mp3",
+      "steps": [
+       "audio/wet_steps_t12_step1.mp3",
+       "audio/wet_steps_t12_step2.mp3",
+       "audio/wet_steps_t12_step3.mp3",
+       "audio/wet_steps_t12_step4.mp3"
+      ]
+     },
+     "measured": {
+      "steps_found": 20,
+      "steps_used_at_s": [
+       2.639,
+       6.175,
+       6.776,
+       11.307
+      ],
+      "over_floor_db": 24.6,
+      "step_lufs_spread_db": 3.5,
+      "step_seconds": [
+       0.43,
+       0.43,
+       0.43,
+       0.193
+      ],
+      "true_peak_dbtp": -10.0,
+      "score": 17.6
+     },
+     "source": [
+      {
+       "take": "wet_steps_t12.wav",
+       "ledger_id": 11,
+       "cost_usd": 0.030283,
+       "prompt": "Sound effect only. One person walking at a calm even pace in soft leather shoes on wet stone paving with shallow puddles: clear separate footsteps, each with a soft splash and a light wet slap, about two steps a second, close and dry. Continuous for ten seconds. No rain, no traffic. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "wet_steps_t13",
+     "files": {
+      "walk": "audio/wet_steps_t13_walk.mp3",
+      "steps": [
+       "audio/wet_steps_t13_step1.mp3",
+       "audio/wet_steps_t13_step2.mp3",
+       "audio/wet_steps_t13_step3.mp3",
+       "audio/wet_steps_t13_step4.mp3"
+      ]
+     },
+     "measured": {
+      "steps_found": 21,
+      "steps_used_at_s": [
+       0.885,
+       5.17,
+       6.26,
+       8.377
+      ],
+      "over_floor_db": 40.8,
+      "step_lufs_spread_db": 2.1,
+      "step_seconds": [
+       0.43,
+       0.43,
+       0.43,
+       0.43
+      ],
+      "true_peak_dbtp": -7.5,
+      "score": 36.6
+     },
+     "source": [
+      {
+       "take": "wet_steps_t13.wav",
+       "ledger_id": 12,
+       "cost_usd": 0.030283,
+       "prompt": "Sound effect only. One person walking at a calm even pace in soft leather shoes on wet stone paving with shallow puddles: clear separate footsteps, each with a soft splash and a light wet slap, about two steps a second, close and dry. Continuous for ten seconds. No rain, no traffic. No voice, no speech, no music."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "night_bed",
+   "label": "Night street",
+   "kind": "loop",
+   "level": -40,
+   "meter": "i",
+   "plays": "At night: in place of the street bed. 2D stereo, ambience bus. 2 dB under the day bed, so the night is calmer and the cues stand clearer.",
+   "spatial": "2d",
+   "pick": "night_bed_join",
+   "why": "The steady parts of takes 1-2 and 2-2 joined and evened into a 27 s loop. Take 1-1 has short tones that change pitch (could be a tune or a whine); 1-3 swings 9 LU; 2-1 and 2-2 have a tram swelling in partway, which would repeat on every loop.",
+   "hp": 45,
+   "xf": 3.0,
+   "rate": 32000,
+   "optional": false,
+   "level_unit": "LUFS integrated",
+   "takes": [
+    {
+     "id": "night_bed_join",
+     "joined": [
+      "night_bed_t12",
+      "night_bed_t22"
+     ],
+     "files": {
+      "loop": "audio/night_bed_join.mp3",
+      "seam": "audio/night_bed_join_seam.mp3"
+     },
+     "measured": {
+      "seconds": 23.9,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs_integrated": -40.0,
+      "lufs_momentary_max": -38.5,
+      "true_peak_dbtp": -27.5,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -3.0,
+       -3.8,
+       -11.4,
+       -21.4
+      ],
+      "centroid_hz": 389,
+      "small_speaker_lufs_m": -40.6,
+      "swing_4s_lu": 0.2,
+      "low_events_s": [],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.5,
+      "seam": {
+       "step_percentile": 3.6,
+       "step_ratio": 0.07,
+       "level_jump_db": 3.3,
+       "typical_jump_db_p95": 3.81,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "night_bed_t12.wav",
+       "ledger_id": 13,
+       "cost_usd": 0.052667,
+       "prompt": "Sound effect only. A calm warm summer night on a quiet city plaza heard from above: a soft low electric hum of street lamps, a faint distant electric tram gliding past now and then, a far-off murmur of a few people at cafe tables with no clear words, a glass clinking very softly far away, a light night breeze. Peaceful and even for twenty seconds with no sudden events. No car engines, no horns, no sirens, no insects, no birds, no dogs. No voice, no speech, no music."
+      },
+      {
+       "take": "night_bed_t22.wav",
+       "ledger_id": 16,
+       "cost_usd": 0.056617,
+       "prompt": "Sound effect only. A calm warm summer night on a quiet city square heard from high above: a soft steady low electric hum, a very faint far-off murmur of a few people at cafe tables with no clear words, the faint smooth whoosh of a distant electric tram far away, a light night breeze. Steady and even for twenty seconds, the same from start to end, with no sudden events and no tones. No car engines, no horns, no sirens, no insects, no birds, no dogs, no bells. No voice, no speech, no music, no melody."
+      }
+     ]
+    },
+    {
+     "id": "night_bed_t12",
+     "files": {
+      "loop": "audio/night_bed_t12.mp3",
+      "seam": "audio/night_bed_t12_seam.mp3"
+     },
+     "measured": {
+      "seconds": 16.6,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs_integrated": -40.0,
+      "lufs_momentary_max": -38.8,
+      "true_peak_dbtp": -27.5,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -2.8,
+       -4.0,
+       -11.5,
+       -20.8
+      ],
+      "centroid_hz": 381,
+      "small_speaker_lufs_m": -40.7,
+      "swing_4s_lu": 0.2,
+      "low_events_s": [],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.45,
+      "seam": {
+       "step_percentile": 13.0,
+       "step_ratio": 0.24,
+       "level_jump_db": 2.69,
+       "typical_jump_db_p95": 3.85,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "night_bed_t12.wav",
+       "ledger_id": 13,
+       "cost_usd": 0.052667,
+       "prompt": "Sound effect only. A calm warm summer night on a quiet city plaza heard from above: a soft low electric hum of street lamps, a faint distant electric tram gliding past now and then, a far-off murmur of a few people at cafe tables with no clear words, a glass clinking very softly far away, a light night breeze. Peaceful and even for twenty seconds with no sudden events. No car engines, no horns, no sirens, no insects, no birds, no dogs. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "night_bed_t22",
+     "files": {
+      "loop": "audio/night_bed_t22.mp3",
+      "seam": "audio/night_bed_t22_seam.mp3"
+     },
+     "measured": {
+      "seconds": 7.3,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs_integrated": -40.0,
+      "lufs_momentary_max": -38.4,
+      "true_peak_dbtp": -28.3,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -3.6,
+       -3.2,
+       -11.0,
+       -23.5
+      ],
+      "centroid_hz": 414,
+      "small_speaker_lufs_m": -40.9,
+      "swing_4s_lu": 0.2,
+      "low_events_s": [],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.59,
+      "seam": {
+       "step_percentile": 3.9,
+       "step_ratio": 0.07,
+       "level_jump_db": 3.27,
+       "typical_jump_db_p95": 3.63,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "night_bed_t22.wav",
+       "ledger_id": 16,
+       "cost_usd": 0.056617,
+       "prompt": "Sound effect only. A calm warm summer night on a quiet city square heard from high above: a soft steady low electric hum, a very faint far-off murmur of a few people at cafe tables with no clear words, the faint smooth whoosh of a distant electric tram far away, a light night breeze. Steady and even for twenty seconds, the same from start to end, with no sudden events and no tones. No car engines, no horns, no sirens, no insects, no birds, no dogs, no bells. No voice, no speech, no music, no melody."
+      }
+     ]
+    },
+    {
+     "id": "night_bed_t11",
+     "files": {
+      "loop": "audio/night_bed_t11.mp3",
+      "seam": "audio/night_bed_t11_seam.mp3"
+     },
+     "measured": {
+      "seconds": 16.6,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs_integrated": -40.0,
+      "lufs_momentary_max": -37.9,
+      "true_peak_dbtp": -28.8,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -3.3,
+       -2.9,
+       -17.1,
+       -28.9
+      ],
+      "centroid_hz": 321,
+      "small_speaker_lufs_m": -39.3,
+      "swing_4s_lu": 0.8,
+      "low_events_s": [],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 2.12,
+      "seam": {
+       "step_percentile": 8.6,
+       "step_ratio": 0.16,
+       "level_jump_db": 2.24,
+       "typical_jump_db_p95": 3.6,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "night_bed_t11.wav",
+       "ledger_id": 14,
+       "cost_usd": 0.052667,
+       "prompt": "Sound effect only. A calm warm summer night on a quiet city plaza heard from above: a soft low electric hum of street lamps, a faint distant electric tram gliding past now and then, a far-off murmur of a few people at cafe tables with no clear words, a glass clinking very softly far away, a light night breeze. Peaceful and even for twenty seconds with no sudden events. No car engines, no horns, no sirens, no insects, no birds, no dogs. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "night_bed_t13",
+     "files": {
+      "loop": "audio/night_bed_t13.mp3",
+      "seam": "audio/night_bed_t13_seam.mp3"
+     },
+     "measured": {
+      "seconds": 16.6,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs_integrated": -40.0,
+      "lufs_momentary_max": -37.4,
+      "true_peak_dbtp": -21.3,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -5.0,
+       -2.1,
+       -11.6,
+       -23.9
+      ],
+      "centroid_hz": 415,
+      "small_speaker_lufs_m": -38.1,
+      "swing_4s_lu": 1.6,
+      "low_events_s": [],
+      "mid_events_s": [],
+      "high_events_s": [
+       13.5
+      ],
+      "tonal_share": 0.57,
+      "seam": {
+       "step_percentile": 88.5,
+       "step_ratio": 2.39,
+       "level_jump_db": 1.4,
+       "typical_jump_db_p95": 3.58,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "night_bed_t13.wav",
+       "ledger_id": 15,
+       "cost_usd": 0.052667,
+       "prompt": "Sound effect only. A calm warm summer night on a quiet city plaza heard from above: a soft low electric hum of street lamps, a faint distant electric tram gliding past now and then, a far-off murmur of a few people at cafe tables with no clear words, a glass clinking very softly far away, a light night breeze. Peaceful and even for twenty seconds with no sudden events. No car engines, no horns, no sirens, no insects, no birds, no dogs. No voice, no speech, no music."
+      }
+     ]
+    },
+    {
+     "id": "night_bed_t21",
+     "files": {
+      "loop": "audio/night_bed_t21.mp3",
+      "seam": "audio/night_bed_t21_seam.mp3"
+     },
+     "measured": {
+      "seconds": 16.6,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs_integrated": -40.0,
+      "lufs_momentary_max": -35.3,
+      "true_peak_dbtp": -22.8,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -2.4,
+       -3.9,
+       -16.4,
+       -27.6
+      ],
+      "centroid_hz": 289,
+      "small_speaker_lufs_m": -40.7,
+      "swing_4s_lu": 3.0,
+      "low_events_s": [],
+      "mid_events_s": [],
+      "high_events_s": [],
+      "tonal_share": 0.9,
+      "seam": {
+       "step_percentile": 63.2,
+       "step_ratio": 1.36,
+       "level_jump_db": 2.66,
+       "typical_jump_db_p95": 4.58,
+       "clean": true
+      },
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "night_bed_t21.wav",
+       "ledger_id": 17,
+       "cost_usd": 0.052667,
+       "prompt": "Sound effect only. A calm warm summer night on a quiet city square heard from high above: a soft steady low electric hum, a very faint far-off murmur of a few people at cafe tables with no clear words, the faint smooth whoosh of a distant electric tram far away, a light night breeze. Steady and even for twenty seconds, the same from start to end, with no sudden events and no tones. No car engines, no horns, no sirens, no insects, no birds, no dogs, no bells. No voice, no speech, no music, no melody."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "night_tram",
+   "label": "Far tram at night (optional)",
+   "kind": "oneshot",
+   "level": -40,
+   "meter": "i",
+   "plays": "Optional: now and then at night (every 40-90 s by hash), a tram gliding by far off, so the night bed itself stays free of events.",
+   "spatial": "2d",
+   "pick": "night_bed_t21",
+   "why": "Cut from take 2-1, where a tram swells in from 10 s; faded in over 3 s and out over 2.5 s.",
+   "hp": 45,
+   "xf": 0.0,
+   "rate": 32000,
+   "optional": true,
+   "level_unit": "LUFS integrated",
+   "takes": [
+    {
+     "id": "night_bed_t21",
+     "files": {
+      "clip": "audio/night_bed_t21_oneshot.mp3"
+     },
+     "measured": {
+      "seconds": 10.9,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs_integrated": -40.0,
+      "lufs_momentary_max": -33.9,
+      "true_peak_dbtp": -21.4,
+      "bands_db_lt200_lt1k_lt4k_hi": [
+       -1.6,
+       -5.3,
+       -18.5,
+       -31.3
+      ],
+      "centroid_hz": 229,
+      "small_speaker_lufs_m": -40.1,
+      "ceiling_shortfall_db": 0.0
+     },
+     "source": [
+      {
+       "take": "night_bed_t21.wav",
+       "ledger_id": 17,
+       "cost_usd": 0.052667,
+       "prompt": "Sound effect only. A calm warm summer night on a quiet city square heard from high above: a soft steady low electric hum, a very faint far-off murmur of a few people at cafe tables with no clear words, the faint smooth whoosh of a distant electric tram far away, a light night breeze. Steady and even for twenty seconds, the same from start to end, with no sudden events and no tones. No car engines, no horns, no sirens, no insects, no birds, no dogs, no bells. No voice, no speech, no music, no melody."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "clips_dir": "out/scratch/chime/107/clips"
+}
