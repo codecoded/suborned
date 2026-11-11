@@ -1,0 +1,29 @@
+<section class="note">
+<p>Sky on 0.2.318: <i>"try redesign the briefing page entirely. It's so busy and full of text, it's overwhelming."</i> Today's page has about 190 words in about 40 pieces. Each direction below keeps only what you need <b>before pressing Begin</b>: Popovic, the job, the two ways in with one time each, the rivals' time, the look pill and Begin. That comes to about 30 words. Everything else is one click away or on another tab.</p>
+<details style="margin-top:10px"><summary style="cursor:pointer;font-family:JostSemiBold">Today's page (0.2.318), for comparison</summary><img src="{TODAY}" alt="Today's job page" style="width:100%;max-width:960px;margin-top:10px;border-radius:8px"></details>
+
+<h3>Where everything goes (all three directions)</h3>
+<table>
+<tr><th>On the page today</th><th>Goes to</th></tr>
+<tr><td>Money ($100,000)</td><td>Off the page. The HUD's counter shows it once play starts, and nothing before Begin costs money.</td></tr>
+<tr><td>Heat "⦿? Unknown"</td><td>Off while it's unknown or zero (the whole Handover). On a later mission where it matters, it becomes one plain phrase with an icon. C shows the form: "Streets are calm". Fable writes the scale. No "Heat" label, no question-mark eye.</td></tr>
+<tr><td>Ways to fail 9 ›</td><td>A link, "What can go wrong ›". It opens the same list as a card over the page.</td></tr>
+<tr><td>Nine checklist lines, the Go rule sentence, the two shared lines</td><td>Behind a click on each way (frame A2). The Journal follows them in play. The rule sentence is cut down to the steps' last line ("Go, and the job's done"), and the Go card in play teaches the rest. <b>Sky's call:</b> is that OK?</td></tr>
+<tr><td>People chips (Inez, the guard, the driver)</td><td>Inez and the driver sit on their way. The guard goes inside the opened steps. A hover still turns the street to them, and a click keeps it there.</td></tr>
+<tr><td>Five-stop timeline</td><td>Down to one time on the page: rivals 2:35. Popovic exits 5:30 and his car leaves 5:50 are the ways' own times. "Turn the driver by 5:20" goes into the Pickup steps. The Chime 5:10 is already the HUD's next-event line in play.</td></tr>
+<tr><td>Cell strip (four faces and job lines)</td><td>The Cell tab, which already has it. B keeps four small faces as a link to that tab.</td></tr>
+<tr><td>The dial (DEV)</td><td>Folded to a small "Dial DEV" chip at the bottom left of the street. A click opens today's panel upward, and it remembers open or shut. Nothing is deleted.</td></tr>
+<tr><td>Five side tabs</td><td>Three at the start: Cell, Job, Menu. People and Journal are dim before play, so they appear once they have something. Labels stay, and everything is clickable.</td></tr>
+<tr><td>Weather pill, clock</td><td>No change (0.2.318's pill).</td></tr>
+</table>
+
+<h3>The three directions</h3>
+<table>
+<tr><th>Dir</th><th>The idea</th><th>Words</th><th>For</th><th>Against</th></tr>
+<tr><td><b>A</b> One choice</td><td>A poster. Big Popovic, the job, one line (rivals, what can go wrong), then two big way cards, each with its time and contact. Begin at the bottom right. A click on a card opens its steps under it (A2).</td><td>~29</td><td>Reads top to bottom in one look. It's today's pieces with most of them removed, so Latch can build it from the existing BookLayout slots (Hero, Kicker, Name, Sub, Ways, Faces, Begin, the fold). The steps reuse the Needs rows.</td><td>The quietest of the three. The times sit as words, not as a picture.</td></tr>
+<tr><td><b>B</b> The clock</td><td>The plan drawn as two lanes on one 0:00–8:10 line. The front door is open until 5:30 and the pickup from 5:50, and a dashed line marks the rivals at 2:35. A narrower page shows more street. The cell's faces link to the Cell tab.</td><td>~29</td><td>You see the timing: the door shuts just before the car leaves, and the rivals come early.</td><td>It's a chart, so there's something to learn. Marks that sit close together crowd on other missions. Better as the Journal's plan view later.</td></tr>
+<tr><td><b>C</b> Pick your way</td><td>Two tall tiles with the contacts' faces big, under the question "How do we get to him?". Picking one fills it, and Begin says "by the front door". Not picking is fine.</td><td>~40</td><td>Feels like a decision about people, which fits "people &gt; powers". The faces are the strongest picture.</td><td>The most words. Picking adds a meaning: which steps the HUD and Journal follow. That's a design change for Sky, not just layout. Needs larger portraits of Inez and the driver (these are crops from the 063 concepts).</td></tr>
+</table>
+<div class="pick"><b>Glyph's pick: A.</b> It's the calmest and fastest to read. It keeps the book's look and the one orange Begin, and it adds no new idea a player has to learn. Optional later: B's lanes as the opened view in the Journal, and C's big faces if Sky wants the contacts to carry the page.</div>
+<p style="color:var(--mut);margin-top:10px;font-size:15px">Mocks only: the street is a frame from brief 101, and the words are placeholders for Fable after Sky picks. Next: Sky picks, Fable writes the words, Latch builds (BookStart, BookLayout, Look107 positions), then Glyph does the 2× crop check.</p>
+</section>
