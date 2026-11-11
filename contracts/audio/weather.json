@@ -1,0 +1,438 @@
+{
+ "schema": "suborned.audio-weather/1",
+ "brief": "107",
+ "note": "Chime, brief 107, 2026-11-11. The weather and night sounds Sky picked (\"go with your recommendations, though rain needs to be light background noise\"). Made by briefs/107/chime/make/build.py from paid/107-weather-sound/takes; never edit by hand. Rows read like briefs/087/cues.json rows (file, mix_group, voices_max, cooldown_s, loop, spatial: the 087 pack's buses and spatial table), and add when (the start state's weather and light, Game.Weather / Game.Light), role and place. Levels are per clip at gain 1. How to play them: briefs/107/chime/wiring.md.",
+ "cues": [
+  {
+   "id": "rain_bed",
+   "label": "Summer shower",
+   "role": "layer over the bed",
+   "when": {
+    "weather": [
+     "rain"
+    ]
+   },
+   "place": "everywhere: the listener",
+   "plays": "While it rains: over the street bed (or the night bed), not instead of it. 2D stereo, ambience bus. 10 dB under the street bed: light background, not a feature.",
+   "mix_group": "ambience",
+   "voices_max": 1,
+   "cooldown_s": 0.0,
+   "loop": true,
+   "spatial": "2d",
+   "level": {
+    "lufs": -48,
+    "meter": "integrated"
+   },
+   "import": "stream",
+   "optional": false,
+   "source": {
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "takes": [
+     "rain_bed_t11.wav"
+    ],
+    "ledger_ids": [
+     1
+    ],
+    "cost_usd": 0.052667
+   },
+   "file": "Audio/107/rain_bed",
+   "path": "unity/Assets/Suborned/Resources/Audio/107/rain_bed.wav",
+   "sha256": "bb91ed5c8cc53e5c743be8f130cbdce1796057b1efedef423e80a085980fdb1e",
+   "measured": {
+    "seconds": 16.7,
+    "sample_rate": 32000,
+    "channels": 2,
+    "bytes": 2137644,
+    "lufs_integrated": -48.0,
+    "lufs_momentary_max": -46.9,
+    "true_peak_dbtp": -25.1,
+    "seam": {
+     "step_percentile": 6.3,
+     "step_ratio": 0.12,
+     "level_jump_db": 0.7,
+     "typical_jump_db_p95": 4.58
+    }
+   }
+  },
+  {
+   "id": "rain_awning",
+   "label": "Rain on awnings and parasols",
+   "role": "3D loop per awning or parasol cluster",
+   "when": {
+    "weather": [
+     "rain"
+    ]
+   },
+   "place": "awnings and parasol clusters: the four nearest the camera focus",
+   "plays": "While it rains: one 3D loop on each cafe awning or parasol cluster, start offset by hash so neighbours differ. At the shower's level, so it is noticed only close up.",
+   "mix_group": "ambience",
+   "voices_max": 4,
+   "cooldown_s": 0.0,
+   "loop": true,
+   "spatial": "3d-near",
+   "level": {
+    "lufs": -48,
+    "meter": "integrated"
+   },
+   "import": "memory",
+   "optional": false,
+   "source": {
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "takes": [
+     "rain_awning_t13.wav"
+    ],
+    "ledger_ids": [
+     6
+    ],
+    "cost_usd": 0.056617
+   },
+   "file": "Audio/107/rain_awning",
+   "path": "unity/Assets/Suborned/Resources/Audio/107/rain_awning.wav",
+   "sha256": "d00668342f7308fb18ab018703129677bac83182e5c4cf1f8f6af9452bf68d2e",
+   "measured": {
+    "seconds": 19.7,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 1891244,
+    "lufs_integrated": -48.0,
+    "lufs_momentary_max": -46.0,
+    "true_peak_dbtp": -23.9,
+    "seam": {
+     "step_percentile": 90.7,
+     "step_ratio": 2.73,
+     "level_jump_db": 0.86,
+     "typical_jump_db_p95": 5.8
+    }
+   }
+  },
+  {
+   "id": "drips",
+   "label": "Drips from the eaves",
+   "role": "3D loop per eave",
+   "when": {
+    "weather": [
+     "rain"
+    ]
+   },
+   "place": "eaves and awning edges, a few per block: the four nearest the camera focus",
+   "plays": "While it rains: a quiet 3D loop under eaves and awning edges, a few per block. Its loudest drip sits 9 dB under a footstep, so it is noticed only close up.",
+   "mix_group": "ambience",
+   "voices_max": 4,
+   "cooldown_s": 0.0,
+   "loop": true,
+   "spatial": "3d-near",
+   "level": {
+    "lufs": -46,
+    "meter": "momentary max"
+   },
+   "import": "memory",
+   "optional": false,
+   "source": {
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "takes": [
+     "drips_t11.wav"
+    ],
+    "ledger_ids": [
+     8
+    ],
+    "cost_usd": 0.0395
+   },
+   "file": "Audio/107/drips",
+   "path": "unity/Assets/Suborned/Resources/Audio/107/drips.wav",
+   "sha256": "199fe25104c07cf2d21b8e8492ac7b4076d7314e4953bd85c0a138f48af2d642",
+   "measured": {
+    "seconds": 14.1,
+    "sample_rate": 48000,
+    "channels": 1,
+    "bytes": 1353644,
+    "lufs_integrated": -53.1,
+    "lufs_momentary_max": -46.0,
+    "true_peak_dbtp": -24.4,
+    "seam": {
+     "step_percentile": 80.0,
+     "step_ratio": 2.06,
+     "level_jump_db": 1.05,
+     "typical_jump_db_p95": 13.52
+    }
+   }
+  },
+  {
+   "id": "wet_step_1",
+   "label": "Wet footsteps, step 1 of 4",
+   "role": "footsteps while the ground is wet",
+   "when": {
+    "weather": [
+     "rain"
+    ]
+   },
+   "place": "at the walker",
+   "plays": "In rain and after: four single steps per set, played as foot_concrete would be (3D-near, alternating, pitch from the hash). Same level as foot_concrete.",
+   "mix_group": "ambience",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-near",
+   "level": {
+    "lufs": -37,
+    "meter": "momentary max"
+   },
+   "import": "decompress",
+   "optional": true,
+   "source": {
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "takes": [
+     "wet_steps_t13.wav"
+    ],
+    "ledger_ids": [
+     12
+    ],
+    "cost_usd": 0.030283
+   },
+   "file": "Audio/107/wet_step_1",
+   "path": "unity/Assets/Suborned/Resources/Audio/107/wet_step_1.wav",
+   "sha256": "a399285a902d49a79a04da80382a6b9a06414a0cb1380356966bfe5f0e3b06bd",
+   "measured": {
+    "seconds": 0.43,
+    "sample_rate": 40000,
+    "channels": 1,
+    "bytes": 34444,
+    "lufs_integrated": -37.0,
+    "lufs_momentary_max": -37.0,
+    "true_peak_dbtp": -10.5
+   }
+  },
+  {
+   "id": "wet_step_2",
+   "label": "Wet footsteps, step 2 of 4",
+   "role": "footsteps while the ground is wet",
+   "when": {
+    "weather": [
+     "rain"
+    ]
+   },
+   "place": "at the walker",
+   "plays": "In rain and after: four single steps per set, played as foot_concrete would be (3D-near, alternating, pitch from the hash). Same level as foot_concrete.",
+   "mix_group": "ambience",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-near",
+   "level": {
+    "lufs": -37,
+    "meter": "momentary max"
+   },
+   "import": "decompress",
+   "optional": true,
+   "source": {
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "takes": [
+     "wet_steps_t13.wav"
+    ],
+    "ledger_ids": [
+     12
+    ],
+    "cost_usd": 0.030283
+   },
+   "file": "Audio/107/wet_step_2",
+   "path": "unity/Assets/Suborned/Resources/Audio/107/wet_step_2.wav",
+   "sha256": "d7d0f47ae12a18fa3c969065ca8517789fa04b1888677390a4702da092164417",
+   "measured": {
+    "seconds": 0.43,
+    "sample_rate": 40000,
+    "channels": 1,
+    "bytes": 34444,
+    "lufs_integrated": -37.0,
+    "lufs_momentary_max": -37.0,
+    "true_peak_dbtp": -12.9
+   }
+  },
+  {
+   "id": "wet_step_3",
+   "label": "Wet footsteps, step 3 of 4",
+   "role": "footsteps while the ground is wet",
+   "when": {
+    "weather": [
+     "rain"
+    ]
+   },
+   "place": "at the walker",
+   "plays": "In rain and after: four single steps per set, played as foot_concrete would be (3D-near, alternating, pitch from the hash). Same level as foot_concrete.",
+   "mix_group": "ambience",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-near",
+   "level": {
+    "lufs": -37,
+    "meter": "momentary max"
+   },
+   "import": "decompress",
+   "optional": true,
+   "source": {
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "takes": [
+     "wet_steps_t13.wav"
+    ],
+    "ledger_ids": [
+     12
+    ],
+    "cost_usd": 0.030283
+   },
+   "file": "Audio/107/wet_step_3",
+   "path": "unity/Assets/Suborned/Resources/Audio/107/wet_step_3.wav",
+   "sha256": "d520d92f46fc07665c6fdd6f6b1a2e504558a01fca13c150a6c85661a373a53b",
+   "measured": {
+    "seconds": 0.43,
+    "sample_rate": 40000,
+    "channels": 1,
+    "bytes": 34444,
+    "lufs_integrated": -37.0,
+    "lufs_momentary_max": -37.0,
+    "true_peak_dbtp": -7.5
+   }
+  },
+  {
+   "id": "wet_step_4",
+   "label": "Wet footsteps, step 4 of 4",
+   "role": "footsteps while the ground is wet",
+   "when": {
+    "weather": [
+     "rain"
+    ]
+   },
+   "place": "at the walker",
+   "plays": "In rain and after: four single steps per set, played as foot_concrete would be (3D-near, alternating, pitch from the hash). Same level as foot_concrete.",
+   "mix_group": "ambience",
+   "voices_max": 2,
+   "cooldown_s": 0.0,
+   "loop": false,
+   "spatial": "3d-near",
+   "level": {
+    "lufs": -37,
+    "meter": "momentary max"
+   },
+   "import": "decompress",
+   "optional": true,
+   "source": {
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "takes": [
+     "wet_steps_t13.wav"
+    ],
+    "ledger_ids": [
+     12
+    ],
+    "cost_usd": 0.030283
+   },
+   "file": "Audio/107/wet_step_4",
+   "path": "unity/Assets/Suborned/Resources/Audio/107/wet_step_4.wav",
+   "sha256": "f710b13b1c43ea6c936a9724f121cf8a7eb6f1fe709c3619ff5e706d5620cdaf",
+   "measured": {
+    "seconds": 0.43,
+    "sample_rate": 40000,
+    "channels": 1,
+    "bytes": 34444,
+    "lufs_integrated": -37.0,
+    "lufs_momentary_max": -37.0,
+    "true_peak_dbtp": -13.1
+   }
+  },
+  {
+   "id": "night_bed",
+   "label": "Night street",
+   "role": "replaces street_bed",
+   "when": {
+    "light": [
+     "night"
+    ]
+   },
+   "place": "everywhere: the listener",
+   "plays": "At night: in place of the street bed. 2D stereo, ambience bus. 2 dB under the day bed, so the night is calmer and the cues stand clearer.",
+   "mix_group": "ambience",
+   "voices_max": 1,
+   "cooldown_s": 0.0,
+   "loop": true,
+   "spatial": "2d",
+   "level": {
+    "lufs": -40,
+    "meter": "integrated"
+   },
+   "import": "stream",
+   "optional": false,
+   "source": {
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "takes": [
+     "night_bed_t12.wav",
+     "night_bed_t22.wav"
+    ],
+    "ledger_ids": [
+     13,
+     16
+    ],
+    "cost_usd": 0.109284
+   },
+   "file": "Audio/107/night_bed",
+   "path": "unity/Assets/Suborned/Resources/Audio/107/night_bed.wav",
+   "sha256": "cba344f892fe6f5450488ab63244142bd6a29566b6c5e17b2ba81a586fe7dee7",
+   "measured": {
+    "seconds": 23.9,
+    "sample_rate": 32000,
+    "channels": 2,
+    "bytes": 3059244,
+    "lufs_integrated": -40.0,
+    "lufs_momentary_max": -38.5,
+    "true_peak_dbtp": -27.5,
+    "seam": {
+     "step_percentile": 3.6,
+     "step_ratio": 0.07,
+     "level_jump_db": 3.3,
+     "typical_jump_db_p95": 3.81
+    }
+   }
+  },
+  {
+   "id": "night_tram",
+   "label": "Far tram at night (optional)",
+   "role": "2D one-shot now and then",
+   "when": {
+    "light": [
+     "night"
+    ]
+   },
+   "place": "everywhere: the listener",
+   "plays": "Optional: now and then at night (every 40-90 s by hash), a tram gliding by far off, so the night bed itself stays free of events.",
+   "mix_group": "ambience",
+   "voices_max": 1,
+   "cooldown_s": 40.0,
+   "loop": false,
+   "spatial": "2d",
+   "level": {
+    "lufs": -40,
+    "meter": "integrated"
+   },
+   "import": "memory",
+   "optional": true,
+   "source": {
+    "by": "Seed Audio 1.0 via Runware (bytedance:seed-audio@1.0)",
+    "takes": [
+     "night_bed_t21.wav"
+    ],
+    "ledger_ids": [
+     17
+    ],
+    "cost_usd": 0.052667
+   },
+   "file": "Audio/107/night_tram",
+   "path": "unity/Assets/Suborned/Resources/Audio/107/night_tram.wav",
+   "sha256": "469a3729283c4ca9737108394a52174e1ed356398fac06f7ceecb078d08c8339",
+   "measured": {
+    "seconds": 10.9,
+    "sample_rate": 32000,
+    "channels": 2,
+    "bytes": 1395244,
+    "lufs_integrated": -40.0,
+    "lufs_momentary_max": -33.9,
+    "true_peak_dbtp": -21.4
+   }
+  }
+ ]
+}

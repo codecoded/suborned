@@ -5,23 +5,24 @@
  "note": "Measured numbers are not a judgement of how anything sounds: Chime cannot hear. Levels are per clip at gain 1, against the 087 pack in unity/Assets/Suborned/Resources/Audio/087.",
  "listening_lift_db": 8.0,
  "listening_limited_db": {
-  "drips_t12": 0.1,
-  "drips_t12_seam": 0.1,
   "wet_steps_t13_walk": 2.0,
   "wet_steps_t13_step3": 2.0,
   "mix_day": 2.7,
-  "mix_rain": 2.9,
+  "mix_rain": 2.8,
   "mix_night": 2.4
  },
  "spent_usd": 0.799,
  "sums": {
-  "street_bed_alone_lufs_i": -38.0,
-  "street_plus_rain_lufs_i": -35.9,
-  "rain_floor_lufs_i": -33.8,
-  "rain_floor_note": "street bed + rain bed + awning and drips each 6 dB down (a cafe about 15 m off)",
-  "night_bed_lufs_i": -40.0,
+  "street_bed_alone_lufs_i": -38.02,
+  "street_plus_rain_lufs_i": -37.6,
+  "rain_floor_lufs_i": -37.33,
+  "rain_floor_note": "street bed + shower + awning and drips each 6 dB down (a cafe about 15 m off)",
+  "rain_close_lufs_i": -36.64,
+  "rain_close_note": "street bed + shower + awning and drips at full level (under an awning)",
+  "night_bed_lufs_i": -40.02,
+  "night_plus_rain_lufs_i": -39.38,
   "mix_day_lufs_i": -33.3,
-  "mix_rain_lufs_i": -31.4,
+  "mix_rain_lufs_i": -33.1,
   "mix_night_lufs_i": -34.0
  },
  "clear_of": {
@@ -134,9 +135,9 @@
      6400,
      8064
     ],
-    "margin_top3_db": 13.7,
-    "bands_clear_6db": 6,
-    "loudness_margin_lu": 7.8
+    "margin_top3_db": 23.6,
+    "bands_clear_6db": 8,
+    "loudness_margin_lu": 11.3
    },
    "notice_2": {
     "top_bands_hz": [
@@ -144,9 +145,9 @@
      8064,
      12801
     ],
-    "margin_top3_db": 17.4,
-    "bands_clear_6db": 6,
-    "loudness_margin_lu": 11.8
+    "margin_top3_db": 26.7,
+    "bands_clear_6db": 8,
+    "loudness_margin_lu": 15.3
    },
    "notice_3": {
     "top_bands_hz": [
@@ -154,9 +155,9 @@
      4032,
      6400
     ],
-    "margin_top3_db": 18.8,
-    "bands_clear_6db": 15,
-    "loudness_margin_lu": 14.8
+    "margin_top3_db": 23.2,
+    "bands_clear_6db": 16,
+    "loudness_margin_lu": 18.3
    },
    "camera_click": {
     "top_bands_hz": [
@@ -164,9 +165,9 @@
      8064,
      12801
     ],
-    "margin_top3_db": 19.1,
-    "bands_clear_6db": 9,
-    "loudness_margin_lu": 3.8
+    "margin_top3_db": 29.0,
+    "bands_clear_6db": 10,
+    "loudness_margin_lu": 7.3
    },
    "cafe_bell": {
     "top_bands_hz": [
@@ -174,9 +175,9 @@
      6400,
      10160
     ],
-    "margin_top3_db": 22.3,
-    "bands_clear_6db": 5,
-    "loudness_margin_lu": 7.8
+    "margin_top3_db": 31.8,
+    "bands_clear_6db": 7,
+    "loudness_margin_lu": 11.3
    },
    "cafe_door": {
     "top_bands_hz": [
@@ -184,9 +185,9 @@
      159,
      200
     ],
-    "margin_top3_db": 19.1,
-    "bands_clear_6db": 12,
-    "loudness_margin_lu": 5.8
+    "margin_top3_db": 19.8,
+    "bands_clear_6db": 21,
+    "loudness_margin_lu": 9.3
    },
    "handover_chime": {
     "top_bands_hz": [
@@ -194,9 +195,9 @@
      1008,
      2016
     ],
-    "margin_top3_db": 16.9,
-    "bands_clear_6db": 6,
-    "loudness_margin_lu": 13.8
+    "margin_top3_db": 20.5,
+    "bands_clear_6db": 9,
+    "loudness_margin_lu": 17.3
    },
    "car_warn": {
     "top_bands_hz": [
@@ -204,9 +205,9 @@
      2016,
      2540
     ],
-    "margin_top3_db": 21.1,
-    "bands_clear_6db": 17,
-    "loudness_margin_lu": 10.0
+    "margin_top3_db": 25.6,
+    "bands_clear_6db": 18,
+    "loudness_margin_lu": 13.5
    },
    "police_siren": {
     "top_bands_hz": [
@@ -214,9 +215,9 @@
      1600,
      2540
     ],
-    "margin_top3_db": 8.3,
-    "bands_clear_6db": 3,
-    "loudness_margin_lu": 12.8
+    "margin_top3_db": 16.9,
+    "bands_clear_6db": 6,
+    "loudness_margin_lu": 16.3
    },
    "patrol_break": {
     "top_bands_hz": [
@@ -224,9 +225,9 @@
      318,
      1600
     ],
-    "margin_top3_db": 22.5,
+    "margin_top3_db": 23.1,
     "bands_clear_6db": 24,
-    "loudness_margin_lu": 11.8
+    "loudness_margin_lu": 15.3
    }
   },
   "night bed": {
@@ -342,9 +343,9 @@
    "id": "rain_bed",
    "label": "Summer shower",
    "kind": "loop",
-   "level": -40,
+   "level": -48,
    "meter": "i",
-   "plays": "While it rains: over the street bed, not instead of it (the street keeps its murmur). 2D stereo, ambience bus.",
+   "plays": "While it rains: over the street bed (or the night bed), not instead of it. 2D stereo, ambience bus. 10 dB under the street bed: light background, not a feature.",
    "spatial": "2d",
    "pick": "rain_bed_t11",
    "why": "The evenest take (0.8 LU swing over 4 s windows) with no gusts or rumbles once the lows are cut; take 2 has a low rumble at 17-18 s that could read as thunder; take 3 is thinner and swings 3.4 LU.",
@@ -364,9 +365,9 @@
       "seconds": 16.7,
       "sample_rate": 32000,
       "channels": 2,
-      "lufs_integrated": -40.0,
-      "lufs_momentary_max": -38.9,
-      "true_peak_dbtp": -17.1,
+      "lufs_integrated": -48.0,
+      "lufs_momentary_max": -46.9,
+      "true_peak_dbtp": -25.1,
       "bands_db_lt200_lt1k_lt4k_hi": [
        -13.3,
        -4.5,
@@ -374,7 +375,7 @@
        -6.8
       ],
       "centroid_hz": 2624,
-      "small_speaker_lufs_m": -39.0,
+      "small_speaker_lufs_m": -47.0,
       "swing_4s_lu": 0.9,
       "low_events_s": [
        14.5,
@@ -411,9 +412,9 @@
       "seconds": 18.2,
       "sample_rate": 32000,
       "channels": 2,
-      "lufs_integrated": -40.0,
-      "lufs_momentary_max": -37.3,
-      "true_peak_dbtp": -18.7,
+      "lufs_integrated": -48.0,
+      "lufs_momentary_max": -45.3,
+      "true_peak_dbtp": -26.7,
       "bands_db_lt200_lt1k_lt4k_hi": [
        -8.4,
        -6.6,
@@ -421,7 +422,7 @@
        -5.0
       ],
       "centroid_hz": 3340,
-      "small_speaker_lufs_m": -37.8,
+      "small_speaker_lufs_m": -45.8,
       "swing_4s_lu": 3.5,
       "low_events_s": [
        4.0,
@@ -461,9 +462,9 @@
       "seconds": 16.7,
       "sample_rate": 32000,
       "channels": 2,
-      "lufs_integrated": -40.0,
-      "lufs_momentary_max": -37.5,
-      "true_peak_dbtp": -19.4,
+      "lufs_integrated": -48.0,
+      "lufs_momentary_max": -45.5,
+      "true_peak_dbtp": -27.4,
       "bands_db_lt200_lt1k_lt4k_hi": [
        -21.8,
        -6.1,
@@ -471,7 +472,7 @@
        -5.1
       ],
       "centroid_hz": 3431,
-      "small_speaker_lufs_m": -37.5,
+      "small_speaker_lufs_m": -45.5,
       "swing_4s_lu": 3.2,
       "low_events_s": [],
       "mid_events_s": [],
@@ -501,12 +502,12 @@
    "id": "rain_awning",
    "label": "Rain on awnings and parasols",
    "kind": "loop",
-   "level": -36,
+   "level": -48,
    "meter": "i",
-   "plays": "While it rains: one 3D loop on each cafe awning or parasol cluster, start offset by hash so neighbours differ. Heard only near them.",
+   "plays": "While it rains: one 3D loop on each cafe awning or parasol cluster, start offset by hash so neighbours differ. At the shower's level, so it is noticed only close up.",
    "spatial": "3d-near",
    "pick": "rain_awning_t13",
-   "why": "Even (1.2 LU swing) with no events and the fewest tonal lines; take 1 has a low thump at 8.5 s; take 2 is the same texture but came out 13 dB quieter, so it carries more noise once raised. Every take has a few loud drops off the edge (12-15 dB over the patter); their peaks are held to -12 dBTP so none pops.",
+   "why": "Even (1.2 LU swing) with no events and the fewest tonal lines; take 1 has a low thump at 8.5 s; take 2 is the same texture but came out 13 dB quieter, so it carries more noise once raised. Every take has a few loud drops off the edge (12-15 dB over the patter); their peaks are held to -12 dBTP so none pops (24 dB over the loop's loudness).",
    "hp": 100,
    "xf": 1.5,
    "rate": 48000,
@@ -523,9 +524,9 @@
       "seconds": 19.7,
       "sample_rate": 48000,
       "channels": 1,
-      "lufs_integrated": -36.0,
-      "lufs_momentary_max": -33.6,
-      "true_peak_dbtp": -13.1,
+      "lufs_integrated": -48.0,
+      "lufs_momentary_max": -45.6,
+      "true_peak_dbtp": -25.1,
       "bands_db_lt200_lt1k_lt4k_hi": [
        -16.0,
        -4.4,
@@ -533,7 +534,7 @@
        -8.9
       ],
       "centroid_hz": 2035,
-      "small_speaker_lufs_m": -33.7,
+      "small_speaker_lufs_m": -45.7,
       "swing_4s_lu": 1.8,
       "low_events_s": [
        8.5
@@ -569,9 +570,9 @@
       "seconds": 18.2,
       "sample_rate": 48000,
       "channels": 1,
-      "lufs_integrated": -36.0,
-      "lufs_momentary_max": -33.0,
-      "true_peak_dbtp": -12.5,
+      "lufs_integrated": -48.0,
+      "lufs_momentary_max": -45.0,
+      "true_peak_dbtp": -24.5,
       "bands_db_lt200_lt1k_lt4k_hi": [
        -18.0,
        -3.8,
@@ -579,7 +580,7 @@
        -10.2
       ],
       "centroid_hz": 1790,
-      "small_speaker_lufs_m": -33.1,
+      "small_speaker_lufs_m": -45.1,
       "swing_4s_lu": 1.3,
       "low_events_s": [],
       "mid_events_s": [],
@@ -613,9 +614,9 @@
       "seconds": 19.7,
       "sample_rate": 48000,
       "channels": 1,
-      "lufs_integrated": -36.0,
-      "lufs_momentary_max": -34.0,
-      "true_peak_dbtp": -11.9,
+      "lufs_integrated": -48.0,
+      "lufs_momentary_max": -46.0,
+      "true_peak_dbtp": -23.9,
       "bands_db_lt200_lt1k_lt4k_hi": [
        -14.4,
        -4.8,
@@ -623,7 +624,7 @@
        -8.2
       ],
       "centroid_hz": 2203,
-      "small_speaker_lufs_m": -34.2,
+      "small_speaker_lufs_m": -46.2,
       "swing_4s_lu": 1.8,
       "low_events_s": [
        19.5
@@ -655,9 +656,9 @@
    "id": "drips",
    "label": "Drips from the eaves",
    "kind": "loop",
-   "level": -36,
+   "level": -46,
    "meter": "m",
-   "plays": "After rain and in rain: a quiet 3D loop under eaves and awning edges, a few per block. Its loudest drip sits a little under a footstep.",
+   "plays": "While it rains: a quiet 3D loop under eaves and awning edges, a few per block. Its loudest drip sits 9 dB under a footstep, so it is noticed only close up.",
    "spatial": "3d-near",
    "pick": "drips_t11",
    "why": "Separate bright drips all the way through (about one a second) at an even level (1.8 LU swing); take 2 has heavier splats and swings 5.8 LU; take 3 is near silence with few clear drops.",
@@ -677,9 +678,9 @@
       "seconds": 14.1,
       "sample_rate": 48000,
       "channels": 1,
-      "lufs_integrated": -43.1,
-      "lufs_momentary_max": -36.0,
-      "true_peak_dbtp": -14.4,
+      "lufs_integrated": -53.1,
+      "lufs_momentary_max": -46.0,
+      "true_peak_dbtp": -24.4,
       "bands_db_lt200_lt1k_lt4k_hi": [
        -37.6,
        -18.2,
@@ -687,7 +688,7 @@
        -4.6
       ],
       "centroid_hz": 3860,
-      "small_speaker_lufs_m": -36.0,
+      "small_speaker_lufs_m": -46.0,
       "swing_4s_lu": 2.7,
       "low_events_s": [],
       "mid_events_s": [
@@ -736,9 +737,9 @@
       "seconds": 14.1,
       "sample_rate": 48000,
       "channels": 1,
-      "lufs_integrated": -44.4,
-      "lufs_momentary_max": -36.0,
-      "true_peak_dbtp": -8.7,
+      "lufs_integrated": -54.4,
+      "lufs_momentary_max": -46.0,
+      "true_peak_dbtp": -18.7,
       "bands_db_lt200_lt1k_lt4k_hi": [
        -29.8,
        -3.6,
@@ -746,7 +747,7 @@
        -7.8
       ],
       "centroid_hz": 2433,
-      "small_speaker_lufs_m": -36.0,
+      "small_speaker_lufs_m": -46.0,
       "swing_4s_lu": 5.8,
       "low_events_s": [],
       "mid_events_s": [
@@ -792,9 +793,9 @@
       "seconds": 12.1,
       "sample_rate": 48000,
       "channels": 1,
-      "lufs_integrated": -40.8,
-      "lufs_momentary_max": -36.0,
-      "true_peak_dbtp": -10.5,
+      "lufs_integrated": -50.8,
+      "lufs_momentary_max": -46.0,
+      "true_peak_dbtp": -20.5,
       "bands_db_lt200_lt1k_lt4k_hi": [
        -17.6,
        -6.3,
@@ -802,7 +803,7 @@
        -3.9
       ],
       "centroid_hz": 3519,
-      "small_speaker_lufs_m": -36.0,
+      "small_speaker_lufs_m": -46.0,
       "swing_4s_lu": 0.8,
       "low_events_s": [],
       "mid_events_s": [],
@@ -841,7 +842,7 @@
    "hp": 120,
    "xf": 0.0,
    "rate": 48000,
-   "optional": false,
+   "optional": true,
    "level_unit": "LUFS momentary max",
    "takes": [
     {
@@ -1307,5 +1308,19 @@
    ]
   }
  ],
- "clips_dir": "out/scratch/chime/107/clips"
+ "shipped": {
+  "unity": "unity/Assets/Suborned/Resources/Audio/107",
+  "contract": "contracts/audio/weather.json",
+  "clips": [
+   "rain_bed",
+   "rain_awning",
+   "drips",
+   "wet_step_1",
+   "wet_step_2",
+   "wet_step_3",
+   "wet_step_4",
+   "night_bed",
+   "night_tram"
+  ]
+ }
 }

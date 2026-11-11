@@ -1,7 +1,7 @@
 """Brief 107 (Chime): takes -> finished clips, listening files and briefs/107/chime/weather-sfx.json. Deterministic: same takes, same numbers.
 Run from the repo root with the scratch venv (numpy + scipy; ffmpeg for the mp3s):
-   out/scratch/chime/venv/bin/python -I briefs/107/chime/make/build.py [--clips DIR]
---clips: where the finished picks go as WAV at their game level (default out/scratch/chime/107/clips; Latch points it at Unity after Sky picks).
+   out/scratch/chime/venv/bin/python -I briefs/107/chime/make/build.py
+Sky's picks (2026-11-11) go to unity/Assets/Suborned/Resources/Audio/107/ as WAV + .meta at game level, and their rows to contracts/audio/weather.json (ship.py).
 The listening mp3s go to briefs/107/chime/audio/, all raised by the same LIFT so their levels compare as in the game."""
 import hashlib, json, subprocess, sys, tempfile
 from pathlib import Path
@@ -9,6 +9,7 @@ import numpy as np
 HERE = Path(__file__).resolve().parent; REPO = HERE.parents[3]
 sys.path.insert(0, str(HERE))
 import measure as M
+import ship
 from table import CUES, T
 A = M.A
 AUDIO = HERE.parent / 'audio'; PACK = REPO / 'unity/Assets/Suborned/Resources/Audio/087'
@@ -52,8 +53,8 @@ def loop_of(c, names):
         for z in xs[1:]: y = A.join(y, z, sr, c['xf'])
     else: y = xs[0]
     pre = y; y = A.loop(y, sr, c['xf']); y, short = master(y, sr, c['level'], c['meter'])
-    if c.get('peak') is not None:  # tame the odd loud drop: limit to the peak, bring the level back, limit again
-        for _ in range(2): y, _t = limit(y, sr, c['peak'], wrap=True); y, short = master(y, sr, c['level'], c['meter'])
+    if c.get('crest') is not None:  # tame the odd loud drop: peaks held to crest dB over the loop's level, the level brought back, held again
+        for _ in range(2): y, _t = limit(y, sr, c['level'] + c['crest'], wrap=True); y, short = master(y, sr, c['level'], c['meter'])
     return y, sr, pre, short
 
 
@@ -135,8 +136,7 @@ def mp3(path, x, sr):
 
 
 def main(a):
-    clips_dir = Path(a[a.index('--clips') + 1]) if '--clips' in a else REPO / 'out/scratch/chime/107/clips'
-    clips_dir.mkdir(parents=True, exist_ok=True); AUDIO.mkdir(parents=True, exist_ok=True)
+    AUDIO.mkdir(parents=True, exist_ok=True)
     led = {}
     for l in (REPO / 'paid/107-weather-sound/ledger.jsonl').read_text().splitlines():
         r = json.loads(l)
@@ -172,19 +172,16 @@ def main(a):
         for r in rows:
             src = r.get('joined', [r['id']]); r['source'] = [{'take': f'{s}.wav', 'ledger_id': led[s]['id'], 'cost_usd': led[s]['cost_usd'], 'prompt': led[s]['prompt']} for s in src if s in led]
         doc_cues.append({k: c[k] for k in ('id', 'label', 'kind', 'level', 'meter', 'plays', 'spatial', 'pick', 'why', 'hp', 'xf', 'rate', 'optional')} | {'level_unit': 'LUFS integrated' if c['meter'] == 'i' else 'LUFS momentary max', 'takes': rows})
-    # finished picks at game level (for Latch after Sky picks)
-    for cid, v in picks.items():
-        if cid == 'wet_steps':
-            for i, y in enumerate(v[0]): A.write_wav(clips_dir / f'wet_step_{i + 1}.wav', y, v[1])
-        else: A.write_wav(clips_dir / f'{cid}.wav', *v)
+    shipped = ship.ship(CUES, doc_cues, picks)  # Sky's picks into Unity and contracts/audio/weather.json
     # the mix: what is under the cues in rain and at night
     street, ssr = pack('street_bed'); street48 = at48(street, ssr); N = len(street48)  # the whole day bed (35.6 s): its first half is the quiet one
     rain = tile(at48(*picks['rain_bed']), N); awn = tile(at48(*picks['rain_awning']), N); drp = tile(at48(*picks['drips']), N)
     night = tile(at48(*picks['night_bed']), N)
     rain_floor = street48 + rain + awn * 10 ** (-6 / 20) + drp * 10 ** (-6 / 20)
-    sums = {'street_bed_alone_lufs_i': round(A.lufs_i(street48, MIXSR), 1), 'street_plus_rain_lufs_i': round(A.lufs_i(street48 + rain, MIXSR), 1),
-            'rain_floor_lufs_i': round(A.lufs_i(rain_floor, MIXSR), 1), 'rain_floor_note': 'street bed + rain bed + awning and drips each 6 dB down (a cafe about 15 m off)',
-            'night_bed_lufs_i': round(A.lufs_i(night, MIXSR), 1)}
+    sums = {'street_bed_alone_lufs_i': round(A.lufs_i(street48, MIXSR), 2), 'street_plus_rain_lufs_i': round(A.lufs_i(street48 + rain, MIXSR), 2),
+            'rain_floor_lufs_i': round(A.lufs_i(rain_floor, MIXSR), 2), 'rain_floor_note': 'street bed + shower + awning and drips each 6 dB down (a cafe about 15 m off)',
+            'rain_close_lufs_i': round(A.lufs_i(street48 + rain + awn + drp, MIXSR), 2), 'rain_close_note': 'street bed + shower + awning and drips at full level (under an awning)',
+            'night_bed_lufs_i': round(A.lufs_i(night, MIXSR), 2), 'night_plus_rain_lufs_i': round(A.lufs_i(night + rain, MIXSR), 2)}
     clear = {'street_bed (087, today)': clear_rows(street48, MIXSR), 'rain floor': clear_rows(rain_floor, MIXSR), 'night bed': clear_rows(night, MIXSR)}
     wk = at48(walk(picks['wet_steps'][0], picks['wet_steps'][1], n=10), picks['wet_steps'][1])
     mixes = {}; L = 20 * MIXSR; w = M.window_lufs(street48, MIXSR, 20.0, 1.0); o = int(np.argmin(np.abs(w - A.lufs_i(street48, MIXSR)))) * MIXSR  # 20 s where the day bed sits at its average
@@ -205,7 +202,7 @@ def main(a):
     doc = {'schema': 'suborned.audio-takes/1', 'brief': '107', 'made_by': 'briefs/107/chime/make/build.py from paid/107-weather-sound/takes (Seed Audio 1.0 via Runware, bytedance:seed-audio@1.0)',
            'note': 'Measured numbers are not a judgement of how anything sounds: Chime cannot hear. Levels are per clip at gain 1, against the 087 pack in unity/Assets/Suborned/Resources/Audio/087.',
            'listening_lift_db': lift, 'listening_limited_db': limited, 'spent_usd': round(spent, 4), 'sums': sums, 'clear_of': clear, 'mixes': {k: f'audio/{k}.mp3' for k in mixes}, 'cues': doc_cues,
-           'clips_dir': str(clips_dir.relative_to(REPO)) if clips_dir.is_relative_to(REPO) else str(clips_dir)}
+           'shipped': shipped}
     (HERE.parent / 'weather-sfx.json').write_text(json.dumps(doc, indent=1, ensure_ascii=False) + '\n')
     for c in doc_cues:
         for r in c['takes']:
