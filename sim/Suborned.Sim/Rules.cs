@@ -248,7 +248,7 @@ namespace Suborned.Sim
         public readonly bool CoverStepFires;
         public readonly int ModRunning, ModRunningAway, ModTargetRunning, RunAwayConeDeg, RunAwayCosPm; public readonly bool PointBlankCover;
         /// <summary>Brief 080: the stat sheet (weapons.sheet) and the seeded start (seed).</summary>
-        public readonly SheetRules Sheet; public readonly SeedRules Seeds;
+        public readonly SheetRules Sheet; public readonly SeedRules Seeds; public readonly LookRules Look;
         public readonly int PointBlankCm, AccPoint, AccEff, AccLong, AccStart, ModMoving, ModCover, ModVale, ModUntrained, DrawTicks, HolsterTicks, AimNewTicks, ReactS, LineLapseS, SidearmArms;
         /// <summary>car.footprint (engine 0.33.1, brief 041): a standing car's footprint (cm, along and across its heading), the clearance a walker keeps off its body, and "at the car" from its body.</summary>
         public readonly int CarLenCm, CarWCm, CarClearCm, CarReachCm;
@@ -369,7 +369,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "mood", "attention", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "rivals", "investigation", "preview", "streams", "phases", "debrief", "events", "seed", "camera", "bodies");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "mood", "attention", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "rivals", "investigation", "preview", "streams", "phases", "debrief", "events", "seed", "camera", "bodies", "look");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "secrets", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -576,7 +576,7 @@ namespace Suborned.Sim
             foreach (var h in new[] { HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian }) if (h < 1) throw new FormatException("weapons.health: every health is at least 1");
             if (ResponseOfficers < 1) throw new FormatException("weapons.health.responseOfficers must be at least 1");
             Sheet = new SheetRules(wp.Opt("sheet") ?? throw new FormatException("weapons.sheet: engine 0.37.0 reads the stat sheet (brief 080)"), RI);
-            Seeds = new SeedRules(b.Opt("seed") ?? throw new FormatException("seed: engine 0.37.0 reads the seeded start (brief 080)"), RI);
+            Seeds = new SeedRules(b.Opt("seed") ?? throw new FormatException("seed: engine 0.37.0 reads the seeded start (brief 080)"), RI); Look = new LookRules(b.Opt("look") ?? throw new FormatException("look: engine 0.54.0 reads the weather and light dial (brief 107)"), RI); // brief 107: a look only (GameLook.cs)
             var co = wp["costs"]; co.Only("hit", "down", "gunfire", "drawWindow", "drawSeenSecurity", "drawSeenPeople", "loudHold");
             HitTrail = RI(co["hit"]); DownTrail = RI(co["down"]); GunfireTrail = RI(co["gunfire"]); DrawWindowS = RI(co["drawWindow"]); DrawSeenSecurity = RI(co["drawSeenSecurity"]); DrawSeenPeople = RI(co["drawSeenPeople"]); LoudHoldTicks = RI(co["loudHold"]);
             // brief 039 B (engine 0.35.0): each block optional, absent = off (a rulebook pinned before it plays as 0.34); unknown = reject

@@ -116,7 +116,7 @@ namespace Suborned.Sim
             string[] crew = { "crew:scout", "crew:fixer", "crew:tech", "crew:enforcer" };
             // Arms (Sky 2026-10-15 Q1): the Enforcer's carbine is the cell's; each sidearm takes weapons.sidearmArms, issued Scout, Fixer, Tech
             int sidearms = (Start.Arms ?? S.Arms) / R.SidearmArms;
-            InitLab(); InitKite(); // brief 027; tuning.md §7.9 the kite response in today too. brief 027 (EXPERIMENTAL): the fight lab's switches, weapons and health scale; off, today's (GameFightLab.cs)
+            InitLab(); InitKite(); InitLook(); // brief 107 (GameLook.cs): the weather and the light, a look only; brief 027; tuning.md §7.9 the kite response in today too. brief 027 (EXPERIMENTAL): the fight lab's switches, weapons and health scale; off, today's (GameFightLab.cs)
             for (int i = 0; i < 4; i++)
             {
                 var id = (OpId)i; bool enf = id == OpId.Enforcer;

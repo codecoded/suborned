@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Suborned.Sim
 {
     /// <summary>The start state's choices beyond the site: what a scenario fixes before tick 0 (hashed into the start state).</summary>
-    public sealed class Start
+    public sealed partial class Start
     {
         public int? RivalsAtS;                                            // §07 3:10 unless a scenario moves it
         /// <summary>Brief 080 (engine 0.37.0, Sky 2026-10-30): the run's seed, 0..2^31-1. The host rolls one at each new game (never 0) and saves it with
@@ -100,7 +100,7 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("seed", "pre080", "oldClock", "rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone", "oneCar", "counts");
+            n.Only("seed", "pre080", "oldClock", "rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone", "oneCar", "counts", "weather", "light");
             if (n.Opt("seed") is JNode sd) { long sv = sd.Long(); if (sv < 0 || sv > int.MaxValue) throw new FormatException($"{sd.Path}: seed 0..2147483647"); s.Seed = (int)sv; } // brief 080
             if (n.Opt("pre080") is JNode p80) s.Pre080 = p80.Bool(); // brief 080, test only
             if (n.Opt("oldClock") is JNode oc) s.OldClock = oc.Bool(); // brief 080, test only
@@ -158,6 +158,7 @@ namespace Suborned.Sim
             if (n.Opt("temperament") is JNode tm) foreach (var kv in tm.Entries) s.Temperament[kv.Key] = kv.Value.Str();
             if (n.Opt("cash") is JNode c) s.Cash = c.Long();
             if (n.Opt("counts") is JNode cn) ParseCounts(s, cn); // brief 098 step 0: the dial
+            ParseLook(s, n); // brief 107 (GameLook.cs): the weather and the light
             return s;
         }
         public string Canonical()
@@ -217,6 +218,7 @@ namespace Suborned.Sim
             if (ValeWaits) w.Prop("valeWaits", true); if (OneCar) w.Prop("oneCar", true); // brief 059, engine 0.42.0, test only: likewise
             if (CrewGone.Count > 0) { w.OpenArr("crewGone"); foreach (var x in CrewGone) w.Str(x); w.EndArr(); } // engine 0.33.0, test only: likewise
             if (Counts.Count > 0) { w.Open("counts"); foreach (var kv in Counts) w.Prop(kv.Key, kv.Value); w.EndObj(); } // brief 098 step 0: only a start that sets the dial adds bytes
+            WriteLook(w); // brief 107 (GameLook.cs): likewise
             return w.EndObj().ToString();
         }
     }
