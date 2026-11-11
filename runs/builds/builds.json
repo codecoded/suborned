@@ -447,6 +447,21 @@
    "zip": null,
    "sent": [],
    "whatsNew": ""
+  },
+  {
+   "build": 330,
+   "version": "0.2.330",
+   "date": "2026-11-11T16:26:23.333Z",
+   "builtAt": "2026-11-11T16:26:07.2193870Z",
+   "sha": "2ef93126a",
+   "dirty": true,
+   "engine": "0.54.0",
+   "engineSource": "working tree on de12bfdb382e",
+   "dllSha256": "971798e39c9c27b7b765ec5194b52800787305de17ba995adf56fc8d42dbc503",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": ""
   }
  ]
 }
