@@ -1,0 +1,3625 @@
+{
+ "schema": "suborned.cell-hml/1",
+ "brief": "briefs/112-cell-characters.md",
+ "owner": "Forma",
+ "for": "Latch",
+ "built": {
+  "by": "tools/figures/cell_hml.ts (cell_hml.py, cell_hml_clips.py)",
+  "blender": "stuff",
+  "spec": "tools/figures/cell_hml.json",
+  "store": "characters/cell_hml"
+ },
+ "conventions": {
+  "unit": "metres, FBX unit scale 1",
+  "axes": "Y up, the figure faces +Z",
+  "origin": "feet on y = 0",
+  "rig": "Generic: each figure on its own 65-bone skeleton, its clips its own (no Humanoid retarget). The host finds Head, Hips, RightShoulder and RightHand by name.",
+  "detail": "as the bundle has it: one mesh level, no decimation, no texture resize (compression goes through Sky)",
+  "clips": "named after the shared controller's states (FigureBuild.CellOverrides swaps them in by name); `props` lists the props an action shows",
+  "props": "prop_<name>: one mesh skinned rigidly to its socket bone; shown in the states listed (always: every state)"
+ },
+ "figures": [
+  {
+   "id": "scout",
+   "role": "scout",
+   "label": "Scout (HML game bundle 2026-11-12: white hooded top, black shorts, sneakers)",
+   "fbx": "Figures/scout/scout.fbx",
+   "sha256": "6facec305661c35d9e7400a556b9531e51c5a8ad50f32795d4471255cede25b0",
+   "bundle": {
+    "file": "scout-game-bundle.zip",
+    "sha256": "e0e69fcd0af92557a9bfe7781d7b764a064328aaab12e143f3c32e7c7edacb5b",
+    "glb": "assets/scout-prop-free-b84dfd8b/models/rig-exports/e3023e8d-6e30-88fa-a2d3-c06f4c9d22c8/model.glb",
+    "glbSha256": "0a30aa6ba5cb1cf800128d6db20b25d57421fffe5a92112f97eb36ef248e2bc2",
+    "rigVersionId": "7920940b-1493-40c4-a1ac-4ef08e1d530b"
+   },
+   "rig": {
+    "type": "generic",
+    "bones": 65,
+    "root": "Armature/Extra_0",
+    "bakedScale": 0.9506,
+    "exposed": [
+     "Armature/Extra_0/Hips/Spine/Extra_3/Chest/Neck/Head",
+     "Armature/Extra_0/Hips",
+     "Armature/Extra_0/Hips/Spine/Extra_3/Chest/RightShoulder"
+    ]
+   },
+   "heightM": 1.72,
+   "restBounds": [
+    [
+     -0.793,
+     -0.176,
+     0
+    ],
+    [
+     0.793,
+     0.176,
+     1.72
+    ]
+   ],
+   "idleGroundM": 0.001,
+   "female": true,
+   "lods": [
+    {
+     "name": "scout_fingerless_glove_l_LOD0",
+     "tris": 748
+    },
+    {
+     "name": "scout_fingerless_glove_r_LOD0",
+     "tris": 748
+    },
+    {
+     "name": "scout_scout_complete_source_head_LOD0",
+     "tris": 4865
+    },
+    {
+     "name": "scout_scout_quaternius_body_LOD0",
+     "tris": 5632
+    },
+    {
+     "name": "scout_source_high_sneakers_LOD0",
+     "tris": 3547
+    },
+    {
+     "name": "scout_tripo_mesh_48b317b3_6224_4b2_LOD0",
+     "tris": 12722
+    }
+   ],
+   "props": [
+    {
+     "name": "pistol",
+     "node": "prop_pistol",
+     "bone": "RightHand",
+     "tris": 1532,
+     "always": false,
+     "states": [
+      "aim",
+      "aim_pistol",
+      "cover_fire",
+      "cover_in",
+      "cover_kneel",
+      "cover_out",
+      "cover_pin",
+      "draw",
+      "holster",
+      "idle_armed",
+      "melee",
+      "melee_whip",
+      "reload",
+      "run_armed",
+      "shoot",
+      "walk_armed"
+     ]
+    }
+   ],
+   "materials": [
+    {
+     "name": "scout_part6",
+     "file": "Figures/scout/Materials/scout_part6.mat",
+     "source": "Matte_Black_Glove",
+     "doubleSided": true,
+     "tint": [
+      0.1284,
+      0.1428,
+      0.1517
+     ],
+     "textures": {},
+     "texturePx": {},
+     "smoothness": {
+      "mean": 0.3,
+      "from": "factor"
+     },
+     "metallicMean": 0
+    },
+    {
+     "name": "scout_pistol",
+     "file": "Figures/scout/Materials/scout_pistol.mat",
+     "source": "Cell pistol authored surface v2",
+     "doubleSided": false,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_pistol_albedo.png",
+      "normal": "Figures/scout/Textures/scout_pistol_normal.png",
+      "mask": "Figures/scout/Textures/scout_pistol_mask.png"
+     },
+     "texturePx": {
+      "albedo": 1024,
+      "normal": 1024,
+      "mask": 1024
+     },
+     "smoothness": {
+      "mean": 0.565,
+      "from": "map"
+     },
+     "metallicMean": 0.118
+    },
+    {
+     "name": "scout_part4",
+     "file": "Figures/scout/Materials/scout_part4.mat",
+     "source": "tripo_material_c92822bb-210a-44c4-ba7f-157ac3bc94ef",
+     "doubleSided": false,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_part4_albedo.png",
+      "normal": "Figures/scout/Textures/scout_part4_normal.png",
+      "mask": "Figures/scout/Textures/scout_part4_mask.png"
+     },
+     "texturePx": {
+      "albedo": 1024,
+      "normal": 1024,
+      "mask": 1024
+     },
+     "smoothness": {
+      "mean": 0.488,
+      "from": "map"
+     },
+     "metallicMean": 0.022
+    },
+    {
+     "name": "scout_part3",
+     "file": "Figures/scout/Materials/scout_part3.mat",
+     "source": "MI_Superhero_Female",
+     "doubleSided": true,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_part3_albedo.png",
+      "normal": "Figures/scout/Textures/scout_part3_normal.png",
+      "mask": "Figures/scout/Textures/scout_part3_mask.png"
+     },
+     "texturePx": {
+      "albedo": 2048,
+      "normal": 2048,
+      "mask": 2048
+     },
+     "smoothness": {
+      "mean": 0.316,
+      "from": "map"
+     },
+     "metallicMean": 0
+    },
+    {
+     "name": "scout_part5",
+     "file": "Figures/scout/Materials/scout_part5.mat",
+     "source": "tripo_material_c92822bb-210a-44c4-ba7f-157ac3bc94ef.001",
+     "doubleSided": false,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_part4_albedo.png",
+      "normal": "Figures/scout/Textures/scout_part4_normal.png",
+      "mask": "Figures/scout/Textures/scout_part5_mask.png"
+     },
+     "texturePx": {
+      "albedo": 1024,
+      "normal": 1024,
+      "mask": 1024
+     },
+     "smoothness": {
+      "mean": 0.488,
+      "from": "map"
+     },
+     "metallicMean": 0.022
+    },
+    {
+     "name": "scout_body",
+     "file": "Figures/scout/Materials/scout_body.mat",
+     "source": "tripo_material_48b317b3-6224-4b2d-82c6-d9cff2422991",
+     "doubleSided": true,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_body_albedo.jpg",
+      "normal": "Figures/scout/Textures/scout_body_normal.png",
+      "mask": "Figures/scout/Textures/scout_body_mask.png"
+     },
+     "texturePx": {
+      "albedo": 2048,
+      "normal": 2048,
+      "mask": 2048
+     },
+     "smoothness": {
+      "mean": 0.508,
+      "from": "map"
+     },
+     "metallicMean": 0.026
+    },
+    {
+     "name": "scout_part1",
+     "file": "Figures/scout/Materials/scout_part1.mat",
+     "source": "Rebuilt black cuff fabric",
+     "doubleSided": true,
+     "tint": [
+      0.1428,
+      0.1559,
+      0.1601
+     ],
+     "textures": {},
+     "texturePx": {},
+     "smoothness": {
+      "mean": 0.2,
+      "from": "factor"
+     },
+     "metallicMean": 0
+    },
+    {
+     "name": "scout_part2",
+     "file": "Figures/scout/Materials/scout_part2.mat",
+     "source": "Repaired shorts black fabric",
+     "doubleSided": true,
+     "tint": [
+      0.0932,
+      0.1061,
+      0.1121
+     ],
+     "textures": {},
+     "texturePx": {},
+     "smoothness": {
+      "mean": 0.32,
+      "from": "factor"
+     },
+     "metallicMean": 0
+    }
+   ],
+   "clips": [
+    {
+     "name": "idle",
+     "action": "Idle",
+     "clip": "Breathing Idle",
+     "take": "idle",
+     "frames": 298,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "idle_alt",
+     "action": "Idle",
+     "clip": "Breathing Idle",
+     "take": "idle",
+     "frames": 298,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "walk",
+     "action": null,
+     "clip": "Walking",
+     "take": "clip_walking",
+     "frames": 29,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "walk_f",
+     "action": null,
+     "clip": "Walking",
+     "take": "clip_walking",
+     "frames": 29,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "run",
+     "action": "Run",
+     "clip": "Running (2)",
+     "take": "run",
+     "frames": 21,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "run_lean",
+     "action": "Run",
+     "clip": "Running (2)",
+     "take": "run",
+     "frames": 21,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "walk_armed",
+     "action": "Walk Armed",
+     "clip": "Pistol Walk",
+     "take": "walk_armed",
+     "frames": 24,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "run_armed",
+     "action": "Run Armed",
+     "clip": "Pistol Run",
+     "take": "run_armed",
+     "frames": 15,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "aim",
+     "action": "Aim Armed",
+     "clip": "Pistol Idle (2)",
+     "take": "aim_armed",
+     "frames": 40,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "aim_pistol",
+     "action": "Aim Armed",
+     "clip": "Pistol Idle (2)",
+     "take": "aim_armed",
+     "frames": 40,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "shoot",
+     "action": "Fire Armed",
+     "clip": "W1 Stand Fire Single",
+     "take": "fire_armed",
+     "frames": 30,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "draw",
+     "action": "Draw",
+     "clip": "Drawing Gun",
+     "take": "draw",
+     "frames": 60,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "melee",
+     "action": "Melee",
+     "clip": "Pistol Whip",
+     "take": "melee",
+     "frames": 77,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "melee_whip",
+     "action": "Melee",
+     "clip": "Pistol Whip",
+     "take": "melee",
+     "frames": 77,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "hit",
+     "action": "Hit",
+     "clip": "Hit Reaction (2)",
+     "take": "hit",
+     "frames": 48,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "hit_large",
+     "action": "Hit Large",
+     "clip": "Big Stomach Hit",
+     "take": "hit_large",
+     "frames": 42,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "panic",
+     "action": "Cower",
+     "clip": "Terrified",
+     "take": "cower",
+     "frames": 600,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "cower",
+     "action": "Duck",
+     "clip": "Ducking",
+     "take": "duck",
+     "frames": 46,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "crouch",
+     "action": "Crouch",
+     "clip": "Crouch Idle (2)",
+     "take": "crouch",
+     "frames": 41,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "crouch_walk",
+     "action": "Crouch Walk",
+     "clip": "Crouched Walking",
+     "take": "crouch_walk",
+     "frames": 31,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "lying",
+     "action": "Lying Hurt",
+     "clip": "Writhing In Pain",
+     "take": "lying_hurt",
+     "frames": 170,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "look_around",
+     "action": "Look Around",
+     "clip": "Looking Around",
+     "take": "look_around",
+     "frames": 190,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "talk",
+     "action": "Talking",
+     "clip": "Talking",
+     "take": "talking",
+     "frames": 308,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "point",
+     "action": "Point",
+     "clip": "Pointing",
+     "take": "point",
+     "frames": 83,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "pickup",
+     "action": "Pick Up",
+     "clip": "Picking Up",
+     "take": "pick_up",
+     "frames": 125,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "sit",
+     "action": "Sit Idle",
+     "clip": "Sitting Idle",
+     "take": "sit_idle",
+     "frames": 89,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "sit_alt",
+     "action": "Sit Idle",
+     "clip": "Sitting Idle",
+     "take": "sit_idle",
+     "frames": 89,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "sit_talk",
+     "action": "Sit Talk",
+     "clip": "Sitting Talking",
+     "take": "sit_talk",
+     "frames": 1349,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "stand_to_sit",
+     "action": "Sit Down",
+     "clip": "Stand To Sit",
+     "take": "sit_down",
+     "frames": 67,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "sit_to_stand",
+     "action": "Stand Up",
+     "clip": "Sit To Stand",
+     "take": "stand_up",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "cover_in",
+     "action": "Cover In",
+     "clip": "Stand To Cover",
+     "take": "cover_in",
+     "frames": 38,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "cover_out",
+     "action": "Cover Out",
+     "clip": "Cover To Stand",
+     "take": "cover_out",
+     "frames": 42,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "cover_kneel",
+     "action": "Crouch Aim Armed",
+     "clip": "W1 Crouch Aim Idle IPC",
+     "take": "crouch_aim_armed",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "cover_fire",
+     "action": "Crouch Fire Armed",
+     "clip": "W1 Crouch Fire Single",
+     "take": "crouch_fire_armed",
+     "frames": 30,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "cover_pin",
+     "action": "Crouch Armed",
+     "clip": "W1 Crouch Idle IPC",
+     "take": "crouch_armed",
+     "frames": 41,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "idle_armed",
+     "action": "Idle Armed",
+     "clip": "Pistol Idle",
+     "take": "idle_armed",
+     "frames": 120,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "holster",
+     "action": "Holster",
+     "clip": "Pistol To Idle",
+     "take": "holster",
+     "frames": 51,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "reload",
+     "action": "Reload",
+     "clip": "UAL1 Standard · Pistol_Reload",
+     "take": "reload",
+     "frames": 50,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "interact",
+     "action": "Interact",
+     "clip": "Button Pushing",
+     "take": "interact",
+     "frames": 97,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "wait",
+     "action": "Wait",
+     "clip": "Bored",
+     "take": "wait",
+     "frames": 320,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "nod",
+     "action": "Nod",
+     "clip": "Head Nod Yes",
+     "take": "nod",
+     "frames": 78,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "shrug",
+     "action": "Shrug",
+     "clip": "Shrugging",
+     "take": "shrug",
+     "frames": 60,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "reassure",
+     "action": "Reassure",
+     "clip": "Hands Forward Gesture",
+     "take": "reassure",
+     "frames": 93,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "argue",
+     "action": "Argue",
+     "clip": "Standing Arguing",
+     "take": "argue",
+     "frames": 624,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "dodge",
+     "action": "Dodge",
+     "clip": "Dodging Back",
+     "take": "dodge",
+     "frames": 80,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "death",
+     "action": "Death",
+     "clip": "Death",
+     "take": "death",
+     "frames": 91,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "drive",
+     "action": "Drive",
+     "clip": "Driving",
+     "take": "drive",
+     "frames": 150,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "enter_car",
+     "action": "Enter Car",
+     "clip": "Entering Car",
+     "take": "enter_car",
+     "frames": 164,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "exit_car",
+     "action": "Exit Car",
+     "clip": "Exiting Car",
+     "take": "exit_car",
+     "frames": 174,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "mislead",
+     "action": "Mislead",
+     "clip": "Telling A Secret",
+     "take": "mislead",
+     "frames": 327,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "walk_stroll",
+     "action": "Walk",
+     "clip": "Walking (2)",
+     "take": "walk",
+     "frames": 37,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "carry_shoulder",
+     "action": null,
+     "authoredFrom": "walk",
+     "take": "carry_shoulder",
+     "frames": 29,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "carry_shoulder_idle",
+     "action": null,
+     "authoredFrom": "idle",
+     "take": "carry_shoulder_idle",
+     "frames": 298,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    }
+   ],
+   "clipSpeedsMs": {
+    "walk": 1.44,
+    "walk_f": 1.44,
+    "run": 3.71,
+    "run_lean": 3.71,
+    "walk_armed": 2.25,
+    "run_armed": 4.48,
+    "crouch_walk": 1.29,
+    "carry_shoulder": 1.44
+   },
+   "groundLiftM": {},
+   "seat": {
+    "hipJointsTarget": [
+     0,
+     0.05,
+     0.567
+    ],
+    "takes": {
+     "sit_idle": {
+      "slide": [
+       0,
+       -0.006,
+       0.027
+      ],
+      "proud": 0,
+      "solesUp": 0.027
+     },
+     "sit_talk": {
+      "slide": [
+       0,
+       -0.01,
+       0.017
+      ],
+      "proud": 0,
+      "solesUp": 0.018
+     },
+     "sit_down": {
+      "slide": [
+       0,
+       -0.008,
+       0.064
+      ],
+      "proud": 0,
+      "solesUp": 0.065
+     },
+     "stand_up": {
+      "slide": [
+       0,
+       -0.008,
+       0.064
+      ],
+      "proud": 0,
+      "solesUp": 0.065
+     }
+    }
+   },
+   "missing": [],
+   "lodScreenHeights": [
+    0.012
+   ]
+  },
+  {
+   "id": "fixer",
+   "role": "fixer",
+   "label": "Fixer (HML game bundle 2026-11-12: black and white halter jumpsuit, long gloves, white boots)",
+   "fbx": "Figures/fixer/fixer.fbx",
+   "sha256": "42851f3154d2b98a978d216e05817e423820f21f16f6de831be2cb4708a7665f",
+   "bundle": {
+    "file": "fixer-game-bundle.zip",
+    "sha256": "ab1bd062bdaeca99ff616f927087a87facdee7f2d8baf535dd23d4d4529802f6",
+    "glb": "assets/fixer-player-cell-adc07eb2/models/rig-exports/8c9e7e6e-a4b2-8ccb-8db4-96d61c8e5c5b/model.glb",
+    "glbSha256": "92815dfa36c068d2e6fce311ad9d1a791d1ebd01a8c8aff18e2ba7b0b6e22b23",
+    "rigVersionId": "0129c284-8660-49cf-a6d8-098810442ddc"
+   },
+   "rig": {
+    "type": "generic",
+    "bones": 65,
+    "root": "Armature/Hips",
+    "bakedScale": 1.7999,
+    "exposed": [
+     "Armature/Hips/Spine/Extra_12/Chest/Neck/Head",
+     "Armature/Hips",
+     "Armature/Hips/Spine/Extra_12/Chest/RightShoulder"
+    ]
+   },
+   "heightM": 1.8,
+   "restBounds": [
+    [
+     -0.503,
+     -0.152,
+     0
+    ],
+    [
+     0.503,
+     0.152,
+     1.8
+    ]
+   ],
+   "idleGroundM": -0.004,
+   "female": true,
+   "lods": [
+    {
+     "name": "fixer_LOD0",
+     "tris": 29714
+    }
+   ],
+   "props": [
+    {
+     "name": "pistol",
+     "node": "prop_pistol",
+     "bone": "RightHand",
+     "tris": 1532,
+     "always": false,
+     "states": [
+      "aim",
+      "aim_pistol",
+      "cover_fire",
+      "cover_in",
+      "cover_kneel",
+      "cover_out",
+      "cover_pin",
+      "draw",
+      "holster",
+      "idle_armed",
+      "melee",
+      "melee_whip",
+      "reload",
+      "run_armed",
+      "shoot",
+      "walk_armed"
+     ]
+    }
+   ],
+   "materials": [
+    {
+     "name": "fixer_body",
+     "file": "Figures/fixer/Materials/fixer_body.mat",
+     "source": "tripo_material_9bd79c1e-a936-4599-8452-b026aa2f6811",
+     "doubleSided": false,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/fixer/Textures/fixer_body_albedo.jpg",
+      "normal": "Figures/fixer/Textures/fixer_body_normal.png",
+      "mask": "Figures/fixer/Textures/fixer_body_mask.png"
+     },
+     "texturePx": {
+      "albedo": 2048,
+      "normal": 2048,
+      "mask": 2048
+     },
+     "smoothness": {
+      "mean": 0.287,
+      "from": "map"
+     },
+     "metallicMean": 0.029
+    },
+    {
+     "name": "fixer_pistol",
+     "file": "Figures/fixer/Materials/fixer_pistol.mat",
+     "source": "Cell pistol authored surface v2.001",
+     "doubleSided": false,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/fixer/Textures/fixer_pistol_albedo.png",
+      "normal": "Figures/fixer/Textures/fixer_pistol_normal.png",
+      "mask": "Figures/fixer/Textures/fixer_pistol_mask.png"
+     },
+     "texturePx": {
+      "albedo": 1024,
+      "normal": 1024,
+      "mask": 1024
+     },
+     "smoothness": {
+      "mean": 0.565,
+      "from": "map"
+     },
+     "metallicMean": 0.118
+    }
+   ],
+   "clips": [
+    {
+     "name": "idle",
+     "action": "Idle",
+     "clip": "Breathing Idle (2)",
+     "take": "idle",
+     "frames": 298,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "idle_alt",
+     "action": "Idle",
+     "clip": "Breathing Idle (2)",
+     "take": "idle",
+     "frames": 298,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "walk",
+     "action": "Walk",
+     "clip": "Walking",
+     "take": "walk",
+     "frames": 37,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "walk_f",
+     "action": "Walk",
+     "clip": "Walking",
+     "take": "walk",
+     "frames": 37,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "run",
+     "action": "Run",
+     "clip": "Running (2)",
+     "take": "run",
+     "frames": 21,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "run_lean",
+     "action": "Run",
+     "clip": "Running (2)",
+     "take": "run",
+     "frames": 21,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "walk_armed",
+     "action": "Walk Armed",
+     "clip": "W1 Walk Aim F Loop IPC",
+     "take": "walk_armed",
+     "frames": 35,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "run_armed",
+     "action": "Run Armed",
+     "clip": "W1 Jog Aim F Loop IPC",
+     "take": "run_armed",
+     "frames": 21,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "aim",
+     "action": "Aim Armed",
+     "clip": "W1 Stand Aim Idle IPC",
+     "take": "aim_armed",
+     "frames": 50,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "aim_pistol",
+     "action": "Aim Armed",
+     "clip": "W1 Stand Aim Idle IPC",
+     "take": "aim_armed",
+     "frames": 50,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "shoot",
+     "action": "Fire Armed",
+     "clip": "W1 Stand Fire Single",
+     "take": "fire_armed",
+     "frames": 30,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "draw",
+     "action": "Draw",
+     "clip": "Drawing Gun",
+     "take": "draw",
+     "frames": 60,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "melee",
+     "action": "Melee",
+     "clip": "Pistol Whip",
+     "take": "melee",
+     "frames": 77,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "melee_whip",
+     "action": "Melee",
+     "clip": "Pistol Whip",
+     "take": "melee",
+     "frames": 77,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "hit",
+     "action": "Hit",
+     "clip": "Standing React Small From Front",
+     "take": "hit",
+     "frames": 36,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "hit_large",
+     "action": "Hit Large",
+     "clip": "Big Stomach Hit",
+     "take": "hit_large",
+     "frames": 42,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "panic",
+     "action": "Cower",
+     "clip": "Terrified",
+     "take": "cower",
+     "frames": 600,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "cower",
+     "action": "Duck",
+     "clip": "Ducking",
+     "take": "duck",
+     "frames": 46,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "crouch",
+     "action": "Crouch",
+     "clip": "Crouch Idle",
+     "take": "crouch",
+     "frames": 41,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "crouch_walk",
+     "action": "Crouch Walk",
+     "clip": "Crouched Walking",
+     "take": "crouch_walk",
+     "frames": 31,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "lying",
+     "action": "Lying Hurt",
+     "clip": "Writhing In Pain",
+     "take": "lying_hurt",
+     "frames": 170,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "look_around",
+     "action": "Look Around",
+     "clip": "Looking Around",
+     "take": "look_around",
+     "frames": 190,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "talk",
+     "action": "Talking",
+     "clip": "Talking",
+     "take": "talking",
+     "frames": 308,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "point",
+     "action": "Point",
+     "clip": "Pointing",
+     "take": "point",
+     "frames": 83,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "pickup",
+     "action": "Pick Up",
+     "clip": "Picking Up",
+     "take": "pick_up",
+     "frames": 125,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "sit",
+     "action": "Sit Idle",
+     "clip": "Sitting Idle",
+     "take": "sit_idle",
+     "frames": 89,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "sit_alt",
+     "action": "Sit Idle",
+     "clip": "Sitting Idle",
+     "take": "sit_idle",
+     "frames": 89,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "sit_talk",
+     "action": "Sit Talk",
+     "clip": "Sitting Talking",
+     "take": "sit_talk",
+     "frames": 1349,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "stand_to_sit",
+     "action": "Sit Down",
+     "clip": "Stand To Sit",
+     "take": "sit_down",
+     "frames": 67,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "sit_to_stand",
+     "action": "Stand Up",
+     "clip": "Sit To Stand",
+     "take": "stand_up",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "cover_in",
+     "action": "Cover In",
+     "clip": "Stand To Cover",
+     "take": "cover_in",
+     "frames": 34,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "cover_out",
+     "action": "Cover Out",
+     "clip": "Cover To Stand",
+     "take": "cover_out",
+     "frames": 42,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "cover_kneel",
+     "action": "Crouch Aim Armed",
+     "clip": "W1 Crouch Aim Idle IPC",
+     "take": "crouch_aim_armed",
+     "frames": 36,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "cover_fire",
+     "action": "Crouch Fire Armed",
+     "clip": "W1 Crouch Fire Single",
+     "take": "crouch_fire_armed",
+     "frames": 30,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "cover_pin",
+     "action": "Crouch Armed",
+     "clip": "W1 Crouch Idle IPC",
+     "take": "crouch_armed",
+     "frames": 45,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "idle_armed",
+     "action": "Idle Armed",
+     "clip": "W1 Stand Relaxed Idle IPC",
+     "take": "idle_armed",
+     "frames": 41,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "holster",
+     "action": "Holster",
+     "clip": "Pistol To Idle",
+     "take": "holster",
+     "frames": 51,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "reload",
+     "action": "Reload",
+     "clip": "UAL1 Standard · Pistol_Reload",
+     "take": "reload",
+     "frames": 50,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol"
+     ]
+    },
+    {
+     "name": "interact",
+     "action": "Interact",
+     "clip": "Button Pushing",
+     "take": "interact",
+     "frames": 97,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "wait",
+     "action": "Wait",
+     "clip": "Bored",
+     "take": "wait",
+     "frames": 320,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "nod",
+     "action": "Nod",
+     "clip": "Head Nod Yes",
+     "take": "nod",
+     "frames": 78,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "shrug",
+     "action": "Shrug",
+     "clip": "Shrugging",
+     "take": "shrug",
+     "frames": 60,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "reassure",
+     "action": "Reassure",
+     "clip": "Hands Forward Gesture",
+     "take": "reassure",
+     "frames": 93,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "argue",
+     "action": "Argue",
+     "clip": "Standing Arguing",
+     "take": "argue",
+     "frames": 624,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "dodge",
+     "action": "Dodge",
+     "clip": "Dodging Back",
+     "take": "dodge",
+     "frames": 80,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "death",
+     "action": "Death",
+     "clip": "Falling Forward Death",
+     "take": "death",
+     "frames": 77,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "drive",
+     "action": "Drive",
+     "clip": "Driving",
+     "take": "drive",
+     "frames": 150,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "enter_car",
+     "action": "Enter Car",
+     "clip": "Entering Car",
+     "take": "enter_car",
+     "frames": 164,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "exit_car",
+     "action": "Exit Car",
+     "clip": "Exiting Car",
+     "take": "exit_car",
+     "frames": 174,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "phone",
+     "action": "Phone Talk",
+     "clip": "Talking On Phone",
+     "take": "phone_talk",
+     "frames": 1165,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "persuade",
+     "action": "Persuade",
+     "clip": "Telling A Secret",
+     "take": "persuade",
+     "frames": 327,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "carry_shoulder",
+     "action": null,
+     "authoredFrom": "walk",
+     "take": "carry_shoulder",
+     "frames": 37,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "carry_shoulder_idle",
+     "action": null,
+     "authoredFrom": "idle",
+     "take": "carry_shoulder_idle",
+     "frames": 298,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    }
+   ],
+   "clipSpeedsMs": {
+    "walk": 0.96,
+    "walk_f": 0.96,
+    "run": 3.65,
+    "run_lean": 3.65,
+    "walk_armed": 1.23,
+    "run_armed": 3.24,
+    "crouch_walk": 1.18,
+    "carry_shoulder": 0.96
+   },
+   "groundLiftM": {
+    "walk": {
+     "drop": 0,
+     "liftMax": 0.016
+    },
+    "run": {
+     "drop": 0,
+     "liftMax": 0.058
+    },
+    "walk_armed": {
+     "drop": 0,
+     "liftMax": 0.028
+    },
+    "run_armed": {
+     "drop": 0,
+     "liftMax": 0.042
+    },
+    "draw": {
+     "drop": 0,
+     "liftMax": 0.033
+    },
+    "melee": {
+     "drop": 0,
+     "liftMax": 0.026
+    },
+    "hit": {
+     "drop": 0,
+     "liftMax": 0.036
+    },
+    "hit_large": {
+     "drop": 0,
+     "liftMax": 0.044
+    },
+    "cower": {
+     "drop": 0,
+     "liftMax": 0.08
+    },
+    "duck": {
+     "drop": 0,
+     "liftMax": 0.089
+    },
+    "crouch": {
+     "drop": 0,
+     "liftMax": 0.03
+    },
+    "crouch_walk": {
+     "drop": 0,
+     "liftMax": 0.019
+    },
+    "look_around": {
+     "drop": 0,
+     "liftMax": 0.035
+    },
+    "talking": {
+     "drop": 0,
+     "liftMax": 0.011
+    },
+    "point": {
+     "drop": 0,
+     "liftMax": 0.012
+    },
+    "pick_up": {
+     "drop": 0,
+     "liftMax": 0.088
+    },
+    "cover_in": {
+     "drop": 0,
+     "liftMax": 0.062
+    },
+    "cover_out": {
+     "drop": 0,
+     "liftMax": 0.065
+    },
+    "crouch_aim_armed": {
+     "drop": 0,
+     "liftMax": 0.023
+    },
+    "crouch_fire_armed": {
+     "drop": 0,
+     "liftMax": 0.023
+    },
+    "crouch_armed": {
+     "drop": 0,
+     "liftMax": 0.025
+    },
+    "idle_armed": {
+     "drop": 0,
+     "liftMax": 0.014
+    },
+    "holster": {
+     "drop": 0,
+     "liftMax": 0.011
+    },
+    "reload": {
+     "drop": 0,
+     "liftMax": 0.014
+    },
+    "wait": {
+     "drop": 0,
+     "liftMax": 0.014
+    },
+    "shrug": {
+     "drop": 0,
+     "liftMax": 0.013
+    },
+    "argue": {
+     "drop": 0,
+     "liftMax": 0.042
+    },
+    "dodge": {
+     "drop": 0,
+     "liftMax": 0.054
+    },
+    "phone_talk": {
+     "drop": 0,
+     "liftMax": 0.024
+    },
+    "persuade": {
+     "drop": 0,
+     "liftMax": 0.056
+    }
+   },
+   "seat": {
+    "hipJointsTarget": [
+     0,
+     0.05,
+     0.572
+    ],
+    "takes": {
+     "sit_idle": {
+      "slide": [
+       -0.003,
+       0.074,
+       -0.044
+      ],
+      "proud": 0.076,
+      "solesUp": 0
+     },
+     "sit_talk": {
+      "slide": [
+       -0.018,
+       0.075,
+       -0.061
+      ],
+      "proud": 0,
+      "solesUp": 0.001
+     },
+     "sit_down": {
+      "slide": [
+       -0.01,
+       0.073,
+       -0.004
+      ],
+      "proud": 0.033,
+      "solesUp": 0
+     },
+     "stand_up": {
+      "slide": [
+       -0.01,
+       0.073,
+       -0.004
+      ],
+      "proud": 0.042,
+      "solesUp": 0
+     }
+    }
+   },
+   "missing": [],
+   "lodScreenHeights": [
+    0.012
+   ]
+  },
+  {
+   "id": "tech",
+   "role": "tech",
+   "label": "Tech (HML game bundle 2026-11-12: black wrap vest, wide trousers, visor)",
+   "fbx": "Figures/tech/tech.fbx",
+   "sha256": "a5f3335ce85d2a89d566a6cd0f6a2ec8ee89c582d34eb137686f070f62eb12e6",
+   "bundle": {
+    "file": "tech-game-bundle.zip",
+    "sha256": "95e9f4ecf2bcc07906a44f65d52adc7defd96559a6713ca4be3ec3bc00e98477",
+    "glb": "assets/tech-player-cell-d7cb0e3a/models/rig-exports/ccd54801-c637-8f8e-b5e3-7086897f0478/model.glb",
+    "glbSha256": "ac3ea889513cce852b257f62f36bd299ef0a2413f0df79cc58c00a970fec666a",
+    "rigVersionId": "f24c6f4a-fec7-44cb-9552-266538c72f9c"
+   },
+   "rig": {
+    "type": "generic",
+    "bones": 65,
+    "root": "Armature/Hips",
+    "bakedScale": 1.85,
+    "exposed": [
+     "Armature/Hips/Spine/Spine1/Spine2/Neck/Head",
+     "Armature/Hips",
+     "Armature/Hips/Spine/Spine1/Spine2/RightShoulder"
+    ]
+   },
+   "heightM": 1.85,
+   "restBounds": [
+    [
+     -0.436,
+     -0.234,
+     0
+    ],
+    [
+     0.436,
+     0.234,
+     1.85
+    ]
+   ],
+   "idleGroundM": -0.002,
+   "female": false,
+   "lods": [
+    {
+     "name": "tech_LOD0",
+     "tris": 26703
+    }
+   ],
+   "props": [
+    {
+     "name": "pistol",
+     "node": "prop_pistol",
+     "bone": "RightHand",
+     "tris": 1532,
+     "always": false,
+     "states": [
+      "aim",
+      "aim_pistol",
+      "cover_fire",
+      "cover_in",
+      "cover_kneel",
+      "cover_out",
+      "cover_pin",
+      "draw",
+      "holster",
+      "idle_armed",
+      "melee",
+      "melee_whip",
+      "reload",
+      "run_armed",
+      "shoot",
+      "walk_armed"
+     ]
+    },
+    {
+     "name": "visor",
+     "node": "prop_visor",
+     "bone": "Head",
+     "tris": 1780,
+     "always": true,
+     "states": [
+      "aim",
+      "aim_pistol",
+      "argue",
+      "carry_shoulder",
+      "carry_shoulder_idle",
+      "cover_fire",
+      "cover_in",
+      "cover_kneel",
+      "cover_out",
+      "cover_pin",
+      "cower",
+      "crouch",
+      "crouch_walk",
+      "death",
+      "dodge",
+      "draw",
+      "drive",
+      "enter_car",
+      "exit_car",
+      "gadget",
+      "hit",
+      "hit_large",
+      "holster",
+      "idle",
+      "idle_alt",
+      "idle_armed",
+      "interact",
+      "keypad",
+      "look_around",
+      "lying",
+      "melee",
+      "melee_whip",
+      "nod",
+      "panel_open",
+      "panic",
+      "pickup",
+      "point",
+      "reassure",
+      "reload",
+      "run",
+      "run_armed",
+      "run_lean",
+      "shoot",
+      "shrug",
+      "sit",
+      "sit_alt",
+      "sit_talk",
+      "sit_to_stand",
+      "stand_to_sit",
+      "talk",
+      "tinker",
+      "wait",
+      "walk",
+      "walk_armed",
+      "walk_f",
+      "whisper"
+     ]
+    }
+   ],
+   "materials": [
+    {
+     "name": "tech_body",
+     "file": "Figures/tech/Materials/tech_body.mat",
+     "source": "tripo_mat_dc253fd5",
+     "doubleSided": false,
+     "tint": [
+      0.8,
+      0.8,
+      0.8
+     ],
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_body_albedo.png",
+      "normal": "Figures/tech/Textures/tech_body_normal.png",
+      "mask": "Figures/tech/Textures/tech_body_mask.png"
+     },
+     "texturePx": {
+      "albedo": 4096,
+      "normal": 4096,
+      "mask": 4096
+     },
+     "smoothness": {
+      "mean": 0.211,
+      "from": "map"
+     },
+     "metallicMean": 0.056
+    },
+    {
+     "name": "tech_visor",
+     "file": "Figures/tech/Materials/tech_visor.mat",
+     "source": "TechVisor_PBR",
+     "doubleSided": false,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_visor_albedo.png",
+      "normal": "Figures/tech/Textures/tech_visor_normal.png",
+      "mask": "Figures/tech/Textures/tech_visor_mask.png"
+     },
+     "texturePx": {
+      "albedo": 512,
+      "normal": 512,
+      "mask": 512
+     },
+     "smoothness": {
+      "mean": 0.79,
+      "from": "map"
+     },
+     "metallicMean": 0.179
+    },
+    {
+     "name": "tech_pistol",
+     "file": "Figures/tech/Materials/tech_pistol.mat",
+     "source": "Cell pistol authored surface v2",
+     "doubleSided": false,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_pistol_albedo.png",
+      "normal": "Figures/tech/Textures/tech_pistol_normal.png",
+      "mask": "Figures/tech/Textures/tech_pistol_mask.png"
+     },
+     "texturePx": {
+      "albedo": 1024,
+      "normal": 1024,
+      "mask": 1024
+     },
+     "smoothness": {
+      "mean": 0.565,
+      "from": "map"
+     },
+     "metallicMean": 0.118
+    }
+   ],
+   "clips": [
+    {
+     "name": "idle",
+     "action": "Idle",
+     "clip": "Breathing Idle",
+     "take": "idle",
+     "frames": 298,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "idle_alt",
+     "action": "Idle",
+     "clip": "Breathing Idle",
+     "take": "idle",
+     "frames": 298,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "walk",
+     "action": "Walk",
+     "clip": "Walking (2)",
+     "take": "walk",
+     "frames": 37,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "walk_f",
+     "action": "Walk",
+     "clip": "Walking (2)",
+     "take": "walk",
+     "frames": 37,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "run",
+     "action": "Run",
+     "clip": "Running",
+     "take": "run",
+     "frames": 21,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "run_lean",
+     "action": "Run",
+     "clip": "Running",
+     "take": "run",
+     "frames": 21,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "walk_armed",
+     "action": "Walk Armed",
+     "clip": "Pistol Walk",
+     "take": "walk_armed",
+     "frames": 24,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "run_armed",
+     "action": "Run Armed",
+     "clip": "Pistol Run",
+     "take": "run_armed",
+     "frames": 22,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "aim",
+     "action": "Aim Armed",
+     "clip": "W1 Stand Aim Idle IPC",
+     "take": "aim_armed",
+     "frames": 50,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "aim_pistol",
+     "action": "Aim Armed",
+     "clip": "W1 Stand Aim Idle IPC",
+     "take": "aim_armed",
+     "frames": 50,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "shoot",
+     "action": "Fire Armed",
+     "clip": "W1 Stand Fire Single",
+     "take": "fire_armed",
+     "frames": 30,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "draw",
+     "action": "Draw",
+     "clip": "Drawing Gun",
+     "take": "draw",
+     "frames": 60,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "melee",
+     "action": "Melee",
+     "clip": "Pistol Whip",
+     "take": "melee",
+     "frames": 77,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "melee_whip",
+     "action": "Melee",
+     "clip": "Pistol Whip",
+     "take": "melee",
+     "frames": 77,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "hit",
+     "action": "Hit",
+     "clip": "Standing React Small From Front",
+     "take": "hit",
+     "frames": 36,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "hit_large",
+     "action": "Hit Large",
+     "clip": "Big Stomach Hit",
+     "take": "hit_large",
+     "frames": 42,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "panic",
+     "action": "Cower",
+     "clip": "Terrified",
+     "take": "cower",
+     "frames": 600,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "cower",
+     "action": "Duck",
+     "clip": "Ducking",
+     "take": "duck",
+     "frames": 46,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "crouch",
+     "action": "Crouch",
+     "clip": "Crouching Idle",
+     "take": "crouch",
+     "frames": 75,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "crouch_walk",
+     "action": "Crouch Walk",
+     "clip": "Crouch Walk Forward",
+     "take": "crouch_walk",
+     "frames": 34,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "lying",
+     "action": "Lying Hurt",
+     "clip": "Writhing In Pain",
+     "take": "lying_hurt",
+     "frames": 170,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "look_around",
+     "action": "Look Around",
+     "clip": "Looking Around",
+     "take": "look_around",
+     "frames": 190,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "talk",
+     "action": "Talking",
+     "clip": "Talking",
+     "take": "talking",
+     "frames": 308,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "point",
+     "action": "Point",
+     "clip": "Pointing",
+     "take": "point",
+     "frames": 83,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "pickup",
+     "action": "Pick Up",
+     "clip": "Picking Up",
+     "take": "pick_up",
+     "frames": 125,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "sit",
+     "action": "Sit Idle",
+     "clip": "Sitting Idle",
+     "take": "sit_idle",
+     "frames": 89,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "sit_alt",
+     "action": "Sit Idle",
+     "clip": "Sitting Idle",
+     "take": "sit_idle",
+     "frames": 89,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "sit_talk",
+     "action": "Sit Talk",
+     "clip": "Sitting Talking",
+     "take": "sit_talk",
+     "frames": 1349,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "stand_to_sit",
+     "action": "Sit Down",
+     "clip": "Stand To Sit",
+     "take": "sit_down",
+     "frames": 67,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "sit_to_stand",
+     "action": "Stand Up",
+     "clip": "Sit To Stand",
+     "take": "stand_up",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "cover_in",
+     "action": "Cover In",
+     "clip": "Stand To Cover",
+     "take": "cover_in",
+     "frames": 38,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "cover_out",
+     "action": "Cover Out",
+     "clip": "Cover To Stand",
+     "take": "cover_out",
+     "frames": 42,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "cover_kneel",
+     "action": "Crouch Aim Armed",
+     "clip": "W1 Crouch Aim Idle IPC",
+     "take": "crouch_aim_armed",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "cover_fire",
+     "action": "Crouch Fire Armed",
+     "clip": "W1 Crouch Fire Single",
+     "take": "crouch_fire_armed",
+     "frames": 30,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "cover_pin",
+     "action": "Crouch Armed",
+     "clip": "W1 Crouch Idle IPC",
+     "take": "crouch_armed",
+     "frames": 41,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "idle_armed",
+     "action": "Idle Armed",
+     "clip": "Pistol Idle",
+     "take": "idle_armed",
+     "frames": 40,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "holster",
+     "action": "Holster",
+     "clip": "Pistol To Idle",
+     "take": "holster",
+     "frames": 51,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "reload",
+     "action": "Reload",
+     "clip": "UAL1 Standard · Pistol_Reload",
+     "take": "reload",
+     "frames": 50,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "pistol",
+      "visor"
+     ]
+    },
+    {
+     "name": "interact",
+     "action": "Interact",
+     "clip": "Button Pushing",
+     "take": "interact",
+     "frames": 97,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "wait",
+     "action": "Wait",
+     "clip": "Bored",
+     "take": "wait",
+     "frames": 320,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "nod",
+     "action": "Nod",
+     "clip": "Head Nod Yes",
+     "take": "nod",
+     "frames": 78,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "shrug",
+     "action": "Shrug",
+     "clip": "Shrugging",
+     "take": "shrug",
+     "frames": 60,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "reassure",
+     "action": "Reassure",
+     "clip": "Hands Forward Gesture",
+     "take": "reassure",
+     "frames": 93,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "argue",
+     "action": "Argue",
+     "clip": "Standing Arguing",
+     "take": "argue",
+     "frames": 624,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "dodge",
+     "action": "Dodge",
+     "clip": "Dodging Back",
+     "take": "dodge",
+     "frames": 80,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "death",
+     "action": "Death",
+     "clip": "Death",
+     "take": "death",
+     "frames": 91,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "drive",
+     "action": "Drive",
+     "clip": "Driving",
+     "take": "drive",
+     "frames": 150,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "enter_car",
+     "action": "Enter Car",
+     "clip": "Entering Car",
+     "take": "enter_car",
+     "frames": 164,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "exit_car",
+     "action": "Exit Car",
+     "clip": "Exiting Car",
+     "take": "exit_car",
+     "frames": 174,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "tinker",
+     "action": "Panel Tinker",
+     "clip": "Working On Device",
+     "take": "panel_tinker",
+     "frames": 193,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "panel_open",
+     "action": "Panel Open",
+     "clip": "Opening A Lid",
+     "take": "panel_open",
+     "frames": 268,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "keypad",
+     "action": "Keypad",
+     "clip": "Entering Code",
+     "take": "keypad",
+     "frames": 225,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "gadget",
+     "action": "Gadget",
+     "clip": "Standing Using Touchscreen Tablet",
+     "take": "gadget",
+     "frames": 994,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "whisper",
+     "action": "Whisper",
+     "clip": "Telling A Secret",
+     "take": "whisper",
+     "frames": 327,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "carry_shoulder",
+     "action": null,
+     "authoredFrom": "walk",
+     "take": "carry_shoulder",
+     "frames": 37,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    },
+    {
+     "name": "carry_shoulder_idle",
+     "action": null,
+     "authoredFrom": "idle",
+     "take": "carry_shoulder_idle",
+     "frames": 298,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "visor"
+     ]
+    }
+   ],
+   "clipSpeedsMs": {
+    "walk": 1.02,
+    "walk_f": 1.02,
+    "run": 4.19,
+    "run_lean": 4.19,
+    "walk_armed": 2.47,
+    "run_armed": 3.05,
+    "crouch_walk": 1.55,
+    "carry_shoulder": 1.02
+   },
+   "groundLiftM": {
+    "hit_large": {
+     "drop": 0,
+     "liftMax": 0.017
+    },
+    "cower": {
+     "drop": 0,
+     "liftMax": 0.012
+    },
+    "cover_out": {
+     "drop": 0,
+     "liftMax": 0.01
+    },
+    "panel_tinker": {
+     "drop": 0.049,
+     "liftMax": 0
+    }
+   },
+   "seat": {
+    "hipJointsTarget": [
+     0,
+     0.05,
+     0.574
+    ],
+    "takes": {
+     "sit_idle": {
+      "slide": [
+       -0.011,
+       0.068,
+       -0.062
+      ],
+      "proud": 0.066,
+      "solesUp": 0
+     },
+     "sit_talk": {
+      "slide": [
+       -0.01,
+       0.066,
+       -0.073
+      ],
+      "proud": 0.07,
+      "solesUp": 0
+     },
+     "sit_down": {
+      "slide": [
+       -0.01,
+       0.067,
+       -0.023
+      ],
+      "proud": 0,
+      "solesUp": 0.006
+     },
+     "stand_up": {
+      "slide": [
+       -0.011,
+       0.067,
+       -0.022
+      ],
+      "proud": 0,
+      "solesUp": 0.01
+     }
+    }
+   },
+   "missing": [],
+   "lodScreenHeights": [
+    0.012
+   ]
+  },
+  {
+   "id": "enforcer",
+   "role": "enforcer",
+   "label": "Enforcer (HML game bundle 2026-11-12: white and black long coat, white boots, carbine)",
+   "fbx": "Figures/enforcer/enforcer.fbx",
+   "sha256": "04cba09308ac88731f61b0a679b8f2d091cea57e5d70d663f43c01cb25e67492",
+   "bundle": {
+    "file": "enforcer-game-bundle.zip",
+    "sha256": "1f45d116fa59cbdb055e1bb94c0b634ebd0944f5b2480d1f718b5edccb8f1263",
+    "glb": "assets/enforcer-player-cell-16f54c8c/models/rig-exports/1c240136-6605-8f38-95b0-93fa77012ab6/model.glb",
+    "glbSha256": "eb808f386c3726c51bd3a20666c08f9072c87511ce47575148aa9d011b0cc090",
+    "rigVersionId": "0595c0fe-4cba-4ff9-87b0-ead117d5798c"
+   },
+   "rig": {
+    "type": "generic",
+    "bones": 65,
+    "root": "Armature/Hips",
+    "bakedScale": 1.9,
+    "exposed": [
+     "Armature/Hips/Spine/Extra_12/Chest/Neck/Head",
+     "Armature/Hips",
+     "Armature/Hips/Spine/Extra_12/Chest/RightShoulder"
+    ]
+   },
+   "heightM": 1.9,
+   "restBounds": [
+    [
+     -0.708,
+     -0.203,
+     0
+    ],
+    [
+     0.708,
+     0.203,
+     1.9
+    ]
+   ],
+   "idleGroundM": -0.001,
+   "female": false,
+   "lods": [
+    {
+     "name": "enforcer_LOD0",
+     "tris": 26989
+    }
+   ],
+   "props": [
+    {
+     "name": "carbine",
+     "node": "prop_carbine",
+     "bone": "RightHand",
+     "tris": 1738,
+     "always": false,
+     "states": [
+      "aim",
+      "aim_pistol",
+      "cover_fire",
+      "cover_in",
+      "cover_kneel",
+      "cover_out",
+      "cover_pin",
+      "cover_stand",
+      "draw",
+      "holster",
+      "idle_armed",
+      "melee",
+      "melee_whip",
+      "peek_left",
+      "peek_right",
+      "raise_aim",
+      "reload",
+      "run_armed",
+      "shoot",
+      "walk_armed"
+     ]
+    }
+   ],
+   "materials": [
+    {
+     "name": "enforcer_body",
+     "file": "Figures/enforcer/Materials/enforcer_body.mat",
+     "source": "tripo_material_bab6729c-e7be-4fb1-a57f-1fe3a8501f12",
+     "doubleSided": true,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/enforcer/Textures/enforcer_body_albedo.jpg",
+      "normal": "Figures/enforcer/Textures/enforcer_body_normal.png",
+      "mask": "Figures/enforcer/Textures/enforcer_body_mask.png"
+     },
+     "texturePx": {
+      "albedo": 2048,
+      "normal": 2048,
+      "mask": 2048
+     },
+     "smoothness": {
+      "mean": 0.281,
+      "from": "map"
+     },
+     "metallicMean": 0.057
+    },
+    {
+     "name": "enforcer_carbine",
+     "file": "Figures/enforcer/Materials/enforcer_carbine.mat",
+     "source": "tripo_material_517b4acc-1e7a-40c2-8d70-bf03c3d977f3",
+     "doubleSided": true,
+     "tint": [
+      1,
+      1,
+      1
+     ],
+     "textures": {
+      "albedo": "Figures/enforcer/Textures/enforcer_carbine_albedo.jpg",
+      "normal": "Figures/enforcer/Textures/enforcer_carbine_normal.png",
+      "mask": "Figures/enforcer/Textures/enforcer_carbine_mask.png"
+     },
+     "texturePx": {
+      "albedo": 4096,
+      "normal": 4096,
+      "mask": 4096
+     },
+     "smoothness": {
+      "mean": 0.744,
+      "from": "map"
+     },
+     "metallicMean": 0.653
+    }
+   ],
+   "clips": [
+    {
+     "name": "idle",
+     "action": "Idle",
+     "clip": "Standard Idle",
+     "take": "idle",
+     "frames": 90,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "idle_alt",
+     "action": "Idle",
+     "clip": "Standard Idle",
+     "take": "idle",
+     "frames": 90,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "walk",
+     "action": "Walk",
+     "clip": "Standard Walk",
+     "take": "walk",
+     "frames": 35,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "walk_f",
+     "action": "Walk",
+     "clip": "Standard Walk",
+     "take": "walk",
+     "frames": 35,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "run",
+     "action": "Run",
+     "clip": "Standard Run (2)",
+     "take": "run",
+     "frames": 22,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "run_lean",
+     "action": "Run",
+     "clip": "Standard Run (2)",
+     "take": "run",
+     "frames": 22,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "walk_armed",
+     "action": "Walk Armed",
+     "clip": "Walk With Rifle (3)",
+     "take": "walk_armed",
+     "frames": 101,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "run_armed",
+     "action": "Run Armed",
+     "clip": "Rifle Run",
+     "take": "run_armed",
+     "frames": 20,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "aim",
+     "action": "Aim Armed",
+     "clip": "Rifle Aiming Idle",
+     "take": "aim_armed",
+     "frames": 93,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "aim_pistol",
+     "action": "Aim Armed",
+     "clip": "Rifle Aiming Idle",
+     "take": "aim_armed",
+     "frames": 93,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "shoot",
+     "action": "Fire Armed",
+     "clip": "Firing Rifle",
+     "take": "fire_armed",
+     "frames": 17,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "draw",
+     "action": "Draw",
+     "clip": "Grab Rifle From Back",
+     "take": "draw",
+     "frames": 60,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "melee",
+     "action": "Melee",
+     "clip": "Rifle Punch",
+     "take": "melee",
+     "frames": 83,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "melee_whip",
+     "action": "Melee",
+     "clip": "Rifle Punch",
+     "take": "melee",
+     "frames": 83,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "hit",
+     "action": "Hit",
+     "clip": "Hit Reaction (2)",
+     "take": "hit",
+     "frames": 48,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "hit_large",
+     "action": "Hit Large",
+     "clip": "Big Stomach Hit",
+     "take": "hit_large",
+     "frames": 42,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "panic",
+     "action": "Cower",
+     "clip": "Terrified",
+     "take": "cower",
+     "frames": 600,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "cower",
+     "action": "Duck",
+     "clip": "Ducking",
+     "take": "duck",
+     "frames": 46,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "crouch",
+     "action": "Crouch",
+     "clip": "Crouch Idle (2)",
+     "take": "crouch",
+     "frames": 41,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "crouch_walk",
+     "action": "Crouch Walk",
+     "clip": "Crouched Walking",
+     "take": "crouch_walk",
+     "frames": 31,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "lying",
+     "action": "Lying Hurt",
+     "clip": "Writhing In Pain",
+     "take": "lying_hurt",
+     "frames": 170,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "look_around",
+     "action": "Look Around",
+     "clip": "Looking Around",
+     "take": "look_around",
+     "frames": 190,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "talk",
+     "action": "Talking",
+     "clip": "Talking",
+     "take": "talking",
+     "frames": 308,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "point",
+     "action": "Point",
+     "clip": "Pointing",
+     "take": "point",
+     "frames": 83,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "pickup",
+     "action": "Pick Up",
+     "clip": "Picking Up",
+     "take": "pick_up",
+     "frames": 125,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "sit",
+     "action": "Sit Idle",
+     "clip": "Sitting Idle",
+     "take": "sit_idle",
+     "frames": 89,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "sit_alt",
+     "action": "Sit Idle",
+     "clip": "Sitting Idle",
+     "take": "sit_idle",
+     "frames": 89,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "sit_talk",
+     "action": "Sit Talk",
+     "clip": "Sitting Talking",
+     "take": "sit_talk",
+     "frames": 1349,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "stand_to_sit",
+     "action": "Sit Down",
+     "clip": "Stand To Sit",
+     "take": "sit_down",
+     "frames": 67,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "sit_to_stand",
+     "action": "Stand Up",
+     "clip": "Sit To Stand",
+     "take": "stand_up",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "cover_in",
+     "action": "Cover In",
+     "clip": "Rifle Stand To Kneel",
+     "take": "cover_in",
+     "frames": 28,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "cover_out",
+     "action": "Cover Out",
+     "clip": "Rifle Kneel To Stand",
+     "take": "cover_out",
+     "frames": 37,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "cover_kneel",
+     "action": "Cover Idle",
+     "clip": "Rifle Kneel Idle",
+     "take": "cover_idle",
+     "frames": 51,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "cover_fire",
+     "action": "Crouch Fire Armed",
+     "clip": "Fire Rifle",
+     "take": "crouch_fire_armed",
+     "frames": 31,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "cover_pin",
+     "action": "Crouch Armed",
+     "clip": "Crouch Idle",
+     "take": "crouch_armed",
+     "frames": 201,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "idle_armed",
+     "action": "Idle Armed",
+     "clip": "Rifle Idle",
+     "take": "idle_armed",
+     "frames": 257,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "holster",
+     "action": "Holster",
+     "clip": "Put Back Rifle",
+     "take": "holster",
+     "frames": 77,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "reload",
+     "action": "Reload",
+     "clip": "Reloading",
+     "take": "reload",
+     "frames": 99,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "interact",
+     "action": "Interact",
+     "clip": "Button Pushing",
+     "take": "interact",
+     "frames": 97,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "wait",
+     "action": "Wait",
+     "clip": "Bored",
+     "take": "wait",
+     "frames": 320,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "nod",
+     "action": "Nod",
+     "clip": "Head Nod Yes",
+     "take": "nod",
+     "frames": 78,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "shrug",
+     "action": "Shrug",
+     "clip": "Shrugging",
+     "take": "shrug",
+     "frames": 60,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "reassure",
+     "action": "Reassure",
+     "clip": "Hands Forward Gesture",
+     "take": "reassure",
+     "frames": 93,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "argue",
+     "action": "Argue",
+     "clip": "Standing Arguing",
+     "take": "argue",
+     "frames": 624,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "dodge",
+     "action": "Dodge",
+     "clip": "Dodging Back",
+     "take": "dodge",
+     "frames": 80,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "death",
+     "action": "Death",
+     "clip": "Falling Back Death",
+     "take": "death",
+     "frames": 78,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "drive",
+     "action": "Drive",
+     "clip": "Driving",
+     "take": "drive",
+     "frames": 150,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "enter_car",
+     "action": "Enter Car",
+     "clip": "Entering Car",
+     "take": "enter_car",
+     "frames": 164,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "exit_car",
+     "action": "Exit Car",
+     "clip": "Exiting Car",
+     "take": "exit_car",
+     "frames": 174,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "kill_attacker",
+     "action": "Takedown",
+     "clip": "Stealth Assassination",
+     "take": "takedown",
+     "frames": 210,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "captor",
+     "action": "Restrain",
+     "clip": "Strangling",
+     "take": "restrain",
+     "frames": 527,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "carry",
+     "action": "Carry",
+     "clip": "Carrying",
+     "take": "carry",
+     "frames": 300,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "enter_door",
+     "action": "Enter Door",
+     "clip": "Opening Door Inwards",
+     "take": "enter_door",
+     "frames": 191,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "cover_stand",
+     "action": "Cover Stand",
+     "clip": "Taking Cover Idle",
+     "take": "cover_stand",
+     "frames": 68,
+     "fps": 30,
+     "loop": true,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "peek_left",
+     "action": "Peek Left",
+     "clip": "Left Cover Sneak W Rifle",
+     "take": "peek_left",
+     "frames": 34,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "peek_right",
+     "action": "Peek Right",
+     "clip": "Right Cover Sneak W Rifle",
+     "take": "peek_right",
+     "frames": 34,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "raise_aim",
+     "action": "Raise Aim",
+     "clip": "Rifle Down To Aim",
+     "take": "raise_aim",
+     "frames": 26,
+     "fps": 30,
+     "loop": false,
+     "props": [
+      "carbine"
+     ]
+    },
+    {
+     "name": "whisper",
+     "action": "Whisper",
+     "clip": "Telling A Secret",
+     "take": "whisper",
+     "frames": 327,
+     "fps": 30,
+     "loop": false,
+     "props": []
+    },
+    {
+     "name": "carry_shoulder",
+     "action": null,
+     "authoredFrom": "walk",
+     "take": "carry_shoulder",
+     "frames": 35,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    },
+    {
+     "name": "carry_shoulder_idle",
+     "action": null,
+     "authoredFrom": "idle",
+     "take": "carry_shoulder_idle",
+     "frames": 90,
+     "fps": 30,
+     "loop": true,
+     "props": []
+    }
+   ],
+   "clipSpeedsMs": {
+    "walk": 1.49,
+    "walk_f": 1.49,
+    "run": 4.24,
+    "run_lean": 4.24,
+    "walk_armed": 1.29,
+    "run_armed": 4.26,
+    "crouch_walk": 1.3,
+    "carry_shoulder": 1.49
+   },
+   "groundLiftM": {
+    "idle": {
+     "drop": 0,
+     "liftMax": 0.011
+    },
+    "cover_idle": {
+     "drop": 0.022,
+     "liftMax": 0
+    }
+   },
+   "seat": {
+    "hipJointsTarget": [
+     0,
+     0.05,
+     0.577
+    ],
+    "takes": {
+     "sit_idle": {
+      "slide": [
+       -0.004,
+       0.046,
+       -0.028
+      ],
+      "proud": 0.027,
+      "solesUp": 0
+     },
+     "sit_talk": {
+      "slide": [
+       -0.004,
+       0.053,
+       -0.047
+      ],
+      "proud": 0.046,
+      "solesUp": 0
+     },
+     "sit_down": {
+      "slide": [
+       -0.004,
+       0.05,
+       0.011
+      ],
+      "proud": 0,
+      "solesUp": 0.026
+     },
+     "stand_up": {
+      "slide": [
+       -0.004,
+       0.05,
+       0.011
+      ],
+      "proud": 0,
+      "solesUp": 0.013
+     }
+    }
+   },
+   "missing": [],
+   "lodScreenHeights": [
+    0.012
+   ]
+  }
+ ]
+}

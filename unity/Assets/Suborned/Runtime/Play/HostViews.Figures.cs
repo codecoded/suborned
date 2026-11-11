@@ -11,7 +11,7 @@ namespace Suborned.Play
     /// and draws its weapon in a fight. View only: nothing here is read by the engine. Keys with no figure keep their capsule.</summary>
     public sealed partial class HostViews
     {
-        sealed class Fig { public int sceneId = -1; public Vector3 sceneOff, sceneDir; public bool sceneStop; /* brief 085: HostViews.Scene */ public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public bool seated; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; /** brief 024 fire placeholder: shots seen, the last one's time, the draw's start, drawn last frame */ public int shots; public float shotAt = -10f, drawAt = -10f; public bool drawn; /** engine 0.35 (brief 039 B): the posture's clip timing, the body events seen, the peek layer's weight, the additive layers (-2 unread) */ public float coverAt = -10f, flinchSeen = -10f, staggerUntil = -10f, peek; public int reactL = -2, peekL = -2; }
+        sealed class Fig { public int sceneId = -1; public Vector3 sceneOff, sceneDir; public bool sceneStop; /* brief 085: HostViews.Scene */ public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public bool seated; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; /** brief 024 fire placeholder: shots seen, the last one's time, the draw's start, drawn last frame */ public int shots; public float shotAt = -10f, drawAt = -10f; public bool drawn; /** engine 0.35 (brief 039 B): the posture's clip timing, the body events seen, the peek layer's weight, the additive layers (-2 unread) */ public float coverAt = -10f, flinchSeen = -10f, staggerUntil = -10f, peek; public int reactL = -2, peekL = -2; /** brief 112 (HostViews.Cell): the cell's own states, its props and the state they were last set for */ public HashSet<string> own; public Renderer[] props; public string[] propIn; public string propFor; }
         /// <summary>Engine 0.35 (brief 039 B): each fighter's posture this tick, by view key (HandoverHost.BodyRead; empty without one input).</summary>
         public readonly Dictionary<string, Posture> Postures = new();
         readonly Dictionary<string, (float at, bool stagger)> bodyShot = new();
@@ -97,7 +97,7 @@ namespace Suborned.Play
             an.runtimeAnimatorController = lib.ControllerFor(e); an.applyRootMotion = false; an.cullingMode = AnimatorCullingMode.CullCompletely;
             foreach (Transform c in t) if (c != inst.transform && c.GetComponent<MeshRenderer>() is MeshRenderer mr) mr.enabled = false; // the capsule's own parts go dark
             uint h = 2166136261; foreach (var ch in key) { h ^= ch; h *= 16777619; }
-            figs[key] = new Fig { model = inst.transform, anim = an, id = id, female = e.female, phase = (h % 1000) / 1000f };
+            figs[key] = new Fig { model = inst.transform, anim = an, id = id, female = e.female, phase = (h % 1000) / 1000f }; CellDress(figs[key], e);
         }
 
         /// <summary>Per frame, after the positions: each figure's facing, clip and stride.</summary>
@@ -202,13 +202,14 @@ namespace Suborned.Play
                 if (!down && !carried && !talking && Postures.TryGetValue(key, out pz) && Has(f, "cover_kneel")) (state, fadeOv, strideOv) = BodyState(f, key, state, pz, speed, shotRecent, nowU); // engine 0.35: the fight on the body
                 else if (CoverState(f.state) && !down && !carried && speed < 0.15f && Has(f, "cover_out")) { state = "cover_out"; fadeOv = 0.1f; f.coverAt = nowU; } // no posture left (the fight over): he stands up
                 else if (f.state == "cover_out" && nowU - f.coverAt < 1.4f && !down && !carried && speed < 0.15f && state is "idle" or "idle_alt" or "aim_pistol" or "aim") state = "cover_out";
+                state = CellState(f, opIdx, state, armed, down || carried || talking || f.seated); // brief 112: the cell's own clips (gun in hand, at the cabinet, watching)
                 natural = host.figures.Speed(f.id, state); if (natural <= 0f && state == "carry_shoulder") natural = 1.29f; // Forma: the walk's legs
                 float stride = natural > 0f ? Mathf.Clamp(speed / natural, 0.4f, 1.8f) : 1f; // the floor was 0.6: a 0.52 m/s walker's legs walked 0.59 m/s and slid (crowd/33, brief 024 anim-fix)
                 if (state == "draw") stride = DrawClipS / Mathf.Max(0.2f, host.DrawS); // the draw clip fits the rulebook's draw time
                 if (strideOv > 0f) stride = strideOv;
                 f.anim.speed = (key == DriveKey ? 1f : pace) * stride; // the driven agent walks in an explore pause too
-                Tray(f, state is "serve" or "serve_walk");
-                if (state == "shoot" && shotNew && f.state == "shoot") f.anim.CrossFadeInFixedTime("shoot", 0.03f, 0, 0f); // the next shot: the recoil again from its start
+                Tray(f, state is "serve" or "serve_walk"); CellProps(f, state);
+                if ((state == "shoot" || state == "cover_fire" && f.own != null) && shotNew && f.state == state) f.anim.CrossFadeInFixedTime(state, 0.03f, 0, 0f); // the next shot: the recoil again from its start (brief 112: the cell's fire from cover is one shot too)
                 else if (state != f.state && fadeOv >= 0f) { f.anim.CrossFadeInFixedTime(state, fadeOv, 0, state == "cower" ? 9f / 30f : 0f); f.state = state; } // engine 0.35: Forma's cross-fades (pin-poses.md §D); the duck plays frames 9→46, then holds its last (the clip doesn't loop)
                 else if (state != f.state) { bool lower = f.state is "aim_pistol" or "aim" or "shoot" && state is "idle" or "idle_alt"; f.anim.CrossFadeInFixedTime(state, f.state.Length == 0 || talking ? 0f : state == "shoot" ? 0.04f : lower ? 0.3f : f.state == "draw" ? 0.08f : 0.15f, 0, f.state.Length == 0 || (state is "sit" or "sit_alt" or "sit_talk" && f.state != "stand_to_sit") ? f.phase * 5f : 0f); f.state = state; } // Forma: seconds, not a share of the clip (an 8.8 s idle took 1.3 s to blend); lowering the gun eases over 0.3 s
                 Layers(f, key, state, pz, shotNew, nowU);

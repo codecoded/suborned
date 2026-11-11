@@ -1,0 +1,172 @@
+{
+ "schema": "suborned.cell-hml/1",
+ "brief": "briefs/112-cell-characters.md",
+ "note": "The cell from Happy Mouse Labs' game bundles (Sky, 2026-11-12: \"replace our main cell with these characters and animations\"). Each figure keeps its own mesh, textures, skeleton and clips; nothing is decimated or resized. `states` maps a state of the shared controller (People/Generated/Figures.controller) to one of the bundle's game actions (manifest.json gamePrep.actions[].name); `byFigure` overrides it for one figure. `extras` are states only the cell has. A state with no action for a figure is left out (it keeps the shared clip, which cannot move this rig, so the host never picks it for the cell).",
+ "store": "characters/cell_hml",
+ "figures": {
+  "scout": {
+   "bundle": "scout-game-bundle.zip",
+   "sha256": "e0e69fcd0af92557a9bfe7781d7b764a064328aaab12e143f3c32e7c7edacb5b",
+   "female": true,
+   "label": "Scout (HML game bundle 2026-11-12: white hooded top, black shorts, sneakers)"
+  },
+  "fixer": {
+   "bundle": "fixer-game-bundle.zip",
+   "sha256": "ab1bd062bdaeca99ff616f927087a87facdee7f2d8baf535dd23d4d4529802f6",
+   "female": true,
+   "label": "Fixer (HML game bundle 2026-11-12: black and white halter jumpsuit, long gloves, white boots)"
+  },
+  "tech": {
+   "bundle": "tech-game-bundle.zip",
+   "sha256": "95e9f4ecf2bcc07906a44f65d52adc7defd96559a6713ca4be3ec3bc00e98477",
+   "female": false,
+   "label": "Tech (HML game bundle 2026-11-12: black wrap vest, wide trousers, visor)"
+  },
+  "enforcer": {
+   "bundle": "enforcer-game-bundle.zip",
+   "sha256": "1f45d116fa59cbdb055e1bb94c0b634ebd0944f5b2480d1f718b5edccb8f1263",
+   "female": false,
+   "label": "Enforcer (HML game bundle 2026-11-12: white and black long coat, white boots, carbine)"
+  }
+ },
+ "props": {
+  "Cell Service Pistol": "pistol",
+  "Cell Carbine": "carbine",
+  "Tech Visor": "visor"
+ },
+ "states": {
+  "idle": "Idle",
+  "idle_alt": "Idle",
+  "walk": "Walk",
+  "walk_f": "Walk",
+  "run": "Run",
+  "run_lean": "Run",
+  "walk_armed": "Walk Armed",
+  "run_armed": "Run Armed",
+  "aim": "Aim Armed",
+  "aim_pistol": "Aim Armed",
+  "shoot": "Fire Armed",
+  "draw": "Draw",
+  "melee": "Melee",
+  "melee_whip": "Melee",
+  "hit": "Hit",
+  "hit_large": "Hit Large",
+  "panic": "Cower",
+  "cower": "Duck",
+  "crouch": "Crouch",
+  "crouch_walk": "Crouch Walk",
+  "lying": "Lying Hurt",
+  "look_around": "Look Around",
+  "talk": "Talking",
+  "point": "Point",
+  "pickup": "Pick Up",
+  "sit": "Sit Idle",
+  "sit_alt": "Sit Idle",
+  "sit_talk": "Sit Talk",
+  "stand_to_sit": "Sit Down",
+  "sit_to_stand": "Stand Up",
+  "cover_in": "Cover In",
+  "cover_out": "Cover Out",
+  "cover_kneel": "Crouch Aim Armed",
+  "cover_fire": "Crouch Fire Armed",
+  "cover_pin": "Crouch Armed"
+ },
+ "extras": {
+  "idle_armed": "Idle Armed",
+  "holster": "Holster",
+  "reload": "Reload",
+  "interact": "Interact",
+  "wait": "Wait",
+  "nod": "Nod",
+  "shrug": "Shrug",
+  "reassure": "Reassure",
+  "argue": "Argue",
+  "dodge": "Dodge",
+  "death": "Death",
+  "drive": "Drive",
+  "enter_car": "Enter Car",
+  "exit_car": "Exit Car"
+ },
+ "byFigure": {
+  "fixer": {
+   "phone": "Phone Talk",
+   "persuade": "Persuade"
+  },
+  "scout": {
+   "mislead": "Mislead",
+   "walk": {
+    "clip": "Walking",
+    "loop": true
+   },
+   "walk_f": {
+    "clip": "Walking",
+    "loop": true
+   },
+   "walk_stroll": "Walk"
+  },
+  "tech": {
+   "tinker": "Panel Tinker",
+   "panel_open": "Panel Open",
+   "keypad": "Keypad",
+   "gadget": "Gadget",
+   "whisper": "Whisper"
+  },
+  "enforcer": {
+   "cover_kneel": "Cover Idle",
+   "kill_attacker": "Takedown",
+   "captor": "Restrain",
+   "carry": "Carry",
+   "enter_door": "Enter Door",
+   "cover_stand": "Cover Stand",
+   "peek_left": "Peek Left",
+   "peek_right": "Peek Right",
+   "raise_aim": "Raise Aim",
+   "whisper": "Whisper"
+  }
+ },
+ "seconds": {
+  "draw": 2.0
+ },
+ "seconds_note": "The host fits `draw` to the rulebook's draw time from a 2.0 s clip (HostViews.Figures DrawClipS), so every figure's draw is re-timed to 2.0 s (the Enforcer's is 2.9 s in the bundle).",
+ "hold": [
+  "cower",
+  "death"
+ ],
+ "authored": {
+  "carry_shoulder": {
+   "donor": "walk",
+   "note": "the figure's own walk with the right arm clamping the legs of the person over the right shoulder (the recipe of author_clips.make_carry)"
+  },
+  "carry_shoulder_idle": {
+   "donor": "idle",
+   "note": "the figure's own idle with the same right arm"
+  }
+ },
+ "seat": {
+  "cushionUp": 0.474,
+  "hipJointsAboveCushionAt175": 0.095,
+  "hipJointsForward": -0.05,
+  "states": [
+   "sit",
+   "sit_alt",
+   "sit_talk",
+   "stand_to_sit",
+   "sit_to_stand"
+  ],
+  "note": "tools/figures/seat.json: the root stands on the chair's point and the pelvis rests on the cushion (0.474 m up). The bundle's sit clips have no seat, so each is slid until its seated pose (stand_to_sit: its last frame; sit_to_stand: its first; the loops: their mean) has the hip joints 0.095 m above the cushion (scaled by the figure's height) and 0.05 m behind the chair's point; if that puts the soles under the floor the clip is lifted until they stand on it."
+ },
+ "byFigure_note": "A value may be {\"clip\": name, \"loop\": bool}: a clip the bundle holds that is not one of its game actions. The Scout's walk: the cell walks at 1.8 m/s (rulebook op-speed-cm-s) and her Walk action (Walking (2)) is a 0.92 m/s stroll, which would play at 1.96 times its speed; the bundle's other walk (Walking, 1.44 m/s) plays at 1.25. Her Walk action stays as walk_stroll.",
+ "groundSkip": [
+  "lying",
+  "death",
+  "sit",
+  "sit_alt",
+  "sit_talk",
+  "stand_to_sit",
+  "sit_to_stand",
+  "drive",
+  "enter_car",
+  "exit_car"
+ ],
+ "groundSkip_note": "Every other take is put on the floor (cell_hml_clips.ground): dropped if it floats, and each frame whose sole is under y = 0 lifted by that much; these keep the bundle's height (lying down, seated, in a car)."
+}

@@ -18,10 +18,14 @@ namespace Suborned.Play
             public float[] lodHeights = Array.Empty<float>();
             [Tooltip("Walks with walk_f.")]
             public bool female;
-            [Tooltip("Forma's testbed cell (briefs/020/people/cell-generic): a Generic figure on its own skeleton, drawn with its own override of the shared controller (each state's clip the same-named clip from its FBX). Null: the shared Humanoid controller.")]
+            [Tooltip("The cell (briefs/112/people/manifest-cell.json, the Happy Mouse bundles): a Generic figure on its own skeleton, drawn with its own override of the shared controller (each state's clip the same-named clip from its FBX). Null: the shared Humanoid controller.")]
             public RuntimeAnimatorController controller;
             [Tooltip("Its own clips' natural speeds (m/s; manifest-cell clipSpeedsMs), read before the library's.")]
             public string[] speedStates = Array.Empty<string>(); public float[] speeds = Array.Empty<float>();
+            [Tooltip("Brief 112 (the Happy Mouse cell): the states this figure has a clip of its own for. A state only the cell has (idle_armed, holster, tinker, phone, ...) is in the shared controller with an empty clip, so the host picks it only for a figure that lists it here.")]
+            public string[] ownStates = Array.Empty<string>();
+            [Tooltip("Brief 112: its props (the renderers named prop_<name> under the model) and, for each, the states it shows in, comma-joined ('*': every state).")]
+            public string[] propNodes = Array.Empty<string>(), propStates = Array.Empty<string>();
         }
 
         public Figure[] figures = Array.Empty<Figure>();
