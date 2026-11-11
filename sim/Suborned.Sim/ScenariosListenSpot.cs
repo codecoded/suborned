@@ -13,6 +13,7 @@
 //    LS-CANCEL   a cancel stops the Listen where she stands; the next Listen is its own
 //    LS-BOTH     the Scout's Listen and the Fixer's Pay on Inez on one tick: both taken, both act at once, both land
 //    P110-PACE   the act-pace dial at 50: every act it names takes half, the card agrees, a world clock stays
+//    SEAT-CUSTOMER  a seated operative is a customer: no loiter clock runs on her in a public seat (engine 0.57.0, attention.seated)
 //    LS-OLD      a rulebook without cell.listen.follow (pinned before 0.55.0) still walks to the spot ahead and holds her, as 0.54.0 did
 using System;
 using System.Collections.Generic;
@@ -237,6 +238,35 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(x => x.Code.StartsWith("turn.pay.", StringComparison.Ordinal)), "the Pay landed");
                 r.Is(!g.Dropped.Exists(d => d.op == OpId.Scout || d.op == OpId.Fixer), "neither was dropped");
             }, KnowRoutine(Inez));
+
+            Add("SEAT-CUSTOMER", "110", "A seated operative is a customer, not a loiterer (engine 0.57.0, attention.seated; Sky 2026-11-12: \"Yes\"): the Scout listens to Inez from a café chair and stays seated after the Listen lands, with no order. For 80 s (past every band's report mark at Heat 0) no watcher's loiter clock on her moves and nobody reports her, though the square's mast sees the terrace; on a rulebook without `seated`, the same seat in a watcher's sight runs its clock as ground does.", r =>
+            {
+                if (r.Inputs == null) { r.Wait(1); return; } // a test that plays bodies on its own inputs
+                (int inView, int rose, bool reported, string seat)? Sit(Run x)
+                {
+                    var g = x.G; x.To(x.Send(Scout, "beside-inez"));
+                    if (!x.Until(() => g.PersonPose(g.Inez)?.phase == "at post" && g.RoundNext(g.Inez) == 0 && g.ListenChairFor(Scout, Inez) != null, T(300))) return null;
+                    x.Do(Scout, "listen", Inez); x.Done(Scout);
+                    if (g.SeatedAt(Scout) is not { } s) return null;
+                    var ids = g.WatcherIds(); var at = ids.ToDictionary(i => i, i => g.AttentionTicks(i, Scout)); int view = 0, up = 0; int lines = g.Log.Count;
+                    for (int k = 0; k < T(80) && !g.Over && g.SeatedAt(Scout) != null; k++)
+                    {
+                        g.Step(); if (g.WatchedAt(x.Op(Scout).Pos)) view++;
+                        foreach (var i in ids) if (g.AttentionTicks(i, Scout) > at[i]) { up++; break; }
+                    }
+                    bool rep0 = g.Log.Skip(lines).Any(l => l.Code == "attention.reporting" && l.Text.Contains("Scout"));
+                    return (view, up, rep0, s.chair);
+                }
+                var a = Sit(r);
+                if (!r.Is(a.HasValue, "the Scout sits in a free café chair to listen, and is still in it when the Listen lands")) return;
+                r.Is(a!.Value.inView > 0, $"seated in {a.Value.seat}, in a watcher's sight {a.Value.inView / Game.Hz} s of the 80");
+                r.Is(a.Value.rose == 0 && !a.Value.reported, $"no loiter clock moved on her while she sat ({a.Value.rose} ticks rose), nobody reported her");
+                var off = Alt(r, Recast(r.Inputs!, "  \"seated\": \\{ \"counts\": \"customer\"[^\n]*\n", ""));
+                if (!r.Is(!off.G.R.AttnSeated, "the rulebook without seated")) return;
+                var b = Sit(off);
+                if (!r.Is(b.HasValue, "there too she sits")) return;
+                r.Is(b!.Value.inView == 0 || b.Value.rose > 0, $"without the law, the seat in sight runs the clock ({b.Value.rose} ticks rose in {b.Value.inView / Game.Hz} s in sight)");
+            });
 
             Add("P110-PACE", "110", "The act-pace dial (rulebook pace, engine 0.55.0; Sky 2026-11-11: \"I think we need to reduce the time things take to happen\"): at 50 every act the dial names takes half its seconds, the card says so and the act takes exactly that: a Watch 10 s, a Listen 15 s (its clock in reach), a Loop 10 s; a world clock it does not name (the loop's run, 120 s) stays.", r =>
             {

@@ -30,6 +30,11 @@ describe('brief 110: orders act at once', () => {
     const bad = structuredClone(raw); bad.pace.acts.push('v:watch-s'); expect(Rulebook.safeParse(bad).success).toBe(false);
     const worse = structuredClone(raw); worse.pace.acts.push('v:listen-reach-m'); expect(Rulebook.safeParse(worse).success).toBe(false);
   });
+  test('a seated operative is a customer (engine 0.57.0, Sky: "Yes")', () => {
+    expect(raw.attention.seated.counts).toBe('customer');
+    expect(raw.attention.seated.src).toContain('café customer');
+    const bad = structuredClone(raw); bad.attention.seated.counts = 'loiterer'; expect(Rulebook.safeParse(bad).success).toBe(false);
+  });
   test('the law for every order is in the rulebook', () => {
     expect(raw.cell.rule).toContain('Every order acts at once');
   });

@@ -1,4 +1,4 @@
-# Brief 110: every order acts at once (Keel, engine 0.55.0 and 0.56.0, 2026-11-12)
+# Brief 110: every order acts at once (Keel, engines 0.55.0 to 0.57.0, 2026-11-12)
 
 Sky, 2026-11-11, playing 0.2.330:
 1. "why does scout have to watch first before they can listen? Scout can always listen and watch"
@@ -222,4 +222,44 @@ How often earshot skips a table (full logs, 100 seeds each): 15 quiet-a plays, 1
   - The earshot law: the person keeps their activity within the listener's reach for the Listen; schedules win.
   - The Scout is "she".
 
-Branch: `t3/scout-listen-always-available`, on 2949c5701, not committed (crew don't commit).
+
+---
+
+# 0.57.0: a seated cell member is a café customer
+
+Sky, 2026-11-12, answering 0.56.0's open question (should a cell member seated at a café table read as a café customer?): "Yes".
+
+## For Sky (short)
+- **A cell member sitting in a public seat is a customer, not a loiterer.** While she sits, no camera, guard, robot or officer counts her as loitering, with or without a Listen, just like the café's own customers. "Public seat" means any seat the street's customers use: every café terrace seat today (24), and any seat the crowd is given later. It isn't limited to Inez's tables.
+- **Everything else still notices her as before.** A seen act is still seen (a Pay or Pressure on camera, a takedown, a drawn weapon). Security that knows her face still knows it. A watcher that was already wary stays wary. A report already made still lands.
+- **Standing up and standing still in view** starts the clock again from where it stopped. Walking into or out of the seat counts as walking.
+- **The act-now law still holds.** No order changed and none waits. Today the only way into a seat is the Listen's settle: she stays seated after the Listen lands until her next order. There is no "sit" order, and a Move onto a seat isn't walkable ground. Adding a sit order would be a design change for Sky.
+
+## Bands
+- **Nothing moves.** 0 of 1800 sweep plays change outcome, time, Trail or Alert (100 seeds × 18 plans, 0.56.0 = ac8f379b4 against 0.57.0). Every play replays identically. 0 of 42 route scripts move.
+- **Why:** the bot plans walk the Scout off the terrace once a Listen lands (quiet-a's `scout-back`), and while the Listen runs the act already holds every clock. So the law only shows when a player leaves her seated. SEAT-CUSTOMER proves it.
+
+## What changed
+- **Rulebook:**
+  - `attention.seated` (`counts: customer`, its rule, src quoting Sky).
+  - The attention rule's own text: seated in a public seat, the clock holds.
+  - Schema: `seated: ground({ counts: 'customer', rule })`, optional only for pinned runs (`rulebook.schema.ts`, in place).
+  - `rulebook110.test.ts` holds it.
+- **Engine:**
+  - `RulesGetaway.cs` reads it (`AttnSeated`).
+  - `GameAttention.cs`: in a watcher's sight, a seated operative (`SeatOf`: in a people-file seat, no walk, on the street) holds the clock, as an act does. One line.
+  - `Debrief.cs`: `suborned.sim/0.57.0`.
+  - A rulebook without `seated` plays and hashes as 0.56.0.
+- **Scenario SEAT-CUSTOMER (new):** the Scout listens to Inez from a free café chair and stays seated after it lands, with no order. For 80 s (past every Heat-0 report mark), in the square mast's sight, no loiter clock on her rises and nobody reports her. On a rulebook without `seated`, the same seat in sight runs the clock.
+
+## Evidence
+- `bun run sim:test`: **3445 passed, 0 failed** (265 s).
+- `bun test contracts/rules contracts/missions/handover`: 350 pass, 0 fail. `bun run typecheck`: clean.
+- Sweep as above, with replay.
+- **DP1** re-recorded: the same 142 orders and the same 3 checkpoint ticks, outcome none; only the pinned hashes and the engine version changed.
+
+## Open
+- **Sky (via Aster):** a "sit" order, or a Move ending on a public seat seating the agent, would let any of the cell use the law outside a Listen. A design change; not made.
+- **GDD (Aster):** §05 attention: "an operative seated in a public seat is a customer: no watcher's loiter clock runs on them; every other way of being noticed unchanged".
+
+Branch: `t3/scout-listen-always-available`, on ac8f379b4, not committed (crew don't commit).
