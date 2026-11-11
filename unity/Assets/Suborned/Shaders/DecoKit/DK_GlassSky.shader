@@ -37,6 +37,11 @@ Shader "Suborned/DecoKit/GlassSky"
             Tags { "LightMode" = "UniversalForward" }
             Blend One OneMinusSrcAlpha
             ZWrite Off
+            // brief 109 (Sky 2026-11-11, the night clip: "the windows flicker ... the window layer fighting glass"): a pane laid on a stone face (the café's
+            // stair glazing, a Records Office door: 0 mm, WindowFightProbe) tied the stone's depth and lost or won per pixel each frame, unseen by day
+            // (dark film on stone) and flickering once the night lit it. The film always wins a tie: one depth step and the slope, never more (stone 1 mm in
+            // front still hides it). The café's generator lifts its stair pane 1 cm too (cafe_upper.py STAIR_GLASS), as 097 lifted the tower slots' backing.
+            Offset -1, -1
             Cull [_Cull]
             HLSLPROGRAM
             #pragma vertex vert

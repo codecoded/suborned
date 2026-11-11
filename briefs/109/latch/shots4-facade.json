@@ -1,0 +1,8 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 round 4 (Aster: Sky on the round-3 night clip, \"I see the windows flicker and there's a clipping / occlusion on the rooftop here\"): the café's back at night, close (zoom 9, the view turned a quarter, step 1), following the Scout on the café's roof terrace as the round-3 clip followed him, so a depth fight shimmers as it did there. Before: 0.2.328 (the stair glazing's film lay on the stone's face, 0 mm); after: the build with GlassSky's depth bias (and captures keep no cut under the desk's mouse). Both -juice on, as Sky plays.",
+  "defaults": { "settle": 0.3 },
+  "shots": [
+    { "name": "juice-facade-night", "script": "route-a-board", "tick": 400, "night": true, "focus": "op/scout", "zoom": 9, "yaw": 1, "hud": false, "clip": { "seconds": 4, "fps": 30 }, "note": "the stair glazing behind the fin (WindowFightProbe: DK_GlassDark on DK_Limestone, 0 mm) and the roofs beside it" }
+  ]
+}

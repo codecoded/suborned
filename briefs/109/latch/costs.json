@@ -1,5 +1,5 @@
 {
- "note": "brief 109 (Latch). round3: moments 4-8 on the final round-3 code, the Studio (Mac Studio M5 Max), 1920x1080 windowed, route-a-board 0:40 at play zoom (perf.json; night-* the same moment at night, perf-night.json), 8 s of frame times with the clock running, three launches per variant, medians and the difference from its base (off, or night-off). -juicedemo repeats one moment without end (a turn every 0.8 s; a shot every 0.15 s, hit, miss and glass in turn), so it is the worst case. on-idle = everything that runs on its own by day (sky trails, robot faces, neon); night-on adds the searchlights. tiltshift = -juice off -tiltshift on. round1: the earlier table (moments 1-3).",
+ "note": "brief 109 (Latch). round3: moments 4-8 on the final round-3 code, the Studio (Mac Studio M5 Max), 1920x1080 windowed, route-a-board 0:40 at play zoom (perf.json; night-* the same moment at night, perf-night.json), 8 s of frame times with the clock running, three launches per variant, medians and the difference from its base (off, or night-off). -juicedemo repeats one moment without end (a turn every 0.8 s; a shot every 0.15 s, hit, miss and glass in turn), so it is the worst case. on-idle = everything that runs on its own by day (sky trails, robot faces, neon); night-on adds the searchlights. tiltshift = -juice off -tiltshift on. round1: the earlier table (moments 1-3). round4: social wins (-juicedemo win, cycling the kinds every 0.8 s), the hit flash (-juicedemo hit, every 0.25 s), shots (now with the flash), the night city and the car lights (night-on vs night-off; drive-on vs drive-off: the getaway pulling away at night, perf-drive.json, 6 s). round4 drive-*: after the fix (flare components off when dark, no occlusion on car lamps, off-screen cars skipped); the first pass, +0.67 ms, is kept as firstPass.",
  "round3": {
   "off": {
    "base": "off",
@@ -360,6 +360,280 @@
      ]
     }
    }
+  }
+ },
+ "round4": {
+  "off": {
+   "base": "off",
+   "median": {
+    "meanMs": 4.267,
+    "p99Ms": 8.462,
+    "gpuMs": 2.443
+   },
+   "delta": {
+    "meanMs": 0.0,
+    "p99Ms": 0.0,
+    "gpuMs": 0.0
+   },
+   "runs": {
+    "meanMs": [
+     4.33,
+     4.051,
+     4.267
+    ],
+    "p99Ms": [
+     8.802,
+     8.105,
+     8.462
+    ],
+    "gpuMs": [
+     1.7,
+     2.443,
+     2.595
+    ]
+   }
+  },
+  "on-idle": {
+   "base": "off",
+   "median": {
+    "meanMs": 4.312,
+    "p99Ms": 8.311,
+    "gpuMs": 1.892
+   },
+   "delta": {
+    "meanMs": 0.045,
+    "p99Ms": -0.151,
+    "gpuMs": -0.551
+   },
+   "runs": {
+    "meanMs": [
+     4.672,
+     4.133,
+     4.312
+    ],
+    "p99Ms": [
+     9.101,
+     8.096,
+     8.311
+    ],
+    "gpuMs": [
+     1.432,
+     1.892,
+     2.292
+    ]
+   }
+  },
+  "win": {
+   "base": "off",
+   "median": {
+    "meanMs": 4.229,
+    "p99Ms": 8.225,
+    "gpuMs": 1.91
+   },
+   "delta": {
+    "meanMs": -0.038,
+    "p99Ms": -0.237,
+    "gpuMs": -0.533
+   },
+   "runs": {
+    "meanMs": [
+     4.644,
+     4.099,
+     4.229
+    ],
+    "p99Ms": [
+     9.094,
+     8.2,
+     8.225
+    ],
+    "gpuMs": [
+     1.444,
+     1.91,
+     2.509
+    ]
+   }
+  },
+  "hit": {
+   "base": "off",
+   "median": {
+    "meanMs": 4.327,
+    "p99Ms": 8.419,
+    "gpuMs": 1.802
+   },
+   "delta": {
+    "meanMs": 0.06,
+    "p99Ms": -0.043,
+    "gpuMs": -0.641
+   },
+   "runs": {
+    "meanMs": [
+     4.528,
+     4.27,
+     4.327
+    ],
+    "p99Ms": [
+     8.882,
+     8.398,
+     8.419
+    ],
+    "gpuMs": [
+     1.526,
+     1.802,
+     2.768
+    ]
+   }
+  },
+  "shot": {
+   "base": "off",
+   "median": {
+    "meanMs": 4.416,
+    "p99Ms": 8.702,
+    "gpuMs": 2.326
+   },
+   "delta": {
+    "meanMs": 0.149,
+    "p99Ms": 0.24,
+    "gpuMs": -0.117
+   },
+   "runs": {
+    "meanMs": [
+     4.416,
+     4.118,
+     4.49
+    ],
+    "p99Ms": [
+     8.702,
+     8.201,
+     8.811
+    ],
+    "gpuMs": [
+     1.678,
+     2.326,
+     2.606
+    ]
+   }
+  },
+  "night-off": {
+   "base": "night-off",
+   "median": {
+    "meanMs": 6.212,
+    "p99Ms": 8.407,
+    "gpuMs": 3.519
+   },
+   "delta": {
+    "meanMs": 0.0,
+    "p99Ms": 0.0,
+    "gpuMs": 0.0
+   },
+   "runs": {
+    "meanMs": [
+     6.212,
+     6.067,
+     6.31
+    ],
+    "p99Ms": [
+     8.305,
+     8.407,
+     8.507
+    ],
+    "gpuMs": [
+     3.519,
+     3.146,
+     3.535
+    ]
+   }
+  },
+  "night-on": {
+   "base": "night-off",
+   "median": {
+    "meanMs": 6.148,
+    "p99Ms": 8.395,
+    "gpuMs": 2.779
+   },
+   "delta": {
+    "meanMs": -0.064,
+    "p99Ms": -0.012,
+    "gpuMs": -0.74
+   },
+   "runs": {
+    "meanMs": [
+     6.148,
+     6.12,
+     6.474
+    ],
+    "p99Ms": [
+     8.395,
+     8.302,
+     8.868
+    ],
+    "gpuMs": [
+     1.541,
+     2.779,
+     3.431
+    ]
+   }
+  },
+  "drive-off": {
+   "base": "drive-off",
+   "median": {
+    "meanMs": 6.53,
+    "p99Ms": 5.808,
+    "gpuMs": 1.645
+   },
+   "delta": {
+    "meanMs": 0.0,
+    "p99Ms": 0.0,
+    "gpuMs": 0.0
+   },
+   "runs": {
+    "meanMs": [
+     6.323,
+     6.53,
+     6.687
+    ],
+    "p99Ms": [
+     5.696,
+     5.808,
+     5.898
+    ],
+    "gpuMs": [
+     1.702,
+     1.347,
+     1.645
+    ]
+   }
+  },
+  "drive-on": {
+   "base": "drive-off",
+   "median": {
+    "meanMs": 6.755,
+    "p99Ms": 5.909,
+    "gpuMs": 1.692
+   },
+   "delta": {
+    "meanMs": 0.225,
+    "p99Ms": 0.101,
+    "gpuMs": 0.047
+   },
+   "runs": {
+    "meanMs": [
+     6.914,
+     6.755,
+     6.435
+    ],
+    "p99Ms": [
+     6.299,
+     5.909,
+     5.697
+    ],
+    "gpuMs": [
+     1.513,
+     1.692,
+     1.753
+    ]
+   },
+   "firstPass": "before the fix (lens flares always on, with occlusion; off-screen cars still worked): +0.67 ms mean",
+   "secondPass": "after the off-screen and dark-lamp fix but with the car lens glows missing (a comment swallowed their registration): \u0394 \u2248 0; this third pass has them"
   }
  }
 }

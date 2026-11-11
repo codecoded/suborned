@@ -49,6 +49,9 @@ namespace Suborned.Play
     public sealed class ShotRunner : MonoBehaviour
     {
         public string Path_ = "", Dir = "";
+        /// <summary>Brief 109 (Sky's round-3 night clip, "clipping / occlusion on the rooftop"): this launch is a capture. The OS cursor then
+        /// keeps no cut disc (HostTurn.FadePoints): it rests wherever the desk's mouse was left, and a capture showed a roof cut open under it.</summary>
+        public static bool Capturing { get; private set; }
         readonly List<Result> results = new();
         sealed class Result
         {
@@ -62,7 +65,7 @@ namespace Suborned.Play
             if (Application.isEditor || Application.isBatchMode) return;
             var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, "-shots");
             if (i < 0 || i + 2 >= a.Length) return;
-            var go = new GameObject("shot-runner"); DontDestroyOnLoad(go);
+            Capturing = true; var go = new GameObject("shot-runner"); DontDestroyOnLoad(go);
             var r = go.AddComponent<ShotRunner>(); r.Path_ = a[i + 1]; r.Dir = a[i + 2];
         }
 

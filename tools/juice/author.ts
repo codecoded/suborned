@@ -13,6 +13,7 @@
 //     v2 tuned       v1 with the burst count and the colour gradient changed by text
 //   Juice_TyreSmoke.vfx (the game's): Simple_Burst with eleven values set by slot name (setVfxSlot), nothing else
 //   Juice_TiltShift.shadergraph (moment 8, -tiltshift): Fullscreen Basic URP with a Custom Function (JuiceTiltShift.hlsl) and two properties
+//   Juice_Beam / Juice_Streak.shadergraph (round 4, the lights): Unlit Simple, additive, Unity's input nodes into one Custom Function (JuiceLight.hlsl)
 // The game uses v3 (Juice_Glow.shadergraph) and Juice_TyreSmoke.vfx (Editor Juice109Assets copies it into Resources/Juice109). --check: exit 1 when a written file differs from what this would write.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -197,6 +198,94 @@ export function tiltShift(template: string): string {
   return writeMulti(out);
 }
 
+/** Brief 109 round 4 (Sky on the night searchlight: "it needs to be done properly, same for car head, tail and streak lights. Not just some flat
+ * opacity"): one builder for the light shaders, a URP Unlit graph (transparent, additive, both faces, no depth write) from "Unlit Simple" whose body is
+ * one Custom Function from JuiceLight.hlsl, fed by Unity's own nodes: UV, world position, world view direction, world normal, vertex colour, time,
+ * the scene's eye depth (Scene Depth, Eye: it handles the orthographic camera) and two properties, _Tint (HDR colour) and _Params (four numbers). */
+export const LIGHT_HLSL_GUID = id('light.hlsl');
+export const LIGHT_HLSL = `// Brief 109 round 4 (tools/juice/author.ts writes this): the light shaders' bodies for Juice_Beam and Juice_Streak (Custom Function, file source).
+#ifndef JUICE_LIGHT_INCLUDED
+#define JUICE_LIGHT_INCLUDED
+float JuiceHash(float3 p) { p = frac(p * 0.3183099 + 0.1); p *= 17.0; return frac(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+float JuiceNoise(float3 x)
+{
+    float3 i = floor(x), f = frac(x); f = f * f * (3.0 - 2.0 * f);
+    return lerp(lerp(lerp(JuiceHash(i), JuiceHash(i + float3(1, 0, 0)), f.x), lerp(JuiceHash(i + float3(0, 1, 0)), JuiceHash(i + float3(1, 1, 0)), f.x), f.y),
+                lerp(lerp(JuiceHash(i + float3(0, 0, 1)), JuiceHash(i + float3(1, 0, 1)), f.x), lerp(JuiceHash(i + float3(0, 1, 1)), JuiceHash(i + 1.0), f.x), f.y), f.z);
+}
+// A volumetric-looking beam on an open cone (UV.y 0 at the lamp, 1 at the far end; normals out from the axis). Params: x the fall-off along the length
+// (power), y the soft edge (power of the view angle to the surface: a silhouette fades to nothing, the core stays), z the depth fade (m) where it meets
+// geometry, w the drifting dust's strength. The colour is HDR: the play bloom takes the hot core by the lamp.
+void JuiceBeam_float(float4 UV, float3 Pos, float3 View, float3 Normal, float4 VColor, float Time, float SceneEye, float4 Tint, float4 Params, out float3 Color, out float Alpha)
+{
+    float3 V = normalize(View), N = normalize(Normal);
+    float rim = pow(saturate(abs(dot(N, V))), Params.y);
+    float along = saturate(UV.y);
+    float fall = pow(1.0 - along, Params.x) * (1.0 + 2.5 * exp(-along * 28.0)) * smoothstep(0.0, 0.015, along); // brighter by the lamp, a soft start
+    float eyeFrag = -TransformWorldToView(Pos).z;
+    float fade = saturate((SceneEye - eyeFrag) / max(Params.z, 1e-3)) * saturate((eyeFrag - 0.5) / 2.0); // no hard line where it meets a wall or the ground; none at the lens
+    float dust = JuiceNoise(Pos * 0.11 + float3(0.0, -Time * 0.35, Time * 0.21)) * 0.6 + JuiceNoise(Pos * 0.31 + float3(Time * 0.5, 0.0, 0.0)) * 0.4;
+    float a = rim * fall * fade * lerp(1.0, dust * 1.6, saturate(Params.w)) * VColor.a;
+    Color = Tint.rgb * VColor.rgb * a; Alpha = 1.0;
+}
+// A light streak on a trail (TrailRenderer, Stretch: UV.x 0 at the head, 1 at the tail; UV.y across). Params: x the taper along (power), y the soft
+// edge across (power), z the hot core (how much brighter the centre line is), w unused. The vertex colour is the trail's gradient.
+void JuiceStreak_float(float4 UV, float3 Pos, float3 View, float3 Normal, float4 VColor, float Time, float SceneEye, float4 Tint, float4 Params, out float3 Color, out float Alpha)
+{
+    float across = 1.0 - abs(UV.y * 2.0 - 1.0);
+    float core = pow(saturate(across), Params.y), hot = 1.0 + Params.z * pow(saturate(across), 10.0);
+    float len = pow(1.0 - saturate(UV.x), Params.x) * smoothstep(0.0, 0.03, UV.x + 0.001);
+    float a = core * len * VColor.a;
+    Color = Tint.rgb * VColor.rgb * a * hot; Alpha = 1.0;
+}
+#endif
+`;
+export const LIGHT_HLSL_META = `fileFormatVersion: 2\nguid: ${LIGHT_HLSL_GUID}\nShaderIncludeImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n`;
+
+export function lightGraph(template: string, key: string, fnName: string, tint: [number, number, number], params: [number, number, number, number]): string {
+  let objs = parseMulti(template);
+  const hd = new Set(objs.filter(o => o.m_Type.includes('.HighDefinition.')).map(o => o.m_ObjectId)); objs = objs.filter(o => !hd.has(o.m_ObjectId));
+  const graph = objs[0]!; graph.m_ActiveTargets = graph.m_ActiveTargets.filter((r: any) => !hd.has(r.m_Id)); graph.m_Path = 'Suborned/Juice';
+  Object.assign(find(objs, ofType('UniversalTarget'), 'URP target'), { m_SurfaceType: 1, m_AlphaMode: 2, m_ZWriteControl: 2, m_CastShadows: false, m_ReceiveShadows: false, m_RenderFace: 0 });
+  const base = find(objs, block('SurfaceDescription.BaseColor'), 'Base Color'), alpha = find(objs, block('SurfaceDescription.Alpha'), 'Alpha');
+  const blocks = new Set(objs.filter(o => o.m_Type.endsWith('.BlockNode')).map(o => o.m_ObjectId));
+  const drop = new Set(objs.filter(o => /Node$|ShaderProperty$|CategoryData$/.test(o.m_Type) && !blocks.has(o.m_ObjectId)).flatMap(o => [o.m_ObjectId, ...(o.m_Slots ?? []).map((r: any) => r.m_Id)]));
+  objs = objs.filter(o => !drop.has(o.m_ObjectId)); graph.m_Nodes = graph.m_Nodes.filter((r: any) => !drop.has(r.m_Id)); graph.m_Edges = [];
+  const K = (s: string) => id(`${key}.${s}`), vec = (n: number) => n === 1 ? 0 : n === 2 ? { x: 0, y: 0 } : n === 3 ? { x: 0, y: 0, z: 0 } : { x: 0, y: 0, z: 0, w: 0 };
+  const T = (n: number) => n === 1 ? 'Vector1MaterialSlot' : n === 3 ? 'Vector3MaterialSlot' : 'Vector4MaterialSlot';
+  const slot = (k: string, n: number, sid: number, name: string, dir: 0 | 1, type = T(n), extra: Record<string, any> = {}) => ({ m_SGVersion: 0, m_Type: `UnityEditor.ShaderGraph.${type}`, m_ObjectId: K(k), m_Id: sid, m_DisplayName: name, m_SlotType: dir, m_Hidden: false, m_ShaderOutputName: name, m_StageCapability: 3, m_Value: vec(n), m_DefaultValue: vec(n), m_Labels: [], ...extra } as Obj);
+  const node = (k: string, type: string, name: string, x: number, y: number, slots: Obj[], extra: Record<string, any> = {}, sg = 0) => ({ m_SGVersion: sg, m_Type: `UnityEditor.ShaderGraph.${type}`, m_ObjectId: K(k), m_Group: ref(''), m_Name: name,
+    m_DrawState: { m_Expanded: true, m_Position: { serializedVersion: '2', x, y, width: 160, height: 100 } }, m_Slots: slots.map(q => ref(q.m_ObjectId)), synonyms: [], m_Precision: 0, m_PreviewExpanded: false, m_DismissedVersion: 0, m_PreviewMode: 0, m_CustomColors: { m_SerializableColors: [] }, ...extra } as Obj);
+  const guid = (k: string) => { const h = K(k + '.guid'); return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`; };
+  const propBase = (k: string, name: string, ref_: string) => ({ m_ObjectId: K(k), m_Guid: { m_GuidSerialized: guid(k) }, m_Name: name, m_DefaultRefNameVersion: 1, m_RefNameGeneratedByDisplayName: name, m_DefaultReferenceName: ref_, m_OverrideReferenceName: ref_, m_GeneratePropertyBlock: true, m_UseCustomSlotLabel: false, m_CustomSlotLabel: '', m_DismissedVersion: 0, m_Precision: 0, overrideHLSLDeclaration: false, hlslDeclarationOverride: 0, m_Hidden: false, m_PerRendererData: false, m_customAttributes: [] });
+  const pTint = { m_SGVersion: 3, m_Type: 'UnityEditor.ShaderGraph.Internal.ColorShaderProperty', ...propBase('tint', 'Tint', '_Tint'), m_Value: { r: tint[0], g: tint[1], b: tint[2], a: 1 }, isMainColor: false, m_ColorMode: 1 } as Obj;
+  const pPar = { m_SGVersion: 1, m_Type: 'UnityEditor.ShaderGraph.Internal.Vector4ShaderProperty', ...propBase('params', 'Params', '_Params'), m_Value: { x: params[0], y: params[1], z: params[2], w: params[3] } } as Obj;
+  const out: Obj[] = [];
+  const add = (n: Obj, slots: Obj[]) => { out.push(n, ...slots); graph.m_Nodes.push(ref(n.m_ObjectId)); return n; };
+  const sUV = slot('uv.out', 4, 0, 'Out', 1), nUV = add(node('uv', 'UVNode', 'UV', -900, -200, [sUV], { m_OutputChannel: 0 }), [sUV]);
+  const sPos = slot('pos.out', 3, 0, 'Out', 1), nPos = add(node('pos', 'PositionNode', 'Position', -900, -100, [sPos], { m_Space: 2, m_PositionSource: 0 }, 1), [sPos]);
+  const sView = slot('view.out', 3, 0, 'Out', 1), nView = add(node('view', 'ViewDirectionNode', 'View Direction', -900, 0, [sView], { m_Space: 2 }, 1), [sView]);
+  const sNorm = slot('norm.out', 3, 0, 'Out', 1), nNorm = add(node('norm', 'NormalVectorNode', 'Normal Vector', -900, 100, [sNorm], { m_Space: 2 }), [sNorm]);
+  const sVC = slot('vc.out', 4, 0, 'Out', 1), nVC = add(node('vc', 'VertexColorNode', 'Vertex Color', -900, 200, [sVC]), [sVC]);
+  const tSlots = ['Time', 'Sine Time', 'Cosine Time', 'Delta Time', 'Smooth Delta'].map((nm, i) => slot('time.' + i, 1, i, nm, 1));
+  const nTime = add(node('time', 'TimeNode', 'Time', -900, 300, tSlots), tSlots);
+  const sSP = slot('sp.out', 4, 0, 'Out', 1), nSP = add(node('sp', 'ScreenPositionNode', 'Screen Position', -1100, 400, [sSP], { m_ScreenSpaceType: 0 }), [sSP]);
+  const sDin = slot('depth.uv', 4, 0, 'UV', 0, 'ScreenPositionMaterialSlot', { m_ScreenSpaceType: 0 }), sDout = { ...slot('depth.out', 1, 1, 'Out', 1), m_StageCapability: 2 } as Obj;
+  const nDepth = add(node('depth', 'SceneDepthNode', 'Scene Depth', -900, 400, [sDin, sDout], { m_DepthSamplingMode: 2 }), [sDin, sDout]);
+  const sTint = slot('tint.out', 4, 0, 'Tint', 1), nTint = add(node('tint.node', 'PropertyNode', 'Property', -900, 500, [sTint], { m_Property: ref(pTint.m_ObjectId) }), [sTint]);
+  const sPar = slot('params.out', 4, 0, 'Params', 1), nPar = add(node('params.node', 'PropertyNode', 'Property', -900, 560, [sPar], { m_Property: ref(pPar.m_ObjectId) }), [sPar]);
+  const ins: [string, number][] = [['UV', 4], ['Pos', 3], ['View', 3], ['Normal', 3], ['VColor', 4], ['Time', 1], ['SceneEye', 1], ['Tint', 4], ['Params', 4]];
+  const fSlots = [...ins.map(([nm, n], i) => slot('fn.' + nm, n, i, nm, 0)), slot('fn.Color', 3, 9, 'Color', 1), slot('fn.Alpha', 1, 10, 'Alpha', 1)];
+  const fn = add(node('fn', 'CustomFunctionNode', `${fnName} (Custom Function)`, -500, 0, fSlots, { m_SourceType: 0, m_FunctionName: fnName, m_FunctionSource: LIGHT_HLSL_GUID, m_FunctionSourceUsePragmas: true, m_FunctionBody: '' }, 1), fSlots);
+  graph.m_Edges.push(edge(nUV.m_ObjectId, 0, fn.m_ObjectId, 0), edge(nPos.m_ObjectId, 0, fn.m_ObjectId, 1), edge(nView.m_ObjectId, 0, fn.m_ObjectId, 2), edge(nNorm.m_ObjectId, 0, fn.m_ObjectId, 3),
+    edge(nVC.m_ObjectId, 0, fn.m_ObjectId, 4), edge(nTime.m_ObjectId, 0, fn.m_ObjectId, 5), edge(nSP.m_ObjectId, 0, nDepth.m_ObjectId, 0), edge(nDepth.m_ObjectId, 1, fn.m_ObjectId, 6),
+    edge(nTint.m_ObjectId, 0, fn.m_ObjectId, 7), edge(nPar.m_ObjectId, 0, fn.m_ObjectId, 8), edge(fn.m_ObjectId, 9, base.m_ObjectId, 0), edge(fn.m_ObjectId, 10, alpha.m_ObjectId, 0));
+  graph.m_Properties = [ref(pTint.m_ObjectId), ref(pPar.m_ObjectId)];
+  const cat = { m_SGVersion: 0, m_Type: 'UnityEditor.ShaderGraph.CategoryData', m_ObjectId: K('cat'), m_Name: '', m_ChildObjectList: [ref(pTint.m_ObjectId), ref(pPar.m_ObjectId)] } as Obj;
+  graph.m_CategoryData = [ref(cat.m_ObjectId)];
+  return writeMulti([...objs, pTint, pPar, cat, ...out]);
+}
+
 if (import.meta.main) {
   const check = process.argv.includes('--check');
   const sg = shaderGraphs(readFileSync(join(BUILTIN, 'com.unity.shadergraph/GraphTemplates/Cross Pipeline/Unlit Simple.shadergraph'), 'utf8'));
@@ -207,6 +296,10 @@ if (import.meta.main) {
     'Juice_TyreSmoke.vfx': tyreSmoke(vfx.v1),
     'Juice_TiltShift.shadergraph': tiltShift(readFileSync(join(BUILTIN, 'com.unity.render-pipelines.universal/Editor/ShaderGraph/GraphTemplates/Fullscreen Basic URP.shadergraph'), 'utf8')),
     'JuiceTiltShift.hlsl': TILT_HLSL, 'JuiceTiltShift.hlsl.meta': TILT_HLSL_META,
+    // round 4: the light shaders (beams: searchlights, headlight beams; streaks: sky lanes, tail-light trails)
+    'Juice_Beam.shadergraph': lightGraph(readFileSync(join(BUILTIN, 'com.unity.shadergraph/GraphTemplates/Cross Pipeline/Unlit Simple.shadergraph'), 'utf8'), 'beam', 'JuiceBeam', [3, 2.85, 2.55], [1.6, 1.4, 1.5, 0.55]),
+    'Juice_Streak.shadergraph': lightGraph(readFileSync(join(BUILTIN, 'com.unity.shadergraph/GraphTemplates/Cross Pipeline/Unlit Simple.shadergraph'), 'utf8'), 'streak', 'JuiceStreak', [2.2, 2.3, 2.6], [1.3, 2.2, 2.5, 0]),
+    'JuiceLight.hlsl': LIGHT_HLSL, 'JuiceLight.hlsl.meta': LIGHT_HLSL_META,
   };
   let bad = 0;
   for (const [rel, text] of Object.entries(files)) {

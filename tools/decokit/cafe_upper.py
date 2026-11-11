@@ -50,6 +50,8 @@ def floors(n):
 
 RB = 2.0                         # the back corners of the upper body, rounded inside the shell's square ones (curvy, never a mitre)
 STAIR = 2.0                      # half width of the stair bay at the back centre
+STAIR_GLASS = 0.01               # brief 109: the stair glazing stands 1 cm proud of the stone line (its face lay on the spandrels' and the stair stone's, 0 mm:
+                                 # the film, transparent and depth-tested, z-fought the stone and flickered once the night lit it); inside the chrome bars (0.05)
 
 
 def _back_arc(sx):
@@ -159,7 +161,7 @@ def crown(s, eaves, top):
     tube(s, lift(S), sec(0.0, 0.3, g1, zs1 - 0.25), pal.Limestone, closed=True)
     band(s, S, -0.04, 0.0, g1 + 0.08, g1 + 0.3, pal.Enamel_Seafoam, closed=True)
     s.extrude(ccw(offset(S, -0.25, closed=True)), zs1 - 0.25, zs1, pal.Enamel_Ivory)
-    tube(s, lift(offset(S, -0.25, closed=True)), sec(-0.03, 0.03, zs1 - 0.03, zs1), pal.Chrome, closed=True)
+    tube(s, lift(offset(S, -0.25, closed=True)), sec(-0.03, 0.03, zs1 - 0.03, zs1 + 0.01), pal.Chrome, closed=True)  # brief 109: 1 cm over the slab (its top lay on the slab's: a flickering line along the roof)
     s.extrude(ccw(offset(S, 0.3, closed=True)), g0 - 0.02, g0, pal.Enamel_Charcoal, bottom=False)   # the dark room behind the film
 
 
@@ -194,7 +196,7 @@ def stair(s, eaves):
     yb = Y_BACK
     for x0, x1 in ((-STAIR, -1.25), (1.25, STAIR)):
         s.rbox((x0, yb - 0.1, Z0), (x1, yb + 0.22, eaves + 1.1), 0.06, pal.Limestone)
-    s.box((-1.25, yb - 0.02, Z0 + 0.6), (1.25, yb, eaves - 0.4), pal.GlassDark)
+    s.box((-1.25, yb + STAIR_GLASS, Z0 + 0.6), (1.25, yb + STAIR_GLASS + 0.01, eaves - 0.4), pal.GlassDark)
     z = Z0 + 0.6
     while z < eaves - 0.4:
         s.box((-1.25, yb, z), (1.25, yb + 0.05, z + 0.04), pal.Chrome)

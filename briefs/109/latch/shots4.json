@@ -1,0 +1,160 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 round 4 (Latch): the lights done properly (searchlight, car head and tail lights at night and in rain, streaks), the social wins, the hit flash. Before -juice off, after -juice on, 30 fps. Night is the shot's own night look; rain is route-a-board with the briefing's weather order at tick 0 (briefs/109/latch/route-a-board.rain.json). The Office front is played at yaw 210 (step 2).",
+  "defaults": {
+    "yaw": 2,
+    "settle": 0.2
+  },
+  "shots": [
+    {
+      "name": "juice-searchlight",
+      "script": "route-a-board",
+      "tick": 400,
+      "zoom": 12,
+      "hud": false,
+      "clip": {
+        "seconds": 4,
+        "fps": 30
+      },
+      "note": "night: the searchlight over the Office, its lamp's glow",
+      "night": true,
+      "focus": "op/scout"
+    },
+    {
+      "name": "juice-carlights-night",
+      "script": "route-a-board",
+      "tick": 2526,
+      "focus": "car/getaway",
+      "hud": false,
+      "clip": {
+        "seconds": 10,
+        "fps": 30
+      },
+      "note": "night: the getaway pulls out and drives off: lens glows, beams, the pool on the street, tail lamps and their streaks, brake lights as it slows behind the rival car",
+      "night": true
+    },
+    {
+      "name": "juice-carlights-rain",
+      "script": "briefs/109/latch/route-a-board.rain.json",
+      "tick": 2526,
+      "focus": "car/getaway",
+      "hud": false,
+      "clip": {
+        "seconds": 10,
+        "fps": 30
+      },
+      "note": "rain by day: the beams and the pool come on in the rain"
+    },
+    {
+      "name": "juice-streaks",
+      "script": "route-a-board",
+      "tick": 400,
+      "focus": "op/scout",
+      "zoom": 16,
+      "hud": false,
+      "clip": {
+        "seconds": 4,
+        "fps": 30
+      },
+      "note": "night: the sky lanes' light streaks",
+      "night": true
+    },
+    {
+      "name": "juice-win-watched",
+      "script": "route-a-board",
+      "tick": 200,
+      "focus": "op/scout",
+      "hud": true,
+      "clip": {
+        "seconds": 4,
+        "fps": 30
+      },
+      "note": "206: the Scout's Watch learns the waitress's routine (scout.watch.watched)"
+    },
+    {
+      "name": "juice-win-heard",
+      "script": "route-a-board",
+      "tick": 677,
+      "focus": "waitress",
+      "hud": true,
+      "clip": {
+        "seconds": 4,
+        "fps": 30
+      },
+      "note": "683: the Scout's Listen hears Inez (scout.listen.heard)"
+    },
+    {
+      "name": "juice-win-turn",
+      "script": "route-a-board",
+      "tick": 1199,
+      "focus": "waitress",
+      "hud": true,
+      "clip": {
+        "seconds": 4,
+        "fps": 30
+      },
+      "note": "1205: the Fixer turns Inez (turn.help.turned): the full signature"
+    },
+    {
+      "name": "juice-win-call",
+      "script": "route-a-board",
+      "tick": 1550,
+      "focus": "waitress",
+      "hud": true,
+      "clip": {
+        "seconds": 4,
+        "fps": 30
+      },
+      "note": "1556: Inez takes the Fixer's call (call.waitress)"
+    },
+    {
+      "name": "juice-win-misled",
+      "script": "route-b",
+      "tick": 2994,
+      "focus": "op/fixer",
+      "zoom": 14,
+      "hud": true,
+      "clip": {
+        "seconds": 4,
+        "fps": 30
+      },
+      "note": "3000: a rival takes the false word (rivals.misled)"
+    },
+    {
+      "name": "juice-win-lent",
+      "script": "route-b",
+      "tick": 4224,
+      "focus": "car/official",
+      "hud": true,
+      "clip": {
+        "seconds": 4,
+        "fps": 30
+      },
+      "note": "4230: the councillor's car is lent to us (lend.lent)"
+    },
+    {
+      "name": "juice-hit-rival",
+      "script": "route-a-board",
+      "tick": 2262,
+      "focus": "rival-1",
+      "hud": true,
+      "clip": {
+        "seconds": 4,
+        "fps": 30
+      },
+      "note": "2267-2297: the Scout hits rival-1 three times: his body flashes"
+    },
+    {
+      "name": "juice-hit-ours",
+      "script": "route-a-board",
+      "tick": 2462,
+      "focus": "op/tech",
+      "hud": true,
+      "clip": {
+        "seconds": 4,
+        "fps": 30
+      },
+      "note": "2468-2498: rival-3 hits our Tech: her body flashes"
+    }
+  ]
+}

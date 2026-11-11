@@ -1,4 +1,4 @@
-// usage: bun briefs/109/latch/clips.ts <app> [--shots <file>] [--before "<args>"] [--after "<args>"] [--perf [--round 1]] [--only off,on,...]
+// usage: bun briefs/109/latch/clips.ts <app> [--shots <file>] [--before "<args>"] [--after "<args>"] [--perf [--round 1|4]] [--only off,on,...]
 // Brief 109 round 1 (Latch): the before/after clips and the Studio cost table, from one built player.
 //   clips (default): briefs/109/latch/shots.json, played twice: -juice off (before) and -juice on (after), the batch's own clip capture (ShotRunner),
 //     then each clip's frames to an mp4 (ffmpeg, h264, at the shot's own clip fps with constant timestamps) and a side-by-side, before left | after right. Out: out/scratch/latch/109/clips/{off,on}/ (frames),
@@ -54,6 +54,7 @@ if (!perf) {
   const variants: [string, string, string[]][] = argOf('--round') === '1' ? [['off', day, ['-juice', 'off']], ['on-idle', day, ['-juice', 'on']], ['order', day, ['-juice', 'on', '-juicedemo', 'order']], ['getaway', day, ['-juice', 'on', '-juicedemo', 'getaway']]]
     : [['off', day, ['-juice', 'off']], ['on-idle', day, ['-juice', 'on']], ['turn', day, ['-juice', 'on', '-juicedemo', 'turn']], ['shot', day, ['-juice', 'on', '-juicedemo', 'shot']], ['tiltshift', day, ['-juice', 'off', '-tiltshift', 'on']],
        ['night-off', night, ['-juice', 'off']], ['night-on', night, ['-juice', 'on']]];
+  if (argOf('--round') === '4') { const drive = join(HERE, 'perf-drive.json'); variants.splice(0, variants.length, ['off', day, ['-juice', 'off']], ['on-idle', day, ['-juice', 'on']], ['win', day, ['-juice', 'on', '-juicedemo', 'win']], ['hit', day, ['-juice', 'on', '-juicedemo', 'hit']], ['shot', day, ['-juice', 'on', '-juicedemo', 'shot']], ['night-off', night, ['-juice', 'off']], ['night-on', night, ['-juice', 'on']], ['drive-off', drive, ['-juice', 'off']], ['drive-on', drive, ['-juice', 'on']]); } // round 4: social wins, hit flash, the lights
   const rows: Record<string, unknown> = {};
   for (const [id, file, extra] of variants) {
     if (only && !only.includes(id)) continue;

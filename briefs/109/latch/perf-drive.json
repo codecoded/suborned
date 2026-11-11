@@ -1,0 +1,16 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 round 4 (Latch): the cost of the car lights at night: route-a-board at the Go, night, the getaway pulling away with the rival car ahead (lens glows, beams, pools, tails, streaks), 6 s of frame times.",
+  "shots": [
+    {
+      "name": "juice-perf-drive",
+      "script": "route-a-board",
+      "tick": 2530,
+      "night": true,
+      "focus": "car/getaway",
+      "yaw": 2,
+      "hud": true,
+      "perf": 6
+    }
+  ]
+}

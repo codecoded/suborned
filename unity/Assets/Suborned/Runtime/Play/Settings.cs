@@ -20,7 +20,7 @@ namespace Suborned.Play
         public GameplayS gameplay = new();
         public List<BindingS> bindings = new();
 
-        [Serializable] public sealed class DisplayS { public string windowMode = "borderless"; public int width, height; public int renderScale = 100; public string quality = "balanced"; public bool vsync = true; public int frameCap = 60; public int hudScale = 100; }
+        [Serializable] public sealed class DisplayS { public string windowMode = "borderless"; public int width, height; public int renderScale = 100; public string quality = "balanced"; public bool vsync = true; public int frameCap = 60; public int hudScale = 100; public bool miniature; public int miniatureStrength = 50; } // brief 109 round 4: the tilt-shift trial (Juice109Tilt), off by default
         [Serializable] public sealed class AudioS { public int master = 80, music = 60, effects = 80, voices = 90, ambience = 60; }
         [Serializable] public sealed class CameraS { public float panSpeed = 18f; public bool edgePan; public float orbitSensitivity = 1f; public bool invertOrbit, trackpadOrbit; public string thirdPersonDistance = "default"; public bool settle = true; public bool freeZoom; /* brief 096 (Sky): Options, Camera, Debug, Free zoom: the map wheel 3 to 60 */ }
         [Serializable]

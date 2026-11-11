@@ -287,7 +287,7 @@ namespace Suborned.Play
                     Switch("V-sync", () => d.vsync, v => { d.vsync = v; Save(); });
                     var caps = new[] { 30, 60, 120, 0 };
                     Choice("Frame cap", new[] { "30", "60", "120", "Off" }, () => Math.Max(0, Array.IndexOf(caps, d.frameCap)), i => { d.frameCap = caps[i]; Save(); }, dim: () => d.vsync);
-                    Slider("HUD scale", 80, 150, 5, () => d.hudScale, v => { d.hudScale = Mathf.RoundToInt(v); Save(); }, Pct);
+                    Slider("HUD scale", 80, 150, 5, () => d.hudScale, v => { d.hudScale = Mathf.RoundToInt(v); Save(); }, Pct); MiniatureRows(d); // brief 109 round 4 (FrontEnd.Juice109)
                     break;
                 }
                 case "audio":

@@ -67,11 +67,12 @@ namespace Suborned.Play
             if (!Juice109.Live) return;
             JuiceEase(c.Face, 0f, EasingMode.Linear); JuiceSet(c.Face, 1f, 0f, 1f, 0f);
             foreach (var r in c.Rows) { JuiceEase(r.row, 0f, EasingMode.Linear); JuiceSet(r.row, 1f, 0f, 1f, 0f); }
-            if (ch.Do is not ("takedown" or "turn")) return; // round 3: a turn landing's chip ("Inez turned") pops as a takedown's does
-            juiceChips.Add(ch.Id); var face = c.Face;
-            JuiceSet(face, 0.35f, -14f, 1f, 0f);
+            bool big = ch.Do is "takedown" or "turn", social = ch.Do is "listen" or "watch" or "call" or "mislead" or "lend"; // round 4: every social win's chip pops, the smaller ones less
+            if (!big && !social) return;
+            juiceChips.Add(ch.Id); var face = c.Face; float peak = big ? 1.28f : 1.16f;
+            JuiceSet(face, big ? 0.35f : 0.6f, big ? -14f : -8f, 1f, 0f);
             foreach (var r in c.Rows) JuiceSet(r.row, 1f, 0f, 0f, 8f);
-            face.schedule.Execute(() => { JuiceEase(face, 0.13f, EasingMode.EaseOut); JuiceSet(face, 1.28f, 8f, 1f, 0f); }).StartingIn(16);
+            face.schedule.Execute(() => { JuiceEase(face, 0.13f, EasingMode.EaseOut); JuiceSet(face, peak, big ? 8f : 5f, 1f, 0f); }).StartingIn(16);
             face.schedule.Execute(() => { JuiceEase(face, 0.26f, EasingMode.EaseOutBack); JuiceSet(face, 1f, 0f, 1f, 0f); }).StartingIn(150);
             for (int i = 0; i < c.Rows.Count; i++) { var row = c.Rows[i].row; row.schedule.Execute(() => { JuiceEase(row, 0.2f, EasingMode.EaseOut); JuiceSet(row, 1f, 0f, 1f, 0f); }).StartingIn(170 + 70 * i); }
         }
@@ -83,7 +84,7 @@ namespace Suborned.Play
             var g = host.Game; if (!Juice109.Live || g == null) return; float now = Time.unscaledTime;
             foreach (var ch in host.DoneChips)
             {
-                if (ch.Do is not ("takedown" or "turn") || juiceChips.Contains(ch.Id) || now - ch.Born < 0.05f) continue;
+                if (ch.Do is not ("takedown" or "turn" or "listen" or "watch" or "call" or "mislead" or "lend") || juiceChips.Contains(ch.Id) || now - ch.Born < 0.05f) continue;
                 juiceChips.Add(ch.Id);
                 if (ch.Agent < 0 || ch.Agent >= colWins.Length || colWins[ch.Agent]?.Clip is not VisualElement f) continue;
                 JuiceEase(f, 0.12f, EasingMode.EaseOut); JuiceSet(f, 1.24f, -7f, 1f, 0f);

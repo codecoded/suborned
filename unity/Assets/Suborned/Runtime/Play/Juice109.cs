@@ -51,7 +51,7 @@ namespace Suborned.Play
         static void Install()
         {
             var go = new GameObject("Juice109 (brief 109: view-only juice)"); UnityEngine.Object.DontDestroyOnLoad(go);
-            Fx = go.AddComponent<Juice109Fx>(); go.AddComponent<Juice109City>(); // brief 109 moment 7
+            Fx = go.AddComponent<Juice109Fx>(); go.AddComponent<Juice109City>(); go.AddComponent<Juice109Lights>(); // brief 109 moment 7; round 4: every car's head and tail lights
         }
 
         // ---------------------------------------------------------------- what the host tells it (each a no-op unless installed)
@@ -63,6 +63,14 @@ namespace Suborned.Play
         /// <summary>Moment 6: an engine shot, from the gun to where it went; `glassy` when it hit a car or a camera.</summary>
         public static void Shot(Vector3 src, Vector3 dst, bool hit, bool covered, bool glassy) { if (Live) ShotImpl(src, dst, hit, covered, glassy); }
         [MethodImpl(MethodImplOptions.NoInlining)] static void ShotImpl(Vector3 src, Vector3 dst, bool hit, bool covered, bool glassy) => ((Juice109Fx)Fx).Shot(src, dst, hit, covered, glassy);
+
+        /// <summary>Round 4: a shot hit the body drawn at `who`: its quick white-hot flash.</summary>
+        public static void HitFlash(Transform who) { if (Live) HitFlashImpl(who); }
+        [MethodImpl(MethodImplOptions.NoInlining)] static void HitFlashImpl(Transform who) => ((Juice109Fx)Fx).HitFlash(who);
+
+        /// <summary>Round 4: a social win of `kind` (turn, paid, misled, call, heard, watched, lent) landed on `who`.</summary>
+        public static void SocialWin(Transform who, string kind) { if (Live) SocialWinImpl(who, kind); }
+        [MethodImpl(MethodImplOptions.NoInlining)] static void SocialWinImpl(Transform who, string kind) => ((Juice109Fx)Fx).SocialWin(who, kind);
 
         /// <summary>Moment 4: a turn landed on the person drawn at `who`.</summary>
         public static void Turned(Transform who) { if (Live) TurnedImpl(who); }

@@ -42,6 +42,12 @@ namespace Suborned.World.Play
             if (File.Exists(vfxFrom) && (!File.Exists(Path.Combine(root, vfxTo)) || File.ReadAllText(vfxFrom) != File.ReadAllText(Path.Combine(root, vfxTo))))
             { File.Copy(vfxFrom, Path.Combine(root, vfxTo), true); AssetDatabase.ImportAsset(vfxTo, ImportAssetOptions.ForceUpdate); n++; }
             n += Lamps(root);
+            // round 4: the light shaders' materials (Shader Graph Juice_Beam, Juice_Streak; the beams' and streaks' meshes carry their own UVs)
+            foreach (var (g, m) in new[] { ("Juice_Beam", "Juice-Beam"), ("Juice_Streak", "Juice-Streak") })
+            {
+                var sh = AssetDatabase.LoadAssetAtPath<Shader>($"Assets/Suborned/Generated/Juice109/{g}.shadergraph"); if (!sh) { Debug.LogWarning($"Juice109Assets: no {g}.shadergraph"); continue; }
+                var mp = $"{Dir}/{m}.mat"; var mm = AssetDatabase.LoadAssetAtPath<Material>(mp); if (!mm) { AssetDatabase.CreateAsset(new Material(sh) { name = m, enableInstancing = true }, mp); n++; } else if (mm.shader != sh) { mm.shader = sh; EditorUtility.SetDirty(mm); n++; }
+            }
             // moment 8's tilt-shift (Juice109Tilt, -tiltshift): its Fullscreen Shader Graph's material
             var tilt = AssetDatabase.LoadAssetAtPath<Shader>("Assets/Suborned/Generated/Juice109/Juice_TiltShift.shadergraph");
             if (tilt) { var tp = $"{Dir}/Juice-TiltShift.mat"; var tm = AssetDatabase.LoadAssetAtPath<Material>(tp); if (!tm) { AssetDatabase.CreateAsset(new Material(tilt) { name = "Juice-TiltShift" }, tp); n++; } else if (tm.shader != tilt) { tm.shader = tilt; EditorUtility.SetDirty(tm); n++; } }
@@ -49,37 +55,47 @@ namespace Suborned.World.Play
             return n;
         }
 
-        /// <summary>The getaway sedan's two headlamps, from its own model (round 2, Sky: "the cars headlights don't align properly when it drives off"):
-        /// the DK_Lamp sub-mesh's vertices in the model's frame (its front is +Z), the front half, split left and right, and on each side the upper
-        /// cluster (the headlamp; the parking lamp sits below it); its centre in x and y, its frontmost z. Written as "x,y,z;x,y,z" (model metres) to
-        /// Resources/Juice109/lamps-<model>.txt for Juice109Fx, which parents the flares to the drawn model at those points.</summary>
+        /// <summary>Every vehicle's lamps, from its own model (round 2 for the getaway's headlights; round 4 for every car's head and tail lights): in the
+        /// model's frame (front +Z), the front half of its DK_Lamp sub-mesh split left and right, the upper cluster on each side (the headlamp; a parking
+        /// lamp sits below); the rear half of its DK_Beacon_Rose sub-mesh (else DK_Lamp) split the same way (the tail lamps). Written as two lines, "F x,y,z;x,y,z"
+        /// and "R x,y,z;x,y,z" (model metres; a side with none is left out), to Resources/Juice109/lamps-<model>.txt.</summary>
         static int Lamps(string root)
         {
-            const string model = "Assets/Suborned/Kit/Models/Vehicles/DK_Sedan_Getaway.fbx";
-            var go = AssetDatabase.LoadAssetAtPath<GameObject>(model); if (!go) { Debug.LogWarning($"Juice109Assets: no {model}"); return 0; }
-            var side = new[] { new System.Collections.Generic.List<Vector3>(), new System.Collections.Generic.List<Vector3>() };
-            foreach (var mf in go.GetComponentsInChildren<MeshFilter>())
+            int n = 0;
+            foreach (var guid in AssetDatabase.FindAssets("t:Model", new[] { "Assets/Suborned/Kit/Models/Vehicles" }))
             {
-                var mr = mf.GetComponent<MeshRenderer>(); var mesh = mf.sharedMesh; if (!mr || !mesh) continue;
-                var mats = mr.sharedMaterials; var verts = mesh.vertices; var toRoot = go.transform.worldToLocalMatrix * mf.transform.localToWorldMatrix;
-                for (int sub = 0; sub < mesh.subMeshCount && sub < mats.Length; sub++)
+                var model = AssetDatabase.GUIDToAssetPath(guid); var name = Path.GetFileNameWithoutExtension(model);
+                if (name.EndsWith("_L1") || name.EndsWith("_L2") || name.Contains("Robot") || name.Contains("Tram")) continue;
+                var go = AssetDatabase.LoadAssetAtPath<GameObject>(model); if (!go) continue;
+                var front = new[] { new System.Collections.Generic.List<Vector3>(), new System.Collections.Generic.List<Vector3>() };
+                var rose = new[] { new System.Collections.Generic.List<Vector3>(), new System.Collections.Generic.List<Vector3>() };
+                var rearLamp = new[] { new System.Collections.Generic.List<Vector3>(), new System.Collections.Generic.List<Vector3>() };
+                foreach (var mf in go.GetComponentsInChildren<MeshFilter>())
                 {
-                    if (!mats[sub] || !mats[sub].name.StartsWith("DK_Lamp")) continue;
-                    foreach (int vi in mesh.GetTriangles(sub)) { var p = toRoot.MultiplyPoint3x4(verts[vi]); if (p.z > 0f) side[p.x < 0f ? 0 : 1].Add(p); }
+                    var mr = mf.GetComponent<MeshRenderer>(); var mesh = mf.sharedMesh; if (!mr || !mesh) continue;
+                    var mats = mr.sharedMaterials; var verts = mesh.vertices; var toRoot = go.transform.worldToLocalMatrix * mf.transform.localToWorldMatrix;
+                    for (int sub = 0; sub < mesh.subMeshCount && sub < mats.Length; sub++)
+                    {
+                        if (!mats[sub]) continue; bool lamp = mats[sub].name.StartsWith("DK_Lamp"), tail = mats[sub].name.StartsWith("DK_Beacon_Rose"); if (!lamp && !tail) continue;
+                        foreach (int vi in mesh.GetTriangles(sub)) { var p = toRoot.MultiplyPoint3x4(verts[vi]); int s = p.x < 0f ? 0 : 1; if (lamp && p.z > 0f) front[s].Add(p); else if (lamp) rearLamp[s].Add(p); else if (p.z < 0f) rose[s].Add(p); }
+                    }
                 }
+                string Side(System.Collections.Generic.List<Vector3> pts, bool upper, bool rear)
+                {
+                    if (pts.Count == 0) return null; float top = float.MinValue; foreach (var p in pts) top = Mathf.Max(top, p.y);
+                    Vector3 lo = Vector3.one * float.MaxValue, hi = Vector3.one * float.MinValue;
+                    foreach (var p in pts) if (!upper || p.y > top - 0.2f) { lo = Vector3.Min(lo, p); hi = Vector3.Max(hi, p); }
+                    return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F3},{1:F3},{2:F3}", (lo.x + hi.x) / 2f, (lo.y + hi.y) / 2f, rear ? lo.z : hi.z);
+                }
+                var f = new System.Collections.Generic.List<string>(); foreach (var side in front) { var q = Side(side, true, false); if (q != null) f.Add(q); }
+                var tails = rose[0].Count + rose[1].Count > 0 ? rose : rearLamp;
+                var r = new System.Collections.Generic.List<string>(); foreach (var side in tails) { var q = Side(side, false, true); if (q != null) r.Add(q); }
+                if (f.Count == 0 && r.Count == 0) continue;
+                var text = $"F {string.Join(";", f)}\nR {string.Join(";", r)}"; var path = $"{Dir}/lamps-{name}.txt"; var full = Path.Combine(root, path);
+                if (File.Exists(full) && File.ReadAllText(full) == text) continue;
+                File.WriteAllText(full, text); AssetDatabase.ImportAsset(path); Debug.Log($"Juice109Assets: {name}'s lamps: {text.Replace("\n", " | ")} (model metres)"); n++;
             }
-            var parts = new System.Collections.Generic.List<string>();
-            foreach (var pts in side)
-            {
-                if (pts.Count == 0) { Debug.LogWarning("Juice109Assets: no DK_Lamp vertices on one side of the getaway sedan's front"); return 0; }
-                float top = float.MinValue; foreach (var p in pts) top = Mathf.Max(top, p.y);
-                Vector3 lo = Vector3.one * float.MaxValue, hi = Vector3.one * float.MinValue;
-                foreach (var p in pts) if (p.y > top - 0.2f) { lo = Vector3.Min(lo, p); hi = Vector3.Max(hi, p); } // the headlamp: within 0.2 m of the lamps' top
-                parts.Add(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F3},{1:F3},{2:F3}", (lo.x + hi.x) / 2f, (lo.y + hi.y) / 2f, hi.z));
-            }
-            var text = string.Join(";", parts); var path = $"{Dir}/lamps-DK_Sedan_Getaway.txt"; var full = Path.Combine(root, path);
-            if (File.Exists(full) && File.ReadAllText(full) == text) return 0;
-            File.WriteAllText(full, text); AssetDatabase.ImportAsset(path); Debug.Log($"Juice109Assets: the getaway sedan's headlamps at {text} (model metres)"); return 1;
+            return n;
         }
 
         static int Mat(string path, Shader shader, Texture2D tex)

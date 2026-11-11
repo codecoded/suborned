@@ -10,7 +10,8 @@ namespace Suborned.Play
     ///  - at night (the run's light): three searchlights sweep the sky from the tallest roofs round the Handover's streets.
     /// Tram pantograph sparks are not built: no tram runs in the played scene (only the rails, the shelters and a far tram's sound), and the
     /// world has no overhead wires to spark on (art bible: rails flush in the road, no overhead wires).
-    /// All the new effect shaders are the Shader Graph glow (Generated/Juice109/Juice_Glow.shadergraph). Deterministic choices (sorted by name and
+    /// The searchlights are the Shader Graph beam (Juice_Beam, round 4: soft edges by view angle, fall-off, depth fade, dust, HDR) with a lens glow at
+    /// the lamp; the sky trails the Shader Graph streak (Juice_Streak); the faces the Shader Graph glow. Deterministic choices (sorted by name and
     /// place, a fixed seed); none of it is read by anything.</summary>
     public sealed class Juice109City : MonoBehaviour
     {
@@ -19,7 +20,8 @@ namespace Suborned.Play
         readonly System.Random rng = new(1097); float findT, faceMatK = -1f; Material faceMat, beamMat; bool night, built;
         public static int Trails, Neon, Faces, Beams;
 
-        void Start() { glowSrc = Resources.Load<Material>("Juice109/Juice-Glow"); }
+        Material streakMat;
+        void Start() { glowSrc = Resources.Load<Material>("Juice109/Juice-Glow"); var st = Resources.Load<Material>("Juice109/Juice-Streak"); streakMat = st ? new Material(st) { name = "Juice109 sky trail" } : glowSrc; if (st) { streakMat.SetColor("_Tint", new Color(1.5f, 1.7f, 2.1f)); streakMat.SetVector("_Params", new Vector4(1.2f, 2.0f, 2.2f, 0f)); } }
 
         void Update()
         {
@@ -90,7 +92,7 @@ namespace Suborned.Play
                     if (unit.GetComponent<TrailRenderer>()) continue;
                     var tr = unit.gameObject.AddComponent<TrailRenderer>(); tr.time = 1.1f; tr.minVertexDistance = 1.5f; tr.widthMultiplier = 0.7f;
                     tr.widthCurve = new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0f)); tr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; tr.receiveShadows = false;
-                    var m = new Material(glowSrc) { name = "Juice109 sky trail" }; m.SetTexture("_BaseMap", Texture2D.whiteTexture); m.SetColor("_Tint", new Color(0.55f, 0.6f, 0.65f, 1f)); tr.sharedMaterial = m;
+                    tr.textureMode = LineTextureMode.Stretch; tr.widthMultiplier = 0.9f; tr.sharedMaterial = streakMat; // round 4: the Shader Graph streak (a hot core that tapers and fades, HDR)
                     var g = new Gradient(); g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(new Color(0.7f, 0.85f, 1f), 1f) }, new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) }); tr.colorGradient = g;
                     trails.Add(tr);
                 }
@@ -113,31 +115,19 @@ namespace Suborned.Play
                 var vp = cam.WorldToViewportPoint(top); if (vp.x > 0.05f && vp.x < 0.95f && vp.y > 0.45f && vp.y < 1.0f) tops.Add(top); // a beam rises up the screen: only roofs in the frame's upper part, so the shafts rise over the far city and never cross the play (readability first)
             }
             tops.Sort((a, b) => b.y != a.y ? b.y.CompareTo(a.y) : a.x != b.x ? a.x.CompareTo(b.x) : a.z.CompareTo(b.z)); // tallest first; ties by place, the same every run
-            if (!beamMat) { beamMat = new Material(glowSrc) { name = "Juice109 searchlight" }; beamMat.SetTexture("_BaseMap", Texture2D.whiteTexture); beamMat.SetColor("_Tint", new Color(1f, 0.97f, 0.9f, 1f) * 0.5f); }
-            var mesh = BeamMesh();
+            if (!beamMat) { var bs = Resources.Load<Material>("Juice109/Juice-Beam"); if (!bs) return; beamMat = new Material(bs) { name = "Juice109 searchlight" }; beamMat.SetColor("_Tint", new Color(1.1f, 1.05f, 0.95f)); beamMat.SetVector("_Params", new Vector4(1.4f, 1.8f, 3f, 0.55f)); } // round 4: the Shader Graph beam (soft edges, fall-off, depth fade, dust, HDR)
+            var mesh = Juice109Lights.BeamMesh(220f, 0.35f, 6f, 24, 16); var lampGlow = Juice109Lights.FlareData(new Color(1f, 0.97f, 0.9f), 1.8f);
             foreach (var p in tops)
             {
                 if (beams.Count >= 3) break; bool near = false; foreach (var b in beams) if ((b.t.position - p).sqrMagnitude < 60f * 60f) near = true; if (near) continue;
                 var go = new GameObject("Juice109 searchlight"); go.transform.SetParent(transform, false); go.transform.position = p + Vector3.up * 0.5f;
                 go.AddComponent<MeshFilter>().sharedMesh = mesh; var mr = go.AddComponent<MeshRenderer>(); mr.sharedMaterial = beamMat; mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false;
+                var lamp = new GameObject("Juice109 searchlight lamp"); lamp.transform.SetParent(go.transform, false); lamp.transform.localPosition = Vector3.forward * 0.3f;
+                var lf = lamp.AddComponent<UnityEngine.Rendering.LensFlareComponentSRP>(); lf.lensFlareData = lampGlow; lf.intensity = 0.8f; lf.scale = 0.6f; lf.useOcclusion = true; lf.occlusionRadius = 0.3f; lf.sampleCount = 8; lf.attenuationByLightShape = false; lf.maxAttenuationDistance = 1000f; lf.maxAttenuationScale = 1000f; // the lamp's own glow
                 beams.Add((go.transform, beams.Count * 120f + 25f, beams.Count * 2.1f));
             }
-            Beams = beams.Count; Debug.Log($"Juice109City: night: {Beams} searchlights at {string.Join(", ", beams.ConvertAll(b => b.t.position.ToString("F0")))} round {c:F0}");
+            Beams = beams.Count; Debug.Log($"Juice109City: night: {Beams} searchlights at {string.Join(", ", beams.ConvertAll(b => { var e = h.frame.Engine(b.t.position); return $"{b.t.position:F0} (engine [{e.X}, {e.Y}])"; }))} round {c:F0}");
         }
 
-        /// <summary>An open cone along +Z, 220 m long, 0.6 m across at the lamp and 14 m at the far end; its vertex colour fades from 0.22 at the lamp to
-        /// 0 along its length and toward its rim (the glow shader is additive: colour is light).</summary>
-        static Mesh BeamMesh()
-        {
-            const int seg = 16, rings = 8; const float len = 220f, r0 = 0.3f, r1 = 7f;
-            var v = new List<Vector3>(); var col = new List<Color>(); var uv = new List<Vector2>(); var tri = new List<int>();
-            for (int j = 0; j <= rings; j++)
-            {
-                float t = j / (float)rings, r = Mathf.Lerp(r0, r1, t), k = 0.35f * (1f - t);
-                for (int i = 0; i <= seg; i++) { float a = i / (float)seg * Mathf.PI * 2f; v.Add(new Vector3(Mathf.Cos(a) * r, Mathf.Sin(a) * r, t * len)); col.Add(new Color(k, k, k, 1f)); uv.Add(new Vector2(0.5f, 0.5f)); }
-            }
-            for (int j = 0; j < rings; j++) for (int i = 0; i < seg; i++) { int a = j * (seg + 1) + i, b = a + seg + 1; tri.AddRange(new[] { a, b, a + 1, a + 1, b, b + 1 }); }
-            var m = new Mesh { name = "Juice109 searchlight cone" }; m.SetVertices(v); m.SetColors(col); m.SetUVs(0, uv); m.SetTriangles(tri, 0); m.RecalculateBounds(); m.bounds = new Bounds(new Vector3(0, 0, len / 2f), new Vector3(2 * r1, 2 * r1, len)); return m;
-        }
     }
 }

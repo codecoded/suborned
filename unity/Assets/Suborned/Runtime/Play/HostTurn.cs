@@ -160,7 +160,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++) if (Selected[k]) Add(OpAt(k), rp);
             if (Panel != null) Add(Panel.World, r); else if (Hover != null) Add(TargetWorld(Hover), r);
             if (Ending.Length == 0 && (DoorMarked || EnterProgress >= 0)) Add(frame.World(Game.S.At(Game.S.GuardPost)), r); // Glyph techwatch fix 4: the door stays ghosted round its marker when the guard has gone (the marker itself reads on an ink halo, HudToolkit.StepMarks)
-            if (Modal == ModalGate.Modal.None && UnityEngine.InputSystem.Mouse.current is { } mouse)
+            if (Modal == ModalGate.Modal.None && !ShotRunner.Capturing && UnityEngine.InputSystem.Mouse.current is { } mouse) // a capture's cursor is wherever the desk's mouse was left: no cut under it
             {
                 var p = mouse.position.ReadValue();
                 if (p.x >= 0 && p.y >= 0 && p.x <= cam.pixelWidth && p.y <= cam.pixelHeight && !OverHud(p) && frame.Ground(cam.ScreenPointToRay(p), out var g)) Add(g, r);
