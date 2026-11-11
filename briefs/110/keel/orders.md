@@ -1,4 +1,4 @@
-# Brief 110: every order acts at once (Keel, engine 0.55.0, 2026-11-12)
+# Brief 110: every order acts at once (Keel, engine 0.55.0 and 0.56.0, 2026-11-12)
 
 Sky, 2026-11-11, playing 0.2.330:
 1. "why does scout have to watch first before they can listen? Scout can always listen and watch"
@@ -8,7 +8,7 @@ Sky, 2026-11-11, playing 0.2.330:
 ## For Sky (short)
 
 - **Listen needs no Watch.** Watch and Listen are both open to the Scout from the start; neither waits for the other.
-- **Listen acts at once.** The Scout walks to the person right away. He listens as soon as he's close enough (5 m) and keeps close as they move. When they stop, he sits down or stands by a wall nearby. The listening time only counts while he's close enough. Inez no longer freezes while he listens: she goes on with her work.
+- **Listen acts at once.** The Scout walks to the person right away. She listens as soon as she's close enough (5 m) and keeps close as they move. When they stop, she sits down or stands by a wall nearby (0.56.0: a chair first). The listening time only counts while she's close enough. Inez no longer freezes while she listens: she goes on with her work (0.56.0: only at the tables in the Scout's reach).
 - **"Blocked by scout":** nothing in the rules makes the Fixer wait for the Scout. The two can now work on Inez at the same time, and both finish (a new test, LS-BOTH). What held the Pay up was most likely Pay's own condition: it needs her routine, which comes from a Watch.
 - **One speed dial on every act** (`act-pace`, 100 = today). The table shows what it does:
 
@@ -42,9 +42,9 @@ Sky, 2026-11-11, playing 0.2.330:
   - Out of reach, the Scout walks in at once (cell.approach: aimed at where she will be). No spot ahead, no waiting at a spot. The act starts on the first tick in reach.
   - Nobody is held for a Listen. `rounds.holds` is now `[ask, pay, help, pressure]`.
   - The act's clock runs only on ticks in reach. Out of reach, `BusyEnd` (and `BusyStart`, so the HUD's bar holds) moves on a tick.
-  - While she walks, he follows once farther than 3 m and stops within 1.5 m (`nearWalking`).
-  - When she stands (a server whose round keeps her within `atSpot` for the next 2 s; anyone else, where they stand), he settles near her, out of every cone and no nearer than 3 m. That is the 0.39.0 choice for someone who stays put: a free chair first, else a wall out of the way. If nothing is free, he stays where he is in reach.
-  - If she leaves the street (inside, down, gone), or no walk reaches her, the Listen ends there: nothing heard, nothing charged, `order.dropped`.
+  - While the person walks, the Scout follows once farther than 3 m and stops within 1.5 m (`nearWalking`).
+  - When the person stands (a server whose round keeps her within `atSpot` for the next 2 s; anyone else, where they stand), the Scout settles near them, no nearer than 3 m. That is the 0.39.0 choice for someone who stays put: a free chair first, else a wall out of the way. If nothing is free, she stays where she is in reach. (0.55.0 required the chair out of every cone, and a Scout already by a wall stayed there; 0.56.0 changes both, see below.)
+  - If the person leaves the street (inside, down, gone), or no walk reaches them, the Listen ends there: nothing heard, nothing charged, `order.dropped`.
   - A cancel stops the follow's walk too (`GameCancel.cs`). A following listener with a walk is a walking body, not a fixed one (`GameBodies.cs`).
 - With no `follow` (a rulebook pinned before 0.55.0), the old spot, its wait and the hold still play. LS-OLD proves it.
 - `Scenarios.Done` now waits for a Listen whose end moves.
@@ -147,12 +147,79 @@ Under 0.55.0, (b) is gone. I chose **both happen**: nothing in the fiction stops
   - `HudModel.cs:117`'s "Next" still suggests Watch before Listen. A suggestion is fine; it is no lock.
   - `HostHoldStatus.cs:195`'s "waiting" plate can no longer show. It is dead under follow.
   - The `Proof085Beats` rows (`r085listenSpot` and the chair-ahead proofs) read `ListenSpotAhead`, which is now always null. They must move to the settle (`ListenSpotNow` during the act, `SeatedAt`).
-  - `HostViews.Listen.cs` draws the spot only while the Scout stands. Under follow he walks during the act, and the figure should walk with him.
-  - The progress bar may creep while he is out of reach. `BusyStart` moves with `BusyEnd`, so it holds.
+  - `HostViews.Listen.cs` draws the spot only while the Scout stands. Under follow she walks during the act, and the figure should walk with her.
+  - The progress bar may creep while she is out of reach. `BusyStart` moves with `BusyEnd`, so it holds.
   - The host queues in the audit: (1)/(2) the 2 s FollowUp queue, (3) `CrowdBlocked`'s waiting Watch.
 - **Fable / Latch (words):** `PlayText.cs:558` "Watch them first (Scout) to learn their routine." Only Pay uses that lock now, and any agent can Watch.
 - **Waymark:** if the dial moves off 100, re-plan the 6 (70) or 9 (50) route scripts listed above.
 - **Suture:** T15.
 - `tools/levels/dialogue/drift.json` will see `rulebook.schema.ts` and `text.json` changed (drift:auto, at commit).
 
-Branch: `t3/5075a1b7` (worktree `t3-5075a1b7-caf4e19a3a3aeedf`), not committed (crew don't commit).
+
+---
+
+# 0.56.0: the Scout prefers a chair, and the person stays in earshot
+
+Sky, 2026-11-12, on the new Listen (Latch's proof found the Scout never took a chair): "yeah, the scout (she) prefers a chair. Once someone has got to someone to listen to them, the other person should remain in earshot."
+
+## For Sky (short)
+- **The Scout is "she"** in the rule text, logs, scenarios and notes I touched.
+- **Chair first.** When the Scout settles to listen, she takes a free chair in reach (3–5 m from the person). If there is none, she stands by a wall. If there is no wall either, she stays where she is. If she's standing by a wall and a chair frees up, she moves to it.
+- **Why she never sat in 0.55.0.** Two reasons:
+  - Every chair near Inez's post is in the square mast's camera view, and the old rule only allowed chairs out of every camera's view. A chair in view is now allowed when no out-of-view chair is free. While she listens, no watcher's clock counts her, so she still isn't noticed.
+  - At the start, all four chairs in Inez's ring have customers in them. The café is busy, so on a full café she stands by a wall, as before.
+- **Earshot.** Once the Scout is listening to Inez, Inez keeps serving, but only the tables within the Scout's reach. A table that would take her out of earshot is skipped, and she waits at her post until her next table. Her timetable doesn't move: the first table after the Listen goes out at its usual time.
+- **Schedules still win.** These moves go on as before, and the Scout follows the person:
+  - Inez's own round moves: the Fixer's Call, and the round ending at Alert 2 or the fight.
+  - Other people's schedules: the driver's drive, Popovic's exit, the crew.
+  - If the person leaves the street, the Listen ends, with the reason in the log.
+
+## Bands (100 seeds per plan, act-pace 100; 0.55.0 = 2949c5701)
+Nothing moves. All 18 plans have the same wins and median times. For example:
+- quiet-a: 98 wins · 4:45, before and after
+- thin-quiet: 93 · 4:06
+- prepared-loud: 68 · 5:53
+- veteran: 50 · 8:10
+
+37 of 1800 plays changed their finish time, Trail or Alert (none their outcome); every play replays identically. The route scripts: 0 of 42 outcomes move.
+
+How often earshot skips a table (full logs, 100 seeds each): 15 quiet-a plays, 18 thin-quiet, 9 prepared-loud. At act-pace 50 the bands are the same as 0.55.0 at 50 (quiet-a 96 · 4:18, thin-quiet 93 · 3:33, prepared-loud 52 · 5:09), so the recommendation stands.
+
+## What changed
+- **Rulebook:**
+  - `cell.listen.earshot: true`.
+  - The `cell.listen.rule` text: the Scout as she; chair first, out of view if one is free, else in view; earshot; schedules win. Its src quotes Sky.
+  - `text.json` silent log `round.earshot`.
+  - Schema: `earshot: z.boolean().optional()` (`rulebook.schema.ts`, in place).
+  - `rulebook110.test.ts` holds the flag and the quote.
+- **Engine:**
+  - `GameListenFollow.cs`: `SettleChair` comes first, a wall spot is swapped for a chair once one is free, `EarshotMask` is called while the Scout is in reach, and `ListenChairFor(agent, role)` is a new host read (chooses nothing, hashes nothing) for Latch.
+  - `GameListenSpot.cs`: `BestChair` and `BestGround` take `also` (a server's post must be in reach too, so the Scout doesn't have to move when the server goes home), and `BestChair` takes `inView`.
+  - `GameRounds.cs`: `RoundEvents.Masked`, the round skipping masked excursions, and `EarshotMask`. A table is skipped when its service point, or any point of its way out from the post, is beyond reach of the Scout's spot (or of where she stands). This only happens while the round clock runs; the Help hold, the call and the end are untouched. It adds hash bytes only once a table is skipped.
+  - `Rules.cs`: `ListenEarshot`, one line changed in place. `earshot` without `follow` is rejected.
+  - `Debrief.cs`: `suborned.sim/0.56.0`.
+  - A rulebook without `earshot` plays and hashes as 0.55.0 (LS-OLD).
+- **Scenarios and tests:**
+  - LS-CHAIR: she sits in a chair at the first moment one is free.
+  - LS-EARSHOT (new): Inez never leaves the settled Scout's reach while she listens, and her next table goes out on time.
+  - LS-UNSEEN measures the act's own ticks. On the landing tick she is idle where she sits, and a seat in view starts a watcher's clock from then: move her after the Listen.
+  - LS-READS reads `ListenChairFor` too, and LS-OLD removes both flags.
+  - `PlaysTheRound` gains LS-CHAIR and LS-EARSHOT.
+  - `BodiesIdleTests.AListeningScoutSitsInHerChairOrStandsByAWallOutOfTheWay` checks that a wall is only ever chosen when no chair is free. On those route plays the chairs are full, so she stood by a wall 6 times and sat 0 times.
+  - Scout pronouns in `ScenariosListenSpot.cs`.
+
+## Evidence
+- `bun run sim:test`: **3440 passed, 0 failed** (238 s).
+- `bun test contracts`: 364 pass, 0 fail. `bun run typecheck`: clean.
+- `suborned-sim batch … --seeds 100` (with replay), 0.55.0 from `git archive HEAD` against 0.56.0: as above. Every play replays identically.
+- **DP1** re-recorded: the same 142 orders and the same 3 checkpoint ticks, outcome none; only the pinned hashes and the engine version changed.
+
+## Open
+- **Motive / Sky:** after the Listen lands, a Scout sitting at a café chair in a camera's view is an idle loiterer, and that watcher's clock starts. Should a seated operative read as a café customer to the attention law? That's a design question, not changed here.
+- **Latch:** `ListenChairFor` tells the host which chair she'd take. The r085 proof rows can now expect a chair whenever one is free (the café is often full).
+- **GDD (Aster):**
+  - §05/§10, the discreet Listen: chair first (in view if none out of it), then a wall, then where she stands.
+  - The earshot law: the person keeps their activity within the listener's reach for the Listen; schedules win.
+  - The Scout is "she".
+
+Branch: `t3/scout-listen-always-available`, on 2949c5701, not committed (crew don't commit).

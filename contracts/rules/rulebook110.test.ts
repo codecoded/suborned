@@ -16,6 +16,8 @@ describe('brief 110: orders act at once', () => {
   });
   test('a Listen follows its person and holds nobody', () => {
     expect(raw.cell.listen.follow).toBe('v:listen-follow-cm');
+    expect(raw.cell.listen.earshot).toBe(true); // engine 0.56.0 (Sky 2026-11-12): the person listened to stays in earshot
+    expect(raw.cell.listen.rule).toContain('the scout (she) prefers a chair');
     expect(raw.rounds.holds).not.toContain('listen');
     expect(raw.rounds.holds).toEqual(['ask', 'pay', 'help', 'pressure']);
     expect(raw.values['listen-follow-cm'].v).toBeLessThan(raw.values['listen-reach-m'].v * 100);

@@ -1329,6 +1329,7 @@
   "down": "a hostile who is down speaks nothing"
  },
  "silentLogs": {
+  "round.earshot": "engine 0.56.0 (brief 110; Keel): log only: a server listened to skips a table that would take her out of the Scout's reach (cell.listen.earshot); the host draws her at her post, no card",
   "start.weather": "engine 0.54.0 (brief 107; Keel): log only: the weather the game starts with, or the briefing's pick; a look only, the host draws it, no card",
   "start.light": "engine 0.54.0 (brief 107; Keel): log only: day or night, as the game starts or the briefing picks; a look only, the host draws it, no card",
   "patrol.resumes": "brief 102's sweep (Fable 2026-11-08): the loop cut patrol-resumes's last line: Turning back already conveys the moment, and another polite announcement would be filler.",

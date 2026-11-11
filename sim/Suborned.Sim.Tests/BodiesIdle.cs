@@ -52,15 +52,17 @@ public class BodiesIdleTests
     }
 
     [Fact]
-    public void AListeningScoutSitsInHisChairOrStandsByAWallOutOfTheWay()
+    public void AListeningScoutSitsInHerChairOrStandsByAWallOutOfTheWay()
     {
-        int seated = 0, ground = 0; var bad = new List<string>(); var seen = new HashSet<string>(); // engine 0.55.0 (cell.listen.follow): he settles after the start, so each Listen's arrival at its spot counts once
+        int seated = 0, ground = 0; var bad = new List<string>(); var seen = new HashSet<string>(); var chose = new HashSet<string>(); // engine 0.55.0 (cell.listen.follow): he settles after the start, so each Listen's arrival at its spot counts once
         foreach (var route in new[] { "route-a", "route-a-pressure", "careless-takedown-seen-crowd" })
             foreach (var seed in new[] { 1, 2, 3, 4, 5, 6 })
                 Play(route, seed, "unset", g =>
                 {
-                    var op = g.Ops[0]; var n = g.ListenSpotNow("scout"); if (op.Busy?.Do != "listen" || !n.HasValue || op.Walk != null) return;
+                    var op = g.Ops[0]; var n = g.ListenSpotNow("scout"); if (op.Busy?.Do != "listen" || !n.HasValue) return;
                     var (at, chair, _, _) = n.Value; string key = $"{route}#{seed}#{op.Busy.Tick}#{at}";
+                    if (chair.Length == 0 && chose.Add(key) && g.ListenChairFor("scout", op.Busy.Target) is string free) bad.Add($"{route} #{seed} {Report.Clock(g.Tick)}: chose a wall with {free} free (chair first)"); // engine 0.56.0: a wall only when no chair is free, read on the tick the spot first shows
+                    if (op.Walk != null) return;
                     if (chair.Length > 0)
                     {
                         if (op.Pos != at) return; // not in yet
@@ -76,7 +78,7 @@ public class BodiesIdleTests
                         if (g.S.Grid.Cuts(at, g.R.BodyMinCm, g.R.ListenPassCm)) bad.Add($"{route} #{seed}: listening from {at}, across a passage");
                     }
                 });
-        Assert.True(seated + ground > 0, $"the Scout settled {seated} times seated, {ground} by a wall"); // engine 0.55.0: sitting where a chair is in her ring, else by a wall
+        Assert.True(seated + ground > 0, $"the Scout settled {seated} times seated, {ground} by a wall"); // engine 0.56.0 (Sky 2026-11-12: "the scout (she) prefers a chair"): a wall only when no chair is free (above); on these routes the café's chairs in Inez's ring are taken (LS-CHAIR waits for one)
         Assert.True(bad.Count == 0, string.Join("; ", bad.Distinct().Take(5)));
     }
 

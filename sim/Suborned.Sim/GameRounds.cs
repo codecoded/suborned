@@ -89,6 +89,8 @@ namespace Suborned.Sim
         public readonly List<Hold> Holds = new List<Hold>();
         public int CallAt = -1, CallArrive, CallUntil; public Pt CallStop;
         public int EndAt = -1; public string EndWhy = "";
+        /// <summary>Engine 0.56.0 (brief 110, cell.listen.earshot): the excursions she skips, by index, because they would take her out of a listener's reach: she rests at her post through them.</summary>
+        public readonly List<int> Masked = new List<int>();
         public int Version;
     }
 
@@ -194,10 +196,11 @@ namespace Suborned.Sim
         static long RoundHalf(long num, long den) => den <= 0 ? 0 : (2 * num + den) / (2 * den); // Math.round(num / den) for num, den ≥ 0
 
         /// <summary>The nominal round, on its clock in ticks from the origin: at post, or an excursion's legs.</summary>
-        static RoundPose BodyPose(RoundsData.Server sv, int tr)
+        static RoundPose BodyPose(RoundsData.Server sv, int tr, List<int>? masked = null)
         {
-            foreach (var x in sv.Exc)
+            for (int i = 0; i < sv.Exc.Count; i++)
             {
+                var x = sv.Exc[i]; if (masked != null && masked.Contains(i)) continue; // engine 0.56.0 (earshot): a table skipped, she rests at her post
                 int t0 = x.Start * Hz, t1 = t0 + x.Out * Hz, t2 = t1 + x.Serve * Hz, t3 = t2 + x.Back * Hz;
                 if (tr < t0 || tr >= t3) continue;
                 if (tr < t1) { long mm = RoundHalf(x.Path.Length * (tr - t0), t1 - t0); return new RoundPose { Pos = x.Path.At(mm), Face = x.Path.Heading(mm), Phase = "to table" }; }
@@ -208,10 +211,11 @@ namespace Suborned.Sim
             return new RoundPose { Pos = sv.At, Face = sv.Face, Phase = "at post" };
         }
         /// <summary>The walk home from round-clock tick tr: the path, where on it she is, and how long it takes (rounds.ts walkBack).</summary>
-        static (Path path, long startMm, int dur)? WalkBack(RoundsData.Server sv, int tr)
+        static (Path path, long startMm, int dur)? WalkBack(RoundsData.Server sv, int tr, List<int>? masked = null)
         {
-            foreach (var x in sv.Exc)
+            for (int i = 0; i < sv.Exc.Count; i++)
             {
+                var x = sv.Exc[i]; if (masked != null && masked.Contains(i)) continue;
                 int t0 = x.Start * Hz, t1 = t0 + x.Out * Hz, t2 = t1 + x.Serve * Hz, t3 = t2 + x.Back * Hz;
                 if (tr < t0 || tr >= t3) continue;
                 if (tr < t1) return (x.Path, RoundHalf(x.Path.Length * (tr - t0), t1 - t0), tr - t0);
@@ -220,9 +224,9 @@ namespace Suborned.Sim
             }
             return null;
         }
-        static int Resume(RoundsData.Server sv, int tr)
+        static int Resume(RoundsData.Server sv, int tr, List<int>? masked = null)
         {
-            foreach (var x in sv.Exc) { int t0 = x.Start * Hz, t3 = t0 + (x.Out + x.Serve + x.Back) * Hz; if (tr >= t0 && tr < t3) return t3; }
+            for (int i = 0; i < sv.Exc.Count; i++) { var x = sv.Exc[i]; if (masked != null && masked.Contains(i)) continue; int t0 = x.Start * Hz, t3 = t0 + (x.Out + x.Serve + x.Back) * Hz; if (tr >= t0 && tr < t3) return t3; }
             return tr;
         }
 
@@ -235,7 +239,7 @@ namespace Suborned.Sim
             void run(int to, int c0, int from) => pieces.Add(new Piece { From = from, To = to, Kind = "run", C0 = c0 });
             Piece walkTo(int from, int tr)
             {
-                var w = WalkBack(sv, tr);
+                var w = WalkBack(sv, tr, ev.Masked);
                 if (w == null) return new Piece { From = from, To = from, Kind = "fixed", Pos = sv.At, Face = sv.Face, Phase = "to post" };
                 return new Piece { From = from, To = from + w.Value.dur, Kind = "walk", WPath = w.Value.path, StartMm = w.Value.startMm, Dur = w.Value.dur };
             }
@@ -263,7 +267,7 @@ namespace Suborned.Sim
                 if (e.at > cur) { run(e.at, clock, cur); clock += e.at - cur; cur = e.at; }
                 if (e.kind == "hold")
                 {
-                    var h = holds[e.ix]; var was = BodyPose(sv, clock); int to = h.to + ling;
+                    var h = holds[e.ix]; var was = BodyPose(sv, clock, ev.Masked); int to = h.to + ling;
                     pieces.Add(new Piece { From = cur, To = to, Kind = "fixed", Pos = was.Pos, Face = h.face, Phase = "held" });
                     cur = to;
                 }
@@ -275,7 +279,7 @@ namespace Suborned.Sim
                     var gf = ev.CallStop - sv.At;
                     int end = Math.Max(wait, ev.CallUntil) + part;
                     pieces.Add(new Piece { From = wait, To = end, Kind = "fixed", Pos = sv.At, Face = gf, Phase = "together" });
-                    cur = end; clock = Resume(sv, clock);
+                    cur = end; clock = Resume(sv, clock, ev.Masked);
                 }
                 else
                 {
@@ -300,7 +304,7 @@ namespace Suborned.Sim
             p ??= pieces[pieces.Count - 1];
             switch (p.Kind)
             {
-                case "run": return BodyPose(sv, p.C0 + (tick - p.From));
+                case "run": return BodyPose(sv, p.C0 + (tick - p.From), ev.Masked);
                 case "walk":
                     {
                         int k = Math.Min(p.Dur, tick - p.From); long mm = p.Dur == 0 ? 0 : RoundHalf(p.StartMm * (p.Dur - k), p.Dur); var h = p.WPath!.Heading(mm);
@@ -308,6 +312,27 @@ namespace Suborned.Sim
                     }
                 default: return new RoundPose { Pos = p.Pos, Face = p.Face, Phase = p.Phase };
             }
+        }
+
+        /// <summary>Engine 0.56.0 (brief 110, cell.listen.earshot; Sky 2026-11-12: "Once someone has got to someone to listen to them, the other person
+        /// should remain in earshot"): while a listener is on her, a table her round is about to go out to (its walk starting within the next second of
+        /// her round's clock, while the clock runs) is skipped when its service point or any point of its way out from her post lies beyond `reach` of `anchor`: she
+        /// rests at her post through it and her round goes on from its next rest, so the timetable is unchanged. Tables in reach she serves as ever.
+        /// Not while held, called or ended (those are the round's own). Returns the table skipped, or null.</summary>
+        string? EarshotMask(RoundsData.Server sv, Pt anchor, int reach)
+        {
+            var ev = EvOf(sv); if (ev.EndAt >= 0 && Tick >= ev.EndAt) return null;
+            Piece? p = null; foreach (var x in Pieces(sv, ev)) if (Tick >= x.From && Tick < x.To) { p = x; break; }
+            if (p == null || p.Kind != "run") return null;
+            int clock = p.C0 + (Tick - p.From);
+            for (int i = 0; i < sv.Exc.Count; i++)
+            {
+                var x = sv.Exc[i]; int t0 = x.Start * Hz; if (t0 < clock || t0 > clock + Hz || ev.Masked.Contains(i)) continue;
+                bool inReach = G.Within(x.At, anchor, reach); for (int k = 1; k < x.Path.Points.Length && inReach; k++) if (!G.Within(x.Path.Points[k], anchor, reach)) inReach = false; // her way out from the post (the post itself is where she is)
+                if (inReach) continue;
+                ev.Masked.Add(i); ev.Version++; return x.Table;
+            }
+            return null;
         }
 
         /// <summary>The reference function for tests (brief 022 vectors): a server's pose at a tick under the given events, without touching the run.</summary>
@@ -334,6 +359,7 @@ namespace Suborned.Sim
                 var ev = roundEv[id]; h.S(id).I(ev.Holds.Count);
                 foreach (var x in ev.Holds) h.I(x.From).I(x.To).P(x.Face);
                 h.I(ev.CallAt).I(ev.CallArrive).I(ev.CallUntil).P(ev.CallStop).I(ev.EndAt).S(ev.EndWhy);
+                if (ev.Masked.Count > 0) { h.S("earshot").I(ev.Masked.Count); foreach (var i in ev.Masked) h.I(i); } // engine 0.56.0: no bytes until a table is skipped
             }
             foreach (var sv in S.Rounds!.Servers.Values) { var p = PersonById(sv.Id); if (p != null && !p.Down) { var q = RoundPoseAt(sv, EvRead(sv), Tick); h.P(q.Pos).S(q.Phase); } }
         }

@@ -101,7 +101,7 @@ namespace Suborned.Sim
 
         /// <summary>The free chair nearest the agent whose seat is in the ring round the person, its free ground within chairGround of it, out of every cone,
         /// free through the act (no walker's stop holds it, nobody else of the cell has it, nobody else sits in it); within `t` ticks' straight walk unless t is -1.</summary>
-        (Pt seat, Pt stand, string chair)? BestChair(Op op, Pt her, int reach, int nearest, int until, int t, int speed)
+        (Pt seat, Pt stand, string chair)? BestChair(Op op, Pt her, int reach, int nearest, int until, int t, int speed, Pt? also = null, bool inView = false) // engine 0.56.0: inView, a chair in a watcher's cone may do (the act holds every clock); engine 0.56.0: `also`, a second point it must be in reach of too (a server's post), as far from it
         {
             if (People2 == null) return null;
             (Pt, Pt, string)? best = null; long bd = long.MaxValue; string me = Sim.Op.Name(op.Id);
@@ -109,8 +109,9 @@ namespace Suborned.Sim
             {
                 var seat = People2.Places[name]; var st = Walk.Free(seat) ? seat : Walk.NearestFree(seat);
                 if (!st.HasValue || G.Dist(st.Value, seat) > R.ListenChairGroundCm || !G.Within(seat, her, reach) || G.Within(seat, her, nearest)) continue;
+                if (also.HasValue && (!G.Within(seat, also.Value, reach) || G.Within(seat, also.Value, nearest))) continue;
                 if (t >= 0 && G.Dist(op.Pos, seat) * 10L > speed * (long)t) continue;
-                if (!ChairFree(name, Tick, until) || (seatHeld.TryGetValue(name, out var who) && who != me) || ChairOfCell(name, op) || WatchedAt(seat)) continue;
+                if (!ChairFree(name, Tick, until) || (seatHeld.TryGetValue(name, out var who) && who != me) || ChairOfCell(name, op) || (!inView && WatchedAt(seat))) continue;
                 long d = G.D2(op.Pos, seat); if (d < bd) { bd = d; best = (seat, st.Value, name); }
             }
             return best;
@@ -120,13 +121,14 @@ namespace Suborned.Sim
 
         /// <summary>The free ground by a wall nearest the agent, in the ring round the person, on a clear line to them, out of every cone, and never across a
         /// passage (engine 0.49.0: with its body there, the ground round it stays as joined as it was: Grid.Cuts). Tried every GroundStepCm, nearest first.</summary>
-        Pt? BestGround(Op op, Pt her, int reach, int nearest, int t, int speed)
+        Pt? BestGround(Op op, Pt her, int reach, int nearest, int t, int speed, Pt? also = null)
         {
             groundTry.Clear();
             for (int dx = -reach; dx <= reach; dx += GroundStepCm) for (int dy = -reach; dy <= reach; dy += GroundStepCm)
                 {
                     var q = new Pt(her.X + dx, her.Y + dy);
                     if (!S.Grid.Free(q) || !G.Within(q, her, reach) || G.Within(q, her, nearest) || !BesideSolid(q)) continue;
+                    if (also.HasValue && (!G.Within(q, also.Value, reach) || G.Within(q, also.Value, nearest))) continue; // engine 0.56.0: in reach of a server's post too
                     if (t >= 0 && G.Dist(op.Pos, q) * 10L > speed * (long)t) continue;
                     groundTry.Add((G.D2(op.Pos, q), q));
                 }
