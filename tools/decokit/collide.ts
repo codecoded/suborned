@@ -1,14 +1,17 @@
 // bun run collide [--force] [--only A,B] [--check] [--plan] [--out FILE]: the collision and hit volumes of every kit piece (brief 055, Vela), measured from the shipped
 // mesh by Blender (collide.py) and kept in contracts/world/kit.collide.json, keyed by the FBX's sha256: a piece is measured again only when its mesh changes.
 // Who declares a piece's volumes instead (its builder, its extra root, never brief 097's pins) is engine 0.49.0's law, tools/decokit/collide_law.ts.
+// Light-only materials (kind glow: a glow on the paving, a strip up a wall, a crossing's beam) are left out of the measure (brief 107, tools/decokit/collide_light.ts).
 // --only A,B: measure those pieces again even when their mesh is unchanged (the measure itself changed).
 // --check: exit 1 if a catalogued piece with a mesh has no volumes for its current mesh (run `bun run collide`). Nothing is placed by hand.
 // --plan: no Blender: list what a run would keep, measure and declare; with --out, write the records it keeps there. --out FILE: write there, not the contract.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import type { KitAsset } from '../../contracts/world/kit.schema';
 import { BLENDER, fbxOf, kitAssets, ROOT } from '../geometry/pieces';
 import { GEN_ROOT } from '../kit/store';
 import { declarationOf, planCollide, readPins, readRows } from './collide_law';
+import { jobArg, lightOf, readLight } from './collide_light';
 
 /** Bump when collide.py changes what it writes. */
 export const COLLIDE_VERSION = 8;
@@ -17,7 +20,8 @@ export const COLLIDE_FILE = resolve(ROOT, 'contracts/world/kit.collide.json');
 export type Volume = { shape: 'box'; min: [number, number, number]; max: [number, number, number]; stand?: true } | { shape: 'cylinder'; c: [number, number]; r: number; y0: number; y1: number; stand?: true };
 /** A thin open part (a ring, hoop, rail, wire, lattice): measured and listed for information, never a blocker. */
 export type ThinPart = { shape: 'box'; thin: true; min: [number, number, number]; max: [number, number, number] };
-export type PieceCollide = { sha256: string; source: 'measured' | 'declared'; declared?: string; class: 'solid' | 'flat' | 'elevated' | 'far'; bounds: [[number, number, number], [number, number, number]]; tris: number; cell: number; volumes: Volume[]; thin?: ThinPart[] } | { sha256: string; error: string };
+/** `light`: the light-only materials the measure left out (collide_light.ts); bounds, volumes and thin parts are of the rest, `tris` counts the whole mesh. */
+export type PieceCollide = { sha256: string; source: 'measured' | 'declared'; declared?: string; class: 'solid' | 'flat' | 'elevated' | 'far'; bounds: [[number, number, number], [number, number, number]]; tris: number; cell: number; volumes: Volume[]; thin?: ThinPart[]; light?: string[] } | { sha256: string; error: string };
 export type CollideFile = { schema: 'suborned.kit.collide/1'; version: number; frame: string; rule: string; pieces: Record<string, PieceCollide> };
 
 const FRAME = 'kit frame: x across, y up, z front, metres from the piece pivot; yaw and scale apply as the piece is placed';
@@ -34,7 +38,8 @@ export function collideText(pieces: Record<string, PieceCollide>): string {
 /** The plan of a plain run on this tree: the catalogue, the declaring tables (GEN_ROOT and the extra roots), the committed file and the meshes on disk. */
 export function planHere(o: { only?: string[]; force?: boolean } = {}) {
   const assets = [...kitAssets().values()], pins = readPins(), rows = readRows(assets, GEN_ROOT);
-  return planCollide({ assets, prior: readCollide(), version: COLLIDE_VERSION, decl: a => declarationOf(a, rows, pins), fbx: fbxOf, sha: f => sha(readFileSync(f)), ...o });
+  const light = readLight([GEN_ROOT, ...new Set(assets.flatMap(a => (a.extra ? [resolve(ROOT, a.extra)] : [])))]); // no catalogue on this machine: each record's own list stands
+  return planCollide({ assets, prior: readCollide(), version: COLLIDE_VERSION, decl: a => declarationOf(a, rows, pins), fbx: fbxOf, sha: f => sha(readFileSync(f)), ...(light ? { light: (a: KitAsset) => lightOf(a.materials, light) } : {}), ...o });
 }
 
 if (import.meta.main) {
@@ -51,7 +56,7 @@ if (import.meta.main) {
     console.log(`collide: ok, ${Object.keys(pieces).length} pieces, ${Object.values(pieces).reduce((n, p) => n + ('volumes' in p ? p.volumes.length : 0), 0)} volumes`); process.exit(0);
   }
   if (flag('--plan')) {
-    for (const t of todo) console.log(`  ${t.declare ? 'declare' : 'measure'} ${t.id} (${t.why}${t.declare ? `, ${t.declare.volumes.length} volumes ${t.declare.hash.slice(0, 12)}` : ''})`);
+    for (const t of todo) console.log(`  ${t.declare ? 'declare' : 'measure'} ${t.id} (${t.why}${t.light.length ? `, without light ${t.light.join(',')}` : ''}${t.declare ? `, ${t.declare.volumes.length} volumes ${t.declare.hash.slice(0, 12)}` : ''})`);
     console.log(`collide: plan, ${Object.keys(pieces).length} kept, ${todo.filter(t => !t.declare).length} to measure, ${todo.filter(t => t.declare).length} to declare, ${errors.length} errors`);
     if (opt('--out')) { mkdirSync(dirname(out), { recursive: true }); writeFileSync(out, collideText(pieces)); console.log(`collide: wrote the ${Object.keys(pieces).length} kept records to ${out}${todo.length ? ` (${todo.length} to measure left out)` : ''}`); }
     process.exit(errors.length ? 1 : 0);
@@ -63,7 +68,7 @@ if (import.meta.main) {
     console.log(`collide: measuring ${todo.length} pieces in Blender`);
     for (let i = 0; i < todo.length; i += 25) {
       const batch = todo.slice(i, i + 25), part = resolve(tmp, 'collide.part.json');
-      const p = Bun.spawnSync([BLENDER, '-b', '-P', resolve(ROOT, 'tools/decokit/collide.py'), '--', part, ...batch.map(t => `${t.id}=${t.fbx}`)], { stdout: 'pipe', stderr: 'pipe' });
+      const p = Bun.spawnSync([BLENDER, '-b', '-P', resolve(ROOT, 'tools/decokit/collide.py'), '--', part, ...batch.map(t => jobArg(t.id, t.fbx, t.light))], { stdout: 'pipe', stderr: 'pipe' });
       if (p.exitCode !== 0 || !existsSync(part)) { console.error(`collide: Blender failed on ${batch.map(b => b.id).join(', ')}\n${p.stderr.toString().slice(-800)}`); process.exit(1); }
       const got = JSON.parse(readFileSync(part, 'utf8')) as Record<string, Omit<Extract<PieceCollide, { volumes: Volume[] }>, 'sha256'> & { error?: string }>;
       for (const { id, sha: s, declare } of batch) { const g = got[id]; pieces[id] = !g || g.error ? { sha256: s, error: g?.error ?? 'no result' } : declare ? { sha256: s, ...g, source: 'declared', declared: declare.hash, volumes: declare.volumes, class: 'solid' } as PieceCollide : { sha256: s, ...g, source: 'measured' } as PieceCollide; }

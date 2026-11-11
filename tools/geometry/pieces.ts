@@ -25,6 +25,12 @@ export function seeThroughMaterials(): Set<string> {
   const k = JSON.parse(readFileSync(resolve(ROOT, 'contracts/world/kit.json'), 'utf8')) as { seeThrough?: { materials: string[] } };
   return new Set(k.seeThrough?.materials ?? []);
 }
+/** Brief 107: the light-only materials each piece's collide record was measured without (kit.collide.json `light`; tools/decokit/collide_light.ts): light has no body. */
+export function lightMaterials(): Map<string, string[]> {
+  const f = resolve(ROOT, 'contracts/world/kit.collide.json'); if (!existsSync(f)) return new Map();
+  const c = JSON.parse(readFileSync(f, 'utf8')) as { pieces: Record<string, { light?: string[] }> };
+  return new Map(Object.entries(c.pieces).filter(([, p]) => p.light?.length).map(([id, p]) => [id, p.light!]));
+}
 export function kitAssets(): Map<string, KitAsset> {
   const k = JSON.parse(readFileSync(resolve(ROOT, 'contracts/world/kit.json'), 'utf8')) as { assets: KitAsset[] };
   return new Map(k.assets.map(a => [a.id, a]));
@@ -42,12 +48,13 @@ const cachePath = (id: string) => resolve(PIECE_DIR, `${id}.json`);
 
 /** Measure what is not cached (one Blender run for all of it), then load every requested piece. A piece with no FBX (a procedural stand-in) is simply absent from the result. */
 export function loadPieces(ids: Iterable<string>, log: (s: string) => void = () => {}): Map<string, PieceData> {
-  const assets = kitAssets(), see = seeThroughMaterials(); mkdirSync(PIECE_DIR, { recursive: true });
+  const assets = kitAssets(), see = seeThroughMaterials(), lights = lightMaterials(); mkdirSync(PIECE_DIR, { recursive: true });
+  const lightOf = (id: string) => lights.get(id) ?? []; // brief 107: left out entirely, bounds included
   const skipOf = (a: KitAsset) => a.materials.filter(m => see.has(m)).sort(); // brief 077: the see-through materials this piece carries
   const want = [...new Set(ids)].sort(), todo: [string, string][] = [], out = new Map<string, PieceData>(), shas = new Map<string, string>();
   for (const id of want) {
     const a = assets.get(id); const f = a && fbxOf(a); if (!f) continue;
-    const skip = skipOf(a), s = sha(readFileSync(f)) + ':' + MEASURE_VERSION + ':' + MEASURE_CELL + (skip.length ? ':see:' + skip.join(',') : ''); shas.set(id, s);
+    const skip = skipOf(a), lit = lightOf(id), s = sha(readFileSync(f)) + ':' + MEASURE_VERSION + ':' + MEASURE_CELL + (skip.length ? ':see:' + skip.join(',') : '') + (lit.length ? ':light:' + lit.join(',') : ''); shas.set(id, s);
     const c = cachePath(id);
     if (existsSync(c)) { const d = JSON.parse(readFileSync(c, 'utf8')) as PieceData; if (d.sha === s) { out.set(id, d); continue; } }
     todo.push([id, f]);
@@ -58,7 +65,7 @@ export function loadPieces(ids: Iterable<string>, log: (s: string) => void = () 
     // Blender takes the jobs in batches so one bad mesh does not lose the run
     for (let i = 0; i < todo.length; i += 12) {
       const batch = todo.slice(i, i + 12);
-      const p = Bun.spawnSync([BLENDER, '-b', '-P', resolve(ROOT, 'tools/geometry/pieces.py'), '--', PIECE_DIR, String(MEASURE_CELL), ...batch.map(([id, f]) => { const k = skipOf(assets.get(id)!); return `${id}=${f}${k.length ? '|' + k.join(',') : ''}`; })], { stdout: 'pipe', stderr: 'pipe' });
+      const p = Bun.spawnSync([BLENDER, '-b', '-P', resolve(ROOT, 'tools/geometry/pieces.py'), '--', PIECE_DIR, String(MEASURE_CELL), ...batch.map(([id, f]) => { const k = skipOf(assets.get(id)!), l = lightOf(id); return `${id}=${f}${k.length || l.length ? '|' + k.join(',') : ''}${l.length ? '|' + l.join(',') : ''}`; })], { stdout: 'pipe', stderr: 'pipe' });
       if (p.exitCode !== 0) throw new Error(`geometry: Blender failed on ${batch.map(b => b[0]).join(', ')}\n${p.stderr.toString().slice(-600)}`);
       for (const [id, f] of batch) {
         const c = cachePath(id); if (!existsSync(c)) { log(`  no data for ${id}`); continue; }
@@ -74,12 +81,12 @@ export function loadPieces(ids: Iterable<string>, log: (s: string) => void = () 
 export type Bounds = { min: [number, number, number]; max: [number, number, number]; tris: number } | { error: string };
 const BOUNDS_FILE = resolve(ROOT, 'out/scratch/splice/geometry/bounds.json');
 export function loadBounds(log: (s: string) => void = () => {}): Map<string, { b: Bounds; asset: KitAsset; fbx: string }> {
-  const assets = kitAssets(), cache: Record<string, { sha: string; b: Bounds }> = existsSync(BOUNDS_FILE + '.cache') ? JSON.parse(readFileSync(BOUNDS_FILE + '.cache', 'utf8')) : {};
+  const assets = kitAssets(), lights = lightMaterials(), cache: Record<string, { sha: string; b: Bounds }> = existsSync(BOUNDS_FILE + '.cache') ? JSON.parse(readFileSync(BOUNDS_FILE + '.cache', 'utf8')) : {};
   const todo: [string, string, string][] = [], out = new Map<string, { b: Bounds; asset: KitAsset; fbx: string }>();
   for (const a of [...assets.values()].sort((x, y) => (x.id < y.id ? -1 : 1))) {
     if (a.status === 'rejected') continue;
-    const f = fbxOf(a); if (!f) continue; const s = sha(readFileSync(f)) + ':' + MEASURE_VERSION;
-    const c = cache[a.id]; if (c && c.sha === s) out.set(a.id, { b: c.b, asset: a, fbx: f }); else todo.push([a.id, f, s]);
+    const f = fbxOf(a); if (!f) continue; const lit = lights.get(a.id) ?? [], s = sha(readFileSync(f)) + ':' + MEASURE_VERSION + (lit.length ? ':light:' + lit.join(',') : '');
+    const c = cache[a.id]; if (c && c.sha === s) out.set(a.id, { b: c.b, asset: a, fbx: f }); else todo.push([a.id, lit.length ? `${f}|${lit.join(',')}` : f, s]);
   }
   if (todo.length) {
     log(`bounds of ${todo.length} kit pieces in Blender`);
@@ -88,7 +95,7 @@ export function loadBounds(log: (s: string) => void = () => {}): Map<string, { b
       const p = Bun.spawnSync([BLENDER, '-b', '-P', resolve(ROOT, 'tools/geometry/bounds.py'), '--', tmp, ...batch.map(([id, f]) => `${id}=${f}`)], { stdout: 'pipe', stderr: 'pipe' });
       if (p.exitCode !== 0) throw new Error(`geometry: Blender bounds failed\n${p.stderr.toString().slice(-400)}`);
       const part = JSON.parse(readFileSync(tmp, 'utf8')) as Record<string, Bounds>;
-      for (const [id, f, s] of batch) { const b = part[id]; if (!b) continue; cache[id] = { sha: s, b }; out.set(id, { b, asset: assets.get(id)!, fbx: f }); }
+      for (const [id, f, s] of batch) { const b = part[id]; if (!b) continue; cache[id] = { sha: s, b }; out.set(id, { b, asset: assets.get(id)!, fbx: f.split('|')[0]! }); }
     }
     mkdirSync(resolve(ROOT, 'out/scratch/splice/geometry'), { recursive: true }); writeFileSync(BOUNDS_FILE + '.cache', JSON.stringify(cache));
   }

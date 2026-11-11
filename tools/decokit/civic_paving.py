@@ -10,8 +10,9 @@ Inlay*         flat seafoam faience strips 4 mm proud of the slab: the band desi
                sweeping from +X to +Y; rotate about Z to set the start angle.
                Brief 107 (Vela): drawn in DK_Inlay_SeafoamNight, DK_Inlay_Seafoam's twin (glows107.py): the same look by day, emission black.
                Round 2 (Sky: the flat lit band was "that blue circle"): the band stays dark at night and a thin line of light runs along
-               each LONG edge (glows107.EDGE, DK_Glow_InlayEdge: Cross Glow mode 2, alpha 0 by day). The module ends get none: the 2 m
-               modules lie end to end, so an end line would dash the band."""
+               each LONG edge of the RINGS (InlayArc_*; glows107.EDGE, DK_Glow_InlayEdge: Cross Glow mode 2, alpha 0 by day). The quarter
+               ends get none: the quarters lie end to end, so an end line would dash the ring. The straight bands (the spokes) carry none
+               (Sky: "remove that thin inner line from edge to center")."""
 
 import math
 
@@ -64,10 +65,9 @@ def edge_line(s, path, into, left=None):
 
 
 def _straight(s, hw):
+    """A straight band: the enamel only. No edge light (Sky 2026-11-11, on the spoke from the outer ring to the fountain: "remove that thin inner line
+    from edge to center"): only the rings carry it."""
     s.extrude([(-1.0, -hw), (1.0, -hw), (1.0, hw), (-1.0, hw)], 0.0, PROUD, pal.Inlay_SeafoamNight, bottom=False)
-    line = [(-1.0 + 0.5 * k, 0.0) for k in range(5)]
-    edge_line(s, [(x, -hw) for x, _ in line], +1)   # travelling +x, the band is on the left (+y)
-    edge_line(s, [(x, hw) for x, _ in line], -1)
 
 
 @asset("InlayBand_06_2", "Ground", bevel=0.0, height=PROUD)

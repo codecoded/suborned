@@ -1,9 +1,11 @@
 """Kit piece solids for `bun run geometry` (brief 055, Splice): the occupied height intervals of a kit piece on a plan grid.
 
-Blender -b -P tools/geometry/pieces.py -- <out dir> <cell m> <id>=<fbx path>[|<mat>,<mat>...] [...]
+Blender -b -P tools/geometry/pieces.py -- <out dir> <cell m> <id>=<fbx path>[|<mat>,<mat>...[|<mat>,<mat>...]] [...]
 
 Brief 077: `|<materials>` names the see-through materials (kit.json seeThrough) the piece carries: their triangles are drawn but stop nothing, so the
 solid is voxelised without them (the trough stands, its planting does not). The bounds (bx*, bz*, minY, maxY) stay the whole mesh's: they place the piece.
+Brief 107: a second `|<materials>` names the light-only materials (kit.collide.json `light`, tools/decokit/collide_light.ts): light has no body, so their triangles are
+left out entirely, bounds included (a glow strip 3 mm off a wall would otherwise turn the wall's crossing parity inside out). `tris` still counts the whole mesh.
 
 Each FBX (the Unity copy of the piece, the very mesh the player draws) is imported with the DecoKit export axes (forward -Z, up Y), so the piece
 stands in the frame the kit catalogue speaks: x across, y up, z front (Blender -Y becomes +Z, Blender +X becomes kit -X: the manifest's bounds
@@ -27,7 +29,7 @@ from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
 ARGS = sys.argv[sys.argv.index("--") + 1:]
-OUT = Path(ARGS[0]); CELL = float(ARGS[1]); JOBS = [(a.split("=", 1)[0], *(a.split("=", 1)[1].rsplit("|", 1) + [""])[:2]) for a in ARGS[2:]]
+OUT = Path(ARGS[0]); CELL = float(ARGS[1]); JOBS = [(a.split("=", 1)[0], *(a.split("=", 1)[1].split("|", 2) + ["", ""])[:3]) for a in ARGS[2:]]
 OUT.mkdir(parents=True, exist_ok=True)
 CAP = 4.0     # nothing above this is stored (nothing here is walked under or shot through above 4 m)
 DX, DZ = 0.125, 0.05
@@ -40,11 +42,15 @@ def base_name(n):
     return re.sub(r"\.\d{3}$", "", n)
 
 
-def load(path, skip=()):
-    """All vertices and triangles, and the triangles that are solid (not on a see-through material)."""
+n_light = [0]  # triangles of the last load left out as light
+
+
+def load(path, skip=(), light=()):
+    """All vertices and triangles, and the triangles that are solid (not on a see-through material); a light-only material's triangles are not loaded at all."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.fbx(filepath=path, axis_forward="-Z", axis_up="Y")
     verts, tris, solid = [], [], []
+    n_light[0] = 0
     for o in bpy.context.scene.objects:
         if o.type != "MESH":
             continue
@@ -52,8 +58,13 @@ def load(path, skip=()):
         names = [base_name(s.material.name) if s.material else "" for s in o.material_slots]
         verts += [m @ v.co for v in me.vertices]
         for t in me.loop_triangles:
+            mat = names[min(t.material_index, len(names) - 1)] if names else ""
+            if light and mat in light: n_light[0] += 1; continue
             tri = tuple(base + i for i in t.vertices); tris.append(tri)
-            if not (names and names[min(t.material_index, len(names) - 1)] in skip): solid.append(tri)
+            if not (names and mat in skip): solid.append(tri)
+    if light:  # only the vertices the body uses: a light's own would widen the bounds that place the piece
+        used = sorted({i for t in tris for i in t}); at = {i: k for k, i in enumerate(used)}
+        verts = [verts[i] for i in used]; tris = [tuple(at[i] for i in t) for t in tris]; solid = [tuple(at[i] for i in t) for t in solid]
     return verts, tris, solid
 
 
@@ -85,8 +96,8 @@ def intervals(ts):
     return spans, lone
 
 
-for pid, path, skipped in JOBS:
-    verts, tris, solid_tris = load(path, set(m for m in skipped.split(",") if m))
+for pid, path, skipped, lit in JOBS:
+    verts, tris, solid_tris = load(path, set(m for m in skipped.split(",") if m), set(m for m in lit.split(",") if m))
     bvh = BVHTree.FromPolygons(verts, solid_tris) if solid_tris else None
     xs = [v.x for v in verts]; ys = [v.y for v in verts]; zs = [v.z for v in verts]
     bx0, bx1, by0, by1, bz0 = min(xs), max(xs), min(ys), max(ys), min(zs)
@@ -151,5 +162,5 @@ for pid, path, skipped in JOBS:
             cells.append(iv)
     # kit-frame bounds are those of the folded grid, anchored at the kit-x/z minimum (the grid's flipped edge lies on the far side of the fold)
     gx0 = ux1 - kx * CELL; gz0 = uz1 - kz * CELL  # fold cells are anchored at the Blender minimum, i.e. the kit maximum
-    (OUT / f"{pid}.json").write_text(json.dumps(dict(id=pid, cell=CELL, x0=round(gx0, 4), x1=round(ux1, 4), z0=round(gz0, 4), z1=round(uz1, 4), bx0=round(ux0, 4), bx1=round(ux1, 4), bz0=round(uz0, 4), bz1=round(uz1, 4), nx=kx, nz=kz, minY=round(min(zs), 4), maxY=round(max(zs), 4), tris=len(tris), **({"seeThrough": sorted(set(m for m in skipped.split(",") if m)), "solidTris": len(solid_tris)} if skipped else {}), cells=cells), separators=(",", ":")))
+    (OUT / f"{pid}.json").write_text(json.dumps(dict(id=pid, cell=CELL, x0=round(gx0, 4), x1=round(ux1, 4), z0=round(gz0, 4), z1=round(uz1, 4), bx0=round(ux0, 4), bx1=round(ux1, 4), bz0=round(uz0, 4), bz1=round(uz1, 4), nx=kx, nz=kz, minY=round(min(zs), 4), maxY=round(max(zs), 4), tris=len(tris) + n_light[0], **({"seeThrough": sorted(set(m for m in skipped.split(",") if m)), "solidTris": len(solid_tris)} if skipped else {}), cells=cells), separators=(",", ":")))
     print(f"piece {pid}: {kx}x{kz} cells x {nz} layers, {len(tris)} tris")

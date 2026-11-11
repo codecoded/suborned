@@ -16,18 +16,18 @@
   },
   "ground": {
     "walkCells": 44910,
-    "walkableCells": 44893,
-    "sunk": 808,
+    "walkableCells": 44894,
+    "sunk": 807,
     "floating": 44,
     "bands": {
       "sunk 5-15 cm": 0,
-      "sunk 15-50 cm": 776,
+      "sunk 15-50 cm": 775,
       "sunk 0.5 m or more": 32,
       "floats 5-15 cm": 0,
       "floats 15 cm or more": 44
     },
     "byCause": {
-      "a drawn piece (stair, platform, kerb stone) raises the floor": 711,
+      "a drawn piece (stair, platform, kerb stone) raises the floor": 710,
       "ground layer drawn above the host height (kerb strip, quantised edge)": 97,
       "ground layer drawn below the host height (quantised edge)": 44
     }
@@ -37,7 +37,7 @@
     "throughSolid": 5,
     "lowCeiling": 9,
     "brush": 15,
-    "invisibleWall": 258
+    "invisibleWall": 102
   },
   "sight": {
     "drawnAtEye": 482,
@@ -74,16 +74,12 @@
   },
   "kit": {
     "measured": 415,
-    "offPivotOrSize": 36,
+    "offPivotOrSize": 25,
     "placedHere": [
       "BikeRack_Play: size 0.32 m off the catalogue",
       "RecordsEntrance: size 0.07 m off the catalogue",
-      "ShrubMound_TB: size 0.24 m off the catalogue",
-      "CafeTerrace_TB: size 0.74 m off the catalogue",
-      "PlanterArc_TB: size 0.56 m off the catalogue",
-      "PlanterRun_4_A_TB: size 0.61 m off the catalogue",
-      "PlanterRun_4_B_TB: size 0.61 m off the catalogue",
-      "PlanterRun_4_C_TB: size 0.61 m off the catalogue"
+      "RoadRibbon_Straight_6m: size 1.00 m off the catalogue",
+      "ShrubMound_TB: size 0.24 m off the catalogue"
     ]
   },
   "rules": [
@@ -107,7 +103,7 @@
     },
     {
       "id": "G-1c",
-      "count": 852,
+      "count": 851,
       "unit": "cells",
       "example": "civic/office-public-entrance: 48 cells, worst 0.75 m"
     },
@@ -119,7 +115,7 @@
     },
     {
       "id": "G-2b",
-      "count": 258,
+      "count": 102,
       "unit": "cells",
       "example": "atom-fountain: 82 cells blocked, nothing drawn"
     },
@@ -143,7 +139,7 @@
     },
     {
       "id": "K-1",
-      "count": 8,
+      "count": 4,
       "unit": "pieces",
       "example": "BikeRack_Play: size 0.32 m off the catalogue"
     }

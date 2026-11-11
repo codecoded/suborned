@@ -1,6 +1,10 @@
 """Collision and hit volumes of kit pieces (brief 055, Vela): the simple solids the sim's walk grid and occluders are built from, measured from the shipped mesh, never placed by hand.
 
-Blender -b -P tools/decokit/collide.py -- <out json> <id>=<fbx path> [...]      (run by `bun tools/decokit/collide.ts`, which keeps contracts/world/kit.collide.json)
+Blender -b -P tools/decokit/collide.py -- <out json> <id>=<fbx path>[|<mat>,<mat>...] [...]      (run by `bun tools/decokit/collide.ts`, which keeps contracts/world/kit.collide.json)
+
+Light has no body (brief 107; tools/decokit/collide_light.ts): `|<materials>` names the light-only materials the piece carries (the catalogue's kind glow: a pool on the
+paving, a strip up a wall, a crossing's beam). Their triangles are left out before anything is measured, bounds included; the piece lists them in `light`, and `tris`
+still counts the whole mesh.
 
 Frame: the kit's own (x across, y up, z front; metres from the piece's pivot; yaw and scale apply as the piece is placed). The FBX is imported with the DecoKit export axes and
 turned into it the way the catalogue's bounds are (kit x = -Blender x, kit z = -Blender y), as tools/geometry/bounds.py does.
@@ -34,7 +38,7 @@ import numpy as np
 import os
 DEBUG = bool(os.environ.get('COLLIDE_DEBUG'))
 ARGS = sys.argv[sys.argv.index("--") + 1:]
-OUT = Path(ARGS[0]); JOBS = [a.split("=", 1) for a in ARGS[1:]]
+OUT = Path(ARGS[0]); JOBS = [(a.split("=", 1)[0], *(a.split("=", 1)[1].split("|", 1) + [""])[:2]) for a in ARGS[1:]]
 
 STEP = 0.04        # surface sample spacing, m
 BIN = 0.025        # height bin, m
@@ -55,20 +59,36 @@ CHAINMAX = 96      # wall-chain boxes a piece may add
 THINBOX = 12       # thin parts listed per piece (boxes around them, for information)
 
 
-def load(path):
+def base_name(n):
+    """A material's kit name: Blender's import suffix (.001) dropped."""
+    import re
+    return re.sub(r"\.\d{3}$", "", n)
+
+
+def load(path, light=frozenset()):
+    """Vertices, triangles and the frond flag per triangle, without the triangles drawn in a light-only material; and the whole mesh's triangle count."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.fbx(filepath=path, axis_forward="-Z", axis_up="Y")
-    verts, tris, frond = [], [], []
+    verts, tris, frond, n_all = [], [], [], 0
     for o in bpy.context.scene.objects:
         if o.type != "MESH":
             continue
         m = o.matrix_world; me = o.data; me.calc_loop_triangles(); base = len(verts)
-        verts += [tuple(m @ v.co) for v in me.vertices]
-        tris += [tuple(base + i for i in t.vertices) for t in me.loop_triangles]
-        frond += [bool(me.materials) and t.material_index < len(me.materials) and me.materials[t.material_index].name in FROND for t in me.loop_triangles]
+        names = [base_name(x.name) if x else "" for x in me.materials]
+        mat = lambda t: names[t.material_index] if t.material_index < len(names) else ""  # noqa: E731
+        lit = [t for t in me.loop_triangles if not (light and mat(t) in light)]
+        n_all += len(me.loop_triangles)
+        if light:  # only the vertices the body uses: a light's own vertices would widen the bounds
+            used = sorted({i for t in lit for i in t.vertices}); at = {i: k for k, i in enumerate(used)}
+            verts += [tuple(m @ me.vertices[i].co) for i in used]
+            tris += [tuple(base + at[i] for i in t.vertices) for t in lit]
+        else:
+            verts += [tuple(m @ v.co) for v in me.vertices]
+            tris += [tuple(base + i for i in t.vertices) for t in lit]
+        frond += [bool(me.materials) and t.material_index < len(me.materials) and me.materials[t.material_index].name in FROND for t in lit]
     V = np.array(verts, dtype=np.float64).reshape(-1, 3)
     V = np.stack([-V[:, 0], V[:, 2], -V[:, 1]], axis=1)  # kit frame: x, y up, z
-    return V, np.array(tris, dtype=np.int64).reshape(-1, 3), np.array(frond, dtype=bool)
+    return V, np.array(tris, dtype=np.int64).reshape(-1, 3), np.array(frond, dtype=bool), n_all
 
 
 def samples(V, T, step):
@@ -294,13 +314,18 @@ def wall_chain(V, T, blocked, A, B, lo, hi, cell, nx, nz, vols):
     return out[:CHAINMAX]
 
 
-def measure(pid, path):
-    V, T, frond = load(path)
+def measure(pid, path, light=frozenset()):
+    V, T, frond, n_all = load(path, light)
+    r2 = lambda v: round(float(v), 2)  # noqa: E731
+    if not len(V) and n_all:  # nothing but light: no body, placed by the light's own bounds
+        W = load(path)[0]
+        return {"bounds": [[r2(c) for c in W.min(axis=0)], [r2(c) for c in W.max(axis=0)]], "tris": int(n_all), "class": "flat", "cell": 0.1, "volumes": [], "thin": [], "light": sorted(light)}
     if not len(V):
         return {"error": "no mesh"}
     lo, hi = V.min(axis=0), V.max(axis=0)
-    r2 = lambda v: round(float(v), 2)  # noqa: E731
-    res = {"bounds": [[r2(c) for c in lo], [r2(c) for c in hi]], "tris": int(len(T))}
+    res = {"bounds": [[r2(c) for c in lo], [r2(c) for c in hi]], "tris": int(n_all)}
+    if light:
+        res["light"] = sorted(light)
     if max(hi[0] - lo[0], hi[2] - lo[2], hi[1] - lo[1]) > FAR:
         res.update({"class": "far", "volumes": []})
         return res
@@ -464,9 +489,9 @@ def measure(pid, path):
 
 
 out = {}
-for pid, path in JOBS:
+for pid, path, lit in JOBS:
     try:
-        out[pid] = measure(pid, path)
+        out[pid] = measure(pid, path, frozenset(m for m in lit.split(",") if m))
     except Exception as e:  # a piece that will not measure is reported, not fatal
         out[pid] = {"error": f"{type(e).__name__}: {e}"[:160]}
 OUT.write_text(json.dumps(out, separators=(",", ":"), sort_keys=True))

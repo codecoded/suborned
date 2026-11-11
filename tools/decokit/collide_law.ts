@@ -13,6 +13,7 @@ import { join, resolve } from 'node:path';
 import type { KitAsset } from '../../contracts/world/kit.schema';
 import { extraId, readExtra, REPO } from '../kit/extra';
 import type { CollideFile, PieceCollide, Volume } from './collide';
+import { sameLight } from './collide_light';
 
 export type Decl = { by: 'builder' | 'extra'; volumes: Volume[] } | { by: 'none' } | { by: 'unknown'; why: 'pin' | 'no row' };
 export type Row = { name: string; collide?: Volume[]; collide_by?: string };
@@ -20,7 +21,8 @@ export type Row = { name: string; collide?: Volume[]; collide_by?: string };
 export type Rows = { gen?: Map<string, Row>; extra: Map<string, Map<string, Row>> };
 /** Brief 097's pins: collide097.json's volumes by id; collide097.py's ITEM (the street item's size and the tag scale range) and PINNED (the 097 rule on). */
 export type Pins = { pinned: boolean; as: Record<string, unknown[]>; item: Record<string, [[number, number, number], [number, number]]> };
-export type Todo = { id: string; fbx: string; sha: string; declare?: { volumes: Volume[]; hash: string }; why: 'new' | 'mesh' | 'declaration' | 'only' | 'all' };
+/** `light`: the light-only materials the measure leaves out (collide_light.ts), empty for most pieces. */
+export type Todo = { id: string; fbx: string; sha: string; light: string[]; declare?: { volumes: Volume[]; hash: string }; why: 'new' | 'mesh' | 'declaration' | 'only' | 'all' | 'light' };
 export type Plan = { pieces: Record<string, PieceCollide>; todo: Todo[]; errors: { id: string; why: string }[]; unread: { id: string; why: 'pin' | 'no row' }[] };
 
 /** The hash a declared record keeps of its volumes (`declared`). */
@@ -77,9 +79,10 @@ const why = (a: KitAsset, d: Extract<Decl, { by: 'unknown' }>) => (d.why === 'pi
 /**
  * Which pieces a run keeps, measures (`declare` absent) or declares, from the prior file and each piece's mesh hash. A piece is redone when its mesh changed, its
  * declaration changed, `only` names it, or the prior file is of another version (or `force`). A piece whose declaration is unknown keeps its record while its
- * mesh is the record's; redone on that mesh, it keeps the record's declaration; on another mesh it is an error, never a guess.
+ * mesh is the record's; redone on that mesh, it keeps the record's declaration; on another mesh it is an error, never a guess. `light` (brief 107): the light-only
+ * materials a piece carries now; a piece is redone when they are not the ones its record was measured without (absent: every record's own list stands).
  */
-export function planCollide(o: { assets: KitAsset[]; prior?: CollideFile; version: number; decl: (a: KitAsset) => Decl; fbx: (a: KitAsset) => string | undefined; sha: (f: string) => string; only?: string[]; force?: boolean }): Plan {
+export function planCollide(o: { assets: KitAsset[]; prior?: CollideFile; version: number; decl: (a: KitAsset) => Decl; fbx: (a: KitAsset) => string | undefined; sha: (f: string) => string; only?: string[]; force?: boolean; light?: (a: KitAsset) => string[] }): Plan {
   const keep = o.prior && o.prior.version === o.version && !o.force ? o.prior.pieces : {}, was = o.prior?.pieces ?? {};
   const plan: Plan = { pieces: {}, todo: [], errors: [], unread: [] };
   for (const a of [...o.assets].sort((x, y) => (x.id < y.id ? -1 : 1))) {
@@ -87,16 +90,17 @@ export function planCollide(o: { assets: KitAsset[]; prior?: CollideFile; versio
     if (a.status === 'rejected' || (o.only && !o.only.includes(a.id))) { if (k) plan.pieces[a.id] = k; continue; }
     const f = o.fbx(a);
     if (!f) { if (k) plan.pieces[a.id] = k; continue; } // a candidate whose mesh is not on this machine keeps its entry (brief 079)
-    const s = o.sha(f), d = o.decl(a), redo = !!o.only?.includes(a.id), r = was[a.id];
+    const s = o.sha(f), d = o.decl(a), redo = !!o.only?.includes(a.id), r = was[a.id], had = r && 'light' in r ? r.light : undefined, light = o.light?.(a) ?? had ?? [];
     let want: Todo['declare'];
     if (d.by === 'unknown') {
       plan.unread.push({ id: a.id, why: d.why });
-      if (k && !redo && k.sha256 === s) { plan.pieces[a.id] = k; continue; } // the record stands for its mesh
+      if (k && !redo && k.sha256 === s && sameLight(had, light)) { plan.pieces[a.id] = k; continue; } // the record stands for its mesh
       if (!r || !('volumes' in r) || r.sha256 !== s) { plan.errors.push({ id: a.id, why: why(a, d) }); continue; }
       want = r.source === 'declared' ? { volumes: r.volumes, hash: r.declared ?? dsha(r.volumes) } : undefined;
     } else want = d.by === 'none' ? undefined : { volumes: d.volumes, hash: dsha(d.volumes) };
-    if (k && !redo && k.sha256 === s && ('declared' in k ? k.declared : undefined) === want?.hash) { plan.pieces[a.id] = k; continue; }
-    plan.todo.push({ id: a.id, fbx: f, sha: s, ...(want ? { declare: want } : {}), why: !r ? 'new' : redo ? 'only' : !k ? 'all' : k.sha256 !== s ? 'mesh' : 'declaration' });
+    const lit = sameLight(had, light);
+    if (k && !redo && k.sha256 === s && lit && ('declared' in k ? k.declared : undefined) === want?.hash) { plan.pieces[a.id] = k; continue; }
+    plan.todo.push({ id: a.id, fbx: f, sha: s, light, ...(want ? { declare: want } : {}), why: !r ? 'new' : redo ? 'only' : !k ? 'all' : k.sha256 !== s ? 'mesh' : !lit ? 'light' : 'declaration' });
   }
   return plan;
 }

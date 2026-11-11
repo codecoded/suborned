@@ -115,3 +115,13 @@ Nothing was adopted and nothing in Unity was opened or rebaked. The player runs 
 - Glint: the sign line now; the edge level after the rebake.
 - Latch: steps 1 to 6.
 - Glyph: one look at a night frame where a sphere lamp's edge rings meet a teal clock ring.
+
+## Round 2b · no edge light on the straight bands (Sky, after bd6fb0720)
+
+Sky, on a crop of the spoke from the outer ring to the fountain: "remove that thin inner line from edge to center".
+- `InlayBand_06_2` and `InlayBand_12_2` are the enamel only again: 10 tris, `DK_Inlay_SeafoamNight` alone.
+- The rings (`InlayArc_*`) keep their edge light.
+- Ran `bun run decokit --only InlayBand_06_2,InlayBand_12_2`, then `bun run kit --extra out/decokit-107-extra`. In `kit.json`, exactly those two rows changed (`tris`, `materials`, `files`); the other 479 rows and the top-level keys are unchanged.
+- `civic-look.json`: the `DK_Glow_InlayEdge` row's `used_by` lists the three arcs only.
+- CD-4 74/74. CD-3 364,093 of 370,000. civic-dress, `tools/world/civic` and `tools/kit` tests: 79 pass.
+- `bun run collide` was **not** run. Splice re-runs it after the collide change.
