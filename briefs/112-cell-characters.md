@@ -53,7 +53,7 @@ Also in each figure, with no host hook yet: reload, interact, nod, shrug, reassu
 - **The seat:** the bundle's sit clips have no chair. Each is slid so the hip joints rest on the café chair's cushion; where the legs are longer than the chair is high the feet stay on the floor and the seat is up to 8 cm proud of the cushion.
 
 ## Known limits
-- **Weight:** about 29,000 to 31,000 triangles each in one level, against the stand-ins' 1,500 to 2,000 at play zoom. Textures are 2048 px, the Tech's body and the Enforcer's carbine 4096 px. Frame time is not measured yet.
+- **Weight:** about 29,000 to 31,000 triangles each in one level, against the stand-ins' 1,500 to 2,000 at play zoom. Textures are 2048 px, the Tech's body and the Enforcer's carbine 4096 px. On the Studio at 1920x1080 the play view costs the same within noise (stand-ins 3.85 and 3.95 ms a frame, the new cell 3.84 and 3.98 ms; the smoke's frame window, two runs each). The Air is not measured.
 - **Walks:** the cell walks at 1.8 m/s. The Scout and the Enforcer fit (their walks play at 1.25 and 1.21 times their speed). The Fixer's and the Tech's walks are strolls of about 1 m/s and play at the 1.8 times cap, which reads hurried. They need a brisker walk in their bundles.
 - **The Scout's walk** is the bundle's `Walking` clip, not her Walk action (`Walking (2)`, 0.92 m/s, which would play at 1.96 times). Her Walk action is kept as `walk_stroll`.
 - **Portraits:** unchanged. The HUD's stills are the same four designs, so they match the new figures.
@@ -69,6 +69,11 @@ Also in each figure, with no host hook yet: reload, interact, nod, shrug, reassu
 3. `CellSheet112`: no import message, every state has a clip, the props are found, the soles are within 3.5 cm of the floor in the standing states.
 4. A game build's smoke passes with the cell drawn.
 5. Sky plays it.
+
+## Result, 2026-11-12
+- A scratch build of this branch (`out/build/cell112`, no build number spent): the full proof ran every section, status ok, no Exception in the player's log.
+- Seven rows fail: `r29 fire busy (act ending within 2 s)`, `r123 fight safe`, and r083's `r085partnerOut`, `r085scoutSideOn`, `r085listenFrame`, `r085viewBack` and `r085sitClips`. They are not the figures': the same branch built with the stand-ins put back fails the same seven and passes the same 143 (both runs alone, the window focused throughout). They are this commit's, with engine 0.57.0; brief 110's proof passes them in the shared tree with changes not yet committed.
+- The first full run also failed `r085tpLeftTap`, `r085clipOut`, `r085clipTopSpeed` and `r085clipFindsHim`: another proof was running at the same time and the window lost focus eight times. Alone, they pass.
 
 ## Evidence
 - `briefs/112/people/manifest-cell.json` (committed).

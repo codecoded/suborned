@@ -4,7 +4,7 @@
 // Out: out/people-models/CellHml (generated, git-ignored). The manifest FigureBuild reads is committed: briefs/112/people/manifest-cell.json.
 // --install mirrors each figure's folder to unity/Assets/Suborned/People/Figures/<id> (git-ignored), over the stand-in of the same id. Run it after
 // `bun tools/figures/run.ts --install`, which puts the stand-ins back. --no-build installs the last build as it is.
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { homedir } from 'node:os';
 
@@ -76,5 +76,6 @@ if (has('--install')) {
     const r = Bun.spawnSync(['rsync', '-a', '--delete', src + '/', join(dst, id) + '/']);
     if (r.exitCode !== 0) throw new Error(`rsync failed: ${id}`);
   }
+  utimesSync(manifestPath, new Date(), new Date()); // FigureBuild.Library rebuilds the figure library when this manifest is newer than its controller
   console.log('installed', build.join(', '), 'to', dst.slice(root.length + 1));
 }
