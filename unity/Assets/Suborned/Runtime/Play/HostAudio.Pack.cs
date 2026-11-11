@@ -152,9 +152,9 @@ namespace Suborned.Play
         void PackLoops(Game g, float dt)
         {
             if (!packLoaded) return; bool on = !SoundOff && !g.Over && Ending.Length == 0;
-            if (bedSource && pack.TryGetValue("street_bed", out var bed) && bed.Clip)
+            if (bedSource && pack.TryGetValue(BedCue(), out var bed) && bed.Clip) // brief 107: the night bed at night (HostAudio.Weather107.cs)
             {
-                if (on && !bedSource.isPlaying) { bedSource.clip = bed.Clip; bedSource.loop = true; bedSource.Play(); } else if (!on && bedSource.isPlaying) bedSource.Stop();
+                if (on && (!bedSource.isPlaying || bedSource.clip != bed.Clip)) { bedSource.clip = bed.Clip; bedSource.loop = true; bedSource.Play(); } else if (!on && bedSource.isPlaying) bedSource.Stop();
                 bedSource.volume = PackGain("ambience") * (Paused && !ConvoOn ? 0.5f : 1f);
             }
             if (roomSource && pack.TryGetValue("room_tone", out var room) && room.Clip)
@@ -162,6 +162,7 @@ namespace Suborned.Play
                 bool want = on && ConvoOn; float vol = Mathf.MoveTowards(roomSource.volume, want ? PackGain("convo") : 0f, dt / (want ? ConvoDipS : 0.4f));
                 if (want && !roomSource.isPlaying) { roomSource.clip = room.Clip; roomSource.loop = true; roomSource.volume = 0f; roomSource.Play(); } roomSource.volume = vol; if (!want && vol <= 0.001f && roomSource.isPlaying) roomSource.Stop();
             }
+            PackWeather(g, dt, on); // brief 107: rain and night (HostAudio.Weather107.cs)
             var pt = views?.Find("patrol"); bool up = on && pt && pt.gameObject.activeInHierarchy && !g.PatrolDown;
             if (up && !patrolA && pack.TryGetValue("patrol_loop", out var pl) && pl.Clip && pack.TryGetValue("patrol_chase", out var pc) && pc.Clip)
             {
@@ -184,7 +185,7 @@ namespace Suborned.Play
         public int PackStress() { int n = 0; foreach (var c in pack.Values) { if (c.Loop || c.Id.StartsWith("foot")) continue; for (int i = 0; i < c.Voices && n < voices.Count; i++) { var v = voices[n++]; v.S.Stop(); v.S.clip = c.Clip; v.S.spatialBlend = 0f; v.S.pitch = 1f; v.S.volume = 1f; v.Cue = c.Id; v.Group = c.Group; v.Gain = 1f; v.Born = Time.unscaledTime; v.PanFrom = null; v.S.time = c.Clip.length > 0f ? 0f : 0f; v.S.PlayScheduled(AudioSettings.dspTime + 0.1); } } return n; }
         public float PackSoloLoop(string id, float before)
         {
-            foreach (var v in voices) v.S.Stop(); if (bedSource) bedSource.Stop(); if (roomSource) roomSource.Stop(); if (patrolA) { patrolA.volume = 0f; patrolB.volume = 0f; } if (loopSource) loopSource.Stop();
+            foreach (var v in voices) v.S.Stop(); if (bedSource) bedSource.Stop(); if (roomSource) roomSource.Stop(); if (rainSource) rainSource.Stop(); foreach (var l in awningLoops) l.S.Stop(); foreach (var l in dripLoops) l.S.Stop(); if (patrolA) { patrolA.volume = 0f; patrolB.volume = 0f; } if (loopSource) loopSource.Stop();
             if (!pack.TryGetValue(id, out var c) || !c.Clip) return 0f; var s = id == "room_tone" ? roomSource : bedSource; s.clip = c.Clip; s.loop = true; s.volume = 1f; s.time = Mathf.Max(0f, c.Clip.length - before); s.Play(); return c.Clip.length;
         }
     }
