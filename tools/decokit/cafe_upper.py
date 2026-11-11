@@ -160,8 +160,10 @@ def crown(s, eaves, top):
         streak_pair(s, Sg, tot * i / k + 0.08, tot * (i + 1) / k - 0.08, g0 + 0.1, g1 - 0.1, 0.004)
     tube(s, lift(S), sec(0.0, 0.3, g1, zs1 - 0.25), pal.Limestone, closed=True)
     band(s, S, -0.04, 0.0, g1 + 0.08, g1 + 0.3, pal.Enamel_Seafoam, closed=True)
-    s.extrude(ccw(offset(S, -0.25, closed=True)), zs1 - 0.25, zs1, pal.Enamel_Ivory)
-    tube(s, lift(offset(S, -0.25, closed=True)), sec(-0.03, 0.03, zs1 - 0.03, zs1 + 0.01), pal.Chrome, closed=True)  # brief 109: 1 cm over the slab (its top lay on the slab's: a flickering line along the roof)
+    # brief 109: the chrome edge's top lay on the slab's (a flickering line along the roof): the slab's top is now 1 cm under the chrome's, which stays at the
+    # roof line (Latch lifted the chrome 1 cm; Vela 2026-11-11 lowers the slab instead, so nothing passes the roof line and the play streets' cap holds)
+    s.extrude(ccw(offset(S, -0.25, closed=True)), zs1 - 0.25, zs1 - 0.01, pal.Enamel_Ivory)
+    tube(s, lift(offset(S, -0.25, closed=True)), sec(-0.03, 0.03, zs1 - 0.03, zs1), pal.Chrome, closed=True)
     s.extrude(ccw(offset(S, 0.3, closed=True)), g0 - 0.02, g0, pal.Enamel_Charcoal, bottom=False)   # the dark room behind the film
 
 

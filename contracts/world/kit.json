@@ -67098,7 +67098,7 @@
    "lods": [
     {
      "file": "Models/Plaza/DK_CafeUpper_3_L1.fbx",
-     "tris": 5654,
+     "tris": 5653,
      "screen": 0.008
     },
     {
@@ -67113,8 +67113,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Plaza/DK_CafeUpper_3.fbx",
-     "sha256": "4b62ef0a2c35b2e39ec2c6104c256a5d5d6cb0784bf7d9fced95e3f63846c3d9",
-     "bytes": 619660
+     "sha256": "2de11ad869134d77676851944915a5b8d95b244b7dd7bc2c30094987dac39b8e",
+     "bytes": 619596
     },
     {
      "root": "generated",
@@ -67408,15 +67408,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_CafeUpper_3_L1.fbx",
-     "sha256": "1dcef09fbb72df59db473013a48a62b1cd21ee9e2ade2782a039391ebe914221",
-     "bytes": 264300
+     "sha256": "4263e5f63054a9dc3cfe0b833897e9291ed4577ace8c92f49ef164a70baa3786",
+     "bytes": 264268
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_CafeUpper_3_L2.fbx",
-     "sha256": "e51853e8d81418208e657b9cd981c00c721d4cf650ebadf64d4698bf1646061f",
-     "bytes": 93932
+     "sha256": "2791f9c185c2a22b25566f3a32dc958477f69073f4f49dc8d67d85ca759184a4",
+     "bytes": 93948
     }
    ],
    "tags": {
@@ -67690,7 +67690,7 @@
    "lods": [
     {
      "file": "Models/Plaza/DK_CafeUpper_3_TB_L1.fbx",
-     "tris": 3325,
+     "tris": 3327,
      "screen": 0.008
     },
     {
@@ -67724,24 +67724,24 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_CafeUpper_3_TB.fbx",
      "src": "Models/Plaza/DK_CafeUpper_3.fbx",
-     "sha256": "244d7404c66d53706ed4ce95b343dc7d1c7b9ae9e48be041873c8cc808e1ce3d",
-     "bytes": 403660
+     "sha256": "eee17775616937211a1f433a8833d9e629551697d2187bb715f3d90e4577cc75",
+     "bytes": 403516
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_CafeUpper_3_TB_L1.fbx",
      "src": "Models/Plaza/DK_CafeUpper_3_L1.fbx",
-     "sha256": "08ffbe479f8c1e8912bde01e5cfa0337dd627210ea595a8f409bd287f2ee687e",
-     "bytes": 154108
+     "sha256": "dfac376146728c7624c53fa00310b07f83ab3324f9a0a09c3aaff266fd1ac21d",
+     "bytes": 154188
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_CafeUpper_3_TB_L2.fbx",
      "src": "Models/Plaza/DK_CafeUpper_3_L2.fbx",
-     "sha256": "ac14c51c530a072e77a0324152209e0365bcbab33dce28a6b43266408772db68",
-     "bytes": 94412
+     "sha256": "bb1189ba99362de3b7ebad608dbab14e7948369df6da238677ec4df13a130a6f",
+     "bytes": 94348
     },
     {
      "root": "generated",
@@ -68040,8 +68040,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Plaza/DK_CafeUpper_4.fbx",
-     "sha256": "4ad09013889336b1caf91850ad0e59e18d17710aa1a12d714873c3c54ab9b7e1",
-     "bytes": 702652
+     "sha256": "17cc6b8ed1fe66e1ec19ae1777c5de1eb0033f17e92b309ade3d6299862845dc",
+     "bytes": 702668
     },
     {
      "root": "generated",
@@ -68335,15 +68335,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_CafeUpper_4_L1.fbx",
-     "sha256": "0d9756747a913ea8d8fa8082a8f4f9439f882182e4779bbb1f5a2c30b984da8a",
-     "bytes": 292204
+     "sha256": "6b77bc9f22acaaefc904a8f05c808e5eb0a73369a95dbc5a73a24bd1ccba9ac6",
+     "bytes": 292108
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_CafeUpper_4_L2.fbx",
-     "sha256": "2c3aab8445e124a1da51fb272b43da779a191ed0d0ad8029cabc9e076c0ec0f1",
-     "bytes": 102188
+     "sha256": "f78905c98a4749b1c1fb153dfd0a030602aa1160223de4679048cddb0589acab",
+     "bytes": 102156
     }
    ],
    "tags": {
@@ -68651,24 +68651,24 @@
      "role": "fbx",
      "path": "Models/Plaza/DK_CafeUpper_4_TB.fbx",
      "src": "Models/Plaza/DK_CafeUpper_4.fbx",
-     "sha256": "6fa68f3d8cd9a4f30f9e96050ad17917c97881b96ff67ff14c748fe3905e9ad7",
-     "bytes": 421900
+     "sha256": "e188980eb596cc650e8eb0dee52c57f6a1257284db02b8493bdd6e8e28866a8d",
+     "bytes": 421964
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_CafeUpper_4_TB_L1.fbx",
      "src": "Models/Plaza/DK_CafeUpper_4_L1.fbx",
-     "sha256": "a475fe6536160e2b9a7bc22dd582c7a8e63eb927cccc343a28ab78e772fbc648",
-     "bytes": 173660
+     "sha256": "99e46363b1362e19863550614026642ae7406084cbb8d4cd4e9dddab8a60b251",
+     "bytes": 173516
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Plaza/DK_CafeUpper_4_TB_L2.fbx",
      "src": "Models/Plaza/DK_CafeUpper_4_L2.fbx",
-     "sha256": "1625428376e4bd8434430c5c2fb5eebe4e84661f8492cd6ca42b1066822af9f5",
-     "bytes": 98028
+     "sha256": "a4238d034ce337f617d9bf7762db4da8dcdad7756f7fdecb2834417a5beed62a",
+     "bytes": 98012
     },
     {
      "root": "generated",
