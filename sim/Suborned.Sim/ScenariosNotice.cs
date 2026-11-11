@@ -163,13 +163,13 @@ namespace Suborned.Sim
             });
 
             // ---------------------------------------------------------------- what a Watch shows (brief 054 §2, §4)
-            Add("WM-1", "—", "The Watch set at 0:00 (brief 054 §2.1, §6): Inez (Fearful, fear 1) reads uneasy and has a Watch to give; the door guard too (security: his sight and marks); the driver (Mercenary, neutral) and Vale have none (nothing-to-see, free). Listen on Inez waits for her Watch (needs-routine); Listen and Pay on the driver need none.", r =>
+            Add("WM-1", "—", "The Watch set at 0:00 (brief 054 §2.1, §6): Inez (Fearful, fear 1) reads uneasy and has a Watch to give; the door guard too (security: his sight and marks); the driver (Mercenary, neutral) and Vale have none (nothing-to-see, free). Listen on Inez needs no Watch (engine 0.55.0, brief 110), nor on the driver; Pay on the driver needs none either (no Watch to give).", r =>
             {
                 var g = r.G;
                 r.Is(g.WatchOffered(Inez) && g.WatchOffered(GuardR), "Inez and the guard: a Watch to give");
                 r.Is(!g.WatchOffered(Driver) && !g.WatchOffered(Vale), "the driver and Vale: none");
                 r.Eq(g.ScoutQuery("watch", Driver).code, "nothing-to-see", "the driver's Watch is refused nothing-to-see");
-                r.Eq(g.ScoutQuery("listen", Inez).code, "needs-routine", "Listen on Inez: Watch first");
+                r.Is(g.ScoutQuery("listen", Inez).ok, "Listen on Inez: open before her Watch (engine 0.55.0)");
                 r.Is(g.ScoutQuery("listen", Driver).code != "needs-routine", "Listen on the driver: no Watch needed");
                 r.Is(g.Preview("pay", Driver).Refused == "" && g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "turn", Target = Driver, Approach = "pay" }).code != "needs-routine", "Pay on the driver: no Watch needed");
                 r.Wait(1);
@@ -189,7 +189,7 @@ namespace Suborned.Sim
                 r.Is(g.ScoutQuery("listen", Inez).code != "needs-routine", "Listen opens");
             });
 
-            Add("WM-3", "—", "A mood that changes mid-mission (brief 054 §2.2): the driver, neutral and never watched, sees the Enforcer draw beside his car and turns uneasy: now he has a Watch to give, and Listen on him waits for it.", r =>
+            Add("WM-3", "—", "A mood that changes mid-mission (brief 054 §2.2): the driver, neutral and never watched, sees the Enforcer draw beside his car and turns uneasy: now he has a Watch to give; Listen on him needs none (engine 0.55.0, brief 110).", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Meet driver"));
@@ -198,7 +198,7 @@ namespace Suborned.Sim
                 bool saw = g.Driver.Memory.Exists(m => m.Act == "saw-weapon-drawn");
                 if (!saw) { r.Is(true, "the driver faced away from the draw (no mood change): nothing to check"); return; }
                 r.Is(g.WatchOffered(Driver), "he saw the weapon: uneasy, a Watch to give");
-                r.Eq(g.ScoutQuery("listen", Driver).code, "needs-routine", "Listen on him now waits for the Watch");
+                r.Is(g.ScoutQuery("listen", Driver).code != "needs-routine", "Listen on him stays open: it waits for no Watch (engine 0.55.0)");
             });
 
             Add("WM-4", "—", "The mood's step on the fit (brief 054 §4.2, rulebook mood.shift): friendly lifts a suiting Pay to ready ($20,000 less) and a Help one order fewer; scared lifts a suiting Pressure to ready (one Trail less); a refusal is never lifted; worse is the floor.", r =>

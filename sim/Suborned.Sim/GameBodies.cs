@@ -151,7 +151,7 @@ namespace Suborned.Sim
             {
                 var op = Ops[i]; if (op.Inside || op.InCar || op.CarriedBy.HasValue || op.Down || op.LeftMap) continue;
                 var seat = SeatOf(op); var into = seat == null ? SittingInto(op) : null; if ((seat ?? into) is string ch) { seatHeld[ch] = Sim.Op.Name(op.Id); seatSeen.Add(ch); } // engine 0.49.0: an operative in a café chair, or taking his last step into it, holds it, as a customer does
-                bool walkSame = op.Walk != null && ReferenceEquals(op.BodyWalk, op.Walk), fixedOp = op.Busy != null || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) || seat != null;
+                bool walkSame = op.Walk != null && ReferenceEquals(op.BodyWalk, op.Walk), fixedOp = (op.Busy != null && !(op.Busy.Do == "listen" && op.Walk != null)) || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) || seat != null;
                 var raw = fixedOp ? op.Pos : op.Walk != null ? op.Walk.At(op.WalkMm) : op.Body.Live(Tick) && op.Pos == op.Body.Raw + op.Body.Lay ? op.Body.Raw : op.Pos; // at work or leading Vale he stands where he stands
                 bool anew = fixedOp || (op.Walk != null ? !walkSame : raw == op.Pos); // a new walk or a set place starts where he stands
                 AddBd(Sim.Op.Name(op.Id), BkOp, fixedOp ? BcFixed : BcFirm, i, raw, op.Body, FmNone, default, (null, 0, default), false, anew); // his plan is his walk and his place (above)

@@ -24,7 +24,7 @@ namespace Suborned.Sim
         bool listenArriving; // on ApproachStep's call of Scout: the act was in place, so reach alone is asked again
         int aheadTick = -1; Dictionary<string, (Pt at, string chair, int walkT, int startT)?>? aheadCache; // the card's read, a tick at a time; never read by the engine's own choice
 
-        bool ListenSpots(Op op, string verb) => verb == "listen" && R.ListenSpotOn && WalksIn(op);
+        bool ListenSpots(Op op, string verb) => verb == "listen" && R.ListenSpotOn && !R.ListenFollowOn && WalksIn(op); // engine 0.55.0: with cell.listen.follow no spot ahead and no wait (GameListenFollow.cs)
 
         /// <summary>The op's spot while its order stands: walking in, waiting or at the act. Null otherwise.</summary>
         ListenSpot? SpotOf(Op op) => op.Spot != null && (ReferenceEquals(op.Spot.For, op.Act) || ReferenceEquals(op.Spot.For, op.Busy)) ? op.Spot : null;

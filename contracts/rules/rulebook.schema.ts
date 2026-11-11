@@ -6,7 +6,7 @@
 // is restated here, and checkRulebook() rejects any id that file does not know (GDD §01: unknown = reject).
 import { z } from 'zod';
 import type { PeopleRules } from '../people/people.rules.schema.ts';
-import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; import { BlastStanding, RivalsBlock, RivalsLookout, RivalsTurn, Unclaimed } from './rulebook.schema096r.ts'; import { CarLend, CarTake } from './rulebook.schema096l.ts'; import { Bodies, FightCover } from './rulebook.schema098b.ts'; import { Look } from './rulebook.schema107.ts'; import { CarGo } from './rulebook.schema096m.ts'; // brief 096 (engine 0.40.0, 0.41.0, 0.42.0, 0.43.0)
+import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; import { BlastStanding, RivalsBlock, RivalsLookout, RivalsTurn, Unclaimed } from './rulebook.schema096r.ts'; import { CarLend, CarTake } from './rulebook.schema096l.ts'; import { Bodies, FightCover } from './rulebook.schema098b.ts'; import { Look } from './rulebook.schema107.ts'; import { Pace } from './rulebook.schema110.ts'; import { CarGo } from './rulebook.schema096m.ts'; // brief 096 (engine 0.40.0, 0.41.0, 0.42.0, 0.43.0)
 
 const id = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const eventId = z.string().regex(/^[a-z][a-z0-9-]*\.[a-z][a-z0-9-]*$/);
@@ -277,7 +277,7 @@ export const Rulebook = z.strictObject({
     take: z.strictObject({ s: Ref, trailUnturned: Ref, struggle: Ref.optional() }), // struggle: optional only for runs pinned before brief 013
     // engine 0.23.0 (Sky 2026-10-22): a person act out of reach walks in instead of being refused too-far; optional so a rulebook pinned before it parses
     // (absent or walkIn false: too-far as before); rulebook.test.ts holds the live rulebook to having it
-    listen: z.strictObject({ nearWalking: Ref, nearStill: Ref, chairGrace: Ref, look: Ref, step: Ref, hold: Ref, chairMargin: Ref, chairGround: Ref, atSpot: Ref, wall: Ref.optional(), pass: Ref.optional(), rule: text, tag: z.string().optional(), src: z.string().optional(), proposed: z.boolean().optional(), reason: z.string().optional() }).optional(), /* engine 0.39.0, brief 085; optional only so runs pinned before it parse */ approach: z.strictObject({ walkIn: z.boolean(), repath: Ref, rule: text, tag: z.string().optional(), src: z.string().optional(), proposed: z.boolean().optional(), reason: z.string().optional() }).optional(),
+    listen: z.strictObject({ nearWalking: Ref, nearStill: Ref, chairGrace: Ref, look: Ref, step: Ref, hold: Ref, chairMargin: Ref, chairGround: Ref, atSpot: Ref, wall: Ref.optional(), pass: Ref.optional(), follow: Ref.optional() /* engine 0.55.0, brief 110: the Listen follows */, rule: text, tag: z.string().optional(), src: z.string().optional(), proposed: z.boolean().optional(), reason: z.string().optional() }).optional(), /* engine 0.39.0, brief 085; optional only so runs pinned before it parse */ approach: z.strictObject({ walkIn: z.boolean(), repath: Ref, rule: text, tag: z.string().optional(), src: z.string().optional(), proposed: z.boolean().optional(), reason: z.string().optional() }).optional(),
     rule: text,
   }),
   // checkIn (both) and seal: optional only so runs pinned before brief 013 parse; brief 013 retires them (response.checkIn, response.levels[].seal).
@@ -499,7 +499,7 @@ export const Rulebook = z.strictObject({
       rule: text }),
     rule: text,
   }).optional(),
-  investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }), bodies: Bodies.optional(), look: Look.optional(), /* brief 107 (engine 0.54.0): the weather and light dial, a look only (rulebook.schema107.ts) */ // brief 098 L9 (engine 0.46.0): optional only for runs pinned before it (rulebook098b.test.ts holds the live one to it)
+  investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }), bodies: Bodies.optional(), look: Look.optional(), pace: Pace.optional() /* brief 110 (engine 0.55.0): the act-pace dial (rulebook.schema110.ts) */, /* brief 107 (engine 0.54.0): the weather and light dial, a look only (rulebook.schema107.ts) */ // brief 098 L9 (engine 0.46.0): optional only for runs pinned before it (rulebook098b.test.ts holds the live one to it)
   preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),
   // brief 080 (engine 0.37.0): the seeded start. Optional only so a rulebook pinned before it parses.
   seed: ground({

@@ -486,7 +486,7 @@
   "only-tech": {"line":"Only the Tech can do this. Select the Tech.","short":"Tech only","verbs":["loop","disable","reroute"]},
   "only-enforcer": {"line":"Only the Enforcer can do this. Select the Enforcer.","short":"Enforcer only","verbs":["enter","take"]},
   "too-far": {"line":"Too far from {who}. Walk within {m} m first.","short":"Too far · {m} m","verbs":["watch","listen","ask","pay","help","pressure"]},
-  "needs-routine": {"line":"Learn {who}'s routine first: Watch them.","short":"Watch first","verbs":["listen","pay"],"byTarget":{"crew":{"line":"Watch one of their crew first. One Watch covers them all.","short":"Watch the crew first"}}},
+  "needs-routine": {"line":"Learn {who}'s routine first: Watch them.","short":"Watch first","verbs":["pay"],"byTarget":{"crew":{"line":"Watch one of their crew first. One Watch covers them all.","short":"Watch the crew first"}}},
   "needs-need": {"line":"Find out what {who} needs first: have the Scout Listen.","short":"Listen first","verbs":["help","pressure"]},
   "needs-temperament": {"line":"Find out who {who} is first: have the Scout Listen.","short":"Listen first","verbs":["ask","pay","help","pressure"]},
   "no-act-need": {"line":"This won't meet {who}'s need. Try another approach.","short":"Not what they need","verbs":["help","pressure"]},

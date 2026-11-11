@@ -240,7 +240,7 @@ namespace Suborned.Sim
             foreach (var op in Ops)
             {
                 op.StepFrom = op.Pos; // tuning.md §8.3: the gait's direction is this tick's step
-                if (op.Busy != null && op.BusyEnd <= Tick) { var o = op.Busy; op.Busy = null; Land(op, o); if (Over) break; }
+                ListenFollow(op); if (op.Busy != null && op.BusyEnd <= Tick) { var o = op.Busy; op.Busy = null; Land(op, o); if (Over) break; } // engine 0.55.0 (GameListenFollow.cs): a Listen keeps to its person, its clock only in reach
                 if (op.Walk != null)
                 {
                     op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; op.Pos = op.Walk.At(op.WalkMm) + OpLay(op); // brief 098 L9: his walk keeps the lay the law gave it

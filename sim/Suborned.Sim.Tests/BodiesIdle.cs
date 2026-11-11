@@ -54,27 +54,29 @@ public class BodiesIdleTests
     [Fact]
     public void AListeningScoutSitsInHisChairOrStandsByAWallOutOfTheWay()
     {
-        int seated = 0, ground = 0; var bad = new List<string>();
+        int seated = 0, ground = 0; var bad = new List<string>(); var seen = new HashSet<string>(); // engine 0.55.0 (cell.listen.follow): he settles after the start, so each Listen's arrival at its spot counts once
         foreach (var route in new[] { "route-a", "route-a-pressure", "careless-takedown-seen-crowd" })
             foreach (var seed in new[] { 1, 2, 3, 4, 5, 6 })
                 Play(route, seed, "unset", g =>
                 {
-                    var op = g.Ops[0]; var n = g.ListenSpotNow("scout"); if (op.Busy?.Do != "listen" || !n.HasValue) return;
-                    var (at, chair, _, _) = n.Value;
+                    var op = g.Ops[0]; var n = g.ListenSpotNow("scout"); if (op.Busy?.Do != "listen" || !n.HasValue || op.Walk != null) return;
+                    var (at, chair, _, _) = n.Value; string key = $"{route}#{seed}#{op.Busy.Tick}#{at}";
                     if (chair.Length > 0)
                     {
-                        if (g.Tick == op.BusyStart) seated++;
-                        if (g.SeatedAt("scout")?.chair != chair || op.Pos != at) bad.Add($"{route} #{seed} {Report.Clock(g.Tick)}: listening from {chair} but standing at {op.Pos}, not in it ({at})");
+                        if (op.Pos != at) return; // not in yet
+                        if (seen.Add(key)) seated++;
+                        if (g.SeatedAt("scout")?.chair != chair) bad.Add($"{route} #{seed} {Report.Clock(g.Tick)}: listening from {chair} but not seated in it");
                         if (!g.BodyIsTenet("scout")) bad.Add($"{route} #{seed} {Report.Clock(g.Tick)}: seated, but a body the law may move");
                     }
                     else
                     {
-                        if (g.Tick == op.BusyStart) ground++;
+                        if (!G.Within(op.Pos, at, g.R.ListenAtSpotCm)) return;
+                        if (seen.Add(key)) ground++;
                         if (!g.BesideSolid(at)) bad.Add($"{route} #{seed}: listening from {at}, not by a wall");
                         if (g.S.Grid.Cuts(at, g.R.BodyMinCm, g.R.ListenPassCm)) bad.Add($"{route} #{seed}: listening from {at}, across a passage");
                     }
                 });
-        Assert.True(seated > 0, $"the Scout sat {seated} times, stood {ground}");
+        Assert.True(seated + ground > 0, $"the Scout settled {seated} times seated, {ground} by a wall"); // engine 0.55.0: sitting where a chair is in her ring, else by a wall
         Assert.True(bad.Count == 0, string.Join("; ", bad.Distinct().Take(5)));
     }
 

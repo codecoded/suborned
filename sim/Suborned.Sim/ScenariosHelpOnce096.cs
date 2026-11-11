@@ -51,8 +51,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.Send(Tech, "cabinet"); ListenToInez(r, loopMast: true);
-                r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
-                ListenToDriver(r);
+                r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "help"); ListenToDriver(r); r.Done(Fixer); // engine 0.55.0: the Scout walks to the car while the Fixer helps Inez (a Listen holds her no longer, so the Help walks in to her round), as 9b
                 r.To(r.Send(Fixer, "d:Boarding pavilion")); r.Do(Fixer, "turn", Driver, "help"); r.Done(Fixer);
                 r.Is(g.Inez.Turned && g.Driver.Turned, "both turned, one visit each");
                 r.Eq(g.Cash, 10000L, "$90,000 spent, $10,000 left");

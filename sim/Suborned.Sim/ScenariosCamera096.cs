@@ -100,8 +100,16 @@ namespace Suborned.Sim
                 var alt = With059(r.Inputs!, "\"people-care-alert\": \\{ \"v\": 2", "\"people-care-alert\": { \"v\": 0");
                 var a = Alt(r, alt); var g = a.G;
                 a.Do(Scout, "watch", Inez); a.Done(Scout); a.Do(Scout, "listen", Inez); a.Until(() => g.Log.Exists(l => l.Code == "scout.listen.heard"), T(240)); // brief 101: from her start, out of the square's mast's view (17 m), so it never reports her loitering first
-                Pt? spot = null; // a free point on her round, in the mast camera's view
-                for (int k = 0; k < 600 && spot == null && !g.Over; k++) { var ip = g.PersonPos(g.Inez); if (ip.HasValue && g.CameraWatching("mast-z0", ip.Value) && g.S.Grid.NearestFree(ip.Value + new Pt(0, 150)) is Pt f && g.CameraWatching("mast-z0", f)) spot = f; else a.Wait(5); }
+                Pt? spot = null; // a free point on her round, in the mast camera's view, that the Fixer reaches just before she does (engine 0.55.0: no waiting in the camera's view, which reports a loiterer)
+                for (int k = 0; k < 600 && spot == null && !g.Over; k++)
+                {
+                    for (int t = T(4); t <= T(90) && spot == null; t += 5)
+                    {
+                        var ip = g.PoseAhead(g.Inez, t)?.pos; if (!ip.HasValue || !g.CameraWatching("mast-z0", ip.Value)) continue;
+                        if (g.S.Grid.NearestFree(ip.Value + new Pt(0, 150)) is Pt f && g.CameraWatching("mast-z0", f) && g.Walk.Route(a.Op(Fixer).Pos, f) is Pt[] rt && new Path(rt).Length / 180 + T(2) <= t) spot = f;
+                    }
+                    if (spot == null) a.Wait(5);
+                }
                 if (!r.Is(spot.HasValue, "a point on Inez's round in the mast camera's view")) return;
                 a.To(a.SendTo(Fixer, spot!.Value));
                 bool Now() { var p0 = g.Preview("pressure", Inez); return p0.Witnesses > 0 && g.WalkInS(Fixer, "pressure", Inez) == 0 && g.CameraWatching("mast-z0", a.Op(Fixer).Pos); }

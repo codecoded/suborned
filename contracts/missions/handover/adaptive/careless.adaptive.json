@@ -11,7 +11,7 @@
   {"id":"fixer-square","op":"fixer","do":"move","to":"d:Courtyard","run":true},
   {"id":"tech-cabinet","op":"tech","do":"move","to":"cabinet","run":true},
   {"id":"watch","op":"scout","do":"watch","target":"waitress","when":["free:scout"],"retry":5},
-  {"id":"listen","op":"scout","do":"listen","target":"waitress","when":["log:scout.watch.watched"],"retry":5},
+  {"id":"listen","op":"scout","do":"listen","target":"waitress","after":["watch"],"when":["free:scout"],"retry":5},
   {"id":"pressure","op":"fixer","do":"turn","target":"waitress","approach":"pressure","when":["log:scout.listen.heard"],"retry":5},
   {"id":"call","op":"fixer","do":"call","target":"waitress","when":["log:turn.pressure.turned"],"retry":4},
   {"id":"enter","op":"enforcer","do":"enter","when":["log:call.waitress"],"retry":3},

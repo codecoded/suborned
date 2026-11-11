@@ -31,7 +31,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard"));
-                { var q = g.ScoutQuery("listen", Inez); r.Is(!q.ok && q.code != "already-heard", $"before a Watch, Listen is refused, but not for knowledge ({q.code})"); }
+                { var q = g.ScoutQuery("listen", Inez); r.Is(q.ok, $"before a Watch, Listen is open too (engine 0.55.0, brief 110; Sky: \"Scout can always listen and watch\") ({q.code})"); }
                 r.Is(g.ScoutQuery("watch", Inez).ok && g.Quote(g.R.Ev("cell.watch"), g.Inez).Refused == "", "the first Watch is open: card and query");
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez"));
@@ -100,17 +100,17 @@ namespace Suborned.Sim
                 r.Is(g.Quote(g.R.Ev("cell.watch"), g.Inez).Refused == "already-watched" && g.ScoutQuery("watch", Inez).code == "already-watched" && !g.WatchOffered(Inez), "with the lovers together, the same: already-watched, card and query");
                 r.Is(!g.Inez.KSecret && !g.GuardP.KSecret, "the affair is still unknown: only Listen teaches it");
             }, Told(Inez, "need"));
-            Add("N106", "—", "The query asks needs before reach (Latch 2026-10-18): at 0:02 the Scout stands far from Inez and her routine is unknown. ScoutQuery says needs-routine (walking closer won't cure it); the order itself, given there, says the same since engine 0.23.0 (rulebook cell.approach: out of reach it would walk in, so the needs are checked first; before it, Issue answered too-far). Within reach, both say needs-routine.", r =>
+            Add("N106", "—", "Listen needs no Watch first (engine 0.55.0, brief 110; Sky 2026-11-11: \"Scout can always listen and watch\"): at 0:02 the Scout stands far from Inez and her routine is unknown. The query and the order both take the Listen (out of reach it walks in at once, cell.approach); within reach it starts at once. Was (0.23.0 to 0.54.0): needs-routine at a distance and in reach.", r =>
             {
                 var g = r.G;
                 r.To(T(2));
                 var at = g.PersonPos(g.Inez)!.Value;
-                r.Is(!G.Within(r.Op(Scout).Pos, at, g.R.ListenReachCm), "the Scout stands out of Listen's reach");
-                r.Eq(g.ScoutQuery("listen", Inez).code, "needs-routine", "at a distance the query gives the missing need, not too-far");
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }).code, "needs-routine", "the order itself: needs-routine (engine 0.23.0: no walk in for a need walking won't cure)");
-                r.To(r.Send(Scout, "beside-inez"));
-                r.Eq(g.ScoutQuery("listen", Inez).code, "needs-routine", "within reach, the query: needs-routine");
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }).code, "needs-routine", "within reach, the order: needs-routine");
+                r.Is(!G.Within(r.Op(Scout).Pos, at, g.R.ListenReachCm) && !g.Inez.KRoutine, "the Scout stands out of Listen's reach, her routine unknown");
+                r.Is(g.ScoutQuery("listen", Inez).ok, "at a distance the query takes it");
+                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }).ok && r.Op(Scout).Act != null, "the order is taken and the Scout walks in at once");
+                r.Is(r.Until(() => r.Op(Scout).Busy?.Do == "listen", T(60)), "in reach, the Listen starts");
+                r.Done(Scout);
+                r.Is(g.Inez.KNeed && g.Inez.KTemperament && !g.Inez.KRoutine, "heard with no Watch: her need and temperament, not her routine (a Listen teaches what it always taught)");
             });
         }
 
