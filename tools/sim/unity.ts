@@ -42,6 +42,8 @@ const INPUTS = { 'rulebook.json': 'contracts/rules/rulebook.json', 'people.rules
 // brief 029 (Keel): the fight range's two sites, its own inputs beside the Handover's (a range run never loads the Handover's files, and the
 // Handover's inputs and hashes are untouched by these). Copied to StreamingAssets/sim/, hashed in engine.json `range`, and R01..R10 played
 // headless into headless.json `range` for the Unity match.
+/** The sound pack's two inputs (sound.json below). Every path this step reads gates the batch's sim step (tools/game/proofmap.json; tools/sim/unity.reads.test.ts holds it). */
+const SOUND_PACK = 'briefs/087/cues.json', SOUND_WEATHER = 'contracts/audio/weather.json';
 const RANGE = { 'range.site.json': 'sim/data/range.site.json', 'range-dense.site.json': 'sim/data/range-dense.site.json', 'range-lane.site.json': 'sim/data/range-lane.site.json' } as const; // lane: engine 0.16 (F8-BREAK, F11-*, F12-*, F13-*)
 const commit = need(sh(['git', 'rev-parse', 'HEAD']), 'git rev-parse').trim();
 const dirty = sh(['git', 'diff', '--quiet', 'HEAD', '--', 'sim/Suborned.Sim', ...Object.values(INPUTS)]).code !== 0;
@@ -145,7 +147,7 @@ let text = 'absent (the host shows its placeholders)';
     : (sh(['git', 'cat-file', '-e', `HEAD:${rel}`]).code === 0 ? Buffer.from(need(sh(['git', 'show', `HEAD:${rel}`]), `git show ${rel}`)) : null);
   const body = at(TEXT), schema = at(TEXT_SCHEMA);
   if (body && schema) {
-    const dir = join(work, 'text'); mkdirSync(join(dir, 'contracts/missions/handover'), { recursive: true });
+    const dir = join(work, 'text'); mkdirSync(join(dir, posix.dirname(TEXT_SCHEMA)), { recursive: true });
     writeFileSync(join(dir, TEXT_SCHEMA), schema);
     // what the schema imports, and what they import, from the same source tree: followed from its relative imports, not a hand list (a new import, book.schema.ts in 0.2.230, broke the hand list)
     for (const todo: [string, Buffer][] = [[TEXT_SCHEMA, schema]], seen = new Set([TEXT_SCHEMA]); todo.length;) {
@@ -201,7 +203,7 @@ let cues = 'absent (the host plays the cue values copied into its code)';
     : (sh(['git', 'cat-file', '-e', `HEAD:${rel}`]).code === 0 ? Buffer.from(need(sh(['git', 'show', `HEAD:${rel}`]), `git show ${rel}`)) : null);
   const body = at(CUES), schema = at(CUES_SCHEMA);
   if (body && schema) {
-    const dir = join(work, 'cues'); mkdirSync(join(dir, 'contracts/audio'), { recursive: true });
+    const dir = join(work, 'cues'); mkdirSync(join(dir, posix.dirname(CUES_SCHEMA)), { recursive: true });
     writeFileSync(join(dir, CUES_SCHEMA), schema); // imports only zod, which resolves from the repo's node_modules above out/
     const { Cues } = await import(join(dir, CUES_SCHEMA));
     const j = judgeCues(body.toString('utf8'), Cues, join(root, CLIP_ROOT), MAX_DEPTH);
@@ -222,7 +224,7 @@ for (const r of routes) console.log(`route ${r.id}: ${r.outcome}${r.fail ? ` (${
 console.log(`mission text: ${text}`);
 console.log(`seats: ${seats}`);
 // the sound pack's cues (briefs/087/cues.json, until Chime moves them to contracts/audio) and the weather and night sounds' (contracts/audio/weather.json, brief 107): view only, unhashed, for HostAudio.Pack; the fields the player reads
-{ const c = JSON.parse(readFileSync(join(root, 'briefs/087/cues.json'), 'utf8')); const wx = join(root, 'contracts/audio/weather.json'); if (existsSync(wx)) c.cues = [...c.cues, ...JSON.parse(readFileSync(wx, 'utf8')).cues];
+{ const c = JSON.parse(readFileSync(join(root, SOUND_PACK), 'utf8')); const wx = join(root, SOUND_WEATHER); if (existsSync(wx)) c.cues = [...c.cues, ...JSON.parse(readFileSync(wx, 'utf8')).cues];
   const body = JSON.stringify({ schema: c.schema, buses: c.buses, spatial: c.spatial, cues: c.cues.map((q: any) => ({ id: q.id, file: q.file, mix_group: q.mix_group, voices_max: q.voices_max, cooldown_s: q.cooldown_s, loop: q.loop, spatial: q.spatial })) }, null, 1) + '\n'; writeFileSync(join(stream, 'sound.json'), body); console.log(`sound pack: ${c.cues.length} cues`); }
 console.log(`listen partners: ${partners}`);
 console.log(`audio cues: ${cues}`);
