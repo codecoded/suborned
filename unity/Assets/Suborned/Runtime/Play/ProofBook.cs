@@ -132,8 +132,8 @@ namespace Suborned.Play
                     h.BookClose(); yield return Frames(1);
                 }
             }
-            nw["front-door"].Add(new BookWordsFile.Need { Id = "test-need", Words = "A test condition", Check = "log:start" }); h.BookOpenNow("job"); yield return Frames(2);
-            var tneed = h.BookPageNow.Needs.Find(x => x.Id == "test-need"); bool testOk = tneed != null && tneed.Met == g.Log.Exists(x => x.Code == "start") && HudToolkit.BookLaidOut.Has(BookSlot.Needs); h.BookClose(); nw["front-door"].RemoveAll(x => x.Id == "test-need"); yield return Frames(1);
+            nw["front-door"].Add(new BookWordsFile.Need { Id = "test-need", Words = "A test condition", Check = "log:start" }); h.BookOpenNow("job"); h.BookStepTo(1); if (h.BookWayOpen != "front-door") h.BookWayToggle("front-door", ""); yield return Frames(2); // brief 108: the steps show behind the way's chip on the place page
+            var tneed = h.BookPageNow.Needs.Find(x => x.Id == "test-need"); bool testOk = tneed != null && tneed.Met == g.Log.Exists(x => x.Code == "start") && HudToolkit.BookLaidOut.Has(BookSlot.Needs); h.BookWayToggle("front-door", ""); h.BookClose(); nw["front-door"].RemoveAll(x => x.Id == "test-need"); yield return Frames(1);
             Row("bookNeeds", nbad == 0 && vocab && testOk && npts >= 10 && nmet.Count >= 5, $"{npts} points on route A and the pickup route, {nbad} wrong; vocabulary {vocab}; test condition {testOk}; ticked at some point: {string.Join(", ", nmet.Keys)} {string.Join("; ", nsaid2)}");
             UnityEngine.Debug.Log("ProofBook: what is still a way (the job's): closes the book, "); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- what is still a way (the job's): closes the book, opens that thing's ring for the selection as it is, gives no order; the ring is the ring a click on that thing opens; the page shows no price of its own

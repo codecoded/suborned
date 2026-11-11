@@ -7,7 +7,7 @@ namespace Suborned.Play
     /// <summary>Brief 088, the book's page as data: named slots in a fixed order, no positions. Glyph's rule (briefs/085/glyph/book/look3/notes.md, look4/notes.md):
     /// empty slots take no room, and the layout never knows what the content is. `Gear` and `Scales` carry our own agents' kit and stats (Sky, 2026-11-02), so wounds,
     /// gear and what a person gives need no redesign: more rows, the same code.</summary>
-    public enum BookSlot { Hero, Name, Sub, State, FactsHead, Facts, Gear, Weapon, Ways, Needs, Scales, Knows, Can, Track, Others, Kicker, Purse, Faces, Shared, Crew, Begin, Filters, Rows, WayIn, Ticks, Next, Stats, Fold, City, Again }
+    public enum BookSlot { Hero, Name, Sub, State, FactsHead, Facts, Gear, Weapon, Ways, Needs, Scales, Knows, Can, Track, Others, Kicker, Purse, Faces, Shared, Crew, Begin, Filters, Rows, WayIn, Ticks, Next, Stats, Fold, City, Again, Story, Place, Danger, Pager }
 
     public sealed class BookFact { public string Icon = "", Word = "", Note = ""; public bool Unknown; }
     public sealed class BookField { public string Icon = "", Text = ""; }
@@ -71,6 +71,10 @@ namespace Suborned.Play
     public sealed class BookCity { public string Icon = "", Head = "", Line = ""; }
     /// <summary>A way on at the end: an id the host acts on, its icon and word; Main is the book's orange pill.</summary>
     public sealed class BookAgain { public string Id = "", Icon = "", Word = ""; public bool Main; }
+    /// <summary>Brief 108 (Glyph's pages, briefs/108/glyph/pages; Sky 2026-11-11: "Yes, much better and clearer"): a row on the briefing's place or look-out page: an icon on a disc, a face
+    /// or the in-street badge; its word and one line; the view a hover (or the place tour) turns the street to; `Way`, a way in's id, carries the chip that opens its steps;
+    /// `When`, a time chip (the rivals' arrival). On: the row the street shows now.</summary>
+    public sealed class BookPlace { public string Id = "", Icon = "", Face = "", Word = "", Line = "", View = "", Way = "", Chip = "", When = ""; public bool Badge, On; }
 
     public sealed class BookPage
     {
@@ -118,6 +122,17 @@ namespace Suborned.Play
         public int TrackMax = 6;
         /// <summary>The ways on, and Try again's choice: a new start or the same (its seed shown after the word).</summary>
         public readonly List<BookAgain> Again = new(); public string NewWord = "", SameWord = ""; public bool SameOn;
+        // brief 108, the briefing as three pages (HostBook.Brief, BookLayout.Brief, HudToolkit.BookBrief)
+        /// <summary>The Job page's step: 0 the mission, 1 the place, 2 look out for; -1 a page that is not the briefing's.</summary>
+        public int Step = -1;
+        /// <summary>The page's left edge on the grid (the curve's): 740, or further right where the street needs the room (the place page).</summary>
+        public float CurveLeft = 740f;
+        public readonly List<string> Story = new();
+        public readonly List<BookPlace> Places = new(), Dangers = new();
+        /// <summary>The way whose steps are open on the place page (its id; "" none): its row and its conditions (Needs of that group) take the list's place.</summary>
+        public string WayOpen = "";
+        /// <summary>The pager's words, and the quiet Skip to Begin on the first page (only after a first play).</summary>
+        public string NextWord = "", BackWord = "", SkipWord = ""; public bool Skip;
     }
 
     /// <summary>One section sign: an entry in the list is all a section takes (HandoverHost.BookSections); no Page: a dim sign with no page.</summary>

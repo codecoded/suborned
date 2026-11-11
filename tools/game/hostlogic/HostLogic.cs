@@ -396,7 +396,7 @@ public sealed class BookCases
     }
     [Test] public void JobAndCellPagesFromTheGame()
     {
-        var h = Host.Fresh(); var job = h.BookJobPage(); Assert.That(job.Name, Is.Not.Empty); /* the ways read the built copy of brief.json: ProofBook.bookJobWay holds them */ Assert.That(job.Track.Count, Is.EqualTo(5)); Assert.That(job.Track[0].Time, Is.EqualTo("2:35"), "brief 096, Sky's call 2: the rivals' 2:35 shows from the start");
+        var h = Host.Fresh(); var job = h.BookJobPage(); Assert.That(job.Name, Is.Not.Empty); /* the ways read the built copy of brief.json: ProofBook.bookJobWay holds them */ Assert.That(job.Step, Is.EqualTo(0)); Assert.That(job.Track, Is.Empty, "brief 108: the briefing's pages have no clock strip"); Assert.That(BookWordsFile.Get().Dangers.Single(d => d.Id == "rivals").When, Is.EqualTo("2:35"), "brief 096, Sky's call 2: the rivals' 2:35 shows from the start (brief 108: on the look-out page)");
         for (int k = 0; k < 4; k++)
         {
             var c = h.BookCellPage(k); Assert.That(c.Weapon, Is.Not.Null); Assert.That(c.Weapon.Stats.ConvertAll(x => x.id), Is.EqualTo(new List<string> { "damage", "rate", "range", "aim" })); Assert.That(c.Scales[0].Max, Is.EqualTo(h.Game.Ops[k].Gun.Max)); Assert.That(c.Ways, Is.Empty, "no ways on an agent"); Assert.That(c.Can.Count, Is.EqualTo(HandoverHost.Slots[k].Length + 1), "one row a verb of the plate, then the car's (brief 096)"); Assert.That(c.Can[^1].Id + ":" + c.Can[^1].Icon, Is.EqualTo("car:car"));

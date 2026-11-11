@@ -11,7 +11,7 @@ namespace Suborned.Play
         /// <summary>A text width in grid px: (text, size, font).</summary>
         public delegate float Measure(string text, float size, string font);
         public struct Item { public BookSlot Slot; public int Index; public Rect At; public float Size, Cy, D; }
-        public sealed class Result { public readonly List<Item> Items = new(); public float Bottom, NameSize, TrackStep, TrackSize; public string[] SubLines = Array.Empty<string>(); public readonly Dictionary<int, string[]> CanLines = new(), NeedLines = new(), CrewLines = new(); public int RowsShown; public float SubSize = 30f; public int Rows; public DebriefLines Debrief; public bool Has(BookSlot s) { foreach (var i in Items) if (i.Slot == s) return true; return false; } public IEnumerable<Item> Of(BookSlot s) { foreach (var i in Items) if (i.Slot == s) yield return i; } }
+        public sealed class Result { public readonly List<Item> Items = new(); public float Bottom, NameSize, TrackStep, TrackSize; public string[] SubLines = Array.Empty<string>(); public readonly Dictionary<int, string[]> CanLines = new(), NeedLines = new(), CrewLines = new(), StoryLines = new(); public int RowsShown; public float SubSize = 30f; public int Rows; public DebriefLines Debrief; public bool Has(BookSlot s) { foreach (var i in Items) if (i.Slot == s) return true; return false; } public IEnumerable<Item> Of(BookSlot s) { foreach (var i in Items) if (i.Slot == s) yield return i; } }
 
         static readonly (float size, float step, float d)[] One = { (36, 60, 46), (31, 54, 42) }, Two = { (30, 52, 40), (27, 46, 36), (24, 40, 32), (22, 37, 30) };
 
@@ -37,6 +37,7 @@ namespace Suborned.Play
 
         public static Result Place(BookPage p, Measure tw)
         {
+            if (p.Step >= 0) return PlaceBrief(p, tw); // brief 108: the briefing's three pages (BookLayout.Brief)
             var r = new Result(); float y = Top;
             PlaceKicker(p, r, tw);
             if (p.HeroFace.Length > 0 || p.HeroIcon.Length > 0) r.Items.Add(new Item { Slot = BookSlot.Hero, At = new Rect(HeroX, HeroY, HeroD, HeroD) });

@@ -3317,6 +3317,92 @@
      "5:50": "His car leaves"
     }
    },
+   "brief": {
+    "rule": "Brief 108, placeholders for Fable (Glyph's pages briefs/108/glyph/pages; Sky 2026-11-11: \"Yes, much better and clearer\"; his hint on the square's cameras). The start briefing is three calm pages on the book's Job page, then Begin: `titles` one a page (the mission, the place, look out for); `story` the mission's few lines on the first; `places` the second page's rows in the order the camera visits them (`view` the street's view key a hover or the tour turns to; `way` a way in's id from brief.json, whose `chip` (with {t:valeExits} {t:valeAtCar} {t:driverLast} {t:chime}) opens its steps, book.job.needs); `dangers` the third page's rows (`face` a kit badge or portrait, else `icon` on a disc; `when` a time chip). The cameras row is Sky's hint: the square's mast (the world camera mast-z0, three heads over the café front, the terrace and the plaza, brief 101 B) sees most of the front-door route's work, so it is worth Watching early. `next`, `back`, `skip` are the pager's; Skip to Begin shows on the first page only after a first play.",
+    "titles": [
+     "Take Popovic alive",
+     "Where it happens",
+     "Look out for"
+    ],
+    "story": [
+     "Councillor Popovic keeps a file on us.",
+     "Tonight, as his shift ends, he carries it out of the Records Office.",
+     "We take him alive, put him in our car and drive away."
+    ],
+    "places": [
+     {
+      "id": "car",
+      "icon": "car",
+      "view": "car/getaway",
+      "word": "Our car",
+      "line": "We start here, in the square."
+     },
+     {
+      "id": "cafe",
+      "face": "portraits/cameo_waitress_normal",
+      "view": "waitress",
+      "word": "Inez's café",
+      "line": "Inez waits on the tables."
+     },
+     {
+      "id": "door",
+      "icon": "enter",
+      "view": "marker/door",
+      "word": "The front door",
+      "line": "Into the Records Office.",
+      "way": "front-door",
+      "chip": "Way in · before {t:valeExits}"
+     },
+     {
+      "id": "pickup",
+      "face": "portraits/cameo_driver_normal",
+      "view": "driver",
+      "word": "The pickup",
+      "line": "His driver waits with his car.",
+      "way": "pickup",
+      "chip": "Way in · from {t:valeAtCar}"
+     }
+    ],
+    "dangers": [
+     {
+      "id": "guard",
+      "face": "badges/signal_guard",
+      "view": "guard",
+      "word": "The guard",
+      "line": "He stands on the front door."
+     },
+     {
+      "id": "cameras",
+      "face": "badges/npc_watcher",
+      "view": "camera/mast-z0",
+      "word": "The square's cameras",
+      "line": "They see most of what we do. Watch them early."
+     },
+     {
+      "id": "rivals",
+      "face": "badges/signal_rival",
+      "word": "Another crew",
+      "line": "They want Popovic too.",
+      "when": "2:35"
+     },
+     {
+      "id": "patrol",
+      "face": "badges/npc_patrol",
+      "view": "patrol",
+      "word": "The patrol robot",
+      "line": "It walks the yard behind the Office."
+     },
+     {
+      "id": "police",
+      "icon": "p_alert",
+      "word": "The police",
+      "line": "Noise brings them."
+     }
+    ],
+    "next": "Next",
+    "back": "Back",
+    "skip": "Skip to Begin"
+   },
    "journal": {
     "rule": "Brief 096, placeholders for Fable (Glyph's mock 3c-journal.png): the Journal is the full log (what the L history held), newest first, with time and place; crucial rows marked, unread dotted. `sub` heads the list, `new` follows it while rows are unread, `filters` the chips in order (crucial, learned, turned and city filter by kind), `begins` the first row at 0:00.",
     "sub": "everything so far, newest first",

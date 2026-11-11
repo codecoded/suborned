@@ -15,7 +15,7 @@ export type ScriptInfo = { start: Record<string, unknown>; until: number };
 
 export type Resolved = {
   name: string; scriptPath: string; checkpoint: string; preset: string; tick: number;
-  night: boolean; setNight: boolean; briefing: boolean;
+  night: boolean; setNight: boolean; briefing: boolean; briefPage: number; briefLook: string; briefWay: string; briefSeen: boolean;
   follow: boolean; agent: string; face: string; focus: string; hasAt: boolean; atX: number; atY: number; yaw: number; zoom: number;
   hud: boolean; state: string; select: string; arm: string; hasPointer: boolean; px: number; py: number; intel: boolean; eye: boolean; why: boolean; settle: number; perf: number; hover: string; mark: boolean;
   pose: { on: boolean; view: string; pos: number[]; look: number[]; offset: number[]; lookOffset: number[]; fov: number };
@@ -78,6 +78,7 @@ export function check(raw: unknown, r: Resolver): { shots: Shot[]; problems: str
       if (s.hud) p('pose draws the world with no HUD: hud must be false');
       if (follow || s.focus !== undefined || s.at !== undefined || s.yaw !== undefined || s.zoom !== undefined) p('pose is its own camera: no follow, focus, at, yaw or zoom');
     }
+    if (s.brief && !s.briefing) p('a brief page is a briefing still: add briefing: true');
     if (s.briefing && ((s.tick ?? 0) > 0 || s.script !== undefined || s.pose || s.clip)) p('the briefing card is up only at tick 0 of the plain start, as a still');
     if (s.format === 'jpg' && (s.hud ?? true) && !s.pose) p('a HUD shot is png: the budget reads its frame lossless (format jpg goes with hud false, a pose or a clip)');
     if (s.hud === false && s.state !== undefined) p('state is the HUD budget\'s: it goes with hud true');
@@ -100,6 +101,7 @@ export function resolveShots(raw: unknown, outDir: string, r: Resolver = fileRes
       return {
         name: s.name, scriptPath: sc, checkpoint: s.checkpoint ?? '', preset: s.preset ?? 'today', tick: s.tick ?? 0,
         night: s.night ?? false, setNight: s.night !== undefined, briefing: s.briefing ?? false,
+        briefPage: s.brief?.page ?? 0, briefLook: s.brief?.look ?? '', briefWay: s.brief?.way ?? '', briefSeen: s.brief?.seen ?? false,
         follow: s.view === 'follow', agent: s.agent ?? s.select ?? 'scout', face: s.face ?? '', focus: s.focus ?? '', hasAt: s.at !== undefined, atX: s.at?.[0] ?? 0, atY: s.at?.[1] ?? 0,
         yaw: s.yaw ?? -1, zoom: s.zoom ?? 0,
         hud: pose ? false : s.hud ?? true, state: s.state ?? 'rest', select: s.select ?? '', arm: s.arm ?? '', hasPointer: s.pointer !== undefined, px: s.pointer?.[0] ?? 0, py: s.pointer?.[1] ?? 0, intel: s.intel ?? false, eye: s.eye ?? false, why: s.why ?? false, hover: s.hover ?? '', mark: s.mark ?? true,

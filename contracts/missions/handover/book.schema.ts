@@ -18,6 +18,12 @@ export const Book = z.strictObject({
   start: z.strictObject({ rule: z.string().min(1), begin: word, shared: z.string().min(1).max(90), purse: word, heat: word,
     cell: z.record(z.enum(['scout', 'fixer', 'tech', 'enforcer']), z.string().min(1).max(60)).describe('one line under each face in the start page\'s cell strip'),
     stations: z.record(z.string().regex(/^\d+:\d\d$/), word).describe('a station\'s word on the Job page\'s clock, before briefing.timeline[].short') }).optional().describe('the start briefing as the book\'s Job page'),
+  // brief 108 (Glyph's pages briefs/108/glyph/pages; Sky 2026-11-11 "Yes, much better and clearer"): the start briefing as three pages, then Begin (HostBook.WordsBrief.cs)
+  brief: z.strictObject({ rule: z.string().min(1), titles: z.array(z.string().min(1).max(40)).length(3).describe('one title a page: the mission, the place, look out for'),
+    story: z.array(z.string().min(1).max(90)).min(1).max(4).describe('the mission in a few short lines, first page'),
+    places: z.array(z.strictObject({ id: z.string().regex(/^[a-z-]+$/), icon: icon.optional(), face: z.string().regex(/^(portraits|badges)\/[a-z_]+$/).optional(), view: z.string().min(1).describe('the street view a hover or the tour turns to (HostViews key)'), word, line: z.string().min(1).max(60), way: z.string().min(1).optional().describe('a way in\'s id (brief.json ways, book.job.needs.ways)'), chip: z.string().min(1).max(40).optional().describe('the way\'s chip; opens its steps') })).min(1).max(5).describe('the second page, in the order the camera visits them'),
+    dangers: z.array(z.strictObject({ id: z.string().regex(/^[a-z-]+$/), icon: icon.optional(), face: z.string().regex(/^(portraits|badges)\/[a-z_]+$/).optional(), view: z.string().min(1).optional(), word, line: z.string().min(1).max(60), when: z.string().regex(/^\d+:\d\d$/).optional() })).min(1).max(6).describe('the third page: what to look out for'),
+    next: word, back: word, skip: word }).optional().describe('the start briefing\'s three pages'),
   journal: z.strictObject({ rule: z.string().min(1), sub: z.string().min(1).max(60), new: z.string().includes('{n}'), begins: word, empty: word,
     filters: z.array(z.strictObject({ id: z.enum(['all', 'crucial', 'learned', 'turned', 'city']), word })).min(1) }).optional().describe('the Journal: the full log'),
   key: z.strictObject({ rule: z.string().min(1), word, stop: word.optional() }).optional().describe('the HUD\'s Book button and the fire line\'s Stop button'),

@@ -1,0 +1,72 @@
+{
+ "schema": "suborned.shots/1",
+ "note": "Brief 108 (Glyph): the briefing's three pages as built, at 1920 x 1080: the mission, the place (Inez's caf\u00e9, the front door's steps, the pickup), look out for (the square's cameras hovered), and the mission page after a first play (Skip to Begin). Briefing stills, no HUD capture.",
+ "shots": [
+  {
+   "name": "p1-mission",
+   "briefing": true,
+   "brief": {
+    "page": 0
+   },
+   "hud": false,
+   "format": "png",
+   "settle": 1.4
+  },
+  {
+   "name": "p2-cafe",
+   "briefing": true,
+   "brief": {
+    "page": 1,
+    "look": "waitress"
+   },
+   "hud": false,
+   "format": "png",
+   "settle": 1.4
+  },
+  {
+   "name": "p2-door-steps",
+   "briefing": true,
+   "brief": {
+    "page": 1,
+    "look": "marker/door",
+    "way": "front-door"
+   },
+   "hud": false,
+   "format": "png",
+   "settle": 1.4
+  },
+  {
+   "name": "p2-pickup",
+   "briefing": true,
+   "brief": {
+    "page": 1,
+    "look": "driver"
+   },
+   "hud": false,
+   "format": "png",
+   "settle": 1.4
+  },
+  {
+   "name": "p3-cameras",
+   "briefing": true,
+   "brief": {
+    "page": 2,
+    "look": "camera/mast-z0"
+   },
+   "hud": false,
+   "format": "png",
+   "settle": 1.4
+  },
+  {
+   "name": "p1-returning",
+   "briefing": true,
+   "brief": {
+    "page": 0,
+    "seen": true
+   },
+   "hud": false,
+   "format": "png",
+   "settle": 1.4
+  }
+ ]
+}

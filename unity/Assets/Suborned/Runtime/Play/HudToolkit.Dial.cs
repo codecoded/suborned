@@ -30,7 +30,10 @@ namespace Suborned.Play
         void DialHud()
         {
             bool want = host.BookStart && host.Game != null && host.DialToday != null && bkPage != null;
-            if (!want) { if (dl != null) { dl.RemoveFromHierarchy(); dl = null; } return; }
+            if (!want || !DialOpen) { if (dl != null) { dl.RemoveFromHierarchy(); dl = null; } }
+            if (!want || DialOpen) { if (dlChip != null) { dlChip.RemoveFromHierarchy(); dlChip = null; } }
+            if (!want) return;
+            if (!DialOpen) { if (dlChip == null || dlChip.parent != bkPage) DialChipBuild(); return; } // brief 108: folded to its chip (HudToolkit.DialFold)
             if (dl == null || dl.parent != bkPage) DialBuild();
             foreach (var k in Population.Kinds)
             {
@@ -60,6 +63,7 @@ namespace Suborned.Play
             dl = E(bkPage, null, DlX, BookLayout.GridH - 24f - DlH, DlW, DlH, true); dl.name = "dial";
             Round(dl, 16f); dl.style.backgroundColor = new Color(BkBody.r, BkBody.g, BkBody.b, 0.94f); Border(dl, 1.5f, DlRim);
             PgText(dl, 18f, 12f, "Jost-SemiBold", 14f, BkDimHex, "The dial · dev", 0.22f, true);
+            DlButton("dial-fold", DlW - 16f - 86f - 10f - 34f, 25f, 34f, 30f, "−", 18f, BkBody, () => DialUnfold(false)); // brief 108: folds back to its chip
             DlButton("dial-today", DlW - 16f - 86f, 25f, 86f, 30f, "Today", 15f, BkDeep, host.DialReset);
             float cy = DlRow0;
             foreach (var k in Population.Kinds)

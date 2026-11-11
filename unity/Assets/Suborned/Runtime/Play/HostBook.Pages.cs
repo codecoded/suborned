@@ -46,7 +46,7 @@ namespace Suborned.Play
                 foreach (var kv in c["weapons"].Entries) one.Weapons[kv.Key] = kv.Value.Str();
                 foreach (var kv in c["does"].Entries) one.Does[kv.Key] = (S(kv.Value, "word"), S(kv.Value, "icon"), S(kv.Value, "line"));
                 if (c.Opt("car") is JNode car) one.Car = (S(car, "word"), S(car, "icon"), S(car, "line"));
-                one.Read096(b); one.ReadLend(b); one.ReadCrew(b);
+                one.Read096(b); one.ReadLend(b); one.ReadCrew(b); one.ReadBrief(b);
             }
             catch (Exception e) { Debug.LogWarning($"Book: text.json's book block not read ({e.Message})"); }
             return one;
@@ -80,8 +80,8 @@ namespace Suborned.Play
                     if (Text != null && Text.PageWays.TryGetValue(id, out var pw) && pw.when.Length > 0) way.Sub.Add(new BookField { Text = pw.when });
                     p.Ways.Add(way);
                 }
-            BookNeeds(p); BookJobStart(p, bw);
-            if (Text != null)
+            BookNeeds(p); if (bw.HasBrief) BookBrief(p, bw); else BookJobStart(p, bw); // brief 108: the briefing's three pages (HostBook.Brief); the 096 page without them
+            if (Text != null && !bw.HasBrief)
                 foreach (var at in Text.PageClock)
                 {
                     var (_, label, _) = Text.Timeline.Find(x => x.at == at); bw.Stops.TryGetValue(at, out var st); const bool known = true; // brief 096, Sky's call 2: every station shows its time from the start, the rivals' 2:35 too

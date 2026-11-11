@@ -24,6 +24,9 @@ namespace Suborned.Play
         public bool nocut; public float[] doorN = new float[0];
         /// <summary>Brief 107 (Glyph): a briefing still with the start's look card open (HudToolkit.LookMenuPin).</summary>
         public bool lookMenu;
+        /// <summary>Brief 108 (Glyph): a briefing still on a page (0 the mission, 1 the place, 2 look out for), the street on a view (a row's, pinned as a click pins it), a way's steps
+        /// open (its id), and "after a first play" (the mission page's Skip to Begin). A page past the first stops its place tour, so the still is the same each time.</summary>
+        public int briefPage; public string briefLook = "", briefWay = ""; public bool briefSeen;
         /// <summary>Brief 070 (Glyph N1, N4): `bare` takes the 3D world only, with no world marks (ground rings, route marks, bay outlines, cones, lines):
         /// rendered once, by the camera, into a texture. `doorS` (block frame) is the pose offset's along-the-face axis instead of up x normal. `keyLight`
         /// (intensity; 0 none) adds a warm key light beside the pose camera for this render only, on the person it looks at (a guard in his door's shade
@@ -105,6 +108,7 @@ namespace Suborned.Play
                 }
                 if (error == null) error = Guard(() =>
                 {
+                    HandoverHost.BriefSeenPin = s.briefing ? s.briefSeen : (bool?)null; // brief 108: a briefing still says whether it is a first play
                     if (s.briefing) { h.ShowBriefing = true; } else { h.StartClock(); }
                     h.SetPaused(true);
                     if (orders != null)
@@ -140,6 +144,12 @@ namespace Suborned.Play
                     }
                 });
                 if (error != null) { Fail(res, error); continue; }
+                if (s.briefing) // brief 108: the briefing's page, its street and a way's steps, as clicks give them (a way left open by the shot before is shut)
+                {
+                    float tb = Time.realtimeSinceStartup; while (!h.BookOpen && Time.realtimeSinceStartup - tb < 5f) yield return null;
+                    error = Guard(() => { h.BookStepTo(s.briefPage); if (h.BookWayOpen != s.briefWay) h.BookWayToggle(h.BookWayOpen.Length > 0 && s.briefWay.Length == 0 ? h.BookWayOpen : s.briefWay, ""); h.BookBriefPin(s.briefLook); h.BookShow("job"); if (h.BookStep != s.briefPage) throw new InvalidOperationException($"the briefing is on page {h.BookStep}, not {s.briefPage}"); });
+                    if (error != null) { Fail(res, error); continue; }
+                }
                 // 2 · frame times with the clock running (it advances the game by that many seconds)
                 if (s.perf > 0)
                 {

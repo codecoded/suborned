@@ -47,6 +47,7 @@ namespace Suborned.Play
             if (!host.BookOpen) { if (bk != null) BookTake(); return false; }
             if (bk == null) BookBuild();
             if (bkFor != host.BookPageNow && host.BookPageNow != null) BookDraw(host.BookPageNow);
+            BkBriefFrame(); // brief 108: the page's edge and the street's label (HudToolkit.BookBrief)
             DialHud(); // brief 098: the dial's dev panel while the book is the start (HudToolkit.Dial)
             var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) || size.x <= 0 ? BookLayout.Grid : size.x, H = float.IsNaN(size.y) || size.y <= 0 ? BookLayout.GridH : size.y, k = Mathf.Min(W / BookLayout.Grid, H / BookLayout.GridH);
             bkPage.style.left = W - BookLayout.Grid * k; bkPage.style.top = (H - BookLayout.GridH * k) / 2f; bkPage.style.scale = new Scale(new Vector3(k, k, 1f));
@@ -64,19 +65,19 @@ namespace Suborned.Play
             bkBody = new VisualElement { pickingMode = PickingMode.Ignore }; bkPage.Add(bkBody); bkBody.style.position = Position.Absolute; bkBody.style.left = 0; bkBody.style.top = 0; bkBody.style.width = BookLayout.Grid; bkBody.style.height = BookLayout.GridH;
             bkCurve = P(bkBody, -BkPad, -BkPad, BookLayout.Grid + 2 * BkPad, BookLayout.GridH + 2 * BkPad, BookCurvePaint); bkCurve.pickingMode = PickingMode.Position;
             bkLine = P(bkPage, -BkPad, -BkPad, BookLayout.Grid + 2 * BkPad, BookLayout.GridH + 2 * BkPad, BookLinePaint);
-            bkOpenedAt = Time.unscaledTime; bkFor = null; bkDrawnSignsFor = "";
+            bkOpenedAt = Time.unscaledTime; bkFor = null; bkDrawnSignsFor = ""; bkPin = null; bkCurveNow = host.BookPageNow?.CurveLeft ?? BookLayout.BriefCurve; // brief 108: opens at its page's edge, no slide
         }
 
         void BookTake()
         {
-            bk.RemoveFromHierarchy(); bk = null; bkPage = null; bkBody = null; bkClock = null; bkFor = null; bkCurve = null; bkLine = null;
+            bk.RemoveFromHierarchy(); bk = null; bkPage = null; bkBody = null; bkClock = null; bkFor = null; bkCurve = null; bkLine = null; bkPin = null;
             foreach (var ch in root.Children()) { ch.style.visibility = StyleKeyword.Null; ch.style.opacity = StyleKeyword.Null; }
         }
 
         /// <summary>The page of light: an ellipse across the grid (Glyph's: left edge 740, centre 2220, y -900 to 1980), a soft turquoise halo outside it, cream inside. Painted once.</summary>
         void BookCurvePaint(Painter2D p, Rect r)
         {
-            var c = new Vector2(2220f + BkPad, 540f + BkPad); const float rx = 1480f, ry = 1440f; const int N = 180;
+            const float rx = 1480f, ry = 1440f; const int N = 180; var c = new Vector2(bkCurveNow + rx + BkPad, 540f + BkPad); // brief 108: the edge where its page puts it (740; the place page's further right)
             void Path() { p.BeginPath(); for (int i = 0; i <= N; i++) { float a = i * Mathf.PI * 2f / N; var q = c + new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry); if (i == 0) p.MoveTo(q); else p.LineTo(q); } p.ClosePath(); }
             p.lineJoin = LineJoin.Round; p.lineCap = LineCap.Butt;
             for (int i = 0; i < 9; i++) { p.strokeColor = new Color(BkTurq.r, BkTurq.g, BkTurq.b, .075f); p.lineWidth = 36f - i * 4f; Path(); p.Stroke(); }
@@ -86,7 +87,7 @@ namespace Suborned.Play
         /// <summary>The thin line from the face to the person, their eye and ground ring, on the frozen street: drawn only where the person stands in view; moved each frame with the camera's glide.</summary>
         void BookLinePaint(Painter2D p, Rect r)
         {
-            var page = host.BookPageNow; if (page == null || bkPage == null) return;
+            var page = host.BookPageNow; if (page == null || bkPage == null || page.Step >= 0) return; // brief 108: the briefing's pages pin a label instead (HudToolkit.BookBrief)
             string key = host.BookLookView.Length > 0 ? host.BookLookView : page.Line ? page.SubjectView : null; if (string.IsNullOrEmpty(key)) return; // brief 096: a hovered way or face is joined by the line too
             var t = host.Views?.Find(key); if (!t || !t.gameObject.activeInHierarchy || !Proj(t.position + Vector3.up * 2.1f, out var head) || !Proj(t.position, out var feet)) return;
             float k = bkPage.resolvedStyle.scale.value.x; if (k <= 0f) k = 1f; float ox = bkPage.resolvedStyle.left, oy = bkPage.resolvedStyle.top;
@@ -142,6 +143,10 @@ namespace Suborned.Play
                     case BookSlot.Fold: keep.Add(BkFoldDraw(body, pg.Fold, it, dl)); break;
                     case BookSlot.City: BkCity(body, pg.City[it.Index], it, dl.CityHead[it.Index], dl.CityLine[it.Index]); break;
                     case BookSlot.Again: keep.Add(BkAgain(body, pg, it)); break;
+                    case BookSlot.Story: BkStory(body, it, r.StoryLines[it.Index]); break; // brief 108, the briefing's pages (HudToolkit.BookBrief)
+                    case BookSlot.Place: BkBriefRow(body, pg.Places[it.Index], it, false); break;
+                    case BookSlot.Danger: BkBriefRow(body, pg.Dangers[it.Index], it, true); break;
+                    case BookSlot.Pager: BkPager(body, pg, it); break;
                 }
             BkSigns(body, pg); BkChrome(body, pg); BkLook(body, pg); if (pg.Fold != null) BkFoldVeil(body, keep); // brief 107: BkLook, the start's look pill beside the clock (HudToolkit.Look107)
         }
@@ -263,7 +268,7 @@ namespace Suborned.Play
         /// <summary>The round section signs: spaced from the list alone. The lit one is the café's orange and larger; one with no page is dim and takes no click.</summary>
         void BkSigns(VisualElement body, BookPage pg)
         {
-            var list = host.BookSections; if (list == null) return; int n = list.Count; BookSigns = n;
+            var all = host.BookSections; if (all == null) return; var list = host.BookStart ? all.FindAll(x => x.Id == "menu" || x.Page != null && host.BookSectionLive(x.Id)) : all; int n = list.Count; BookSigns = n; // brief 108: the start shows only the signs with something on them
             for (int i = 0; i < n; i++)
             {
                 var s = list[i]; bool menu = s.Id == "menu", cur = s.Id == pg.Section, dim = !menu && (s.Page == null || !host.BookSectionLive(s.Id)); float d = cur ? 108f : 84f, y = BookLayout.SignY(i, n), x = BookLayout.SignX; // brief 096: Menu opens the pause menu; the Journal is dim until it has a row

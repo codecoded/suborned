@@ -66,8 +66,8 @@ namespace Suborned.Play
             var t0 = System.Diagnostics.Stopwatch.GetTimestamp(); BookPage pg = null; Guard("book", () => pg = s.Page(this)); if (pg == null) return;
             pg.Begin = BookStart; // brief 096: the start's pages carry Begin where Back is
             BookPageNow = pg; BookBuildMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
-            var look = BookLookView.Length > 0 ? views?.Find(BookLookView) : null;
-            BookGlide(look && look.gameObject.activeInHierarchy ? look.position : pg.Subject, pg.SubjectYaw);
+            var look = BookView(BookLookView);
+            BookGlide(look ? look.position : pg.Subject, pg.SubjectYaw);
         }
 
         /// <summary>The camera glides to frame a world point beside the page (Glyph's frame); with none, back to where the book came from (brief 096: a hover let go).</summary>
@@ -80,7 +80,7 @@ namespace Suborned.Play
             float yawGoal = pg.SubjectYaw ?? yawNow, playZoom = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax);
             var keepF = focus; float keepY = yawNow, keepZ = cam.orthographicSize; var keepR = cam.transform.rotation;
             cam.orthographicSize = playZoom; CamProjection(); cam.transform.rotation = Quaternion.Euler(pitch, yawGoal, 0f); focus = new Vector3(at.x, 0f, at.z); PlaceCamera();
-            Vector2 sp = cam.WorldToScreenPoint(at), want = new(cam.pixelWidth * 300f / 1920f, cam.pixelHeight * (1f - 0.46f));
+            float edge = BookPageNow?.CurveLeft ?? 740f; Vector2 sp = cam.WorldToScreenPoint(at), want = new(cam.pixelWidth * edge * .41f / 1920f, cam.pixelHeight * (1f - 0.46f)); // brief 108: left of the page's edge (300 of 1920 at 740; the place page's room further right)
             var d = (sp - want) * (2f * playZoom / cam.pixelHeight); // px to metres at this zoom (orthographic)
             var right = cam.transform.right; right.y = 0f; right.Normalize(); var up = cam.transform.forward; up.y = 0f; up.Normalize();
             var goal = focus + right * d.x + up * d.y / Mathf.Sin(cam.transform.eulerAngles.x * Mathf.Deg2Rad); goal.y = 0f;
@@ -110,7 +110,8 @@ namespace Suborned.Play
                 return false;
             }
             ClearHover();
-            if (BookStartKeys(kb) || BookEndKeys(kb)) return true;
+            if (BookStartKeys(kb) || BookEndKeys(kb) || BookBriefKeys(kb)) return true; // brief 108: the briefing pages' arrows (HostBook.Brief)
+            TourFrame();
             if (controls.Down(kb, PlayAction.Book) || kb != null && kb.escapeKey.wasPressedThisFrame) { BookClose(); return true; }
             if (BookSectionNow == "journal" && UnityEngine.InputSystem.Mouse.current is { } wm && wm.scroll.ReadValue().y is float wy && wy != 0f) JournalScroll(wy > 0f ? -1 : 1);
             if (controls.Down(kb, PlayAction.CycleAgent)) BookNext();

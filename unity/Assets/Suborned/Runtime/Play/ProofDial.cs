@@ -139,7 +139,7 @@ namespace Suborned.Play
 
         IEnumerator Page(HandoverHost h)
         {
-            if (!h.ShowBriefing) h.ShowBriefing = true;
+            if (!h.ShowBriefing) h.ShowBriefing = true; HudToolkit.DialUnfold(true); // brief 108: the panel is folded to its chip until opened
             float t0 = Time.realtimeSinceStartup; while (HudToolkit.DialElement("dial-play") == null && Time.realtimeSinceStartup - t0 < 10f) yield return null;
             yield return new WaitForSecondsRealtime(0.6f); // the page's slide and fade
         }

@@ -47,6 +47,8 @@ export const Shot = z.object({
     fov: z.number().min(10).max(120).optional(),
   }).strict().optional(),
   night: z.boolean().optional(), briefing: z.boolean().optional(),
+  brief: z.object({ page: z.number().int().min(0).max(2).optional(), look: z.string().optional(), way: z.string().optional(), seen: z.boolean().optional() }).strict().optional() // brief 108: a briefing still's page (0 the mission, 1 the place, 2 look out for), the street on a row's view, a way's steps open, after a first play
+    .describe('needs briefing: true'),
   hud: z.boolean().optional(), state: z.enum(['rest', 'active', 'alt']).optional(),
   select: z.enum(OPS).optional(), arm: z.string().optional(), pointer: z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]).optional(), intel: z.boolean().optional(), eye: z.boolean().optional(), why: z.boolean().optional(),
   hover: z.string().optional(), mark: z.boolean().optional(),

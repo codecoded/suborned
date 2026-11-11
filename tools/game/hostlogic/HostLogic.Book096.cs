@@ -11,58 +11,7 @@ public class Book096
 {
     static float Tw(string s, float size, string font) => (s?.Length ?? 0) * size * .52f;
 
-    /// <summary>The start's Job page. hostlogic has no built copy of brief.json (the player's StreamingAssets: ProofBook.bookJobWay holds the ways there), so the two ways
-    /// are given as contracts/missions/handover/brief.json has them and the page's start pieces are built on them as BookJobPage does.</summary>
-    static BookPage StartPage(HandoverHost h)
-    {
-        Host.Set(h, "BookStart", true);
-        try
-        {
-            var p = h.BookJobPage(); p.Begin = true;
-            if (p.Ways.Count == 0)
-            {
-                foreach (var (id, contact) in new[] { ("front-door", "waitress"), ("pickup", "driver") }) p.Ways.Add(new BookWay { Verb = id, Word = id, Target = new HandoverHost.Target { Kind = "person", Key = contact, Id = contact } });
-                p.Needs.Clear(); p.Crew.Clear(); Host.Call(h, "BookNeeds", p); Host.Call(h, "BookJobStart", p, BookWordsFile.Get());
-            }
-            return p;
-        }
-        finally { Host.Set(h, "BookStart", false); }
-    }
-
-    [Test] public void TheStartIsTheJobPageWithFacesTheSharedEndTheCellAndBegin()
-    {
-        var h = Host.Fresh(); var p = StartPage(h); var bw = BookWordsFile.Get();
-        Assert.That(p.Kicker, Is.EqualTo("THE HANDOVER")); Assert.That(p.Purse, Is.EqualTo($"${h.Game.Cash:N0}")); Assert.That(p.Heat, Is.Not.Empty);
-        Assert.That(p.Subject, Is.Null, "the start stays on the opening view (the cell): only a hover turns the street");
-        var faces = p.Ways.ToDictionary(w => w.Verb, w => w.Faces.Select(f => f.View).ToList());
-        Assert.That(faces["front-door"], Is.EqualTo(new List<string> { "waitress", "guard" }), "Inez, then the guard her way needs off the door");
-        Assert.That(faces["pickup"], Is.EqualTo(new List<string> { "driver" }));
-        Assert.That(p.Shared, Is.EqualTo(bw.Shared).And.Not.Empty);
-        var tail = p.Needs.Where(n => n.Group == BookLayout.Tail).Select(n => n.Id).ToList();
-        Assert.That(tail, Is.EqualTo(new List<string> { "go", "left-safe" }), "the shared conditions after the getaway sit once under the shared line (engine 0.42.0: the guard line is the front door's own)");
-        foreach (var w in p.Ways) Assert.That(p.Needs.Count(n => n.Group == w.Verb && n.Id == "getaway"), Is.EqualTo(1), $"{w.Verb} keeps its own 'reaches the car'");
-        Assert.That(p.Needs.Where(n => n.Group != BookLayout.Tail).All(n => !n.Met), "no way's own condition is met at 0:00"); var ls = p.Needs.Single(n => n.Id == "left-safe"); Assert.That(ls.Unknown && !ls.Met, "nobody is left behind at 0:00, so left-safe waits at ? until Popovic is in a car, never ticked at the start");
-        Assert.That(p.Crew.Select(c => c.Line).ToArray(), Is.EqualTo(new[] { "scout", "fixer", "tech", "enforcer" }.Select(r => bw.StartCell[r]).ToArray()), "the cell strip's lines are book.start.cell");
-        Assert.That(string.Join(" ", p.Crew.Select(c => c.Line)), Does.Not.Contain("false tip"), "the stale false tip is gone");
-        Assert.That(p.Track.Select(t => t.Time).ToArray(), Is.EqualTo(new[] { "2:35", "5:10", "5:20", "5:30", "5:50" }), "the 5:30 shift's clock, the rivals' 2:35 shown (Sky's call 2)");
-        Assert.That(p.Track[^1].Word, Is.EqualTo(bw.Stations["5:50"]));
-        // laid out on the grid: everything inside 1920 x 1080, Begin clear of the cell strip and the clock, no slot over another in the text column
-        var r = BookLayout.Place(p, Tw);
-        foreach (var it in r.Items) Assert.That(it.At.xMax <= 1920f && it.At.yMax <= 1080f && it.At.x >= 0f && it.At.y >= 0f, $"{it.Slot} {it.At} off the page");
-        var sh = r.Of(BookSlot.Shared).Single(); Assert.That(Tw(p.Shared, sh.Size, "") + 52f, Is.LessThanOrEqualTo(sh.At.width), "the shared line fits its column, clear of the rail");
-        var begin = r.Of(BookSlot.Begin).Single().At;
-        foreach (var it in r.Items) if (it.Slot is BookSlot.Crew or BookSlot.Track or BookSlot.Needs or BookSlot.Shared) Assert.That(it.At.Overlaps(begin), Is.False, $"{it.Slot} {it.At} under Begin {begin}");
-        var col = r.Items.Where(i => i.Slot is BookSlot.Ways or BookSlot.Faces or BookSlot.Needs or BookSlot.Shared or BookSlot.Track or BookSlot.Crew).ToList();
-        for (int a = 0; a < col.Count; a++) for (int b = a + 1; b < col.Count; b++)
-                if (col[a].Slot != col[b].Slot) Assert.That(col[a].At.Overlaps(col[b].At), Is.False, $"{col[a].Slot} {col[a].At} over {col[b].Slot} {col[b].At}");
-    }
-
-    [Test] public void InPlayTheJobPageKeepsBackAndFramesTheDoor()
-    {
-        var h = Host.Fresh(); var p = h.BookJobPage();
-        Assert.That(p.Begin, Is.False); Assert.That(p.Ways.All(w => w.Faces.Count > 0)); Assert.That(p.Crew.Count, Is.EqualTo(4));
-        Assert.That(BookLayout.Place(p, Tw).Has(BookSlot.Begin), Is.False);
-    }
+    // brief 108: the start's Job page is the briefing's three pages now: HostLogic.Brief108.cs holds them (the 096 page with faces, the shared end, the cell strip and the clock is retired)
 
     [Test] public void CrucialCardsQueueMostUrgentFirstAndAStaleOneLeavesByItself()
     {

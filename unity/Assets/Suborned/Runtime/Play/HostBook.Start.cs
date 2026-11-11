@@ -21,7 +21,7 @@ namespace Suborned.Play
         bool BookOpenStart()
         {
             if (!startWanted || BookOpen || Game == null || Game.Over || Game.Tick > 0 && !Paused) return false;
-            BookStart = true; if (BookOpenNow("job")) return true;
+            BookStart = true; BookStep = 0; BookWayOpen = ""; BookTourAt = -1; if (BookOpenNow("job")) return true; // brief 108: the start opens on the mission page
             BookStart = false; return false;
         }
 
@@ -31,6 +31,7 @@ namespace Suborned.Play
             if (!ShowBriefing) return;
             if (DialPending) { DialPlay(); return; } // brief 098: numbers changed on the dial: the street is built with them first, then this again (HostDial)
             if (!cam || Game == null || Game.Over) { StartClock(); return; }
+            BriefMarkSeen(); BookStep = 1; BookWayOpen = ""; BookTourAt = -1; // brief 108: Skip to Begin from now on; in play the Job sign opens on the place page
             ShowBriefing = false; Paused = true; ClearHover(); Status = "";
             StartT = BriefExitS + BriefGlideS; glideFrom = glideTo = focus; glideYawFrom = glideYawTo = yawNow; // no glide: the view behind the page is where play starts
         }
@@ -58,8 +59,8 @@ namespace Suborned.Play
         {
             if (view == BookLookView || BookPageNow == null) return;
             BookLookView = view;
-            var t = view.Length > 0 ? views?.Find(view) : null;
-            if (t && t.gameObject.activeInHierarchy) BookGlide(t.position, BookPageNow.SubjectYaw);
+            var t = BookView(view);
+            if (t) BookGlide(t.position, BookPageNow.SubjectYaw);
             else BookGlide(BookPageNow.Subject, BookPageNow.SubjectYaw);
         }
 
@@ -75,7 +76,7 @@ namespace Suborned.Play
         bool BookStartKeys(Keyboard kb)
         {
             if (!BookStart || kb == null) return false;
-            if (controls.Down(kb, PlayAction.Pause)) { BriefingBegin(); return true; }
+            if (controls.Down(kb, PlayAction.Pause)) { if (BookPageNow?.Step is >= 0 and < 2) BookStepBy(1); else BriefingBegin(); return true; } // brief 108: Next, then Begin
             if (controls.Down(kb, PlayAction.Book) || kb.escapeKey.wasPressedThisFrame) { ShowBriefing = false; return true; }
             return false;
         }
