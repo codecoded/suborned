@@ -297,11 +297,11 @@ namespace Suborned.Play
             var line = LockVariantFor(o, a) is string tk && l.ByTarget.TryGetValue(tk, out var bv) ? bv.line : l.Line; /* brief 102: tie-unknown before the cell knows the pair (HostCall) */ // Fable 019: "Scout or Tech" on a machine; engine 0.33.0: car-held by the rival car (rival-car, rival-car-driving)
             string who = o.Target.Length > 0 ? Name(o.Target) : "them";
             string op = o.Op.Length > 0 && o.Op != "cell" ? AgentNames[(int)Op.Parse(o.Op)] : "The agent";
-            string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
-            string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
-            string tick = a.tick >= 0 ? LockTick(l.Code, a.tick) : "?"; // engine 0.33.0 (Fable's tickAs): car-held's {tick} is the time still to wait
+            string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : null; // brief 108: none drops its clause (Clause.Fill), never "?"
+            string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : null;
+            string tick = a.tick >= 0 ? LockTick(l.Code, a.tick) : null; // engine 0.33.0 (Fable's tickAs): car-held's {tick} is the time still to wait
             line = line.Replace("{holders}", Text.HoldersPhrase(a.ids)); // brief 018: car-held names what blocks the car (Answer.ids)
-            return line.Replace("{who}", who).Replace("{op}", op).Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
+            return Clause.Fill(Clause.Fill(Clause.Fill(line.Replace("{who}", who).Replace("{op}", op), "{m}", m), "{usd}", usd), "{tick}", tick);
         }
 
         // engine log codes that land an order's act, and the verb and agent whose exchange they belong to

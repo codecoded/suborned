@@ -129,7 +129,7 @@ namespace Suborned.Play
             {
                 i.Rows.Add(("door_held", $"Found: unit in ~{q.PoliceInS} s · {doors}"));
                 i.Rows.Add(("p_unknown", $"Never found: comes home, +{q.TrailIfMissing} T, a statement"));
-                i.Rows.Add(("nextevent", $"Wakes {(q.WakesAt >= 0 ? MissionClock(q.WakesAt) : "?")} · knows where and when, {(q.Aware == "yes" ? "and your face" : "not your face")}"));
+                i.Rows.Add(("nextevent", $"{(q.WakesAt >= 0 ? $"Wakes {MissionClock(q.WakesAt)} · " : "")}knows where and when, {(q.Aware == "yes" ? "and your face" : "not your face")}"));
             }
             // a reporter on his way: taking him down stops the report (Glyph §7)
             foreach (var r in Game.Reps) if (r.P == p && r.Kind != "tell" && r.Phase is "walk" or "call" or "react" or "check" && r.LandAt > Game.Tick && r.LandAt < int.MaxValue / 4)
@@ -470,11 +470,13 @@ namespace Suborned.Play
             var m = System.Text.RegularExpressions.Regex.Match(l.Text, @"\d+");
             string agent = "the Scout"; foreach (var k in OpKeys) if (l.Text.Contains(Cap(k)) || l.Text.Contains(k + " ")) { agent = "the " + Cap(k); break; }
             int clockTick = l.Code == "seal.starts" || l.Code == "fight.loud" ? Game.Lockdown : l.Code == "alarm.dispatches" ? NextUnitTick() : Game.Tick;
+            // brief 108: the response's arrival is the engine's own ("…, on the street 2:08.2"), robots or police; a clock the engine hasn't set drops its clause, never "?"
+            string clock = l.Code == "alarm.dispatches" ? Clause.ClockAfter(l.Text, "on the street") ?? (clockTick < int.MaxValue / 4 ? MissionClock(clockTick) : null) : clockTick < int.MaxValue / 4 ? MissionClock(clockTick) : null;
             string whoName = who != null ? PersonName(who) : "someone";
             if (l.Code == "report.confirmed") { int i = l.Text.IndexOf(" confirms", StringComparison.Ordinal); whoName = i > 0 ? (l.Text.StartsWith("the camera", StringComparison.Ordinal) ? CameraName(l.Text[11..i]) : "the response") : "the response"; }
             if (l.Code == "takedown.seen" && l.Text.StartsWith("The ", StringComparison.Ordinal)) { int i = l.Text.IndexOf(" sees", StringComparison.Ordinal); var w = i > 4 ? l.Text[4..i] : ""; whoName = Game.S.Cameras.Exists(c => c.Id == w) ? CameraName(w) : w.Length > 0 ? Name(w) : "someone"; }
-            return s.Replace("{who}", whoName).Replace("{agent}", agent).Replace("{alert}", Game.Alert.ToString())
-                .Replace("{n}", m.Success ? m.Value : "?").Replace("{clock}", clockTick < int.MaxValue / 4 ? MissionClock(clockTick) : "?");
+            s = s.Replace("{who}", whoName).Replace("{agent}", agent).Replace("{alert}", Game.Alert.ToString());
+            return Clause.Fill(Clause.Fill(s, "{n}", m.Success ? m.Value : null), "{clock}", clock);
         }
 
         int NextUnitTick() { int best = int.MaxValue; foreach (var u in Game.Units) if (!u.Legacy && !u.Patrol && u.Launch > Game.Tick && u.Launch < best) best = u.Launch; return best; }

@@ -631,7 +631,7 @@ The engine, with the support sent away before the fight:
 | # | trigger (game state) | hint says (gist; Fable words it) | rings | gone when |
 |---|---|---|---|---|
 | H1 | briefing closed, nothing learned about anyone, no Watch or Listen given | The door has a guard. Someone near him might be useful; the **Scout** finds out by **Watching** people. | the café terrace (the place, not Inez) | any Watch or Listen order |
-| H2 | a person's routine is known (Watch done), their need and temperament are not | Watching tells you where and when. To learn what someone needs and who they are, the **Scout Listens**, standing close. | the watched person | Listen ordered on them |
+| H2 | the cell has begun (a Watch or Listen given, or something learned) and someone out on the street has need and temperament unknown and no Listen on them; a watched one first (brief 110: Listen needs no Watch) | Watching tells you where and when. To learn what someone needs and who they are, the **Scout Listens**, standing close. | the watched person | Listen ordered on them |
 | H3 | a person's need is known, they're not turned, and no approach has been given | The **Fixer** can turn them. Hover each approach to read its price before you commit. | the Fixer's portrait | any Turn order |
 | H4 | the entrance camera is live, the Tech is idle, and 0:45 has passed | A camera watches the public door. The **Tech** can **Loop** it from the control cabinet. | the cabinet | a Loop order |
 | H5 | a contact is turned and has never been called | Turned people act when you **call** them. Select the Fixer and right-click them to see what they can do. | the contact | a Call order |

@@ -114,9 +114,9 @@ namespace Suborned.Play
                 // the secret, and the lover tie it reveals, only once the cell knows it (Listen, or a Watch of the pair together)
                 r.Secret = p.Knows("secret") ? (p.Secret == "affair" && p.Lover != null ? $"Secret: seeing {h.Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name}" : p.Secret == "record" ? "Secret: a record" : $"Secret: {p.Secret}") : "";
                 (r.Next, r.NextIcon) = Roles[i] == "councillor" ? (g.Vale == ValeAt.WithEnforcer ? ("with the Enforcer", "take") : ("Take him at his car", "take"))
-                    : p.Turned ? (g.CallOffered(Roles[i]) ? ("Call them when it counts", "call") : ("", "")) /* brief 102: only where a Call is offered (engine 0.51.0) */ :!p.KRoutine && g.WatchOffered(Roles[i]) ? (Roles[i] == "guard" ? "Watch: his sight" : "Watch: their mood", "watch") : !p.KNeed ? ("Listen: learn the need", "listen") : ("Turn: Ask, Pay, Help or Pressure", "help");
+                    : p.Turned ? (g.CallOffered(Roles[i]) ? ("Call them when it counts", "call") : ("", "")) /* brief 102: only where a Call is offered (engine 0.51.0) */ :!p.KRoutine && !p.KNeed && g.WatchOffered(Roles[i]) ? ("Watch or Listen, either first", "listen") /* brief 110 (engine 0.55.0): Listen needs no Watch */ : !p.KNeed ? ("Listen: learn the need", "listen") : !p.KRoutine && g.WatchOffered(Roles[i]) ? (Roles[i] == "guard" ? "Watch: his sight" : "Watch: their mood", "watch") : ("Turn: Ask, Pay, Help or Pressure", "help");
             }
-            if (h.Ending.Length > 0) EndCard(h); else Ended = false;
+            if (h.Ending.Length > 0 && !h.EndHeld) EndCard(h); else Ended = false; // brief 109: the card waits while a leaving plays out (HostEndPlayout)
         }
 
         /// <summary>Per frame: what follows the camera, the cursor and the selection; the roster's live state; the open cards.</summary>

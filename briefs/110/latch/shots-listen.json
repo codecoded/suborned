@@ -1,0 +1,22 @@
+{
+ "schema": "suborned.shots/1",
+ "note": "Brief 110 (Aster): the Scout listening to Inez as she walks, following her and then settling (engine 0.55.0, cell.listen.follow). He waits on the terrace; the Listen at 0:30; the camera keeps the Scout (clip.track), zoom 9, 30 s at 30 fps.",
+ "defaults": {
+  "settle": 0.3
+ },
+ "shots": [
+  {
+   "name": "listen-follow",
+   "script": "briefs/110/latch/listen-inez.script.json",
+   "tick": 300,
+   "focus": "op/scout",
+   "zoom": 9,
+   "hud": true,
+   "clip": {
+    "seconds": 30,
+    "fps": 30,
+    "track": true
+   }
+  }
+ ]
+}

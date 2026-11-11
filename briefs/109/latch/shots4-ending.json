@@ -1,0 +1,8 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 round 4 (Aster: Sky on 0.2.330, \"if popovic drives away and mission ends, you should see him get in the car and drive away with the driver - never just end abruptly\"): the route where nobody touches Popovic and his own driver drives him off at 6:13 (fail-vale-leaves, vale-leaves / driven-away). From 4 s before, on his car, with the HUD, through the fail camera to the end card. Before: 0.2.330 (the engine ends on the tick he sits in; the view froze there: driver on the kerb, car in its bay, the card). After: the leaving plays out (he gets in, his driver walks round and gets in, a beat, the car pulls out along the pickup's way and leaves; the camera on it), then the card. Both -juice on; after adds -endplay on (the playing-out is off for automation).",
+  "defaults": { "settle": 0.3 },
+  "shots": [
+    { "name": "juice-ending-driven-away", "script": "fail-vale-leaves", "tick": 3690, "focus": "car/official", "zoom": 9, "hud": true, "clip": { "seconds": 20, "fps": 30 }, "note": "6:09 to the card" }
+  ]
+}

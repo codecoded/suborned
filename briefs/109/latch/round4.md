@@ -2,7 +2,7 @@
 
 Sky's ruling on 0.2.327, built end to end. Same rules as before: view only, replays unchanged, nothing screen-wide.
 
-**The build for Sky:** **0.2.329** (`out/build/play/The Suborned.app`; `bun run batch --sky`, 200 s, BATCH OK). It has round 4's four parts and the two night fixes (section 5). 0.2.328 had the four parts only.
+**The build for Sky:** **0.2.331** (sections 6–7: the day flicker and the ending; 1,039 s, the town rebaked for the contact shade). Before it, **0.2.329** (`out/build/play/The Suborned.app`; `bun run batch --sky`, 200 s, BATCH OK). It has round 4's four parts and the two night fixes (section 5). 0.2.328 had the four parts only.
 
 ## 1 · Lights done properly
 Sky on the night searchlight: "it needs to be done properly, same for car head, tail and streak lights. Not just some flat opacity". Round 3's beam was a flat grey cone with hard edges.
@@ -129,6 +129,47 @@ Both were there before juice. Each shows in the round-3 clip's `-juice off` half
 - **Not the near plane:** `PlayStandOff` keeps every roof clear of it, and frames with the cut on and off match once the mouse is away.
 - **Fix:** `ShotRunner.Capturing` (set when the launch has `-shots`); `FadePoints` skips the OS cursor while it is set. Play is unchanged.
 
+## 6 · Day flicker on the kerb and a roof (Sky on 0.2.330: "got flicker here on the curb and top here")
+**How I looked:** a new Editor probe, `Editor/World/Review/SurfaceFightProbe.cs` (batchmode, read only).
+- It generalises WindowFightProbe to every surface in a box round the café block (x -250..-70, z -100..80).
+- It compares every pair within 2 mm that overlap, face the same way, and where one writes depth. That includes the same material across renderers, and each Mesh LOD level of a merged chunk against its neighbours.
+- Result: 2,718 renderers, 4.3 M triangles, 8,068 pairs. **No renderer in the zone carries Mesh LOD levels**, so my 106 change isn't in this picture.
+
+**The kerb: the contact strip lay on the kerb's light lens.**
+- `ContactShade` (the baked contact shade, brief 026) lays its strip along every kerb's foot 4 mm up (`Lift = 0.004`).
+- `road_ribbon.py` lays the kerb's strip-light lens (`DK_Road_Lens`) at `Z_LENS = 0.004`, the same height.
+- The probe: `contact/kerb` against `DK_Road_Lens`, 0.0 mm, along every gutter (27 m² in the box).
+- The contact strip is a multiply blend, depth-tested against the opaque lens at the same depth, so it won or lost per pixel. That reads as dark speckle along the kerb and gutter, crawling as the view moves.
+- **Fix, at the source:** `ContactShade.Lift` 4 → 12 mm, above every inlay the kit lays on the ground (lens 4, hairline 7, pool 10 mm). The town is rebaked for it.
+
+**The roof: shadow edges crawling, from the shadow fit, not a second layer.**
+- The probe finds no coplanar layers on that roof (flat pairs above the street are only on the Records tower).
+- The play view has one shadow cascade, its distance `focusDepth + far` (TacticalShadows, brief 096).
+- `PlayStandOff` eases `focusDepth` every frame as the frame passes roofs of other heights, so while you pan, the cascade's size changes frame to frame.
+- URP keeps a cascade on its texel grid only while its size holds. So every shadow edge re-sampled and crawled: the parapet's shadow along the roof edge, and the posts' streaks.
+- With a still camera, and the fixed day sun (`Weather107`), it holds still. That's why the stills look clean and play doesn't.
+- **Fix:** `TacticalShadows.depthStep = 10`. The fit takes the stand-off in 10 m steps, rounded up so the shadows still reach the street, and holds it while the stand-off moves within 1.5 steps below. Panning no longer refits the cascade. Cost: up to 10 m more shadow distance on about 70 m.
+
+## 7 · The ending plays out (Sky on 0.2.330: "if popovic drives away and mission ends, you should see him get in the car and drive away with the driver - never just end abruptly")
+**Cause:** the engine ends the run on purpose (brief 059 K1, Sky 3a) on the tick Popovic sits in his car. The view stopped there.
+- **In the engine:** `Game.ValeTimeline` handles the moment he reaches the car and his `ValeInS` seconds pass. On that one tick it:
+  - sets `Vale = InCar`;
+  - notes `car.leaves` ("Popovic gets into his car and his driver drives him away.");
+  - calls `Fail("vale-leaves", …, Because("driven-away", …))`.
+- **Never simulated:** the driver getting in (`DriverAboard` stays false) and the car moving, since nothing steps after `Over`.
+- **What the view showed:** the frozen tick. The fail camera's replay stops on the same tick, so you saw the driver on the kerb, the car in its bay, then the card.
+- **No engine change needed:** the loss on that tick is the right outcome. Only the playing-out was missing, and that is view-only.
+
+**The fix (view only):** `HostViews.LeavingOfficial.cs` plays it out on the wall clock from the frame the run ends.
+1. **Popovic:** steps from his door into the car's side, gone inside the body. No fade.
+2. **His driver:** walks round to the driver's door on the street side, past the near end of the car if he stood on the kerb side, and gets in.
+3. **A beat:** the car has no opening doors (the "doors up" are its tailfins). Then it pulls out along the site's way out (`SiteWayOut`, shared with the lend). It steers round the cars drawn or waits behind one, using our getaway's driving logic, now shared as `ViewDrive`. Then it leaves the frame.
+
+**The end card waits** (`HostEndPlayout.cs`):
+- **Fail camera:** it follows the car and holds while it leaves (`failLeaveFrom`, capped at 20 s). The run as it ended doesn't play it twice.
+- **Without the fail camera:** the card waits while Popovic's car or our getaway is still in view, up to 20 s. The view follows the car (`JuiceFollow`) until you move the camera. A click shows the card at once; Esc still opens the pause menu.
+- **When it runs:** on for a player's launch, off for automation (`-endplay on|off`, `Juice109.Decide`'s rule), so proofs and checks see the card as before.
+
 ## Clips (30 fps; `*-side.mp4` is before on the left, after on the right; before = `-juice off`)
 All in `briefs/109/latch/clips/`:
 - `juice-searchlight-side.mp4`: night, the searchlight over the Office, with its lamp's glow.
@@ -138,6 +179,8 @@ All in `briefs/109/latch/clips/`:
 - `juice-win-watched-side.mp4`, `juice-win-heard-side.mp4`, `juice-win-turn-side.mp4`, `juice-win-call-side.mp4`, `juice-win-misled-side.mp4`, `juice-win-lent-side.mp4`: the social wins.
 - `juice-hit-rival-side.mp4`: the Scout hits rival-1 three times.
 - `juice-hit-ours-side.mp4`: rival-3 hits our Tech.
+- `juice-ending-driven-away-side.mp4` (`shots4-ending.json`; before 0.2.330 `-juice on`, after 0.2.331 `-juice on -endplay on`): the route where nobody touches Popovic and his driver drives him off. Before: the run ends as he sits in, the driver stays on the kerb, the car stays in its bay, the card. After: the fail camera's replay, the driver walks round the front to his door and gets in, a beat, the car pulls out along the pickup's way with the camera on it (the 20 s clip ends as it drives off; the card comes once it's gone).
+- `juice-day-kerbroof-side.mp4` and `juice-day-moving-side.mp4` (`shots4-day.json`; before 0.2.330, after 0.2.331, both `-juice on`): the kerb by the square's planter and the roof across the road, still and with the camera following the getaway over the zone's roofs.
 - `juice-facade-night-side.mp4` (both halves `-juice on`; before = 0.2.328, after = this build): the café's back at night, close (zoom 9, step 1), following the Scout on the roof terrace. The stair glazing beside the fin, and the roofs next to it.
 
 ## Cost (Studio, Mac Studio M5 Max): `briefs/109/latch/costs.json` (`round4`)

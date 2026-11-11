@@ -59,9 +59,12 @@ namespace Suborned.Play
         }
 
         /// <summary>The site's way out the car stands on (the one whose line passes nearest it), from its nearest point on, then on past its end.</summary>
-        void LentWay(Game g)
+        void LentWay(Game g) { SiteWayOut(g, lentWay); lentLen = 0f; for (int i = 1; i < lentWay.Count; i++) lentLen += Vector3.Distance(lentWay[i - 1], lentWay[i]); }
+
+        /// <summary>The site's way out from where Popovic's car stands (brief 109: his own drive-off at the end too, HostViews.LeavingOfficial).</summary>
+        void SiteWayOut(Game g, List<Vector3> into)
         {
-            lentWay.Clear(); Pt car = g.CarPos(); Pt[] best = null; long bd = long.MaxValue; int from = 0;
+            into.Clear(); Pt car = g.CarPos(); Pt[] best = null; long bd = long.MaxValue; int from = 0;
             Suborned.Sim.Site.Ground gr = null; try { gr = g.S.GroundOf(g.R); } catch (System.Exception) { }
             if (gr == null) return;
             foreach (var way in new[] { gr.PickupWay, gr.ServiceWay })
@@ -75,7 +78,7 @@ namespace Suborned.Play
             var end = frame.World(best[best.Length - 1]); var d0 = end - frame.World(best[best.Length - 2]); d0.y = 0f;
             if (d0.sqrMagnitude > 1e-4f) { var far = end + d0.normalized * LeaveBeyond; far.y = end.y; pts.Add(far); }
             for (int i = 0; i < 4; i++) Round(pts);
-            lentWay.AddRange(pts); for (int i = 1; i < lentWay.Count; i++) lentLen += Vector3.Distance(lentWay[i - 1], lentWay[i]);
+            into.AddRange(pts);
         }
 
         static (Vector3 at, Vector3 dir) Along(List<Vector3> way, float s)

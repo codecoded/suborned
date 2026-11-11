@@ -148,12 +148,22 @@ namespace Suborned.Play
                         return true;
                     }
                 case "H2":
-                    foreach (var r in Roles)
                     {
-                        var p = g.PersonByRole(r);
-                        if (p.KRoutine && !(p.KNeed && p.KTemperament) && !Given(o => o.Do == "listen" && o.Target == r)) { ring = At(r); trigWho = r; return true; }
+                        // brief 110 (engine 0.55.0, Sky: "Scout can always listen and watch"): Listen needs no Watch. Once the cell has begun (H1 gone: a Watch
+                        // or Listen given, or something learned), someone out on the street whose need and temperament are unknown and who has no Listen on
+                        // them; a watched one first (was: only after their routine was known)
+                        bool begun = Given(o => o.Do is "watch" or "listen"); foreach (var r in Roles) { var q = g.PersonByRole(r); if (q.KRoutine || q.KNeed || q.KTemperament) begun = true; }
+                        if (!begun) return false;
+                        string pick = null;
+                        foreach (var r in Roles)
+                        {
+                            var p = g.PersonByRole(r);
+                            if (p.KNeed && p.KTemperament || Given(o => o.Do == "listen" && o.Target == r) || g.PersonPos(p) == null) continue;
+                            if (p.KRoutine) { pick = r; break; } pick ??= r;
+                        }
+                        if (pick == null) return false;
+                        ring = At(pick); trigWho = pick; return true;
                     }
-                    return false;
                 case "H3":
                     foreach (var r in Roles)
                     {

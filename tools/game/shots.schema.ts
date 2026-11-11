@@ -49,12 +49,14 @@ export const Shot = z.object({
   night: z.boolean().optional(), briefing: z.boolean().optional(),
   brief: z.object({ page: z.number().int().min(0).max(2).optional(), look: z.string().optional(), way: z.string().optional(), seen: z.boolean().optional() }).strict().optional() // brief 108: a briefing still's page (0 the mission, 1 the place, 2 look out for), the street on a row's view, a way's steps open, after a first play
     .describe('needs briefing: true'),
+  book: z.object({ section: z.enum(['journal', 'cell', 'job']), row: z.string().optional() }).strict().optional() // brief 108: the book open over the stopped run, a Journal row open by its title's words
+    .describe('a book still: hud false (the page is the frame)'),
   hud: z.boolean().optional(), state: z.enum(['rest', 'active', 'alt']).optional(),
   select: z.enum(OPS).optional(), arm: z.string().optional(), pointer: z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]).optional(), intel: z.boolean().optional(), eye: z.boolean().optional(), why: z.boolean().optional(),
   hover: z.string().optional(), mark: z.boolean().optional(),
   size: z.tuple([z.number().int().min(320).max(7680), z.number().int().min(180).max(4320)]).optional(), format: z.enum(['png', 'jpg']).optional(),
   settle: z.number().min(0).max(10).optional(), perf: z.number().min(0).max(60).optional(),
-  clip: z.object({ seconds: z.number().min(0.5).max(60), fps: z.number().int().min(5).max(60).optional() }).strict().optional(),
+  clip: z.object({ seconds: z.number().min(0.5).max(60), fps: z.number().int().min(5).max(60).optional(), track: z.boolean().optional() /* brief 110: the camera keeps its `focus` as it moves */ }).strict().optional(),
   skip: z.boolean().optional(),
 }).strict();
 export type Shot = z.infer<typeof Shot>;

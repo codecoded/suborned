@@ -127,7 +127,7 @@ namespace Suborned.Play
             Show(nextUnknown, unknown); Show(nextWordK.Root, !unknown && word.Length > 0); nextWordK.Set(word); nextTimeK.Set(Stress ? "7:30" : m.NextTime);
             bool tip = has && nextHover && !ended; Show(nextTip, tip); if (tip) nextTipK.Set(unknown ? "Next · ?" : $"Next · {m.NextLabel}");
             bool coming = host.RespComing > 0 && !ended; Show(respRow, coming);
-            if (coming) { int sec = host.RespSoonestS; respK.Set(host.RespComing.ToString()); respTimeK.Set(sec >= 0 ? $"{sec / 60}:{sec % 60:00}" : "?"); }
+            if (coming) { int sec = host.RespSoonestS; respK.Set(host.RespComing.ToString()); respTimeK.Set(sec >= 0 ? $"{sec / 60}:{sec % 60:00}" : ""); } // brief 108: no arrival yet shows no time, never "?"
             Show(keys, !ended && !m.BriefingOpen);
             for (int i = 0; i < 4; i++) { bool kn = KnownPerson(KeyPeople[i]); peopleDiscs[i].style.opacity = kn ? 1f : 0.6f; peopleDiscs[i].style.unityBackgroundImageTintColor = kn ? Color.white : new Color(0.55f, 0.6f, 0.6f); Show(keyDots[i], slipWaitsFor == KeyPeople[i]); }
             KeyDotFor = slipWaitsFor;

@@ -1,0 +1,9 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 109 round 4 (Aster: Sky on 0.2.330 by day, \"got flicker here on the curb and top here\"): the kerb by the square's planter and the flat roof across the road (the posts with green caps, the fountain dome), at play zoom 10, view step 2. Still: the kerb's contact strip on the lens (both 4 mm up: a depth fight, a fixed pattern while the camera rests). Moving: the camera follows the getaway out after the Go over the zone's roofs, so the stand-off eases as the frame passes roofs of other heights (PlayStandOff) and the one shadow cascade refits each frame; shadow edges crawl. Before 0.2.330, after the build with ContactShade's lift (12 mm) and TacticalShadows' held fit depth. Both -juice on.",
+  "defaults": { "settle": 0.3 },
+  "shots": [
+    { "name": "juice-day-kerbroof", "script": "route-a-board", "tick": 400, "focus": "op/scout", "zoom": 10, "yaw": 2, "hud": false, "clip": { "seconds": 3, "fps": 30 }, "note": "the kerb and the roof as Sky framed them" },
+    { "name": "juice-day-moving", "script": "route-a-board", "tick": 2528, "focus": "car/getaway", "zoom": 10, "yaw": 2, "hud": false, "clip": { "seconds": 10, "fps": 30 }, "note": "the camera moving over the zone's roofs" }
+  ]
+}

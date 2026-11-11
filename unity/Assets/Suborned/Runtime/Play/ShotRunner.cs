@@ -27,13 +27,16 @@ namespace Suborned.Play
         /// <summary>Brief 108 (Glyph): a briefing still on a page (0 the mission, 1 the place, 2 look out for), the street on a view (a row's, pinned as a click pins it), a way's steps
         /// open (its id), and "after a first play" (the mission page's Skip to Begin). A page past the first stops its place tour, so the still is the same each time.</summary>
         public int briefPage; public string briefLook = "", briefWay = ""; public bool briefSeen;
+        /// <summary>Brief 108 (Sky: "should wrap"): a still of the book over the stopped run: `bookSection` opens it there (journal, cell, job), `bookRow` opens the first
+        /// Journal row whose title holds those words (the newest first, as the Journal lists them).</summary>
+        public string bookSection = "", bookRow = "";
         /// <summary>Brief 070 (Glyph N1, N4): `bare` takes the 3D world only, with no world marks (ground rings, route marks, bay outlines, cones, lines):
         /// rendered once, by the camera, into a texture. `doorS` (block frame) is the pose offset's along-the-face axis instead of up x normal. `keyLight`
         /// (intensity; 0 none) adds a warm key light beside the pose camera for this render only, on the person it looks at (a guard in his door's shade
         /// lit as Inez is in the sun). `shift` moves the play camera's look point that many metres in from the door's outward side (the driver's still
         /// takes in the Office door behind his car).</summary>
         public bool bare; public float[] doorS = new float[0]; public float keyLight, shift;
-        public float atX, atY, zoom, px, py, settle = 0.35f, perf, clipSeconds; public int clipFps = 30, w = 1920, h = 1080; public bool jpg; public ShotPose pose = new ShotPose();
+        public bool clipTrack; public float atX, atY, zoom, px, py, settle = 0.35f, perf, clipSeconds; public int clipFps = 30, w = 1920, h = 1080; public bool jpg; public ShotPose pose = new ShotPose();
     }
     [Serializable] public sealed class ShotFile { public string schema = "", outDir = ""; public ShotSpec[] shots = new ShotSpec[0]; }
 
@@ -147,6 +150,16 @@ namespace Suborned.Play
                     }
                 });
                 if (error != null) { Fail(res, error); continue; }
+                if (!s.briefing && s.bookSection.Length > 0) // brief 108: the book over the run, a Journal row open, as clicks give them
+                {
+                    error = Guard(() =>
+                    {
+                        if (!h.BookOpen && !h.BookOpenNow(s.bookSection)) throw new InvalidOperationException($"the book would not open on {s.bookSection}");
+                        h.BookShow(s.bookSection);
+                        if (s.bookRow.Length > 0) { var row = h.BookPageNow?.Rows.Find(x => x.Title.Contains(s.bookRow)) ?? throw new InvalidOperationException($"no Journal row '{s.bookRow}' at tick {h.Game.Tick}"); if (!row.Open) h.JournalRow(row.Id); }
+                    });
+                    if (error != null) { Fail(res, error); continue; }
+                }
                 if (s.briefing) // brief 108: the briefing's page, its street and a way's steps, as clicks give them (a way left open by the shot before is shut)
                 {
                     float tb = Time.realtimeSinceStartup; while (!h.BookOpen && Time.realtimeSinceStartup - tb < 5f) yield return null;
@@ -185,7 +198,7 @@ namespace Suborned.Play
                 }
                 else
                 {
-                    var docs = s.briefing ? new UIDocument[0] : FindObjectsByType<UIDocument>(FindObjectsSortMode.None); var shown = docs.Select(d => d.rootVisualElement.style.display).ToArray(); // brief 096: a briefing shot keeps its page (the start is the book, a page over the street, not HUD)
+                    var docs = s.briefing || s.bookSection.Length > 0 ? new UIDocument[0] : FindObjectsByType<UIDocument>(FindObjectsSortMode.None); var shown = docs.Select(d => d.rootVisualElement.style.display).ToArray(); // brief 096: a briefing shot keeps its page (the start is the book, a page over the street, not HUD)
                     foreach (var d in docs) d.rootVisualElement.style.display = DisplayStyle.None;
                     yield return null; yield return new WaitForEndOfFrame();
                     error = Guard(() => { var t = ScreenCapture.CaptureScreenshotAsTexture(); File.WriteAllBytes(path + Ext(s), Encode(t, s)); Destroy(t); res.Files.Add(s.name + Ext(s)); });
@@ -320,8 +333,10 @@ namespace Suborned.Play
             HandoverHost.BeforeStep = feed; // brief 100: a clip plays its script on: the orders still to come are given at their own tick as the clock passes them (the stop of a report, a chase)
             Time.captureFramerate = fps; h.SetPaused(false); yield return null;
             var ds = new List<float>(); string error = null;
+            Vector3? track = s.clipTrack && s.focus.Length > 0 && h.Views.Find(s.focus) is Transform tf0 ? tf0.position : null; // brief 110: the camera keeps its focus (eased) as it moves
             for (int f = 0; f < n && error == null; f++)
             {
+                if (track is Vector3 tk && h.Views.Find(s.focus) is Transform tf) { var at = Vector3.Lerp(tk, tf.position, 1f - Mathf.Exp(-(1f / fps) / 0.5f)); track = at; h.LookAt(at); }
                 yield return new WaitForEndOfFrame(); ds.Add(Time.unscaledDeltaTime * 1000f);
                 var file = System.IO.Path.Combine(path, $"f{f:0000}{Ext(s)}");
                 error = Guard(() =>

@@ -11,7 +11,7 @@ namespace Suborned.Play
     public sealed partial class HostViews
     {
         public const float ListenPartnerGapM = 1.15f, ListenPartnerWalk = 1.4f, ListenPartnerRun = 2.7f, ListenLingerS = 1.5f;
-        sealed class Partner { public Game For; public string Key = "", Role = ""; public readonly List<Vector3> Path = new(); public float Len, At, Linger = ListenLingerS; }
+        sealed class Partner { public Game For; public string Key = "", Role = ""; public readonly List<Vector3> Path = new(); public float Len, At, Linger = ListenLingerS; public Vector3? Tail; }
         Partner listenP; float scoutFaceYaw = float.NaN; string scoutFaceFor = "";
 
         /// <summary>A partner's view is the view's own while she's out: the positions leave it alone.</summary>
@@ -42,15 +42,29 @@ namespace Suborned.Play
         {
             var who = host.ListenPartners; if (who == null) return;
             if (listenP != null && listenP.For != g) { var old = things[listenP.Key]; things[listenP.Key] = (old.t, old.to, old.to, false); listenP = null; }
-            string role = null; for (int k = 0; k < 4; k++) if (g.Ops[k].Busy?.Do == "listen") role = g.Ops[k].Busy.Target;
+            // brief 110 (engine 0.55.0): a Listen holds nobody and the listener follows. The partner steps out only once the listener has settled by the person standing
+            // (the listener's spot, no walk); once out she stays with the person while the Listen runs, walking beside them if they move on (was: on any Listen, the person held)
+            string role = null;
+            for (int k = 0; k < 4; k++) if (g.Ops[k].Busy is { Do: "listen" } b && (!g.R.ListenFollowOn || listenP != null && listenP.Role == b.Target || g.Ops[k].Walk == null && g.ListenSpotNow(Op.Name((OpId)k)) != null)) role = b.Target;
             bool fight = g.FightOn || g.Alert >= 2, talk = role != null && who.ContainsKey(role) && !fight;
             if (listenP == null) { if (!talk || !ListenPartnerOut(g, role, who[role])) return; }
             var p = listenP; float dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f), pace = host.ConvoOn || host.Paused || g.Over ? 0f : host.Speed;
             if (!fight && (talk || host.ConvoOn || host.ConvoPending || host.StreetLinesDue)) p.Linger = ListenLingerS; else p.Linger -= dt * pace;
             bool back = fight || p.Linger <= 0f; float speed = fight ? ListenPartnerRun : ListenPartnerWalk, target = back ? 0f : p.Len, was = p.At;
+            if (back && p.Tail is Vector3 tail) // she walked on beside the person: her way back is from where she is now
+            {
+                p.Path.RemoveRange(2, p.Path.Count - 2); var route = g.Walk.Route(frame.Engine(p.Path[1]), frame.Engine(tail)); if (route != null) foreach (var q in route) p.Path.Add(frame.World(q)); p.Path.Add(tail);
+                p.Len = 0f; for (int k = 1; k < p.Path.Count; k++) p.Len += Vector3.Distance(p.Path[k - 1], p.Path[k]); p.At = was = p.Len; p.Tail = null;
+            }
             p.At = Mathf.MoveTowards(p.At, target, speed * dt * pace);
             var pos = PathAt(p, p.At); var dir = (PathAt(p, Mathf.Min(p.Len, p.At + 0.1f)) - PathAt(p, Mathf.Max(0f, p.At - 0.1f))).normalized * (back ? -1f : 1f);
             var x = things[p.Key]; bool moving = p.At != was;
+            if (!back && p.At >= p.Len - 0.01f && things.TryGetValue(p.Role, out var by) && by.shown) // with her: if she walks on, alongside at arm's length
+            {
+                var cur = p.Tail ?? pos; var off = cur - by.t.position; off.y = 0f;
+                if (off.magnitude > ListenPartnerGapM + 0.25f) { var want = by.t.position + (off.sqrMagnitude > 0.01f ? off.normalized : Vector3.right) * ListenPartnerGapM; want.y = cur.y; var nx = Vector3.MoveTowards(cur, want, ListenPartnerRun * dt * pace); dir = (nx - cur).normalized; moving = (nx - cur).sqrMagnitude > 1e-6f; speed = ListenPartnerWalk; cur = nx; }
+                p.Tail = cur; pos = cur;
+            }
             if (back && p.At <= 0f) { things[p.Key] = (x.t, pos, pos, false); x.t.gameObject.SetActive(false); listenP = null; return; }
             things[p.Key] = (x.t, moving ? pos - dir * speed * 0.1f : pos, pos, true); if (!x.t.gameObject.activeSelf) x.t.gameObject.SetActive(true); x.t.position = pos;
             if (p.At >= p.Len - 0.01f && things.TryGetValue(p.Role, out var them))

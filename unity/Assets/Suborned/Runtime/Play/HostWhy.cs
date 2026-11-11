@@ -275,7 +275,19 @@ namespace Suborned.Play
             string effect = w.What == "alert" && Text != null && Text.WhyEffect.TryGetValue(w.To.ToString(), out var e) ? e : "";
             return WhyJoin(WhyJoin(w.Line, w.Again), effect);
         }
-        static string WhyJoin(string a, string b) => string.IsNullOrEmpty(a) ? b ?? "" : string.IsNullOrEmpty(b) ? a : a + " " + b;
+        /// <summary>Two lines as one. Brief 108 (Sky: the Journal said "robots are coming" twice): a sentence of the second that the first already says is dropped at the join
+        /// ("…, so robots are coming to look." + "Robots are coming. On the street by 1:52." reads "…, so robots are coming to look. On the street by 1:52.").</summary>
+        static string WhyJoin(string a, string b)
+        {
+            if (string.IsNullOrEmpty(a)) return b ?? ""; if (string.IsNullOrEmpty(b)) return a;
+            string said = a.ToLowerInvariant(); var kept = new System.Collections.Generic.List<string>();
+            foreach (var part in System.Text.RegularExpressions.Regex.Split(b.Trim(), @"(?<=[.!?])\s+"))
+            {
+                var core = part.Trim().TrimEnd('.', '!', '?').ToLowerInvariant();
+                if (core.Length > 0 && !said.Contains(core)) kept.Add(part.Trim());
+            }
+            return kept.Count == 0 ? a : a + " " + string.Join(" ", kept);
+        }
 
         // ---------------------------------------------------------------- the meter's list (part 3)
 

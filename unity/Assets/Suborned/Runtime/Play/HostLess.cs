@@ -190,10 +190,11 @@ namespace Suborned.Play
         {
             var s = BoxedShort(a) ?? Text?.ShortLock(a.code, LockVariantFor(o, a)) ?? HostShort(a.code); // brief 102: tie-unknown before the cell knows the pair (HostCall) // brief 098 step 1b: "Boxed in · red car" (HostTrafficBoxed)
             if (s == null) return null;
-            string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
-            string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
-            string tick = a.tick >= 0 ? LockTick(a.code, a.tick) : "?";
-            s = s.Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick).Replace("{holders}", Text?.HoldersPhrase(a.ids) ?? "hostiles").Replace("{op}", o.Op.Length > 0 && IsOpName(o.Op) ? AgentNames[(int)Op.Parse(o.Op)] : "The agent");
+            string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : null; // brief 108: none drops its clause, never "?"
+            string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : null;
+            string tick = a.tick >= 0 ? LockTick(a.code, a.tick) : null;
+            s = Clause.Fill(Clause.Fill(Clause.Fill(s, "{m}", m), "{usd}", usd), "{tick}", tick); if (s.Length == 0) return null;
+            s = s.Replace("{holders}", Text?.HoldersPhrase(a.ids) ?? "hostiles").Replace("{op}", o.Op.Length > 0 && IsOpName(o.Op) ? AgentNames[(int)Op.Parse(o.Op)] : "The agent");
             // Sky, route B: too early for Take says when Vale comes to his car (the briefing's timeline mark)
             if (a.code == "vale-not-at-car" && Text?.Timeline != null) foreach (var (at, label, _) in Text.Timeline) if (label.Contains("reaches his car")) { s += " · " + at; break; }
             return s;

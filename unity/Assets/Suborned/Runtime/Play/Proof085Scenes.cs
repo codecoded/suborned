@@ -68,6 +68,20 @@ namespace Suborned.Play
             for (int i = 0; i < 30 && h.ConvoPending && !h.ConvoOn; i++) yield return null;
             if (h.ConvoOn) { yield return new WaitForSecondsRealtime(0.35f); got[0] = true; }
         }
+        /// <summary>Brief 110 (engine 0.55.0: the person a Listen is on walks on): to the scene in drawn time (the clock at 4x, the route's orders at their ticks), so the
+        /// partner keeps beside her frame by frame as in play; ToScene's headless steps moved her many ticks in one drawn frame.</summary>
+        static IEnumerator ToSceneDrawn(HandoverHost h, RouteRun r, int until, bool[] got)
+        {
+            var g = h.Game; got[0] = false; h.SetSpeed(4); h.SetPaused(false); float t0 = Time.unscaledTime;
+            while (!g.Over && g.Tick < until && !h.ConvoPending && !h.ConvoOn && Time.unscaledTime - t0 < 120f)
+            {
+                while (r.I < r.Orders.Count && r.Orders[r.I].Tick <= g.Tick && !h.ConvoPending) Give(h, r.Orders[r.I++]);
+                yield return null;
+            }
+            for (int i = 0; i < 30 && h.ConvoPending && !h.ConvoOn; i++) yield return null;
+            if (h.ConvoOn) { yield return new WaitForSecondsRealtime(0.35f); got[0] = true; }
+            h.SetSpeed(1);
+        }
         static IEnumerator EndScene(HandoverHost h) { if (!h.ConvoOn) { h.ConvoEndNow(); yield break; } yield return Press(Key.Escape); for (int i = 0; i < 40 && h.ConvoOn; i++) yield return null; h.ConvoEndNow(); yield return Frames(2); }
         /// <summary>Word for word against the file: the scene's lines are the conversation's beats in order.</summary>
         static string Words(HandoverHost h, string id)

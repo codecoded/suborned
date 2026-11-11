@@ -1,0 +1,7 @@
+{
+ "schema": "suborned.shots/1",
+ "note": "Brief 108 (Glyph; Sky on 0.2.330: \"should wrap\"): the Journal's 'The alarm is answered' row opened at 2:05 on the careless route where the pickup camera reports the Fixer loitering (the alarm answered at 1:58.2). Its result wraps inside the card and no longer says robots are coming twice.",
+ "shots": [
+  { "name": "journal-alarm-answered", "script": "careless-scout-idles-pickup", "tick": 1250, "book": { "section": "journal", "row": "The alarm is answered" }, "hud": false, "format": "png", "settle": 1.2 }
+ ]
+}

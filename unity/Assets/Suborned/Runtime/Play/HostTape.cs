@@ -34,8 +34,8 @@ namespace Suborned.Play
             i.Tape = q.Recorded; i.TapeBy = q.RecordedBy; i.TapeInS = q.RecordInS; i.TapeLoopEnds = q.RecordLoopEnds;
             if (q.Recorded == "yes") { i.Trail = $"T +{TrailPlus(i.Trail) + q.RecordTrail}"; i.Alert = $"A →{Math.Max(AlertTo(i.Alert), q.RecordAlert)}"; }
             else { i.Trail = $"T ?+{TrailPlus(i.Trail) + q.RecordTrail}"; if (AlertTo(i.Alert) == 0) i.Alert = $"A ?→{q.RecordAlert}"; } // brief 101 (Motive): a camera not yet watched may tape it: its Trail in the Trail as its Alert in the Alert, both marked "?"
-            var tip = (q.Recorded == "yes" ? w.TapeSeen : w.TapeMaybe).Replace("{camera}", cam).Replace("{alert}", q.RecordAlert.ToString()).Replace("{trail}", q.RecordTrail.ToString())
-                .Replace("{s}", q.RecordInS >= 0 ? q.RecordInS.ToString() : "?");
+            var tip = Clause.Fill((q.Recorded == "yes" ? w.TapeSeen : w.TapeMaybe).Replace("{camera}", cam).Replace("{alert}", q.RecordAlert.ToString()).Replace("{trail}", q.RecordTrail.ToString()),
+                "{s}", q.RecordInS >= 0 ? q.RecordInS.ToString() : null); // brief 108: no time drops its clause, never "?"
             if (q.RecordLoopEnds >= 0) tip += " · " + w.TapeLoopEnds.Replace("{t}", MissionClock(q.RecordLoopEnds));
             i.TapeTip = Cap(tip); i.Rows.Add((q.Recorded == "yes" ? "eye_open" : "eye_unk", i.TapeTip));
         }

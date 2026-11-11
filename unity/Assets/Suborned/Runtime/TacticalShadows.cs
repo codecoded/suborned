@@ -40,6 +40,20 @@ namespace Suborned
         public float fitFade = 3f, fitMargin = 1.5f;
         [Tooltip("Brief 096 (Sky's free zoom, debug): the frame fit is not capped at farBand, so a frame zoomed far out (ortho 60: ±77 m of ground along the view) keeps shadows to its edge. Set each frame by PlayStandOff.")]
         public bool uncapped;
+        [Tooltip("Brief 109 (Sky on 0.2.330 by day: \"got flicker here on the curb and top here\", torn shadow edges on a roof along its parapet): the depth (m) the orthographic fit " +
+            "takes from focusDepth, in steps of this, held while focusDepth moves within 1.5 steps below it. PlayStandOff eases the stand-off every frame as the frame " +
+            "passes roofs of other heights; the one cascade's distance followed it, its size changed each frame, and URP can keep a cascade on its texel grid only while " +
+            "its size holds: every shadow edge crawled as the view panned. Rounded up, so the shadows still reach the street. 0 = the stand-off as it is (as before).")]
+        public float depthStep = 10f;
+        float depthHeld = float.NaN;
+        /// <summary>The depth the fit uses now (for checks), and how many times it changed this launch.</summary>
+        public float DepthHeld => depthHeld; public int DepthChanges { get; private set; }
+        float FitDepth()
+        {
+            if (depthStep <= 0f) return focusDepth;
+            if (float.IsNaN(depthHeld) || focusDepth > depthHeld || focusDepth < depthHeld - depthStep * 1.5f) { depthHeld = Mathf.Ceil(focusDepth / depthStep) * depthStep; DepthChanges++; }
+            return depthHeld;
+        }
         [Tooltip("The main light's soft-shadow quality while this camera renders orthographic (the sun's own setting overrides the asset's): Medium (5×5 tent) " +
             "with the sharper fitted map; the sun's own value comes back after the render.")]
         public SoftShadowQuality orthoSoftShadows = SoftShadowQuality.Medium;
@@ -156,7 +170,7 @@ namespace Suborned
             {
                 float s = Mathf.Clamp(-cam.transform.forward.y, 0.2f, 1f), cot = Mathf.Sqrt(1f - s * s) / s; // the view's pitch below the horizon
                 float far = cam.orthographicSize * cot + fitFade + fitMargin; if (!uncapped) far = Mathf.Min(farBand, far);
-                Fit(urp, focusDepth, nearBand, far, Ortho, airSplits, fitFade);
+                Fit(urp, FitDepth(), nearBand, far, Ortho, airSplits, fitFade);
                 return;
             }
             Fit(urp, focusDepth, nearBand, farBand, cam && cam.orthographic ? Ortho : cascades, airSplits, fade);

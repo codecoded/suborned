@@ -17,7 +17,9 @@ namespace Suborned.World
     /// a scene root `contact` (not the build root: Inspect counts only the export's layers). No shadow, no lighting, fog fades it out.</summary>
     public static class ContactShade
     {
-        const float Tile = 64f, Lift = 0.004f;
+        // Lift: above every inlay the kit lays on the ground (road_ribbon.py: the kerb's lens 4 mm, its hairline 7, the pool 10). Brief 109 (Sky on 0.2.330: "flicker
+        // here on the curb"): at 4 mm the kerb strip lay on the lens (DK_Road_Lens, Z_LENS 0.004) and, a multiply depth-tested against it, flickered along every gutter.
+        const float Tile = 64f, Lift = 0.012f;
 
         sealed class Buf { public readonly List<Vector3> v = new(); public readonly List<Vector2> uv = new(); public readonly List<int> t = new(); }
         static readonly Dictionary<(string kind, int x, int z), Buf> bufs = new();

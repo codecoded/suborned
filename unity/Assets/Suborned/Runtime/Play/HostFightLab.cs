@@ -30,7 +30,7 @@ namespace Suborned.Play
         public static string Dir(string sub)
         {
             var d = new DirectoryInfo(Application.dataPath);
-            for (int i = 0; i < 7 && d != null; i++, d = d.Parent) { var c = Path.Combine(d.FullName, "briefs", "027"); if (Directory.Exists(c)) return Path.Combine(c, sub); }
+            for (int i = 0; i < 10 && d != null; i++, d = d.Parent) /* brief 110: 10 up (a scratch build under out/scratch/<agent>/<dir>/ is 8 deep; at 7 the proof read routes from nowhere) */ { var c = Path.Combine(d.FullName, "briefs", "027"); if (Directory.Exists(c)) return Path.Combine(c, sub); }
             return Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "briefs", "027", sub));
         }
         public static readonly string[] Presets = { "today", "lab" }, Modes = { "realtime", "freeze", "target" }, Checkpoints = { "", "cp-loud", "cp-safe" };

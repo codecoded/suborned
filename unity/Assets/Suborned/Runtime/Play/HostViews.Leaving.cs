@@ -14,34 +14,34 @@ namespace Suborned.Play
     {
         const float LeaveAccel = 3.5f, LeaveTop = 15f, LeaveBeyond = 110f, LeaveSmooth = 5f; // m/s², m/s, m past the lane's end (Rocket Lane runs straight on 140 m past it; Apron Road 90 m), m of corner smoothing
         const string GetawayKey = "car/getaway";
-        Game leaveFor; readonly List<Vector3> leaveWay = new(); float leaveS, leaveV, leaveLen; Vector3? leaveHeading;
+        Game leaveFor; readonly ViewDrive getaway = new() { key = GetawayKey };
+        Vector3? leaveHeading => getaway.heading;
 
         /// <summary>For checks and captures: how far along its way out the car has been drawn (m); 0 before it left.</summary>
-        public float GetawayLeftM => leaveFor != null ? leaveS : 0f;
+        public float GetawayLeftM => leaveFor != null ? getaway.s : 0f;
+        /// <summary>The getaway's drive-off is under way and its car still in the city's view (brief 109: the end card waits for it, HandoverHost.EndPlayout).</summary>
+        public bool GetawayLeavingNow => leaveFor != null && getaway.way.Count >= 2 && !getaway.Done;
 
         void GetawayLeaving()
         {
             var g = host.Game;
-            if (g == null || g.Range || g.CarLeftTick > g.Tick) /* brief 096 (engine 0.42.0): with the lend our car can leave while the mission runs on */ { if (leaveFor != null) { leaveFor = null; leaveHeading = null; } return; }
+            if (g == null || g.Range || g.CarLeftTick > g.Tick) /* brief 096 (engine 0.42.0): with the lend our car can leave while the mission runs on */ { if (leaveFor != null) { leaveFor = null; getaway.heading = null; } return; }
             if (!things.TryGetValue(GetawayKey, out var th)) return;
             if (leaveFor != g)
             {
-                leaveFor = g; leaveS = leaveV = 0f; leaveLen = 0f; leaveHeading = null; LeaveSteerReset(); LeaveWay(g);
+                leaveFor = g; getaway.Reset(); LeaveWay(g);
             }
-            if (leaveWay.Count < 2) return;
-            if (leaveS >= leaveLen) { if (th.shown) things[GetawayKey] = (th.t, th.to, th.to, false); return; } // out of the city's view
-            float dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f);
-            leaveV = PushCap(GetawayKey, Mathf.Min(LeaveTop, leaveV + LeaveAccel * dt), dt); // brief 098 step 1b: it brakes while it shoves a wreck aside (HostViews.TrafficShove)
-            leaveV = LeaveSteer(g, leaveV, dt); leaveS += leaveV * dt; // brief 109 round 2: round the other cars, or wait behind one (HostViews.LeavingSteer)
-            var (at, dir) = LeaveSteeredAt(leaveS); leaveHeading = dir;
-            things[GetawayKey] = (th.t, at, at, true);
+            if (getaway.way.Count < 2) return;
+            if (getaway.Done) { if (th.shown) things[GetawayKey] = (th.t, th.to, th.to, false); return; } // out of the city's view
+            // brief 098 step 1b: it brakes while it shoves a wreck aside (HostViews.TrafficShove); brief 109 round 2: round the other cars, or waits behind one (HostViews.LeavingSteer)
+            DriveFrame(g, getaway, LeaveTop, Mathf.Min(Time.unscaledDeltaTime, 0.1f));
         }
 
         /// <summary>The way out in world points, its corners rounded: the grid's route (the engine's own, read only) from the car to the end of its
         /// lane, then straight on along the lane. A stand with no lane: nowhere to go, the car stays.</summary>
         void LeaveWay(Game g)
         {
-            leaveWay.Clear();
+            var leaveWay = getaway.way; leaveWay.Clear();
             var lane = g.CurStand.Exit; if (lane == null || lane.Length < 2) return;
             Pt from = g.CurStand.CarCell, end = lane[lane.Length - 1];
             Pt[] route = null;
@@ -53,8 +53,7 @@ namespace Suborned.Play
             var d = frame.World(end) - frame.World(lane[lane.Length - 2]); d.y = 0f;
             if (d.sqrMagnitude > 1e-4f) { var far = frame.World(end) + d.normalized * LeaveBeyond; far.y = frame.World(end).y; pts.Add(far); }
             for (int i = 0; i < 4; i++) Round(pts); // Chaikin: a grid route's cells would steer the car in steps
-            leaveWay.AddRange(pts);
-            for (int i = 1; i < leaveWay.Count; i++) leaveLen += Vector3.Distance(leaveWay[i - 1], leaveWay[i]);
+            leaveWay.AddRange(pts); getaway.Measure();
         }
 
         static void Add(List<Vector3> pts, Vector3 w) { if ((pts[pts.Count - 1] - w).sqrMagnitude > 1f) pts.Add(w); } // a metre apart: the grid's fine cells carry no steering of their own
@@ -68,18 +67,6 @@ namespace Suborned.Play
                 o.Add(Vector3.Lerp(pts[i], pts[i + 1], k)); o.Add(Vector3.Lerp(pts[i], pts[i + 1], 1f - k));
             }
             o.Add(pts[pts.Count - 1]); pts.Clear(); pts.AddRange(o);
-        }
-
-        (Vector3 at, Vector3 dir) LeaveAt(float s)
-        {
-            for (int i = 1; i < leaveWay.Count; i++)
-            {
-                var a = leaveWay[i - 1]; var b = leaveWay[i]; float len = Vector3.Distance(a, b);
-                if (s > len && i + 1 < leaveWay.Count) { s -= len; continue; }
-                var d = b - a; d.y = 0f;
-                return (Vector3.Lerp(a, b, len > 1e-4f ? Mathf.Clamp01(s / len) : 1f), d.sqrMagnitude > 1e-8f ? d.normalized : Vector3.forward);
-            }
-            return (leaveWay[leaveWay.Count - 1], Vector3.forward);
         }
     }
 }

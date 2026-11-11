@@ -13,17 +13,24 @@ namespace Suborned.Play
     /// onto its way once that is clear. No fade, no cut. View only: the engine's car and the hash are untouched.</summary>
     public sealed partial class HostViews
     {
+        /// <summary>A car the view drives after the engine stopped (brief 109: our getaway; Popovic's car at the end, HostViews.LeavingOfficial): its way,
+        /// how far along it is, its speed, and its sideways steering round the other cars.</summary>
+        sealed class ViewDrive
+        {
+            public string key = ""; public readonly List<Vector3> way = new(); public float s, v, len, side, sideGoal, sideRate; public string last = ""; public Vector3? heading;
+            public void Reset() { s = v = len = side = sideGoal = sideRate = 0f; last = ""; heading = null; way.Clear(); }
+            public void Measure() { len = 0f; for (int i = 1; i < way.Count; i++) len += Vector3.Distance(way[i - 1], way[i]); }
+            public bool Done => way.Count >= 2 && s >= len;
+        }
         const float SteerClear = 0.35f, SteerMax = 4.5f, SteerStep = 0.5f, LeaveBrake = 6f; // m between bodies; m off the way at most; m a try; m/s²
         /// <summary>How far sideways a car can go per metre it rolls: a pull-out from rest turns hard (0.9), at speed it changes lane gently (0.3 by 10 m/s).</summary>
         static float SteerSlope(float v) => Mathf.Lerp(0.9f, 0.3f, Mathf.Clamp01(v / 10f));
-        float leaveSide, leaveSideGoal, leaveSideRate;
-        /// <summary>For checks and captures: what the drive-off did last ("" clear, "steer 3.0 round car/rivals", "wait for car/rivals").</summary>
-        public string LeaveSteerLast { get; private set; } = "";
+        /// <summary>For checks and captures: what the getaway's drive-off did last ("" clear, "steer 3.0 round car/rivals", "wait for car/rivals").</summary>
+        public string LeaveSteerLast => getaway.last;
         readonly Dictionary<Transform, (float half, float rad, float cz)> bodyDims = new();
         readonly List<(Vector2 a, Vector2 b, float r, string key)> leaveObs = new();
 
-        void Say(string w) { if (w != LeaveSteerLast) Debug.Log($"HostViews: the getaway's drive-off: {w} at {leaveS:0.0} m of {leaveLen:0} m, {leaveV:0.0} m/s"); LeaveSteerLast = w; }
-        void LeaveSteerReset() { leaveSide = leaveSideGoal = leaveSideRate = 0f; LeaveSteerLast = ""; }
+        static void Say(ViewDrive c, string w) { if (w != c.last) Debug.Log($"HostViews: {c.key}'s drive-off: {w} at {c.s:0.0} m of {c.len:0} m, {c.v:0.0} m/s"); c.last = w; }
 
         /// <summary>A car body as a capsule in its own frame: half the straight between the two ends, the radius (half its width), the centre's offset along +Z.</summary>
         (float half, float rad, float cz) Dims(Transform m)
@@ -47,19 +54,19 @@ namespace Suborned.Play
         static Vector3 RightOf(Vector3 d) => new(d.z, 0f, -d.x);
 
         /// <summary>Per frame of the leaving: the other cars now; the side to drive at; the speed it may have (braked when nothing clears). Returns the speed.</summary>
-        float LeaveSteer(Game g, float v, float dt)
+        float LeaveSteer(Game g, ViewDrive c, float v, float dt)
         {
-            var me = carModels.TryGetValue(GetawayKey, out var mm) && mm ? Dims(mm) : (1.45f, 0.9f, 0f);
+            var me = carModels.TryGetValue(c.key, out var mm) && mm ? Dims(mm) : (1.45f, 0.9f, 0f);
             leaveObs.Clear();
             foreach (var kv in carModels)
             {
-                if (kv.Key == GetawayKey || !kv.Key.StartsWith("car/") || !kv.Value || !kv.Value.gameObject.activeInHierarchy || !things.TryGetValue(kv.Key, out var th) || !th.shown) continue;
+                if (kv.Key == c.key || !kv.Key.StartsWith("car/") || !kv.Value || !kv.Value.gameObject.activeInHierarchy || !things.TryGetValue(kv.Key, out var th) || !th.shown) continue;
                 var d = Dims(kv.Value); var f = kv.Value.forward; f.y = 0f; if (f.sqrMagnitude < 1e-6f) f = Vector3.forward; f.Normalize();
-                var c = kv.Value.position + f * d.cz; leaveObs.Add((XZ(c - f * d.half), XZ(c + f * d.half), d.rad, kv.Key));
+                var oc = kv.Value.position + f * d.cz; leaveObs.Add((XZ(oc - f * d.half), XZ(oc + f * d.half), d.rad, kv.Key));
             }
             // how close each is now: a car already that close (alongside the stand) blocks only if the way would bring us closer still, as a driver pulls out past it
             var near = new float[leaveObs.Count];
-            { var (p0, d0) = LeaveAt(leaveS); var c0 = p0 + RightOf(d0) * leaveSide + d0 * me.Item3; Vector2 a0 = XZ(c0 - d0 * me.Item1), b0 = XZ(c0 + d0 * me.Item1); for (int i = 0; i < near.Length; i++) near[i] = SegDist(a0, b0, leaveObs[i].a, leaveObs[i].b); }
+            { var (p0, d0) = WayAt(c.way, c.s); var c0 = p0 + RightOf(d0) * c.side + d0 * me.Item3; Vector2 a0 = XZ(c0 - d0 * me.Item1), b0 = XZ(c0 + d0 * me.Item1); for (int i = 0; i < near.Length; i++) near[i] = SegDist(a0, b0, leaveObs[i].a, leaveObs[i].b); }
             float slope = SteerSlope(v), look = Mathf.Max(25f, 4f + v * 1.4f + v * v / (2f * LeaveBrake)); // as far down the road as a driver reads it: past a car in the way, to see a swerve that clears it
             string by = "";
             // the way at `goal`, the swerve from where it is now included (sideways SteerSlope m per m rolled): clear? else how far ahead it is blocked
@@ -69,42 +76,51 @@ namespace Suborned.Play
             // its line; clear for the whole look ahead? else how far ahead the first car in the way is
             bool Clear(float goal, out float blockedAt)
             {
-                float side = leaveSide;
+                float side = c.side;
                 for (float ds = 0f; ds <= look; ds += 0.75f)
                 {
-                    var (p, d) = LeaveAt(leaveS + ds); var r = RightOf(d);
+                    var (p, d) = WayAt(c.way, c.s + ds); var r = RightOf(d);
                     if (ds > 0f) { float want = Mathf.MoveTowards(side, goal, slope * 0.75f); if (Room(p, r, want)) side = want; }
-                    var c = p + r * side + d * me.Item3; Vector2 a = XZ(c - d * me.Item1), b = XZ(c + d * me.Item1);
+                    var cc = p + r * side + d * me.Item3; Vector2 a = XZ(cc - d * me.Item1), b = XZ(cc + d * me.Item1);
                     for (int i = 0; i < leaveObs.Count; i++) { var o = leaveObs[i]; float dd = SegDist(a, b, o.a, o.b); if (dd < me.Item2 + o.r + SteerClear && dd < near[i] - 0.05f) { blockedAt = ds; by = o.key; return false; } }
                 }
                 blockedAt = float.MaxValue; return true;
             }
-            if (!Clear(leaveSideGoal, out var blocked))
+            if (!Clear(c.sideGoal, out var blocked))
             {
                 string first = by; bool found = false;
                 var tries = new List<float>(); for (float k = -SteerMax; k <= SteerMax + 1e-3f; k += SteerStep) tries.Add(k);
-                tries.Sort((x, y) => Mathf.Abs(x - leaveSide).CompareTo(Mathf.Abs(y - leaveSide)));
-                foreach (var k in tries) if (Mathf.Abs(k - leaveSideGoal) > 1e-3f && Clear(k, out _)) { leaveSideGoal = k; found = true; break; }
-                if (found) Say($"steer {leaveSideGoal:0.0} round {first}");
+                tries.Sort((x, y) => Mathf.Abs(x - c.side).CompareTo(Mathf.Abs(y - c.side)));
+                foreach (var k in tries) if (Mathf.Abs(k - c.sideGoal) > 1e-3f && Clear(k, out _)) { c.sideGoal = k; found = true; break; }
+                if (found) Say(c, $"steer {c.sideGoal:0.0} round {first}");
                 else
                 {
                     v = Mathf.Min(v, Mathf.Sqrt(2f * LeaveBrake * Mathf.Max(0f, blocked - 1f))); // a driver stops short of it and waits
-                    if (LeaveSteerLast != $"wait for {first}") { var why = new System.Text.StringBuilder(); foreach (var k in tries) { Clear(k, out var bk); why.Append($" {k:0.0}:{(bk == float.MaxValue ? "clear" : $"{by}@{bk:0.0}")}"); } Debug.Log($"HostViews: the drive-off's tries at {leaveS:0.0} m (side {leaveSide:0.0}, look {look:0.0} m):{why}"); }
-                    Say($"wait for {first}");
+                    if (c.last != $"wait for {first}") { var why = new System.Text.StringBuilder(); foreach (var k in tries) { Clear(k, out var bk); why.Append($" {k:0.0}:{(bk == float.MaxValue ? "clear" : $"{by}@{bk:0.0}")}"); } Debug.Log($"HostViews: the drive-off's tries ({c.key}) at {c.s:0.0} m (side {c.side:0.0}, look {look:0.0} m):{why}"); }
+                    Say(c, $"wait for {first}");
                 }
             }
-            else if (Mathf.Abs(leaveSideGoal) > 1e-3f && Clear(0f, out _)) { leaveSideGoal = 0f; Say("back on its way"); }
-            float was = leaveSide; { var (p, d) = LeaveAt(leaveS + v * dt); float want = Mathf.MoveTowards(leaveSide, leaveSideGoal, slope * v * dt); if (Room(p, RightOf(d), want)) leaveSide = want; } // sideways only where there is room
-            leaveSideRate = v * dt > 1e-5f ? (leaveSide - was) / (v * dt) : 0f;
+            else if (Mathf.Abs(c.sideGoal) > 1e-3f && Clear(0f, out _)) { c.sideGoal = 0f; Say(c, "back on its way"); }
+            float was = c.side; { var (p, d) = WayAt(c.way, c.s + v * dt); float want = Mathf.MoveTowards(c.side, c.sideGoal, slope * v * dt); if (Room(p, RightOf(d), want)) c.side = want; } // sideways only where there is room
+            c.sideRate = v * dt > 1e-5f ? (c.side - was) / (v * dt) : 0f;
             return v;
         }
 
         /// <summary>Where the car is drawn at `s` along its way, at its side, facing along the way turned by its sideways motion.</summary>
-        (Vector3 at, Vector3 dir) LeaveSteeredAt(float s)
+        static (Vector3 at, Vector3 dir) SteeredAt(ViewDrive c)
         {
-            var (p, d) = LeaveAt(s); var r = RightOf(d);
-            var h = d + r * leaveSideRate; h.y = 0f;
-            return (p + r * leaveSide, h.sqrMagnitude > 1e-8f ? h.normalized : d);
+            var (p, d) = WayAt(c.way, c.s); var r = RightOf(d);
+            var h = d + r * c.sideRate; h.y = 0f;
+            return (p + r * c.side, h.sqrMagnitude > 1e-8f ? h.normalized : d);
+        }
+
+        /// <summary>One frame of a view drive: speed up to `top` (braked to push a wreck aside, PushCap), steer round the cars drawn or wait, move on; the car drawn there.</summary>
+        void DriveFrame(Game g, ViewDrive c, float top, float dt)
+        {
+            c.v = PushCap(c.key, Mathf.Min(top, c.v + LeaveAccel * dt), dt);
+            c.v = LeaveSteer(g, c, c.v, dt); c.s += c.v * dt;
+            var (at, dir) = SteeredAt(c); c.heading = dir;
+            if (things.TryGetValue(c.key, out var th)) things[c.key] = (th.t, at, at, true);
         }
 
         /// <summary>The least distance between two segments in the plane.</summary>

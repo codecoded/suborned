@@ -11,7 +11,7 @@ namespace Suborned.Play
         /// <summary>A text width in grid px: (text, size, font).</summary>
         public delegate float Measure(string text, float size, string font);
         public struct Item { public BookSlot Slot; public int Index; public Rect At; public float Size, Cy, D; }
-        public sealed class Result { public readonly List<Item> Items = new(); public float Bottom, NameSize, TrackStep, TrackSize; public string[] SubLines = Array.Empty<string>(); public readonly Dictionary<int, string[]> CanLines = new(), NeedLines = new(), CrewLines = new(), StoryLines = new(); public int RowsShown; public float SubSize = 30f; public int Rows; public DebriefLines Debrief; public bool Has(BookSlot s) { foreach (var i in Items) if (i.Slot == s) return true; return false; } public IEnumerable<Item> Of(BookSlot s) { foreach (var i in Items) if (i.Slot == s) yield return i; } }
+        public sealed class Result { public readonly List<Item> Items = new(); public float Bottom, NameSize, TrackStep, TrackSize; public string[] SubLines = Array.Empty<string>(); public readonly Dictionary<int, string[]> CanLines = new(), NeedLines = new(), CrewLines = new(), StoryLines = new(); public readonly Dictionary<int, (string[][] Lines, string[] Result, string Where)> RowText = new(); public int RowsShown; public float SubSize = 30f; public int Rows; public DebriefLines Debrief; public bool Has(BookSlot s) { foreach (var i in Items) if (i.Slot == s) return true; return false; } public IEnumerable<Item> Of(BookSlot s) { foreach (var i in Items) if (i.Slot == s) yield return i; } }
 
         static readonly (float size, float step, float d)[] One = { (36, 60, 46), (31, 54, 42) }, Two = { (30, 52, 40), (27, 46, 36), (24, 40, 32), (22, 37, 30) };
 
@@ -109,10 +109,10 @@ namespace Suborned.Play
                 foreach (var (g, cx, cw) in cols)
                 {
                     float cy = top;
-                    for (int i = 0; i < p.Needs.Count; i++) { if (p.Needs[i].Group != g || g == Tail) continue; var lines = Wrap(p.Needs[i].Words, NeedSize, "Jost-Medium", cw - 30f, tw); r.NeedLines[i] = lines; float h = NeedLineH * lines.Length + 8f; r.Items.Add(new Item { Slot = BookSlot.Needs, Index = i, Size = NeedSize, D = 22f, At = new Rect(cx, cy, cw, h) }); cy += h; n++; }
+                    for (int i = 0; i < p.Needs.Count; i++) { if (p.Needs[i].Group != g || g == Tail) continue; var lines = WrapAny(p.Needs[i].Words, NeedSize, "Jost-Medium", cw - 30f, tw); r.NeedLines[i] = lines; float h = NeedLineH * lines.Length + 8f; r.Items.Add(new Item { Slot = BookSlot.Needs, Index = i, Size = NeedSize, D = 22f, At = new Rect(cx, cy, cw, h) }); cy += h; n++; }
                     bottom = Mathf.Max(bottom, cy);
                 }
-                for (int i = 0; i < p.Needs.Count; i++) if (!r.NeedLines.ContainsKey(i) && p.Needs[i].Group != Tail) { var lines = Wrap(p.Needs[i].Words, NeedSize, "Jost-Medium", CanW - 30f, tw); r.NeedLines[i] = lines; float h = NeedLineH * lines.Length + 8f; r.Items.Add(new Item { Slot = BookSlot.Needs, Index = i, Size = NeedSize, D = 22f, At = new Rect(X, bottom, CanW, h) }); bottom += h; }
+                for (int i = 0; i < p.Needs.Count; i++) if (!r.NeedLines.ContainsKey(i) && p.Needs[i].Group != Tail) { var lines = WrapAny(p.Needs[i].Words, NeedSize, "Jost-Medium", CanW - 30f, tw); r.NeedLines[i] = lines; float h = NeedLineH * lines.Length + 8f; r.Items.Add(new Item { Slot = BookSlot.Needs, Index = i, Size = NeedSize, D = 22f, At = new Rect(X, bottom, CanW, h) }); bottom += h; }
                 y = bottom + 16f;
             }
             y = PlaceShared(p, r, y, tw);
@@ -125,7 +125,7 @@ namespace Suborned.Play
                 y += 10f; int n = p.Can.Count; var (ws, ls, d) = n <= 6 ? (30f, 21.5f, 42f) : n <= 8 ? (26f, 20f, 38f) : (23f, 18f, 32f); float lw = CanW - d - 14f, gap = n <= 6 ? 14f : 10f;
                 for (int i = 0; i < n; i++)
                 {
-                    var lines = Wrap(p.Can[i].Line, ls, "Jost-Medium", lw, tw); r.CanLines[i] = lines; float lh = ls * 1.3f, h = ws * 1.25f + lh * lines.Length;
+                    var lines = WrapAny(p.Can[i].Line, ls, "Jost-Medium", lw, tw); r.CanLines[i] = lines; float lh = ls * 1.3f, h = ws * 1.25f + lh * lines.Length; // brief 108: WrapAny, never one line past its column
                     r.Items.Add(new Item { Slot = BookSlot.Can, Index = i, Size = ws, D = d, Cy = y + ws * .6f, At = new Rect(X, y, CanW, h) }); y += h + gap;
                 }
                 y += 10f;

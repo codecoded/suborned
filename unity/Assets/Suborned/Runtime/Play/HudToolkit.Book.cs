@@ -135,7 +135,7 @@ namespace Suborned.Play
                     case BookSlot.Crew: BkCrew(body, pg.Crew[it.Index], it, r.CrewLines[it.Index]); break;
                     case BookSlot.Begin: BkBegin(body, it); break;
                     case BookSlot.Filters: BkFilter(body, pg.Filters[it.Index], it); break;
-                    case BookSlot.Rows: BkRow(body, pg.Rows[it.Index], it); break;
+                    case BookSlot.Rows: BkRow(body, pg.Rows[it.Index], it, r.RowText.TryGetValue(it.Index, out var rt) ? rt : BookLayout.RowWords(pg.Rows[it.Index], BkTw)); break;
                     case BookSlot.WayIn: BkWayIn(body, pg, it); break; // brief 099, the debrief (HudToolkit.BookDebrief, BookFold)
                     case BookSlot.Ticks: BkTick(body, pg.Ticks[it.Index], it, dl.TickWords[it.Index]); break;
                     case BookSlot.Next: BkNext(body, pg, it, dl.Next[0]); break;

@@ -31,6 +31,7 @@ namespace Suborned.Play
 
         /// <summary>The fail camera is playing (the HUD shows only its caption; the end card waits).</summary>
         public bool FailCamOn { get; private set; }
+        float failLeaveFrom = -1f; // brief 109: the fail camera's clock when the leaving it follows began
         /// <summary>The run's end has something to orbit: the end card's "Show me again".</summary>
         public bool FailCamAvailable => endGame?.Cause is FailCause c && FailTarget(c) != null;
         /// <summary>The caption and its tip while it plays (Fable's less.failcam, filled).</summary>
@@ -125,7 +126,7 @@ namespace Suborned.Play
             System.Array.Copy(Selected, sel0, 4); System.Array.Clear(Selected, 0, 4); foreach (var o in c.Ops) if (IsOpName(o)) Selected[(int)Op.Parse(o)] = true;
             failPivot = frame.World(tgt.at);
             if (!c.Single && c.Origin is CauseOrigin og && og.ScenePlaced && og.Reporter is Blamed rp && rp.Placed) failPivot = (frame.World(og.Scene) + frame.World(rp.At)) / 2f; // the seal: the reporter and what it saw, both in frame
-            failAcc = 0f; failStart = Time.unscaledTime; failHoldUntil = -1f; failClock = 0f; failYawSet = false; failWalls.Clear();
+            failAcc = 0f; failStart = Time.unscaledTime; failHoldUntil = -1f; failLeaveFrom = -1f; failClock = 0f; failYawSet = false; failWalls.Clear();
             (FailCaption, FailTip) = FailWords(c, tgt.who);
             if (fade) { fadeR0 = fade.radiusPerZoom; ghost0 = fade.ghost; feather0 = fade.feather; fade.radiusPerZoom = 0.02f; fade.ghost = 0f; fade.feather = failFeather; } // Glyph r1: only what stands on the culprit-op line, cut clean (no dither); a narrow edge
             FailProps(failPivot);
@@ -159,6 +160,7 @@ namespace Suborned.Play
         {
             if (!FailCamOn) return;
             FailCamLast = $"{why} at clock {failClock:0.00} s, tick {failGame?.Tick} of {failTo}, over {failGame?.Over}";
+            if (why is "click" or "esc") EndPlayoutSkip(endGame); // brief 109: skipped: the card at once
             FailCamOn = false; Game = endGame; failGame = null; views.Tick(); views.Frame(1f); views.ShowFans(null);
             if (!Following) { cam.orthographic = camOrtho0; cam.orthographicSize = camSize0; cam.transform.SetPositionAndRotation(camPos0, camRot0); focus = focus0; if (fade) fade.focus = focus; }
             System.Array.Copy(sel0, Selected, 4);
@@ -186,6 +188,8 @@ namespace Suborned.Play
                 }
             }
             else if (failHoldUntil < 0f) failHoldUntil = failClock + failHoldS;
+            if (EndPlayout && failHoldUntil >= 0f && views.OfficialLeavingAt is Vector3 leaving) // brief 109: Popovic driven away: hold while he and his driver get in and the car leaves, the camera on it
+            { failCulprit = leaving; if (failLeaveFrom < 0f) failLeaveFrom = failClock; if (failClock - failLeaveFrom < EndPlayoutMaxS) failHoldUntil = Mathf.Max(failHoldUntil, failClock + 0.05f); }
             views.Frame(g.Tick >= failTo || g.Over ? 1f : Mathf.Clamp01(failAcc / 0.1f));
             // the culprit's cone (a camera, the guard, the patrol, an officer or robot) as the engine draws it, on the street
             if (endGame.Cause is FailCause c)

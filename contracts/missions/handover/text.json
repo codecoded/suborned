@@ -1512,7 +1512,7 @@
     "target": "the watched person",
     "line": "Watching shows where and when. The Scout can Listen, close by, to learn who someone is.",
     "short": "Listen to [{who}].",
-    "trigger": "a person's routine is known (Watch done), their need and temperament are not",
+    "trigger": "the cell has begun (a Watch or Listen given, or something learned) and someone out on the street has need and temperament unknown and no Listen on them; a watched one first (brief 110: Listen needs no Watch)",
     "rings": "the watched person",
     "goneWhen": "Listen ordered on them"
    },

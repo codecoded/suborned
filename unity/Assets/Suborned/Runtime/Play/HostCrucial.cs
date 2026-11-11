@@ -147,8 +147,10 @@ namespace Suborned.Play
             if (line.Length > 0)
             {
                 line = line.Replace("{n}", (c.Kind == "for-car" ? (RingHealthOf(ValeCarId())?.left ?? 0) : c.Kind is "hurt" or "hurt-carry" ? Game.Ops[(int)OpId.Enforcer].Gun.Health : c.Value).ToString()).Replace("{vale}", ValeWord)
-                    .Replace("{seal}", Game.Lockdown < int.MaxValue / 8 ? MissionClock(Game.Lockdown) : "?").Replace("{by}", "")
-                    .Replace("{s}", RespSoonestS >= 0 ? $"{RespSoonestS} s" : "?").Replace("{police}", Game.SplitPoliceAt < LendInf ? MissionClock(Game.SplitPoliceAt) : "?");
+                    .Replace("{by}", ""); // brief 108: a time the engine hasn't set drops its clause (Clause.Fill), never "?"
+                line = Clause.Fill(line, "{seal}", Game.Lockdown < int.MaxValue / 8 ? MissionClock(Game.Lockdown) : null);
+                line = Clause.Fill(line, "{s}", RespSoonestS >= 0 ? $"{RespSoonestS} s" : null);
+                line = Clause.Fill(line, "{police}", Game.SplitPoliceAt < LendInf ? MissionClock(Game.SplitPoliceAt) : null);
                 line = line.Trim();
             }
             return line.Length > 0 ? $"{line} · {MissionClock(c.Tick)}" : MissionClock(c.Tick);

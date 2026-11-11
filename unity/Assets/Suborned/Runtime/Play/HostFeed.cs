@@ -342,7 +342,7 @@ namespace Suborned.Play
         string EventResult(LogLine l)
         {
             var g = Game; string t = l.Text;
-            string Num() { var m = System.Text.RegularExpressions.Regex.Match(t, @"\d+"); return m.Success ? m.Value : "?"; }
+            string Num() { var m = System.Text.RegularExpressions.Regex.Match(t, @"\d+"); return m.Success ? m.Value : null; } // brief 108: no number drops its sentence, never "?"
             string Between(string a, string b) { int i = t.IndexOf(a, StringComparison.Ordinal); if (i < 0) return null; i += a.Length; int j = t.IndexOf(b, i, StringComparison.Ordinal); return j > i ? t[i..j] : null; }
             switch (l.Code)
             {
@@ -359,8 +359,8 @@ namespace Suborned.Play
                 case "patrol.breaks": return t.Contains("gunfire") ? "Toward the gunfire." : "Toward the drawn weapon.";
                 case "run.seen": { var who = Between("The ", " sees"); var ag = Between("sees the ", " running"); return who != null && ag != null ? $"The {who} noticed the {Cap(ag)} running." : "Someone noticed a runner."; } // engine 0.34.0 (M067-B2): a run is noticed, never an Alert on its own
                 case "report": { var who = Between("The ", " reports"); return who != null ? $"The {who} reported the attempt. Alert {g.Alert}." : $"Reported. Alert {g.Alert}."; }
-                case "fight.loud": return $"{Num()} officers, from the north street." + (g.Lockdown < int.MaxValue / 8 ? $" The district seals at {MissionClock(g.Lockdown)}." : "");
-                case "fight.safe": return $"{Num()} of them. The car can't leave while they stand.";
+                case "fight.loud": return ((Num() is string nl ? $"{nl} officers, from the north street." : "") + (g.Lockdown < int.MaxValue / 8 ? $" The district seals at {MissionClock(g.Lockdown)}." : "")).Trim();
+                case "fight.safe": return (Num() is string ns ? $"{ns} of them. " : "") + "The car can't leave while they stand.";
                 case "fight.ambush": return t.Contains("warning") ? "Inez's warning came in time. You saw it first." : "The rivals open fire at the car.";
                 case "fight.over": return Text?.CardFor("fight.over")?.Result is { Length: > 0 } fo ? fo : "The last of them is down or gone. Fire orders end. The car can go."; // Fable's card (text.json cards.items["fight.over"].result)
                 case "rivals.recalled": return "Rivals who were away are coming back for the fight."; // engine 0.33.0: Fable's results (cards.items), for a text without them

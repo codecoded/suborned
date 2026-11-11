@@ -26,9 +26,11 @@ namespace Suborned.Play
         public static bool Live => Fx != null;
 
         /// <summary>`-juice on|off` wins; else on unless the launch has an automation flag (playing.ts: anything but the window and macOS ones).</summary>
-        public static bool Decide(string[] args)
+        public static bool Decide(string[] args) => Decide(args, "-juice");
+        /// <summary>The same rule for another switch (brief 109: `-endplay`, HandoverHost.EndPlayout): `name on|off` wins; else on unless the launch has an automation flag.</summary>
+        public static bool Decide(string[] args, string name)
         {
-            int i = Array.IndexOf(args, "-juice");
+            int i = Array.IndexOf(args, name);
             if (i >= 0) return !(i + 1 < args.Length && args[i + 1].Equals("off", StringComparison.OrdinalIgnoreCase));
             for (int k = 1; k < args.Length; k++)
             {

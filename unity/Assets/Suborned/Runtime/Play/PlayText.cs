@@ -555,7 +555,7 @@ namespace Suborned.Play
             A("go", "Go", "the car leaves with whoever is in it");
             A("fire", "Fire", "fire until they are down: the run goes loud");
             void Lk(string code, string pattern, string line) { var l = new LockText { Code = code, Line = line }; l.Match.Add(new Regex(pattern, RegexOptions.IgnoreCase)); t.Locks.Add(l); }
-            Lk("needs-routine", "needs .*routine", "Watch them first (Scout) to learn their routine.");
+            Lk("needs-routine", "needs .*routine", "Watch them first to learn their routine."); // brief 110: only Pay asks it now, and any agent can Watch
             Lk("needs-need", "needs .*need", "Listen to them first (Scout) to learn what they need.");
             Lk("needs-temperament", "needs .*temperament", "Listen to them first (Scout) to learn their temperament.");
             Lk("busy", "busy until", "Wait until the current act lands, or cancel it (C).");

@@ -175,9 +175,11 @@ namespace Suborned.World.Review
             File.WriteAllText(Path.Combine(root, "out", "scratch", "latch", "windowfight", "box.txt"), sb.ToString());
         }
 
-        static bool Inside(Tri t, Vector3 p)
+        static bool Inside(Tri t, Vector3 p) => InsideTri(t.a, t.b, t.c, p);
+        /// <summary>p (on the triangle's plane) inside triangle abc, 1 mm of slack.</summary>
+        public static bool InsideTri(Vector3 a, Vector3 b, Vector3 c, Vector3 p)
         {
-            Vector3 v0 = t.b - t.a, v1 = t.c - t.a, v2 = p - t.a; float d00 = Vector3.Dot(v0, v0), d01 = Vector3.Dot(v0, v1), d11 = Vector3.Dot(v1, v1), d20 = Vector3.Dot(v2, v0), d21 = Vector3.Dot(v2, v1);
+            Vector3 v0 = b - a, v1 = c - a, v2 = p - a; float d00 = Vector3.Dot(v0, v0), d01 = Vector3.Dot(v0, v1), d11 = Vector3.Dot(v1, v1), d20 = Vector3.Dot(v2, v0), d21 = Vector3.Dot(v2, v1);
             float den = d00 * d11 - d01 * d01; if (Mathf.Abs(den) < 1e-12f) return false;
             float v = (d11 * d20 - d01 * d21) / den, w = (d00 * d21 - d01 * d20) / den; const float e = -0.001f; return v >= e && w >= e && v + w <= 1f - e;
         }

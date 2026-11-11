@@ -282,7 +282,7 @@ namespace Suborned.Play
             if (MenuKeys(kb)) return; // the pause menu is up: Esc resumes, its buttons act; nothing else this frame
             if (FailCamFrame()) { FollowFrame(); return; }
             if (ConvoFrame()) return; // brief 032: a conversation scene plays (HostConvo): the clock held, its keys only, the cutaway camera // the fail camera plays (HostFailCam): nothing else this frame but the follow view, if on (Sky 2026-10-20: it plays in the view the player is in)
-            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); Guard("car fx", CarFxFrame); FollowFrame(); FadePoints(); return; } // the end card is modal (ModalGate)
+            if (Ending.Length > 0) { ClearHover(); EndPlayoutFrame(); /* brief 109: a leaving plays out before the card (HostEndPlayout) */ if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); Guard("car fx", CarFxFrame); FollowFrame(); FadePoints(); return; } // the end card is modal (ModalGate)
             if (!CameraLab.Typing) Controls(); // brief 025: no keys reach the street while a preset name is typed
             if (Fault == null) Guard("plan", PlanFrame); // brief 041: the pause lifted gives the queued orders on this tick, before the clock steps
             if (Fault != null) return;
@@ -1007,19 +1007,13 @@ namespace Suborned.Play
                 PopKey("no-way", screen, target, Feedback.Refused, "Can't walk there."); return false;
             }
             bool engages = o.Do is "watch" or "listen" or "turn" or "call" or "loop" or "disable" or "reroute" or "mislead" or "enter" or "take" or "board" or "carry" or "restrain" or "stash" or "drop" or "takedown";
-            if (engages && HoldOn && op.Busy != null && !op.Down)
-            {
-                if (op.BusyEnd - g.Tick <= 2 * Game.Hz) { pending[k] = new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, How = o.How }; pendingAt[k] = target; pendingFrom[k] = g.Tick; Track(); return false; } // it goes when the act in hand ends (FollowUp)
-                CancelAgent(k, screen);
-            }
+            // brief 110 (engine 0.55.0; Sky: "No commands should be waiting. It either is accepted or not available"): the act in hand is cancelled and the new
+            // one goes now, never queued behind it (was: an act ending within 2 s was waited for, FollowUp)
+            if (engages && HoldOn && op.Busy != null && !op.Down) CancelAgent(k, screen);
             // the 0.2.113 bot smoke row (Q-OFFER, 6 of them): the ring offered Fire to a busy agent and the engine refused it agent-busy (rulebook:
-            // fire is no act a busy operative takes; a cancel ends the act at its cancel line's cost). Fire is urgent: an act ending within 2 s is
-            // waited for (the fire goes then, the whole order kept), any other is cancelled first and the fire goes now; in every preset
-            if (o.Do == "fire" && op.Busy != null && !op.Down)
-            {
-                if (op.BusyEnd - g.Tick <= 2 * Game.Hz) { pending[k] = FireCopy(o); pendingAt[k] = target; pendingFrom[k] = g.Tick; Track(); return false; }
-                CancelAgent(k, screen); FireCancelledActs++;
-            }
+            // fire is no act a busy operative takes; a cancel ends the act at its cancel line's cost). Fire is urgent: the act in hand is cancelled and
+            // the fire goes now, in every preset (brief 110: never waited for, even an act about to end)
+            if (o.Do == "fire" && op.Busy != null && !op.Down) { CancelAgent(k, screen); FireCancelledActs++; }
             if (o.Do == "watch" && Game.WatcherKind(o.Target) == "patrol")
             {
                 Answer a = default; Guard("watch reach", () => a = g.LearnQuery(o.Op, "watch", o.Target));
@@ -1404,9 +1398,7 @@ namespace Suborned.Play
             ActWalk w = null; Guard("walk", () => w = ActPlace(by, order, t));
             var tw = TargetWorld(t);
             if (w != null && Driving && by == (OpId)dAgent) DriveAutoBegin(); // Sky 2026-10-20: out of reach while driven, the engine walks the agent in and acts, as on the map (brief 024's "no auto-walk" replaced)
-            retryUntil[(int)by] = -1;
-            if (w == null && order.Do == "watch" && CrowdBlocked((int)by, order.Target)) // brief 031: a passer-by across the line: the Watch waits a moment and goes (FollowUp)
-            { pending[(int)by] = order; pendingAt[(int)by] = tw; pendingFrom[(int)by] = Game.Tick; SayOrder(by, order, new ActWalk { Place = "" }); Track(); return; }
+            // brief 110: a Watch with a passer-by across the line is given now; refused (no-clear-line), the ring says why (was: it waited up to 5 s, CrowdBlocked)
             if (w == null) { if (Issue(order, screen, tw)) SayOrder(by, order, null); return; }
             if (WalksIn(by, order)) { if (Issue(order, screen, tw)) SayOrder(by, order, w); return; } // engine 0.23: a person act out of reach is taken; the engine walks the agent in (op.Act, op.Walk) and the act starts in reach
             var walk = w.Place.Length > 0 ? new Order { Op = order.Op, Do = "move", To = w.Place, Run = giveRun && RunInRulebook } : new Order { Op = order.Op, Do = "move", Point = w.To, Run = giveRun && RunInRulebook }; // brief 041: Shift + hold (or Shift on a wedge) runs there first
@@ -1439,17 +1431,6 @@ namespace Suborned.Play
         /// <summary>The target of agent k's pending act (the proof's latch check), "" none.</summary>
         public string PendingTarget(int k) => pending[k]?.Target ?? (Game != null && Game.Ops[k].Busy == null ? Game.Ops[k].Act?.Target : null) ?? "";
         readonly Order[] pending = new Order[4]; readonly Vector3?[] pendingAt = new Vector3?[4]; readonly int[] pendingFrom = new int[4];
-        readonly int[] retryUntil = { -1, -1, -1, -1 };
-
-        /// <summary>Brief 031: the agent's Watch on `target` would be refused only for the crowd: the engine says no-clear-line, and the line at
-        /// eye height past the walls and solids is clear (a passer-by is crossing it). Read-only (LearnQuery).</summary>
-        bool CrowdBlocked(int k, string target)
-        {
-            var g = Game; Answer a = default; if (!Guard("watch line", () => a = g.LearnQuery(Op.Name((OpId)k), "watch", target))) return false;
-            if (a.ok || a.code != "no-clear-line") return false;
-            Pt? aim = Game.WatcherKind(target) switch { "camera" => CameraAt(target.Substring(7)), "patrol" => g.PatrolPose()?.pos, _ => CastOf(target) is Person p ? g.PersonPos(p) : null };
-            return aim.HasValue && g.S.Sight(g.Ops[k].Pos, aim.Value, g.R.Eye);
-        }
 
         /// <summary>After each step: an agent who has arrived (no walk, nothing in hand) gives the order they walked for.</summary>
         void FollowUp()
@@ -1458,10 +1439,6 @@ namespace Suborned.Play
             {
                 var o = pending[k]; if (o == null) continue;
                 var op = Game.Ops[k]; if (op.Walk != null || op.Busy != null || op.Inside) continue;
-                // brief 031: a Watch refused only because a passer-by crosses the line (no-clear-line, the walls clear) is tried again each tick
-                // for up to 5 s (a read-only query, so nothing is recorded until it goes); then it is given and any refusal shows as usual
-                if (o.Do == "watch" && CrowdBlocked(k, o.Target)) { if (retryUntil[k] < 0) retryUntil[k] = Game.Tick + 5 * Game.Hz; if (Game.Tick < retryUntil[k]) continue; }
-                retryUntil[k] = -1;
                 pending[k] = null;
                 var act = o.Do == "fire" ? FireCopy(o) : new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, How = o.How }; // a waited fire keeps its whole order
                 if (Issue(act, null, pendingAt[k]) && Game.Tick - pendingFrom[k] >= 5 * Game.Hz) SayArrive((OpId)k, act); // a short walk: the ack said it (Fable §4)

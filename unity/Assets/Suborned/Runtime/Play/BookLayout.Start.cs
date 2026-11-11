@@ -66,7 +66,7 @@ namespace Suborned.Play
                 float cy = top;
                 for (int k = c * half; k < Mathf.Min(tail.Count, (c + 1) * half); k++)
                 {
-                    int i = tail[k]; var lines = Wrap(p.Needs[i].Words, NeedSize, "Jost-Medium", cw - 42f, tw); r.NeedLines[i] = lines; float h = NeedLineH * lines.Length + 8f;
+                    int i = tail[k]; var lines = WrapAny(p.Needs[i].Words, NeedSize, "Jost-Medium", cw - 42f, tw); r.NeedLines[i] = lines; float h = NeedLineH * lines.Length + 8f;
                     r.Items.Add(new Item { Slot = BookSlot.Needs, Index = i, Size = NeedSize, D = 22f, At = new Rect(X - 10f + c * cw, cy, cw, h) }); cy += h;
                 }
                 bottom = Mathf.Max(bottom, cy);
@@ -80,12 +80,26 @@ namespace Suborned.Play
             int shown = 0;
             for (int i = Mathf.Clamp(p.RowsFrom, 0, p.Rows.Count - 1); i < p.Rows.Count; i++)
             {
-                var row = p.Rows[i]; float h = RowH + (row.Open ? 16f + row.Lines.Count * LineH + (row.Result.Length > 0 ? 48f : 0f) + 12f : 0f);
+                var row = p.Rows[i]; var text = RowWords(row, tw); r.RowText[i] = text; float h = RowH;
+                if (row.Open) { h += 16f + 12f; foreach (var l in text.Lines) h += LineH + (l.Length - 1) * RowLineH; if (text.Result.Length > 0) h += 48f + (text.Result.Length - 1) * RowLineH; }
                 if (y + h > RowsBottom && shown > 0) break;
                 r.Items.Add(new Item { Slot = BookSlot.Rows, Index = i, Size = 23f, Cy = y + RowH / 2f, At = new Rect(RowX, y, RowW, h) }); y += h; shown++;
             }
             r.RowsShown = shown; return y;
         }
+
+        /// <summary>A Journal row's words fitted to its card (brief 108, Sky: "should wrap"): an open row's spoken lines and its result wrap inside the card, never under the
+        /// signs; the "→ where" beside the title is cut with an ellipsis where the card ends. One rule for every row: the card's own widths (BkRow draws at these x).</summary>
+        public static (string[][] Lines, string[] Result, string Where) RowWords(BookRow row, Measure tw)
+        {
+            float tx = RowTextX + tw(row.Title, 23f, "Jost-SemiBold") + 16f, ww = RowW - 40f - tx;
+            string where = row.Where.Length > 0 && ww > 60f ? Clip(WrapAny("→ " + row.Where, 19f, "Jost-Medium", ww, tw), 1, 19f, "Jost-Medium", ww, tw)[0] : "";
+            var lines = new string[row.Open ? row.Lines.Count : 0][];
+            for (int k = 0; k < lines.Length; k++) lines[k] = WrapAny(row.Lines[k].text, 20f, "Jost-Medium", RowW - RowLineX - 24f, tw);
+            var result = row.Open && row.Result.Length > 0 ? WrapAny(row.Result, 20f, "Jost-SemiBold", RowW - RowResultX - 24f, tw) : System.Array.Empty<string>();
+            return (lines, result, where);
+        }
+        public const float RowTextX = 124f, RowLineX = 130f, RowResultX = 86f, RowLineH = 26f;
 
         /// <summary>The cell strip under the clock: four columns of face, name, job word and a line wrapped to two.</summary>
         static float PlaceCrew(BookPage p, Result r, float y, Measure tw)

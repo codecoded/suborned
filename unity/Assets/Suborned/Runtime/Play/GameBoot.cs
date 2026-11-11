@@ -83,7 +83,7 @@ namespace Suborned.Play
 
     /// <summary>`-gameProof &lt;dir&gt;`: the briefing, then play at play zoom, then the pause menu; each a HudToolkit shot (frame, HUD layer,
     /// manifest); frame times over 10 s of play; proof.json; Quit through the menu.</summary>
-    public sealed class GameProof : MonoBehaviour
+    public sealed partial class GameProof : MonoBehaviour
     {
         public string Dir = "";
         readonly List<string> log = new();
@@ -110,6 +110,7 @@ namespace Suborned.Play
         IEnumerator Start()
         {
             Directory.CreateDirectory(Dir);
+            if (!FailFast()) yield break; // brief 110: a missing input or a section that throws ends the run at once, the path or the place in proof.json (GameProof.FailFast.cs)
             HandoverHost h = null; float t0 = Time.realtimeSinceStartup;
             while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - t0 > 60f) { Write(null, "no host after 60 s"); Application.Quit(2); yield break; } yield return null; }
             h.controls.conversations = ConversationScenes.Never; // brief 032: the proof measures play, never a conversation cutaway (its café spot played one)
