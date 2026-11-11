@@ -9,7 +9,7 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 4. (035 Q4) Keycaps on portraits (1–4) and agent wedges (⇧1–⇧4) only, every other button without? Draft: yes.
 5. (035 Q5) The conversation scene is a cutaway outside the play camera's limits (faces far above 60 px)? Draft: yes.
 6. (035 Q6) The scene's default: first time with each person (refusals dropped under timing B)? Draft: yes.
-7. (035 Q7) Night: is the Handover played by day, by night, or chosen at the briefing; should night ever change sight? Draft: night is a look only.
+7. (035 Q7) Night: is the Handover played by day, by night, or chosen at the briefing; should night ever change sight? Draft: night is a look only. **Answered, Sky 2026-11-11 (brief 107): a look only for now; chosen at the briefing (see "After v0.39.0").**
 8. (035 Q8) The police contest for Vale in the loud final fight: promote from the lab, or wait for the fight lab?
 9. (035 Q9) The fight lab's 16 questions, including which fight mode stays.
 10. (035 Q10) The decisive shot: keep it [L] or strike it (it is aiming)?
@@ -43,6 +43,14 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 38. (brief 075) Which world the submission plays: the game build today plays the export-built scene, the old builders' swap lives in the OldTown scene, and district polish is parked.
 39. (brief 081, engine 0.37.0; Motive, not Sky) fight.spacing.cell, the operatives' spacing: built, proposed, Motive to confirm.
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
+
+## After v0.39.0 (2026-11-11; briefs 106, 107; for the GDD's next version)
+- Sky, 2026-11-11: "I still feel we're not using Unity to its fullest. Do a deep dive into every plugin out there". Research: `out/research/reports/Unity 6 plugins for The Suborned.md`. Sky said "Yes" to switching on Unity's free built-ins first (GPU occlusion, Mesh LOD, STP), measured on the Air (brief 106, Latch).
+- Sky, 2026-11-11: "But also think about the weather, environment. Haze, night time, rain etc" (brief 107; Glint's study `briefs/107/glint/weather.html`, Aster's concepts `briefs/107/concepts/`). Then "Yes to all three" to Glint's recommendations:
+  1. Weather and night are a look only for now: no rule reads them. The weather is part of each game's start state (rolled from the seed on its own stream, so saved runs replay unchanged), so a later rule could read it.
+  2. Each game rolls its weather from the seed; the player can change it at the briefing.
+  3. The weather holds for the whole mission.
+  Order: fix night in the old town (it silently stayed day: no LightPhase after the swap), then rain (wetness and puddles in our shaders, streak reflections as decals, VFX Graph rain; umbrellas pale, on about a third of the crowd, never on the cell), then the low ground mist (our own pass; distance fog can't work at the orthographic play camera). Buy nothing yet.
 
 ## v0.39.0 (2026-11-05; brief 096)
 - Sky, 2026-11-04 (brief 096, the tester's pickup run): bribes on camera, "yeah, they should have been punished for not turning off camera"; box-in, "yeah"; then Motive's rules page, "all. recommended". Engine 0.40.0 (Keel): a Pay or Pressure a live camera watches is recorded (+1 T, an incident at the desk's next scan + 3 s, a lead on the Fixer's face; a later Loop doesn't undo it); Help, Ask and Listen stay private. Box-in is built (a standing car on another's way out refuses its Drive and Go; closed-in names "boxed"); the turned driver pulls in at the kerb short of a taken drive; a cell car parked on private ground is a loiterer. Bays carry a use (Vantage). §02, §04 private, §05 attention and on camera, §06 cars, §07, §10 price.

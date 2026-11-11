@@ -23,3 +23,13 @@ Should weather or night ever change play (sight ranges, crowd size, faces hidden
 - Desk study: no Unity runs this round (Latch has Unity for brief 106). Read code and docs; reuse existing captures under `briefs/097/` etc. if useful.
 - Concept stills for the look come from Aster in the main thread (`briefs/107/concepts/`); use them on the page.
 - No paid calls. Don't commit; Aster commits. Plain English, short.
+
+## Ruled (Sky, 2026-11-11: "Yes to all three")
+Look only for now; the weather is rolled from the seed into each game's start state (on its own stream, so saved runs replay unchanged) and can be changed at the briefing; it holds for the whole mission. Buy nothing yet. Decision log "After v0.39.0".
+
+## The round (one owner per piece; Latch builds the view end to end)
+1. **Keel** (own worktree): `weather` and the day/night choice in the start state. A rulebook dial for the weather's odds (clear, overcast, rain, mist; Glint's values), read by no rule; a briefing order to change it; logged at start. Old saves without it replay as today (clear, day). sim:test + the sweep must be unchanged.
+2. **Vela**: the night glows Glint names (seafoam inlay bands, planter feet; lit rooms behind glass are Latch's `look097.json`) as kit candidates, no Unity.
+3. **Chime**: rain sound (shower bed, rain on awnings and parasols, drips, wet steps) and a night street bed, made the way the 087 pack was (Seed Audio / Mirelo, under $2), a page for Sky's pick.
+4. **Latch**, after brief 106: fix night in the old town (Glint's fix: one driver of the play light, a LightPhase from Glint077's night data, no silent fallback, the batch's night-vs-day brightness check), then rain (wetness and puddles in our shaders, streak reflections as decals, VFX Graph rain, rings drawn after the rain), then the ground mist pass; read Keel's weather; adopt Vela's glows in one kit step; one `--sky` build.
+5. Later, own step: umbrellas (Forma: a worn prop on about a third of the crowd, pale, never the cell) and people sheltering (Pulse), once rain is in.
