@@ -10,6 +10,7 @@ The four cell members are now the Happy Mouse Labs game bundles (`~/Projects/the
 - **Build:** `bun tools/figures/cell_hml.ts --install` (about 30 s). It unzips the bundles, converts each in Blender (`cell_hml.py`, `cell_hml_clips.py`), writes `briefs/112/people/manifest-cell.json` and copies the figures over the stand-ins in `unity/Assets/Suborned/People/Figures/<id>` (git-ignored). The same bytes every build.
 - **Unity:** `FigureBuild.CellOverrides` reads that manifest. Each figure is Generic on its own skeleton and plays its own clips through an override of the shared controller. A figure whose installed file is not the manifest's build keeps its stand-in, with a warning, so a tree without the install still runs.
 - **Props:** the pistol, the carbine and the Tech's visor are part of each figure and show by state, as the bundle lists them per action: the gun only in the armed states, the visor always (`HostViews.Cell`).
+- **Superseded:** the testbed cell's builder (`tools/figures/cell_generic.py`, brief 020) is out of the repo; its manifest is no longer read. A copy is in `out/archive/112-cell-characters/` of the main checkout, with the session's one-off helpers.
 - **Check:** `CellSheet112` (Unity batch mode) plays every state of every figure through the game's own controller and writes stills and `cell.json`. `tools/figures/cell_hml.test.ts` checks the manifest against the spec, the rulebook's speeds and the states the host uses.
 
 ## Which action plays where

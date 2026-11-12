@@ -111,7 +111,7 @@ def seat(arm, act, n, target, at, rest):
 
 
 def own_speed(arm, act, n, fps):
-    """Natural ground speed (m/s) of an in-place loco clip: the planted foot's median speed in mid-stance (within 2 cm of its lowest), as cell_generic.own_speed reads it.
+    """Natural ground speed (m/s) of an in-place loco clip: the planted foot's median speed in mid-stance (within 2 cm of its lowest).
     A run has too few such frames (a foot is down for three or four), so the band widens to 4 cm, then to each foot's lowest step."""
     sc = bpy.context.scene; assign(arm, act); M = arm.matrix_world
     P = {s: [] for s in ('Left', 'Right')}
