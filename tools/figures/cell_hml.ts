@@ -2,7 +2,7 @@
 //   bun tools/figures/cell_hml.ts [--only id,id] [--install] [--no-build]
 // Bundles: $SUBORNED_STORE/characters/cell_hml/<id>-game-bundle.zip (default store ~/Projects/the-suborned-store), each checked against the sha256 in cell_hml.json.
 // Out: out/people-models/CellHml (generated, git-ignored). The manifest FigureBuild reads is committed: briefs/112/people/manifest-cell.json.
-// --install mirrors each figure's folder to unity/Assets/Suborned/People/Figures/<id> (git-ignored), over the stand-in of the same id. Run it after
+// --install mirrors each figure's folder to unity/Assets/Suborned/People/Figures/<id> (those four are tracked in git: .gitignore), over the stand-in of the same id. Run it after
 // `bun tools/figures/run.ts --install`, which puts the stand-ins back. --no-build installs the last build as it is.
 import { existsSync, mkdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
