@@ -38,8 +38,9 @@ async function install(p: Part, lock: Lock, repo: string, log: (s: string) => vo
   const m = fromRows(parseRows(text));
   if (!(existsSync(tgz) && (await streamSha(tgz)) === want.archiveSha256)) get(lock, want.asset, tgz, true);
   if ((await streamSha(tgz)) !== want.archiveSha256) throw new Error(`${p.name}: ${want.asset} does not match the lock's hash; nothing installed`);
-  const x = Bun.spawnSync(['tar', '-xzf', tgz, '-C', stage], { stdout: 'pipe', stderr: 'pipe' });
+  const x = Bun.spawnSync(['tar', '-xmzf', tgz, '-C', stage], { stdout: 'pipe', stderr: 'pipe' });
   if (x.exitCode !== 0) throw new Error(`${p.name}: tar failed: ${x.stderr.toString().slice(0, 300)}`);
+  // -m: each file takes the time it lands here, not the Studio's, so Unity sees it as changed whatever this machine imported before
   const bad = m.rows.filter(row => !existsSync(join(stage, row.path)) || sha256(readFileSync(join(stage, row.path))) !== row.sha256);
   if (bad.length) throw new Error(`${p.name}: ${bad.length} files in the archive differ from its manifest (first ${bad[0]!.path}); nothing installed`);
   const before = installedRows(p.name, repo), now = new Set(m.rows.map(row => row.path));

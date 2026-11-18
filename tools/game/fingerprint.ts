@@ -11,7 +11,9 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 /** What a build reads, from git (relative to the repo root). tools/game/version.json is an output of a build (its counter), so it is not here. */
-export const INPUTS = ['unity/Assets', 'unity/ProjectSettings', 'unity/Packages', 'tools/game/app-icon.png'];
+/** tools/art/lock.json stands for the art git does not hold (tools/art: the old town's art, the kit copy, the crowd figures), which art:fetch installs untracked on a
+ *  machine without it: a pull that moves the lock rebuilds the app there, where those files alone would not. */
+export const INPUTS = ['unity/Assets', 'unity/ProjectSettings', 'unity/Packages', 'tools/game/app-icon.png', 'tools/art/lock.json'];
 /** Git-ignored folders the app carries, read by content (relative to the repo root). */
 export const IGNORED_INPUTS = ['unity/Assets/Suborned/Sim', 'unity/Assets/StreamingAssets'];
 /** Files under those folders that change with the clock, the commit or the build number and nothing else (matched by file name). */

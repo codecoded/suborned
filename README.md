@@ -34,9 +34,10 @@ On another Mac (the MacBook Air):
 
 The build reads 2.3 GB of art that git does not hold: the old town's DecoKit art and what its builders wrote, the kit copy, the crowd figures and the café planting. That is the art pack, a 1.1 GB download from the GitHub release `art`; `tools/art/lock.json` names the parts each commit needs.
 
-Once: Unity 6000.6.2f1 (its Mac build support comes with it), the .NET 10 SDK (`brew install dotnet`), Bun 1.4+. Then:
+Once: Unity 6000.6.2f1 (its Mac build support comes with it), the .NET 10 SDK and Bun 1.4+. Homebrew's `dotnet` is now .NET 11, which the engine (net10.0) does not run on: install `dotnet@10` and link it, so `dotnet` on the PATH is 10 (`dotnet --list-sdks` shows a 10.0 line; on the Air, 10.0.404). Then:
 
 ```sh
+brew install dotnet@10 && brew link --force dotnet@10
 git clone --filter=blob:none https://github.com/codecoded/suborned.git ~/Projects/suborned   # about 330 MB: today's files, older ones only when asked for
 cd ~/Projects/suborned && bun install
 ```
@@ -50,7 +51,8 @@ bun run batch --sky     # the engine, the kit check, the world, the town rebuild
 ```
 
 - On a new checkout `art:fetch` also has Unity import the project once, in batchmode (3.5 minutes on the Studio); the first `batch --sky` then rebuilds the town and builds the player from cold (37 minutes on the Studio, from a clean clone with no old repo or store). Later builds take as long as on the Studio.
-- Both Macs count builds in `tools/game/version.json` and `runs/builds/builds.json`. Pull before you build; if they conflict, keep the higher number.
+- A build counts itself in `tools/game/version.json` and `runs/builds/builds.json`, so after one those two files show as changed. Commit them with your change (or `git restore` them) before the next `git pull`, which otherwise refuses to start. If the two Macs' numbers then conflict, keep the higher one.
+- After a pull that moves `tools/art/lock.json` (new art), `art:fetch` installs it and the next batch rebuilds the town and the app: the lock is one of the build's inputs.
 - On the Studio, after the art changes (a kit piece adopted, figures installed, old-town art copied in): `bun run art:pack` uploads the parts that moved and rewrites `tools/art/lock.json`; commit it. `bun run art:pack --check` says whether anything is due. The old town's generated meshes are a seed: fetched once, then each Mac's own rebuild keeps them.
 
 Signing and notarisation, so the game opens on other Macs without "not verified":
