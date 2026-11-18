@@ -48,7 +48,7 @@ import { judgeProofBudget, loadProofSet, type ProofBudget } from './proofset';
 import { walkFileState } from './walkfile';
 import { changedPaths, gateFile, ledgerFile, loadMap, picturesJudged, planLines, planProof, readLedger, recordPictures, recordSteps, shotsGate, snapshot, stepGate, writeLedger, writePlan, planFile, emptyLedger, type Ledger, type Plan, type Snapshot } from './proofdelta';
 
-import { APP, AFTER_WORLD, BUILD_DIR, OUT, OWN_PLAYER, PROOF, STAMP, UNITY, env, readJson, rel, unityExe } from './batch-paths';
+import { APP, AFTER_WORLD, BUILD_DIR, OUT, OWN_PLAYER, PROOF, STAMP, UNITY, buildLimitMs, env, readJson, rel, unityExe } from './batch-paths';
 import { LATE_FILE, LATE_MARKER, PERF064_MARKER, TPLONG_FILE, engineEnd, playerHasLate, playerHasPerf064, playerHasTpLong, watchLoad } from './batch-player';
 export { playerHasLate, playerHasPerf064, playerHasTpLong } from './batch-player';
 /** Sky 2026-10-30: the game plays the old town: the swap of the old builders round our Handover zone, from the scene just built, then the host installed. Null when it worked, else why. */
@@ -299,7 +299,7 @@ export const STEPS: Step[] = [
       if (cur && !c.sky) { c.facts.build = readJson(STAMP); c.facts.rebuildSkipped = cur; return { ok: true, detail: `NOT REBUILT, no build number spent: ${cur}` }; }
       if (c.sky) return skySmoke(c, cur);
       const plan = makePlan(c); c.facts.plan = plan; for (const l of planLines(plan)) c.say(l); // the snapshot is taken here, on what this build reads: after the world steps, before Unity
-      const t0 = Date.now(), r = await sh('game-build', ['bun', 'tools/game/cli.ts', '--build', '--proof-plan', planFile(BUILD_DIR), ...(c.spots ? ['--spots'] : [])], { timeoutMs: 3600000 });
+      const t0 = Date.now(), r = await sh('game-build', ['bun', 'tools/game/cli.ts', '--build', '--proof-plan', planFile(BUILD_DIR), ...(c.spots ? ['--spots'] : [])], { timeoutMs: buildLimitMs() });
       const b = readJson(STAMP);
       if (r.code !== 0 || !b || b.result !== 'Succeeded' || Date.parse(b.at) < t0 - 5000) return fail('game build failed', r);
       c.facts.build = b;
@@ -471,7 +471,7 @@ export type ProofGate = { mode: 'full' | 'delta'; why: string; build?: string; r
 /** --sky's game build (batch-sky.ts): built when anything it is made from moved, with the proof's base alone as the smoke; else the smoke on the app as it stands. */
 async function skySmoke(c: Ctx, cur: string | undefined): Promise<StepResult> {
   const t0 = Date.now(), dir = join(BUILD_DIR, cur ? 'smoke' : 'proof'), snap = c.facts.snap as Snapshot;
-  if (!cur) { writePlan(BUILD_DIR, smokePlan(loadMap(), snap.id), snap); const r = await sh('game-build', ['bun', 'tools/game/cli.ts', '--build', '--proof-plan', planFile(BUILD_DIR)], { timeoutMs: 3600000 }), b = readJson(STAMP); if (r.code !== 0 || b?.result !== 'Succeeded' || Date.parse(b.at) < t0 - 5000) return fail('game build failed', r); }
+  if (!cur) { writePlan(BUILD_DIR, smokePlan(loadMap(), snap.id), snap); const r = await sh('game-build', ['bun', 'tools/game/cli.ts', '--build', '--proof-plan', planFile(BUILD_DIR)], { timeoutMs: buildLimitMs() }), b = readJson(STAMP); if (r.code !== 0 || b?.result !== 'Succeeded' || Date.parse(b.at) < t0 - 5000) return fail('game build failed', r); }
   else { c.facts.rebuildSkipped = cur; rmSync(dir, { recursive: true, force: true }); mkdirSync(dir, { recursive: true }); await launchPlayer(c, 'game-build', smokeArgs(dir), [1920, 1080], { timeoutMs: 180000 }); }
   const b = (c.facts.build = readJson(STAMP)), j = judgeSmoke(readSmoke(dir, BUILD_DIR, t0, (Date.now() - t0) / 1000));
   return j.ok ? { ok: true, detail: `${cur ? 'NOT REBUILT; ' : `Build ${b.version} (${b.recording}, ${b.sha}${b.dirty ? '+' : ''}) in ${b.seconds} s; `}${j.detail}`, why: cur ? 'the smoke on the app as it stands' : 'build and smoke' } : fail(`${j.detail}

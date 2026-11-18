@@ -13,6 +13,9 @@ export const PLAY_DIR = join(ROOT, 'out/build/play');
 export const BUILD_DIR = process.env.SUBORNED_PLAYER_DIR ? resolve(ROOT, process.env.SUBORNED_PLAYER_DIR) : PLAY_DIR;
 export const OWN_PLAYER = BUILD_DIR !== PLAY_DIR;
 export const APP = join(BUILD_DIR, 'The Suborned.app'), PROOF = join(BUILD_DIR, 'proof/proof.json'), STAMP = join(BUILD_DIR, 'build.json');
+/** game-build's limit: an hour, or four for the first build into this player folder (no inputs.json, which cli.ts writes after a build), when Unity compiles every
+ *  shader variant from cold: 2 h 4 min on the Air (2026-11-18, 0.2.337, its first build), 21 min on the Studio. Later builds reuse Library's shader cache. */
+export const buildLimitMs = (): number => (existsSync(join(BUILD_DIR, 'inputs.json')) ? 1 : 4) * 3600000;
 /** The children's environment: dotnet quiet; with its own player folder, cli.ts builds and proves there (SUBORNED_GAME_OUT) as a scratch build (SUBORNED_GAME_SCRATCH). */
 export const env: Record<string, string | undefined> = {
   ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1', ...(process.env.DOTNET_ROOT || !existsSync('/opt/homebrew/opt/dotnet/libexec') ? {} : { DOTNET_ROOT: '/opt/homebrew/opt/dotnet/libexec' }),
