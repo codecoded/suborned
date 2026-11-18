@@ -71,46 +71,78 @@ runs/goals/**/obj/
 runs/crew/**/bin/
 runs/crew/**/obj/
 
-# Screenshots, renders and test captures in briefs stay on disk, out of git (Sky, 2026-10-19; history rewritten to drop them).
-# Kept: concept art and images a tool reads.
+# Pictures in briefs stay on disk, out of git: screenshots, renders and captures (Sky, 2026-10-19; history rewritten to drop them), and concept art,
+# video, sound and pages over 1 MB (Sky, 2026-11-18: "keep concept art etc out of the repo"); briefs/media-manifest.tsv lists them with their sha256.
+# Kept in git: only the images a tool opens, each by name. tools/storage/briefs-media.test.ts fails on any other picture, or a page over 1 MB, in git.
 briefs/**/*.png
 briefs/**/*.jpg
 briefs/**/*.jpeg
 briefs/**/*.webp
+briefs/**/*.gif
 briefs/**/*.mp4
 briefs/**/*.mov
-!briefs/007/**/*.png
-!briefs/007/**/*.jpg
-!briefs/007/**/*.jpeg
-!briefs/007/**/*.webp
-!briefs/008/concepts/**/*.png
-!briefs/008/concepts/**/*.jpg
-!briefs/008/concepts/**/*.jpeg
-!briefs/008/concepts/**/*.webp
-!briefs/009/concepts/**/*.png
-!briefs/009/concepts/**/*.jpg
-!briefs/009/concepts/**/*.jpeg
-!briefs/009/concepts/**/*.webp
-!briefs/104/concepts/**/*.png
-!briefs/107/concepts/**/*.png
-!briefs/009/options/**/*.png
-!briefs/009/options/**/*.jpg
-!briefs/009/options/**/*.jpeg
-!briefs/009/options/**/*.webp
-!briefs/009/crossings-proposal/**/*.png
-!briefs/009/crossings-proposal/**/*.jpg
-!briefs/009/crossings-proposal/**/*.jpeg
-!briefs/009/crossings-proposal/**/*.webp
-!briefs/011/ui/round*/**/*.png
-!briefs/011/ui/round*/**/*.jpg
-!briefs/011/ui/round*/**/*.jpeg
-!briefs/011/ui/round*/**/*.webp
-!briefs/012/cell/**/*.png
-!briefs/012/cell/**/*.jpg
-!briefs/012/cell/**/*.jpeg
-!briefs/012/cell/**/*.webp
-briefs/012/cell/_test/
+briefs/**/*.glb
+briefs/**/*.fbx
+briefs/**/*.blend
+# the art bible's sources (tools/art-bible/generate.ts), the app icon's portrait (tools/game/icon.py), the crossing options' concepts
+# (tools/decokit/options009.py) and the lineup the figure sheets are cut from (tools/figures/sheets_gen.py)
+!briefs/007/concepts/AtomicAge/contact_sheet.jpg
+!briefs/007/concepts/Blocks/contact_sheet.jpg
+!briefs/007/liner-B-atomic-aerial.jpg
+!briefs/007/liner-B-atomic-quay.jpg
+!briefs/007/parade-A-vault-aerial.jpg
+!briefs/007/parade-B-open-aerial.jpg
+!briefs/007/parade-B-open-eye.jpg
+!briefs/009/concepts/crossing-future-eye-cafe.jpg
+!briefs/009/concepts/crossing-future-eye.jpg
+!briefs/009/concepts/crossing-future-play-2.jpg
+!briefs/009/concepts/crossing-future-play-avenue.jpg
+!briefs/009/concepts/crossing-future-play.jpg
+!briefs/011/ui/round4/v10-signage-hotbar-fight.jpg
+!briefs/011/ui/round4/v10-signage-hotbar-take.jpg
+!briefs/011/ui/round4/v10-signage-hotbar.jpg
+!briefs/012/cell/tech-final/TF-portrait-tech-white-chosen.png
+!briefs/012/cell/tech-final/TF-portraits-four.jpg
 !briefs/020/people/cell-lineup-latest.png
+# pages over 1 MB (their pictures embedded), on disk
+briefs/008/light-honest/report.html
+briefs/011/ui/review-2026-10-16/index.html
+briefs/011/ui/round2/index.html
+briefs/011/ui/round4/index.html
+briefs/011/ui/round5/index.html
+briefs/011/ui/round6/index.html
+briefs/011/ui/spec.html
+briefs/012/cell/index.html
+briefs/012/cell/round3/index.html
+briefs/012/cell/round3b/index.html
+briefs/012/cell/round4/index.html
+briefs/012/cell/tech-final/index.html
+briefs/026/vela/gap.html
+briefs/026/vela/round1.html
+briefs/028/road/index.html
+briefs/031/robot-face/robot-face.html
+briefs/056/unity-deck.html
+briefs/072/style/applied.html
+briefs/072/style/proposal.html
+briefs/073/board.html
+briefs/075/parity.html
+briefs/075/remap/sheet.html
+briefs/077/domes/index.html
+briefs/077/light/index.html
+briefs/077/survey.html
+briefs/077/troughs/index.html
+briefs/079/glisten/index.html
+briefs/081/simview.html
+briefs/084/cues.html
+briefs/084/eye.html
+briefs/085/hud.html
+briefs/085/latch/camera/board.html
+briefs/096/glyph/index.html
+briefs/097/vela/audit/index.html
+briefs/097/vela/index.html
+briefs/104/chime/robot-sfx.html
+briefs/108/glyph/briefing-directions.html
+briefs/108/glyph/pages/briefing-pages.html
 presentation/_check/
 
 # Local compiler caches inside goal/crew evidence; retain source and reports.

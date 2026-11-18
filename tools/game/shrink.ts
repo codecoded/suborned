@@ -7,7 +7,8 @@
 //   --jpg       convert to JPEG quality 90 (<name>.jpg) and remove the PNG; the PNG's name may be in a brief or a report, so --check lists the files that name each
 //   --list      every file, not the biggest 15
 //   --root      folders under the repo to look in (default briefs,out)
-// Never touched, whatever their size: files git tracks (concept art and images a tool reads are committed); anything a tool reads lossless: *.hud.png,
+// Never touched, whatever their size: files git tracks (the images a tool reads) and the brief pictures briefs/media-manifest.tsv lists (concept art and
+// the like, kept on disk out of git); anything a tool reads lossless: *.hud.png,
 // *.world.png, *.debug.png, and a shot that has a HUD layer, manifest or rects beside it (a budget set: its layer and manifest are in that size's pixels,
 // so the set would have to be resampled together; the shots tool takes 1080p sets from now on); out/build (the apps), out/missions, out/batch/compile,
 // out/drift-auto, out/route-diff, out/world, out/decokit*, Textures folders, node_modules, unity; and anything not screen-shaped (aspect 1.3 to 2.2:
@@ -87,9 +88,12 @@ export function shrinkOne(t: Plan, jpg: boolean): number {
   return statSync(t.to).size;
 }
 
+/** The PNGs git tracks, and the brief pictures kept on disk out of git (briefs/media-manifest.tsv: concept art and the like): both left as they are. */
 function trackedSet(): Set<string> {
   const r = Bun.spawnSync(['git', 'ls-files', '-z', '--', '*.png'], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' });
-  return new Set(r.stdout.toString().split('\0').filter(Boolean));
+  const kept = new Set(r.stdout.toString().split('\0').filter(Boolean)), manifest = join(ROOT, 'briefs/media-manifest.tsv');
+  if (existsSync(manifest)) for (const l of readFileSync(manifest, 'utf8').split('\n')) { const p = l.split('\t')[2]; if (p && !l.startsWith('#')) kept.add(p); }
+  return kept;
 }
 
 if (import.meta.main) {
