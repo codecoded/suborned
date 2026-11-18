@@ -53,7 +53,7 @@ import { LATE_FILE, LATE_MARKER, PERF064_MARKER, TPLONG_FILE, engineEnd, playerH
 export { playerHasLate, playerHasPerf064, playerHasTpLong } from './batch-player';
 /** Sky 2026-10-30: the game plays the old town: the swap of the old builders round our Handover zone, from the scene just built, then the host installed. Null when it worked, else why. */
 async function oldTown(t0: number): Promise<string | null> {
-  const run = async (log: string, ...args: string[]) => { const f = join(OUT, 'logs', log); const r = await sh(log, ['bun', join(ROOT, 'briefs/075/oldbuild/swap/tools/unityrun.ts'), f, '--', ...args], { timeoutMs: 3600000 }); return r.code === 0 ? null : `${log} exit ${r.code}; log ${f}`; };
+  const run = async (log: string, ...args: string[]) => { const f = join(OUT, 'logs', log); const r = await sh(log, ['bun', join(ROOT, 'briefs/075/oldbuild/swap/tools/unityrun.ts'), f, '--', ...args], { timeoutMs: buildLimitMs() }); return r.code === 0 ? null : `${log} exit ${r.code}; log ${f}`; };
   const S = 'Suborned.OldTown.Editor.Swap.OldTownSwap', swapOut = join(OUT, 'swap');
   return await run('unity-swap.log', '-executeMethod', `${S}.Build`, '-swapHeights', 'rule', '-swapHq', 'ours', '-swapOurs', 'Assets/Scenes/HarbourDistrict.unity', '-swapWorld', 'out/world/harbour-district.world.json', '-swapScene', 'OldTown', '-swapPlan', 'contracts/world/harbour-district.plan.json', '-swapOut', swapOut)
     ?? await run('unity-swap-verify.log', '-executeMethod', `${S}.Verify`, '-swapOurs', 'Assets/Scenes/HarbourDistrict.unity', '-swapScene', 'OldTown', '-swapOut', swapOut)
@@ -269,7 +269,7 @@ export const STEPS: Step[] = [
         const bad = logProblems(logSince(from));
         return bad.length ? fail(`the Editor logged problems during the rebuild:\n${bad.join('\n')}`) : fail('HarbourDistrict is rebuilt, but the old town (the played scene) is built in batchmode only: close the Editor and run again');
       }
-      const r = await sh('unity-world', [unityExe(), '-batchmode', '-quit', '-projectPath', UNITY, '-executeMethod', 'Suborned.World.HarbourWorldBuilder.Build', '-world', 'out/world/harbour-district.world.json', '-logFile', join(OUT, 'logs/unity-world.unity.log')], { timeoutMs: 3600000 });
+      const r = await sh('unity-world', [unityExe(), '-batchmode', '-quit', '-projectPath', UNITY, '-executeMethod', 'Suborned.World.HarbourWorldBuilder.Build', '-world', 'out/world/harbour-district.world.json', '-logFile', join(OUT, 'logs/unity-world.unity.log')], { timeoutMs: buildLimitMs() });
       const log = existsSync(join(OUT, 'logs/unity-world.unity.log')) ? readFileSync(join(OUT, 'logs/unity-world.unity.log'), 'utf8') : '';
       const fp = log.match(/fingerprint (\w+)/)?.[1];
       if (r.code === 0 && existsSync(SCENE) && statSync(SCENE).mtimeMs > t0) { const town = await oldTown(t0); if (town) return fail(town); }

@@ -13,8 +13,9 @@ export const PLAY_DIR = join(ROOT, 'out/build/play');
 export const BUILD_DIR = process.env.SUBORNED_PLAYER_DIR ? resolve(ROOT, process.env.SUBORNED_PLAYER_DIR) : PLAY_DIR;
 export const OWN_PLAYER = BUILD_DIR !== PLAY_DIR;
 export const APP = join(BUILD_DIR, 'The Suborned.app'), PROOF = join(BUILD_DIR, 'proof/proof.json'), STAMP = join(BUILD_DIR, 'build.json');
-/** game-build's limit: an hour, or four for the first build into this player folder (no inputs.json, which cli.ts writes after a build), when Unity compiles every
- *  shader variant from cold: 2 h 4 min on the Air (2026-11-18, 0.2.337, its first build), 21 min on the Studio. Later builds reuse Library's shader cache. */
+/** The Unity steps' limit (unity-world's town rebuild, game-build): an hour, or four before the first build into this player folder (no inputs.json, which cli.ts
+ *  writes after a build), as on a Mac new to the project, where Unity imports and compiles every shader variant from cold: the Air's first app build took
+ *  2 h 4 min (2026-11-18, 0.2.337) and its town 42 min; the Studio's 21 and 12. Later runs reuse Library (the shader cache among it). */
 export const buildLimitMs = (): number => (existsSync(join(BUILD_DIR, 'inputs.json')) ? 1 : 4) * 3600000;
 /** The children's environment: dotnet quiet; with its own player folder, cli.ts builds and proves there (SUBORNED_GAME_OUT) as a scratch build (SUBORNED_GAME_SCRATCH). */
 export const env: Record<string, string | undefined> = {
