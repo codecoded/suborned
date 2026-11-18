@@ -28,7 +28,30 @@ On another Mac (the MacBook Air):
 
 - `bun run game:pack` zips the app to `out/build/play/TheSuborned-<sha>.zip`, and `bun run game:send [device]` sends it by Taildrop (default `skys-macbook-air-1`; `--dry-run` prints the command). No SSH is needed.
 - On the Air, the zip lands in Downloads through the Tailscale app. Unzip it, then open the app by right-click → Open the first time, or run `xattr -dr com.apple.quarantine "The Suborned.app"` first. The app is signed ad hoc, not notarised.
-- Or pull the branch on the Air and run `bun run game` there. That needs Unity 6000.6.2f1 on the Air.
+- Or build on the Air itself: see "Build on another Mac" below.
+
+### Build on another Mac
+
+The build reads 2.3 GB of art that git does not hold: the old town's DecoKit art and what its builders wrote, the kit copy, the crowd figures and the café planting. That is the art pack, a 1.1 GB download from the GitHub release `art`; `tools/art/lock.json` names the parts each commit needs.
+
+Once: Unity 6000.6.2f1 (its Mac build support comes with it), the .NET 10 SDK (`brew install dotnet`), Bun 1.4+. Then:
+
+```sh
+git clone --filter=blob:none https://github.com/codecoded/suborned.git ~/Projects/suborned   # about 330 MB: today's files, older ones only when asked for
+cd ~/Projects/suborned && bun install
+```
+
+Each time:
+
+```sh
+git pull
+bun run art:fetch       # only the parts that changed (the first time, all 1.1 GB); the café planting goes beside the repo, in ../the-suborned-store
+bun run batch --sky     # the engine, the kit check, the world, the town rebuild and the app, as on the Studio
+```
+
+- The first Unity import of a new checkout takes a while; later builds take as long as on the Studio.
+- Both Macs count builds in `tools/game/version.json` and `runs/builds/builds.json`. Pull before you build; if they conflict, keep the higher number.
+- On the Studio, after the art changes (a kit piece adopted, figures installed, old-town art copied in): `bun run art:pack` uploads the parts that moved and rewrites `tools/art/lock.json`; commit it. `bun run art:pack --check` says whether anything is due. The old town's generated meshes are a seed: fetched once, then each Mac's own rebuild keeps them.
 
 Signing and notarisation, so the game opens on other Macs without "not verified":
 

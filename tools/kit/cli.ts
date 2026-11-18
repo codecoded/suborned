@@ -8,7 +8,7 @@ import type { Kit } from '../../contracts/world/kit.schema';
 import { usageGate } from '../gen/flags';
 import { buildCatalogue } from './catalogue';
 import { copyAdopted } from './copy';
-import { GEN_ROOT, kitRoot } from './store';
+import { GEN_ROOT, KIT_ROOTS, kitRoot } from './store';
 
 const USAGE = `usage: bun run kit [--catalogue] [--extra DIR ...]
   (no flag)    write contracts/world/kit.json from the DecoKit manifest, then copy the adopted pieces into unity/Assets/Suborned/Kit/ (hash-checked)
@@ -21,6 +21,13 @@ env: SUBORNED_OLD (old repo), SUBORNED_STORE (store), DECOKIT_OUT (generated pie
 usageGate(process.argv.slice(2), { flags: ['--catalogue'], valued: [{ flag: '--extra', required: true }] }, USAGE, 'kit');
 
 const repo = resolve(import.meta.dir, '../..'), path = resolve(repo, 'contracts/world/kit.json'), dest = resolve(repo, 'unity/Assets/Suborned/Kit');
+// No DecoKit on this machine (the Air: its kit copy comes in the art pack, bun run art:fetch): kit.json stands as committed and the copy is checked against it.
+if (!KIT_ROOTS.some(p => existsSync(join(p, 'decokit_manifest.json')))) {
+  const none = join(repo, 'out/kit/no-source'), r = copyAdopted(JSON.parse(readFileSync(path, 'utf8')) as Kit, none, dest, none, repo, join(repo, 'out/kit/copied.json'));
+  if (r.errors.length) { console.error(`no DecoKit source here (${KIT_ROOTS.join(', ')}), and the kit copy is short of kit.json: ${r.errors.length} files missing or changed (first: ${r.errors[0]!.replace(/: missing in source$/, '')}); bun run art:fetch installs it`); process.exit(1); }
+  console.log(`no DecoKit source here: kit.json as committed; the kit copy checked against it (${r.skipped.length} files${r.pruned.length ? `, ${r.pruned.length} stale removed` : ''}) → ${dest}`);
+  process.exit(0);
+}
 const root = kitRoot(), prior: Kit | undefined = existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : undefined;
 const argv = process.argv.slice(2), extras = [...argv.flatMap((a, i) => (a === '--extra' ? [argv[i + 1]!] : [])), ...(process.env.DECOKIT_EXTRA ?? '').split(':').filter(Boolean)].map(d => resolve(repo, d));
 const kit = buildCatalogue(root, prior, GEN_ROOT, extras), text = JSON.stringify(kit, null, 1) + '\n';

@@ -1,0 +1,50 @@
+{
+ "schema": "suborned.art-lock/1",
+ "release": {
+  "slug": "codecoded/suborned",
+  "tag": "art"
+ },
+ "parts": {
+  "oldtown-art": {
+   "content": "55aca2c8677a3e0d66c40a190258a7a6414ae81d2139e8ddc64389e8f261c2e0",
+   "files": 1277,
+   "bytes": 198227267,
+   "asset": "oldtown-art-55aca2c8677a.tar.gz",
+   "archiveSha256": "073439eba8992753063eae6ead85d5fd3d3c95f092857786a13f8f7cffe87f56",
+   "archiveBytes": 182809275
+  },
+  "oldtown-generated": {
+   "content": "fb16fe5ba3ef91898987c803fd042dbbb918913a3402ff9f8985b192088fcb08",
+   "files": 1026,
+   "bytes": 1669368749,
+   "asset": "oldtown-generated-fb16fe5ba3ef.tar.gz",
+   "archiveSha256": "20089d4416b27de3400527ee59f3cf6a3a86651bfc9eb0734bc29894cc844558",
+   "archiveBytes": 541613779,
+   "seed": true
+  },
+  "kit": {
+   "content": "894163b050d3eacdc4a854f658594790e789ed13615bcd66ca10c73676f14378",
+   "files": 4728,
+   "bytes": 377099556,
+   "asset": "kit-894163b050d3.tar.gz",
+   "archiveSha256": "c50c9f165ab7c41a4661576758613da50fb0c80acc6e318adb2a54570c6d6bfd",
+   "archiveBytes": 331951136
+  },
+  "people": {
+   "content": "0cb04a9ca289e41aa1f3f45e9dbfa31f0f7b9d49df73d40af5eb9f1252a5a966",
+   "files": 569,
+   "bytes": 88469613,
+   "asset": "people-0cb04a9ca289.tar.gz",
+   "archiveSha256": "02d9d5b77fad3b8e699d8c10cafe982340dcbd1887a27a39e5447343e42445ac",
+   "archiveBytes": 51013141
+  },
+  "cafe-plants": {
+   "content": "ec0f2e019b7d4d7c3052c1712b4ee2cbdbd844734c5fde7e64685137165bd8b4",
+   "files": 23,
+   "bytes": 64536538,
+   "asset": "cafe-plants-ec0f2e019b7d.tar.gz",
+   "archiveSha256": "ee21268a4e8dbd2b9b1dbabc060ea00ab9dfabc70c708bea9b3a6509b7b4c194",
+   "archiveBytes": 63805812
+  }
+ }
+}

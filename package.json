@@ -30,6 +30,8 @@
     "proofset": "bun tools/game/proofset.ts",
     "causes": "bun tools/levels/causes.ts",
     "kit": "bun tools/kit/cli.ts",
+    "art:pack": "bun tools/art/pack.ts",
+    "art:fetch": "bun tools/art/fetch.ts",
     "decokit": "bun tools/decokit/run.ts",
     "collide": "bun tools/decokit/collide.ts",
     "block": "bun tools/plan/block.ts",
