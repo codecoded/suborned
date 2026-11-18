@@ -12,9 +12,9 @@
 // usage: bun tools/game/proofdelta.ts plan                  what the next batch's proof would run
 //        bun tools/game/proofdelta.ts what-if <path>...     what a change to these paths alone would run, as if every section had just passed
 //        bun tools/game/proofwhat.ts diff <from> <to>       the same for a commit range, with the batch's steps and shots (proofwhat.ts: unplaced, what-if)
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { z } from 'zod';
 import { IGNORED_INPUTS, fingerprint, ignoredFiles } from './fingerprint';
 import { unityOwned } from '../kit/copy';
@@ -133,6 +133,7 @@ export function readLedger(file: string): Ledger {
 }
 export function writeLedger(file: string, l: Ledger): void {
   const used = new Set([...Object.values(l.sections), ...Object.values(l.steps), ...Object.values(l.stepFails ?? {})].map(p => p.snapshot));
+  mkdirSync(dirname(file), { recursive: true }); // a checkout that has never built has no out/build/play yet
   writeFileSync(file, JSON.stringify({ ...l, snapshots: Object.fromEntries(Object.entries(l.snapshots).filter(([id]) => used.has(id))) }) + '\n');
 }
 /** Were this set's pictures judged clean on its section's current pass? Only then may "unchanged since" stand for them; else the pictures on disk are judged now, whatever the proof ran. */
@@ -284,7 +285,7 @@ export const planFile = (dir: string) => join(dir, 'proofplan.json');
 export const ledgerFile = (dir: string) => join(dir, 'proofledger.json');
 export const gateFile = (dir: string) => join(dir, 'proofgate.json');
 export type PlanFile = Plan & { files: Record<string, string> };
-export function writePlan(dir: string, plan: Plan, snap: Snapshot): void { writeFileSync(planFile(dir), JSON.stringify({ ...plan, files: snap.files }) + '\n'); }
+export function writePlan(dir: string, plan: Plan, snap: Snapshot): void { mkdirSync(dir, { recursive: true }); writeFileSync(planFile(dir), JSON.stringify({ ...plan, files: snap.files }) + '\n'); }
 export function readPlan(file: string): { plan: Plan; snap: Snapshot } {
   const j = JSON.parse(readFileSync(file, 'utf8')) as PlanFile, { files, ...plan } = j;
   return { plan, snap: { id: plan.snapshot, files } };

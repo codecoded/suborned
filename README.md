@@ -49,7 +49,7 @@ bun run art:fetch       # only the parts that changed (the first time, all 1.1 G
 bun run batch --sky     # the engine, the kit check, the world, the town rebuild and the app, as on the Studio
 ```
 
-- The first Unity import of a new checkout takes a while; later builds take as long as on the Studio.
+- On a new checkout `art:fetch` also has Unity import the project once, in batchmode (3.5 minutes on the Studio); the first `batch --sky` then rebuilds the town and builds the player from cold (37 minutes on the Studio, from a clean clone with no old repo or store). Later builds take as long as on the Studio.
 - Both Macs count builds in `tools/game/version.json` and `runs/builds/builds.json`. Pull before you build; if they conflict, keep the higher number.
 - On the Studio, after the art changes (a kit piece adopted, figures installed, old-town art copied in): `bun run art:pack` uploads the parts that moved and rewrites `tools/art/lock.json`; commit it. `bun run art:pack --check` says whether anything is due. The old town's generated meshes are a seed: fetched once, then each Mac's own rebuild keeps them.
 

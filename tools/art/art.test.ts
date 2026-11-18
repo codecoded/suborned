@@ -18,6 +18,7 @@ beforeAll(() => {
   process.env.SUBORNED_ART_RELEASE_DIR = release;
   put(studio, `${K}/Kit/Models/a.fbx`, 'model a'); put(studio, `${K}/Kit/Models/a.fbx.meta`, 'guid: 1'); put(studio, `${K}/Kit.meta`, 'guid: k');
   put(studio, `${K}/Kit/Models/old.fbx`, 'goes away');
+  put(studio, `${K}/Kit/Prefabs/Empty.meta`, 'fileFormatVersion: 2\nguid: e\nfolderAsset: yes\n'); mkdirSync(join(studio, `${K}/Kit/Prefabs/Empty`));
   put(studio, `${K}/People/Figures/c1/c1.fbx`, 'crowd'); put(studio, `${K}/People/Figures/scout/scout.fbx`, 'cell, in git');
   put(studio, `${K}/Resources/Fx097/fx.asset`, 'fx v1');
   put(dirname(studio), 'the-suborned-store/testbed-art/cafe-plants/palm.png', 'palm');
@@ -31,7 +32,7 @@ describe('art pack', () => {
     const r = await pack({ repo: studio, lockFile, parts, ...quiet });
     expect(r.packed.sort()).toEqual(['cafe-plants', 'kit', 'oldtown-generated', 'people']);
     const lock = readLock(lockFile);
-    expect(lock.parts.kit!.files).toBe(4); expect(lock.parts['oldtown-generated']!.seed).toBe(true);
+    expect(lock.parts.kit!.files).toBe(5); expect(lock.parts['oldtown-generated']!.seed).toBe(true);
     expect(readdirSync(release).sort()).toEqual(Object.values(lock.parts).flatMap(p => [p.asset, p.asset.replace(/\.tar\.gz$/, '.tsv')]).sort());
     const people = readFileSync(join(release, lock.parts.people!.asset.replace(/\.tar\.gz$/, '.tsv')), 'utf8');
     expect(people).toContain('People/Figures/c1/c1.fbx'); expect(people).not.toContain('scout');
@@ -44,6 +45,7 @@ describe('art pack', () => {
     expect(readFileSync(join(air, `${K}/Kit/Models/a.fbx`), 'utf8')).toBe('model a');
     expect(readFileSync(join(dirname(air), 'the-suborned-store/testbed-art/cafe-plants/palm.png'), 'utf8')).toBe('palm');
     expect(existsSync(join(air, `${K}/People/Figures/scout/scout.fbx`))).toBe(false); // git brings that one
+    expect(existsSync(join(air, `${K}/Kit/Prefabs/Empty`))).toBe(true); // an empty folder, from its meta
     expect((await fetchArt({ repo: air, lockFile, parts, ...quiet })).current.sort()).toEqual(['cafe-plants', 'kit', 'oldtown-generated', 'people']);
   });
 
