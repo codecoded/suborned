@@ -45,4 +45,6 @@ if (mode === 'clips') {
   const r = Bun.spawnSync(['rsync', '-a', '--delete', '--exclude', '.rows.*', '--exclude', 'Generated', '--exclude', 'Generated.meta', ...held, out + '/', dst + '/']);
   if (r.exitCode !== 0) throw new Error('rsync failed');
   console.log('installed to', dst, readdirSync(dst).length, 'entries');
+  // brief 112: the mirror above put the stand-ins of the cell's four ids back; the cell's own figures (tools/figures/cell_hml.ts) go over them again when they are built
+  if (existsSync(join(root, 'out/people-models/CellHml/Figures'))) console.log(run(['bun', join(root, 'tools/figures/cell_hml.ts'), '--install', '--no-build']).trim());
 }

@@ -289,7 +289,7 @@ namespace Suborned.Play
             DriveFrame(kb); // brief 025: the driven agent's controller, before the clock steps (HostDrive)
             if (!Paused && !Frozen && !Game.Over && !(Panel != null && controls.pauseWithPanel))
             {
-                acc += Time.unscaledDeltaTime * Speed * PlaybackScale * (rangeHalf ? 0.5f : 1f) * DragSlow; // brief 041: ¼ speed while a portrait is dragged (the ticks are identical) // brief 027: targetPlayback slows the host while a volley fires (ticks identical)
+                acc += (Time.captureFramerate > 0 ? Time.deltaTime : Time.unscaledDeltaTime) * Speed * PlaybackScale * (rangeHalf ? 0.5f : 1f) * DragSlow; /* brief 112: while a clip is captured (ShotRunner.Clip sets captureFramerate) the game steps by the capture clock, as the animators do, so a slow frame cannot run the walk ahead of the legs */ // brief 041: ¼ speed while a portrait is dragged (the ticks are identical) // brief 027: targetPlayback slows the host while a volley fires (ticks identical)
                 int n = 0; double t0 = Now();
                 while (acc >= 0.1f && n < 80 && !Game.Over && !Frozen && !ConvoOn && convoWant == null) { if (!StepOnce()) return; acc -= 0.1f; n++; } // brief 032: an act that opens a scene holds the clock on its first tick // brief 027: a freeze stops the steps at once
                 if (n == 80) acc = 0f;

@@ -57,37 +57,63 @@ namespace Suborned.World.People
         {
             var mpath = Path.Combine(Root, "manifest.json"); if (!File.Exists(mpath)) return null;
             var lib = AssetDatabase.LoadAssetAtPath<FigureLibrary>(LibraryPath);
-            bool stale = lib == null || !File.Exists(ControllerPath) || File.GetLastWriteTimeUtc(mpath) > File.GetLastWriteTimeUtc(ControllerPath);
+            bool stale = lib == null || !File.Exists(ControllerPath) || File.GetLastWriteTimeUtc(mpath) > File.GetLastWriteTimeUtc(ControllerPath)
+                || File.Exists(CellManifest) && File.GetLastWriteTimeUtc(CellManifest) > File.GetLastWriteTimeUtc(ControllerPath); // brief 112: the cell's own manifest
             if (stale) Debug.Log($"People: the figure library is {(lib == null ? "missing" : "older than the installed manifest")}: rebuilt");
             return stale ? Build() : lib;
         }
 
-        /// <summary>Forma's testbed cell (briefs/020/people/cell-generic/manifest-cell.json): Generic figures on their own skeletons. Each gets an
-        /// AnimatorOverrideController over the shared controller, every state's clip replaced by the same-named clip of its own FBX (the shared
-        /// Humanoid clips cannot drive a Generic rig), and its own clip speeds (clipSpeedsMs). A state with no own clip keeps the shared one.</summary>
+        /// <summary>The cell's manifest (brief 112, written by `bun tools/figures/cell_hml.ts`): the four Happy Mouse figures, Generic, each on its own skeleton.</summary>
+        public static string CellManifest => Path.Combine(HarbourWorldBuilder.RepoRoot, "briefs", "112", "people", "manifest-cell.json");
+        static string Sha256(string path) { using var sha = System.Security.Cryptography.SHA256.Create(); using var f = File.OpenRead(path); return string.Concat(sha.ComputeHash(f).Select(b => b.ToString("x2"))); }
+
+        /// <summary>The cell (brief 112; Sky 2026-11-12: "replace our main cell with these characters and animations"): Generic figures on their own skeletons, with
+        /// their own clips. The shared Humanoid clips cannot move a Generic rig, so each gets an AnimatorOverrideController over the shared controller, every state's
+        /// clip replaced by the same-named clip of its own FBX, and its own clip speeds (clipSpeedsMs), LOD heights and props. A clip the shared controller has no
+        /// state for (idle_armed, holster, tinker, phone, ...) gets one, on an empty clip: only a figure that lists it in ownStates is ever given it (HostViews.Cell).
+        /// A figure whose installed FBX is not the manifest's build (the stand-in is still there) is left as it is, with a warning.</summary>
         static void CellOverrides(FigureLibrary lib, AnimatorController ctl)
         {
-            var path = Path.Combine(HarbourWorldBuilder.RepoRoot, "briefs", "020", "people", "cell-generic", "manifest-cell.json"); if (!File.Exists(path)) return;
-            var states = ctl.layers[0].stateMachine.states.Select(x => x.state).Where(x => x.motion is AnimationClip).ToList();
-            var log = new List<string>();
-            foreach (var cf in J.A(Json.Parse(File.ReadAllText(path)), "figures"))
+            if (!File.Exists(CellManifest)) return;
+            var cell = new List<(object row, FigureLibrary.Figure fig, string fbx, Dictionary<string, AnimationClip> own)>();
+            foreach (var cf in J.A(Json.Parse(File.ReadAllText(CellManifest)), "figures"))
             {
                 string id = J.S(cf, "id"); var fig = lib.figures.FirstOrDefault(x => x.id == id); if (fig == null) continue;
                 var fbx = Path.Combine(Root, J.S(cf, "fbx"));
+                if (!File.Exists(fbx) || Sha256(fbx) != J.S(cf, "sha256")) { Debug.LogWarning($"People: the cell's {id} is not installed (Figures/{id} holds another build): the stand-in stays. Run: bun tools/figures/cell_hml.ts --install"); continue; }
                 var own = AssetDatabase.LoadAllAssetsAtPath(fbx).OfType<AnimationClip>().Where(c => !c.name.StartsWith("__preview__")).GroupBy(c => c.name).ToDictionary(g => g.Key, g => g.First());
-                var ov = new AnimatorOverrideController(ctl) { name = "Figures_" + id };
+                cell.Add((cf, fig, fbx, own));
+            }
+            if (cell.Count == 0) return;
+            var sm = ctl.layers[0].stateMachine; var have = new HashSet<string>(sm.states.Select(x => x.state.name));
+            foreach (var name in cell.SelectMany(c => c.own.Keys).Distinct().OrderBy(x => x).Where(x => !have.Contains(x)))
+            {
+                var empty = new AnimationClip { name = "cell_" + name }; AssetDatabase.AddObjectToAsset(empty, ctl);
+                var st = sm.AddState(name); st.motion = empty; st.writeDefaultValues = true;
+            }
+            var states = sm.states.Select(x => x.state).Where(x => x.motion is AnimationClip).ToList();
+            var log = new List<string>();
+            foreach (var (cf, fig, fbx, own) in cell)
+            {
+                var ov = new AnimatorOverrideController(ctl) { name = "Figures_" + fig.id };
                 var pairs = new List<KeyValuePair<AnimationClip, AnimationClip>>(); ov.GetOverrides(pairs);
-                var byState = new Dictionary<AnimationClip, AnimationClip>(); int n = 0;
-                foreach (var st in states) if (own.TryGetValue(st.name, out var oc) && st.motion is AnimationClip bc && !byState.ContainsKey(bc)) { byState[bc] = oc; n++; }
+                var byState = new Dictionary<AnimationClip, AnimationClip>(); var mine = new List<string>();
+                foreach (var st in states) if (own.TryGetValue(st.name, out var oc) && st.motion is AnimationClip bc && !byState.ContainsKey(bc)) { byState[bc] = oc; mine.Add(st.name); }
                 ov.ApplyOverrides(pairs.Select(kv => new KeyValuePair<AnimationClip, AnimationClip>(kv.Key, byState.TryGetValue(kv.Key, out var o) ? o : null)).ToList());
-                var ovPath = Gen + "/Figures_" + id + ".overrideController"; AssetDatabase.DeleteAsset(ovPath); AssetDatabase.CreateAsset(ov, ovPath);
-                fig.controller = ov;
+                var ovPath = Gen + "/Figures_" + fig.id + ".overrideController"; AssetDatabase.DeleteAsset(ovPath); AssetDatabase.CreateAsset(ov, ovPath);
+                fig.controller = ov; fig.ownStates = mine.ToArray();
                 if (AssetDatabase.LoadAssetAtPath<GameObject>(fbx) is GameObject model) fig.model = model;
+                if (J.Get(cf, "female") is bool fem) fig.female = fem;
+                if (J.Get(cf, "lodScreenHeights") != null) fig.lodHeights = J.A(cf, "lodScreenHeights").Select(x => (float)(double)x).ToArray();
                 var sp = J.Get(cf, "clipSpeedsMs") as Dictionary<string, object>;
                 fig.speedStates = sp?.Keys.ToArray() ?? new string[0]; fig.speeds = sp?.Values.Select(v => (float)(double)v).ToArray() ?? new float[0];
-                log.Add($"{id} {n}/{states.Count} states own");
+                var nodes = new List<string>(); var shown = new List<string>();
+                if (J.Get(cf, "props") != null)
+                    foreach (var p in J.A(cf, "props")) { nodes.Add(J.S(p, "node")); shown.Add(J.Get(p, "always") is bool al && al ? "*" : string.Join(",", J.A(p, "states").Select(x => (string)x))); }
+                fig.propNodes = nodes.ToArray(); fig.propStates = shown.ToArray();
+                log.Add($"{fig.id} {mine.Count}/{states.Count} states own, props [{string.Join(",", nodes)}]");
             }
-            if (log.Count > 0) Debug.Log("People: testbed cell overrides: " + string.Join(", ", log));
+            Debug.Log("People: the cell's overrides: " + string.Join("; ", log));
         }
 
         /// <summary>Brief 039 B (Forma's install note, briefs/039/forma/pin-poses.md §D "Host"): two additive layers, no mask. "react" (weight 1):

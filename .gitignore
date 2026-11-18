@@ -26,7 +26,17 @@ unity/Assets/Scenes/HarbourDistrict.unity.meta
 unity/Assets/Suborned/Kit/
 unity/Assets/Suborned/Kit.meta
 # Stand-in people mirrored by `bun tools/figures/run.ts --install` (brief 020); manifest = briefs/020/people/manifest.json
-unity/Assets/Suborned/People/
+# The cell's four figures are tracked (brief 112; Sky, 2026-11-12: "We need new models in the git, because I need on my other machine to pull down"):
+# built by `bun tools/figures/cell_hml.ts --install`, committed as Unity imports them. Their folder metas stay each machine's own.
+unity/Assets/Suborned/People/*
+!unity/Assets/Suborned/People/Figures/
+unity/Assets/Suborned/People/Figures/*
+!unity/Assets/Suborned/People/Figures/scout/
+!unity/Assets/Suborned/People/Figures/fixer/
+!unity/Assets/Suborned/People/Figures/tech/
+!unity/Assets/Suborned/People/Figures/enforcer/
+unity/Assets/Suborned/People/Figures/*/Materials.meta
+unity/Assets/Suborned/People/Figures/*/Textures.meta
 unity/Assets/Suborned/People.meta
 unity/Assets/Scenes/probe-*
 unity/Assets/Scenes/probe-*.meta
