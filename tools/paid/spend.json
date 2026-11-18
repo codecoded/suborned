@@ -76,9 +76,17 @@
   "2026-11-11": {
    "calls": 20,
    "usd": 0.79904
+  },
+  "2026-11-12": {
+   "calls": 3,
+   "usd": 1.8
   }
  },
  "by_model": {
+  "P2-20260801": {
+   "calls": 1,
+   "usd": 1.2
+  },
   "alibaba:qwen@3-tts-1.7b-voicedesign": {
    "calls": 28,
    "usd": 0.0177
@@ -147,13 +155,17 @@
    "calls": 9,
    "usd": 4.05
   },
+  "tripo3d/p2/image-to-3d": {
+   "calls": 1,
+   "usd": 0.0
+  },
   "tripo:v3.1@0": {
-   "calls": 5,
-   "usd": 2.8
+   "calls": 6,
+   "usd": 3.4
   }
  },
- "calls": 829,
- "failed": 27,
+ "calls": 832,
+ "failed": 28,
  "jobs": {
   "007-concepts": {
    "blocked": 0,
@@ -797,6 +809,36 @@
    "used": 2,
    "used_usd": 1.2
   },
+  "069-head-preserved-20261112": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-12": {
+     "calls": 1,
+     "usd": 0.6
+    }
+   },
+   "by_model": {
+    "tripo:v3.1@0": {
+     "calls": 1,
+     "usd": 0.6
+    }
+   },
+   "by_pass": {
+    "source": {
+     "budget_usd": 1.0,
+     "calls": 1,
+     "usd": 0.6
+    }
+   },
+   "calls": 1,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 1,
+   "total_usd": 0.6,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
   "069-intake": {
    "blocked": 0,
    "by_day": {
@@ -842,6 +884,40 @@
    "failed": 0,
    "ok": 39,
    "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "069-p2-head-preserved-20261112": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-12": {
+     "calls": 2,
+     "usd": 1.2
+    }
+   },
+   "by_model": {
+    "P2-20260801": {
+     "calls": 1,
+     "usd": 1.2
+    },
+    "tripo3d/p2/image-to-3d": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "source": {
+     "budget_usd": 2.0,
+     "calls": 2,
+     "usd": 1.2
+    }
+   },
+   "calls": 2,
+   "cost_per_used": null,
+   "failed": 1,
+   "ok": 1,
+   "total_usd": 1.2,
    "unknown_cost_calls": 0,
    "used": 0,
    "used_usd": 0.0
@@ -1525,6 +1601,6 @@
   }
  },
  "schema": "suborned.paid-spend/1",
- "total_usd": 77.39989,
+ "total_usd": 79.19989,
  "used": 72
 }
