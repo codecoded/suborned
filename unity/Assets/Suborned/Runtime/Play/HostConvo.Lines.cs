@@ -135,7 +135,16 @@ namespace Suborned.Play
             var card = c.Card; var conv = Text.Conversations.Find(x => x.Id == c.Id);
             if (card != null && conv != null) { card.Lines.Clear(); foreach (var b in conv.Beats) card.Lines.Add(new FeedLine { Speaker = b.Speaker, Name = Text.ConvName(b.Speaker), Text = b.Line }); if (conv.Learned.Count > 0) card.Footer = conv.Learned[0]; card.Revealed = card.Bubbled = card.Lines.Count; card.NextBeatAt = -1; }
             float at = Time.unscaledTime; int n = 0;
-            foreach (var (sp, tx) in c.Lines) { if (n++ >= StreetAgreedLines) break; streetDue.Add((at, sp, tx, false)); at += ReadS(tx); }
+            // On the street the deal has already landed. Let the player hear the promise or
+            // see the guard answer while he starts walking. The history keeps the whole exchange.
+            bool promise = c.Id is "help-inez-2" or "help-inez-2-known";
+            bool answering = c.Id is "call-inez" or "call-inez-pressure";
+            if (promise || answering)
+            {
+                var (speaker, line) = c.Lines[c.Lines.Count - 1];
+                streetDue.Add((at, speaker, line, answering)); at += ReadS(line);
+            }
+            else foreach (var (sp, tx) in c.Lines) { if (n++ >= StreetAgreedLines) break; streetDue.Add((at, sp, tx, false)); at += ReadS(tx); }
             if (c.HasCards) ConvoCardsAfter(c, at);
         }
         public const int StreetAgreedLines = 3;

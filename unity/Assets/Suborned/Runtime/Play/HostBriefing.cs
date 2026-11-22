@@ -14,7 +14,8 @@ namespace Suborned.Play
     public sealed partial class HandoverHost
     {
         public const float BriefExitS = 0.3f, BriefGlideS = 5.3f, BriefSettleS = 0.3f, BriefRosterS = 0.25f;
-        /// <summary>When the clock starts, in seconds after Begin (3.6).</summary>
+        internal const float DoorShotStarts = 3.0f, DoorShotEnds = BriefExitS + BriefGlideS;
+        /// <summary>When the clock starts after Begin.</summary>
         public const float BriefPlayAt = BriefExitS + BriefGlideS + BriefSettleS;
         /// <summary>Seconds since Begin while the start sequence runs; -1 when it does not.</summary>
         public float StartT { get; private set; } = -1f;
@@ -60,7 +61,7 @@ namespace Suborned.Play
             ClearHover();
             if (!StartFreeze) StartT += Time.unscaledDeltaTime;
             bool skip = kb != null && kb.anyKey.wasPressedThisFrame || mouse != null && (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame || mouse.middleButton.wasPressedThisFrame);
-            if (skip && Time.frameCount != beginFrame && StartT < BriefExitS + BriefGlideS) { StartT = BriefExitS + BriefGlideS; StartSkips++; } // lands now; the settle and the clock follow as ever
+            if (skip && Time.frameCount != beginFrame && StartT < BriefExitS + BriefGlideS) { StartT = BriefPlayAt; StartSkips++; } // lands now; the settle and the clock follow as ever
             ApplyGlide();
             if (StartT >= BriefPlayAt) { StartT = -1f; BriefCamOn = false; StartClock(); SequencePlayedAt = Time.unscaledTime; }
             return true;
@@ -71,8 +72,15 @@ namespace Suborned.Play
             if (!cam) return;
             float u = Mathf.Clamp01((StartT - BriefExitS) / BriefGlideS), e = u < 0.5f ? 4f * u * u * u : 1f - Mathf.Pow(-2f * u + 2f, 3f) / 2f; // ease in and out (cubic)
             yawNow = yawFrom = yawTo = glideYawFrom + Mathf.DeltaAngle(glideYawFrom, glideYawTo) * e; turnStart = -1f;
+            focus = Vector3.Lerp(glideFrom, glideTo, e);
+            if (Game.Tick == 0 && !Game.Range && StartT >= DoorShotStarts && StartT < DoorShotEnds && DoorWorld is Vector3 door)
+            {
+                // A cut across the square keeps both the car arrival and the guard legible at play zoom.
+                yawNow = yawFrom = yawTo = doorPlayedYaw;
+                focus = door;
+            }
             cam.transform.rotation = Quaternion.Euler(pitch, yawNow, 0f);
-            focus = Vector3.Lerp(glideFrom, glideTo, e); focus.y = 0f; PlaceCamera();
+            focus.y = 0f; PlaceCamera();
         }
 
         /// <summary>Proofs: the sequence at `t` seconds after Begin (with StartFreeze, a still of that moment).</summary>

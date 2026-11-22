@@ -94,7 +94,9 @@ namespace Suborned.Play
                 h.Down = Mathf.MoveTowards(h.Down, dead ? 1f : 0f, dt / SinkS);
                 var at = frame.World(h.Cam.At); float bob = Mathf.Sin((t * BobHz + h.Phase) * Mathf.PI * 2f);
                 LivePose(h, at, BobM * bob * (1f - h.Down), out var lp, out var lr);
-                h.Cue.Rest = lr; var live = Quaternion.AngleAxis(h.Cue.Nod, Vector3.up) * lr;
+                // Park the looped lens looking down. A live camera looks across the street again when the feed returns.
+                if (looped) lr *= Quaternion.Euler(35f, 0f, 0f);
+                h.Cue.Rest = lr; var live = Quaternion.AngleAxis(looped ? 0f : h.Cue.Nod, Vector3.up) * lr;
                 // down: on its ring on the ground under where it hovered, level, facing as it faced
                 var f = FlatDir(lr * Vector3.forward); float ground = Ground(lp);
                 var restAt = new Vector3(lp.x, ground + RestUp * HoverScale, lp.z); var restRot = Quaternion.LookRotation(f, Vector3.up);

@@ -118,7 +118,7 @@ namespace Suborned.Play
                 if (t.localScale != Vector3.one) t.localScale = Vector3.one;            // the capsule's cower squash: the figure crouches instead
                 bool down = lifted.TryGetValue(key, out var lift); if (down && t.localRotation != Quaternion.identity) t.localRotation = Quaternion.identity; // laid flat is the capsule's: the figure lies
                 var d = to - from; d.y = 0f; float speed = d.magnitude / 0.1f;          // the engine's step is a tenth of a second
-                bool arriving = host.Starting && g.Tick == 0 && key.StartsWith("op/", System.StringComparison.Ordinal);
+                bool arriving = host.Starting && g.Tick == 0 && (key == "guard" || key.StartsWith("op/", System.StringComparison.Ordinal));
                 if (arriving)
                 {
                     d = t.position - f.lastPos; d.y = 0f;

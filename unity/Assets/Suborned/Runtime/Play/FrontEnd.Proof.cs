@@ -71,13 +71,22 @@ namespace Suborned.Play
             yield return Shot(fe, "briefing");
             // the start (board 03): Begin, then stills at 0.15 s (the exit), 1.8 s (the glide), 3.4 s (the settle), then play; the clock holds until 3.6 s
             HandoverHost.StartFreeze = true; h.BriefingBegin(); int tick0 = h.Game.Tick;
-            foreach (var (at, name, outside) in new[] { (0.15f, "start-1-begin", 0), (1.8f, "start-2-glide", 1), (HandoverHost.BriefPlayAt - 0.2f, "start-3-settle", 4) })
+            foreach (var (at, name, outside) in new[] { (0.15f, "start-1-begin", 0), (1.8f, "start-2-glide", 1), (HandoverHost.DoorShotStarts + 0.2f, "start-guard-approach", 4), (HandoverHost.DoorShotEnds - 0.1f, "start-guard-post", 4), (HandoverHost.BriefPlayAt - 0.2f, "start-3-settle", 4) })
             {
                 h.StartSeek(at); yield return null; yield return new WaitForSecondsRealtime(0.1f);
                 int visible = new[] { "scout", "fixer", "tech", "enforcer" }.Count(key => h.Views.Find("op/" + key)?.gameObject.activeInHierarchy == true);
                 var car = h.Views.Find("car/getaway");
                 float distance = car ? Vector3.Distance(car.position, h.frame.World(h.Game.GetawayCarPos())) : float.PositiveInfinity;
                 Check(name + "-arrival", visible == outside && (outside == 0 ? distance > 5f : distance < 0.5f), $"{visible} outside, car {distance:0.0} m from bay");
+                if (name.StartsWith("start-guard-"))
+                {
+                    var guard = h.Views.Find("guard");
+                    var post = h.frame.World(h.Game.S.Stand(h.Game.S.GuardPost));
+                    var screen = h.View.WorldToViewportPoint(guard.position + Vector3.up);
+                    float gap = Vector2.Distance(new Vector2(post.x, post.z), new Vector2(guard.position.x, guard.position.z));
+                    bool framed = screen.z > 0 && screen.x > 0.1f && screen.x < 0.9f && screen.y > 0.1f && screen.y < 0.9f;
+                    Check(name, framed && (name.EndsWith("post") ? gap < 0.7f : gap > 1f), $"guard in frame {screen}, {gap:0.0} m from his post");
+                }
                 yield return Shot(fe, name);
             }
             Check("startHeld", h.Starting && h.Paused && h.Game.Tick == tick0, $"starting {h.Starting}, paused {h.Paused}, tick {h.Game.Tick} (was {tick0})");

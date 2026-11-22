@@ -8,8 +8,33 @@ namespace Suborned.Play
         // The parked car and these four transforms return to the simulation on the next frame.
         const float ParkAt = 1.7f;
 
+        // Only the last few steps from the public approach play before the clock starts.
+        // Use the walk grid and its floor heights, just as the guard does during his visit.
+        Suborned.Sim.Game arrivalGame;
+        Suborned.Sim.Path arrivalWalk;
+        void GuardArrival(float time, ref Vector3 position)
+        {
+            var game = host.Game;
+            if (arrivalGame != game)
+            {
+                arrivalGame = game;
+                arrivalWalk = null;
+                var site = game.S;
+                if (site.HasPlace("d:Office approach"))
+                {
+                    var points = game.Walk.Route(site.Stand("d:Office approach"), site.Stand(site.GuardPost));
+                    if (points != null && points.Length > 1) arrivalWalk = new Suborned.Sim.Path(points);
+                }
+            }
+            if (arrivalWalk == null) return;
+            float remaining = Mathf.Max(0f, HandoverHost.DoorShotEnds - 0.4f - time);
+            long distance = arrivalWalk.Length - (long)(remaining * game.R.PeopleWalk * 10);
+            if (distance < arrivalWalk.Length) position = frame.World(arrivalWalk.At(distance));
+        }
+
         internal void ArrivalPose(string key, float time, ref Vector3 position, ref bool visible)
         {
+            if (key == "guard") { GuardArrival(time, ref position); return; }
             if (key != GetawayKey && !key.StartsWith("op/", System.StringComparison.Ordinal)) return;
             var car = things[GetawayKey].to;
             var forward = GetawayFacing() ?? Vector3.forward;

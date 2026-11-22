@@ -428,7 +428,7 @@ namespace Suborned.Play
                 {
                     var pose = to;
                     ArrivalPose(kv.Key, host.StartT, ref pose, ref shown);
-                    if (kv.Key == GetawayKey || kv.Key.StartsWith("op/", System.StringComparison.Ordinal)) from = to = pose;
+                    from = to = pose; // tick zero is held throughout the arrival
                 }
                 if (t.gameObject.activeSelf != shown) t.gameObject.SetActive(shown);
                 if (shown && kv.Key == DriveKey)

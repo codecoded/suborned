@@ -33,9 +33,13 @@ const shown = (id: string) => conversationLines(c, byId(id)).map((l) => [l.name,
 /** Brief 102 (Sky 2026-11-08): on top of the 096 sample, Sky's yes to Fable's rewrite and the sweep's lines to the same bar (briefs/102/fable/hand.json); nothing else moves. */
 type Edit = { where: string; ids?: string[]; part?: string; speaker: string; before: string; after: string };
 const hand = (json('briefs/102/fable/hand.json') as { edits: Edit[] }).edits.filter((e) => e.where === 'conversations');
+// The first-play experiment changes the successful Help receipt and Inez's last line.
+const helpedInez = (id: string) => id === 'help-inez-2' || id === 'help-inez-2-known';
+const currentLine = (id: string, line: string) => helpedInez(id) && line === "Then I'm with you. Whatever this is, please be careful."
+  ? "Ring me when you're ready. I'll call Arthur over for coffee and keep him here a while." : line;
 const as102 = (id: string, beats: object[]) => beats.map((b) => {
   const x = b as { speaker: string; line?: string }, e = hand.find((h) => h.part === 'beats' && h.ids!.includes(id) && h.speaker === x.speaker && h.before === x.line);
-  return e ? { ...b, line: e.after } : b;
+  return e ? { ...b, line: currentLine(id, e.after) } : b;
 });
 
 describe('the words', () => {
@@ -55,8 +59,8 @@ describe('the words', () => {
       const a = approved.scenes.find((x) => x.id === id)!;
       expect([byId(id).learned, byId(id).opens], id).toEqual([a.learned, a.opens]);
     }
-    for (const x of [...sample.help044.items, ...sample.help045.items]) expect([byId(x.id).beats, byId(x.id).learned, byId(x.id).opens, byId(x.id).status], x.id).toEqual([as102(x.id, x.beats) as typeof c.items[number]['beats'], x.learned, x.opens, 'awaiting-sky']); // the page Sky reads
-    for (const e of hand) for (const id of e.ids!) expect(JSON.stringify(byId(id)[e.part as 'beats' | 'street']), `${id}: ${e.after}`).toContain(JSON.stringify(e.after)); // brief 102's lines are in
+    for (const x of [...sample.help044.items, ...sample.help045.items]) expect([byId(x.id).beats, byId(x.id).learned, byId(x.id).opens, byId(x.id).status], x.id).toEqual([as102(x.id, x.beats) as typeof c.items[number]['beats'], helpedInez(x.id) ? ["Call later from the Fixer's portrait."] : x.learned, x.opens, 'awaiting-sky']); // the page Sky reads
+    for (const e of hand) for (const id of e.ids!) expect(JSON.stringify(byId(id)[e.part as 'beats' | 'street']), `${id}: ${e.after}`).toContain(JSON.stringify(currentLine(id, e.after))); // brief 102's lines are in
     expect(sample.help045.items.map((x) => x.id)).toEqual(DRIVER);
     expect([...SAMPLE, ...HELP, ...DRIVER].sort()).toEqual(c.items.map((x) => x.id).sort());
     expect(byId('listen-inez').beats.at(-1)).toEqual({ speaker: 'scout', line: "She's deep in debt to the Bureau and can't keep up. And she's seeing Arthur, the guard on the Office door." }); // Sky: "Fables rewrite is better"
