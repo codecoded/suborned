@@ -90,10 +90,12 @@ namespace Suborned.Play
         }
 
         /// <summary>The cabinet's card lists every camera it reaches, one row each (Glyph §9): the rows after the first loop row.</summary>
+        static string PanelDevice(string panel) => panel.StartsWith("panel-", StringComparison.Ordinal) ? panel[6..] : "entrance";
+
         IEnumerable<Intent> MoreLoops(int slot, Target t)
         {
             if (t.Kind != "cabinet") yield break;
-            foreach (var c in Game.S.Cameras) if (c.Id != "entrance" && Loopable(c.Id)) yield return LoopIntent(slot, c.Id);
+            foreach (var c in Game.S.Cameras) if (c.Id != PanelDevice(t.Key) && Game.ControlPanel(c.Id) == t.Key && Loopable(c.Id)) yield return LoopIntent(slot, c.Id);
         }
 
         // ---------------------------------------------------------------- the takedown (Glyph §1, §2)

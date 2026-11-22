@@ -267,14 +267,14 @@ export const Rulebook = z.strictObject({
     mislead: z.strictObject({ s: Ref, trail: Ref, away: Ref.optional() }), // brief 096 (engine 0.41.0): the false tip's away is retired; optional only for pinned runs
     call: z.strictObject({ trail: Ref }),
     // engine 0.34.2 (Sky 2026-10-26): who sees an Enter and what it does; optional only for runs pinned before it (absent: the patrol's sight fails entry-seen-patrol)
-    enter: z.strictObject({ s: Ref, alarm: Ref, seen: z.strictObject({ patrol: z.enum(['fail', 'report']), rule: text, ...grounded }).optional() }),
+    enter: z.strictObject({ s: Ref, alarm: Ref, seen: z.strictObject({ guard: z.enum(['fail', 'block']).optional(), camera: z.enum(['fail', 'report']).optional(), patrol: z.enum(['fail', 'report']), rule: text, ...grounded }).optional() }),
     carry: z.strictObject({ s: Ref }),
     board: z.strictObject({ s: Ref }).optional(), // brief 018 (Board, step out); optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
     // brief 059 K6 (engine 0.32.0): the getaway car's Drive between the mission's car stands; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
     driveCar: z.strictObject({ rule: text, src: text }).optional(),
     // brief 025 (EXPERIMENTAL, engine 0.9.0): the driven agent; optional: a rulebook without it makes drive an unknown verb (rulebook.test.ts holds the live one to it)
     drive: z.strictObject({ experimental: text, slack: Ref, burst: Ref, busyPush: Ref, gap: Ref, onBusy: z.enum(['cancel', 'hold']), onRelease: z.enum(['stand', 'resume']), rule: text, tag: z.string().optional(), src: z.string().optional() }).optional(),
-    take: z.strictObject({ s: Ref, trailUnturned: Ref, struggle: Ref.optional() }), // struggle: optional only for runs pinned before brief 013
+    take: z.strictObject({ camera: z.enum(['fail', 'report']).optional(), s: Ref, trailUnturned: Ref, struggle: Ref.optional() }), // struggle: optional only for runs pinned before brief 013
     // engine 0.23.0 (Sky 2026-10-22): a person act out of reach walks in instead of being refused too-far; optional so a rulebook pinned before it parses
     // (absent or walkIn false: too-far as before); rulebook.test.ts holds the live rulebook to having it
     listen: z.strictObject({ nearWalking: Ref, nearStill: Ref, chairGrace: Ref, look: Ref, step: Ref, hold: Ref, chairMargin: Ref, chairGround: Ref, atSpot: Ref, wall: Ref.optional(), pass: Ref.optional(), follow: Ref.optional() /* engine 0.55.0, brief 110: the Listen follows */, earshot: z.boolean().optional() /* engine 0.56.0: the person stays in reach */, rule: text, tag: z.string().optional(), src: z.string().optional(), proposed: z.boolean().optional(), reason: z.string().optional() }).optional(), /* engine 0.39.0, brief 085; optional only so runs pinned before it parse */ approach: z.strictObject({ walkIn: z.boolean(), repath: Ref, rule: text, tag: z.string().optional(), src: z.string().optional(), proposed: z.boolean().optional(), reason: z.string().optional() }).optional(),

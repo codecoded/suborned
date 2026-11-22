@@ -111,7 +111,12 @@ namespace Suborned.World.Play
                 EditorSceneManager.OpenScene(OldTownPlay.ScenePath, OpenSceneMode.Single);
             }
             var scene = EditorSceneManager.GetActiveScene();
-            if (GameObject.Find(PlayInstall.RootName) is not null && Object.FindAnyObjectByType<HandoverHost>() is HandoverHost installed) Debug.Log(TrafficKit.Apply(installed)); // brief 098 step 1: an installed scene takes the traffic kit as it is now (saved below when it changed)
+            if (GameObject.Find(PlayInstall.RootName) is not null && Object.FindAnyObjectByType<HandoverHost>() is HandoverHost installed) {
+                Debug.Log(TrafficKit.Apply(installed));
+                var panel = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Booths/DK_UtilityCabinet_Play.fbx");
+                if (!panel) throw new FileNotFoundException("The street control panel model is missing.");
+                if (installed.localControlPanel != panel) { installed.localControlPanel = panel; EditorUtility.SetDirty(installed); EditorSceneManager.MarkSceneDirty(scene); }
+            } // brief 098 step 1: an installed scene takes the traffic kit as it is now (saved below when it changed)
             if (GameObject.Find(PlayInstall.RootName) is null || Object.FindAnyObjectByType<HandoverHost>() is null) OldTownPlay.InstallOpen();
             else if (scene.isDirty) EditorSceneManager.SaveScene(scene);
             Debug.Log(Look097Materials.Apply()); // brief 097: the kit materials' wind and vertex-AO rows

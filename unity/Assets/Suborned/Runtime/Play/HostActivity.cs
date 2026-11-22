@@ -91,7 +91,7 @@ namespace Suborned.Play
 
         string ActPlaceName(int k, Order q) => q.Do switch
         {
-            "loop" or "disable" or "reroute" => "the cabinet", "enter" => "the public door", "board" => "the getaway car", "take" => $"{ValeWord}",
+            "loop" or "disable" or "reroute" => PlaceName(Game.ControlPanel(q.Target)), "enter" => "the public door", "board" => "the getaway car", "take" => $"{ValeWord}",
             _ => q.Target.Length > 0 ? Name(q.Target) : "the act",
         };
 

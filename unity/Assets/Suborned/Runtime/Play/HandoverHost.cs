@@ -40,7 +40,7 @@ namespace Suborned.Play
         [Tooltip("The patrol robot's model (brief 104: Vela's PatrolBot104, its LED face on the Screen; was brief 031's PatrolRobot); null = the capsule.")]
         [UnityEngine.Serialization.FormerlySerializedAs("serviceRobot")] public GameObject patrolRobot;
         [Tooltip("Brief 055: the mission cameras' poles, Vela's CCTVPole (the world's pole-camera piece) scaled to the plan's 5.5 m mount, lens at 4.79 m; null = the 3.2 m stand-in. Brief 096: hoverCamera (Vela's HoverCamera, floating at the pole's lens with no pole) replaces it when set (HostViews.HoverCam).")]
-        public GameObject cctvPole, hoverCamera;
+        public GameObject cctvPole, hoverCamera, localControlPanel;
         [Tooltip("Brief 026: the robots' rig table (Vela's robot-faces.json, written in by PlayInstall) and the dot-matrix glyph sheet: the patrol and response robots get live faces and servo heads (view only); empty = still models.")]
         public Suborned.Robots.RobotRigs.Table robotRigs;
         public TextAsset robotGlyphs;
@@ -792,6 +792,7 @@ namespace Suborned.Play
                 if (n.StartsWith("bystander/")) { var bl = Game.RangeBystanders(); int bi = int.Parse(n[10..]); if (bi >= bl.Count || bl[bi].Down || bl[bi].State == "safe") return null; return new Target { Kind = "bystander", Key = bl[bi].Id, Id = bl[bi].Id, Label = "a passer-by" }; } // engine 0.18: a range bystander
                 if (n == "car/getaway") return new Target { Kind = "car", Key = "getaway", Label = GetawayCarName() }; // brief 096: "our car" (names.targets.car-getaway)
                 if (n == "marker/door") return new Target { Kind = "door", Key = "door", Label = "the public door" };
+                if (n.StartsWith("marker/panel-", StringComparison.Ordinal)) return new Target { Kind = "cabinet", Key = n[7..], Label = PlaceName(n[7..]) };
                 if (n == "marker/cabinet") return new Target { Kind = "cabinet", Key = "cabinet", Label = "the control cabinet" };
                 if (n.StartsWith("camera/")) return new Target { Kind = "camera", Key = n[7..], Label = CameraName(n[7..]) };
             }
@@ -900,15 +901,15 @@ namespace Suborned.Play
                     }
                 case "loop":
                     if (!(t.Kind == "cabinet" || (t.Kind == "camera" && Loopable(t.Key)))) return null;
-                    return LoopIntent(slot, t.Kind == "camera" ? t.Key : "entrance");
+                    return LoopIntent(slot, t.Kind == "camera" ? t.Key : PanelDevice(t.Key));
                 case "disable": // engine 0.31.0 (brief 058 §2): a camera the cabinet loops, alive; on the cabinet, the entrance camera (the others from their own ring)
                     if (!(t.Kind == "cabinet" || (t.Kind == "camera" && Loopable(t.Key)))) return null;
-                    { var cam = t.Kind == "camera" ? t.Key : "entrance"; if (g.CameraDark(cam)) return null; return DisableIntent(slot, cam); }
+                    { var cam = t.Kind == "camera" ? t.Key : PanelDevice(t.Key); if (g.CameraDark(cam)) return null; return DisableIntent(slot, cam); }
                 case "reroute":
-                    if (t.Kind is not ("cabinet" or "patrol")) return null;
+                    if (t.Kind != "patrol" && !(t.Kind == "cabinet" && t.Key == g.ControlPanel("patrol"))) return null;
                     { var i = I("reroute", "patrol", "", "Reroute the patrol"); i.Time = $"{R.RerouteS} s"; i.Trail = $"T +{R.RerouteTrail}"; return i; }
                 case "act":
-                    if (t.Kind == "door") { var i = I("enter", "", "", "Enter the Office"); i.Time = $"{R.EnterS} s"; i.Alert = "seen = fail"; var sq = g.SeenAt(g.S.Stand(g.S.GuardPost)); i.Seen = SeenWords(sq); i.SeenQ = sq; return i; } // brief 014: the eye on the line (the engine's card-only SeenAt)
+                    if (t.Kind == "door") { var i = I("enter", "", "", "Enter the Office"); i.Time = $"{R.EnterS} s"; i.Alert = g.R.EnterCameraReports ? "camera alerts security" : "seen = fail"; var sq = g.SeenAt(g.S.Stand(g.S.GuardPost)); i.Seen = SeenWords(sq); i.SeenQ = sq; return i; } // brief 014: the eye on the line (the engine's card-only SeenAt)
                     if ((t.Kind == "person" && t.Key == "councillor") || (t.Kind == "car" && t.Key == "official" && !IsLentCar(t)) || (t.Kind == "person" && t.Key == "driver" && g.Vale == ValeAt.Pickup)) { var i = I("take", "", "", $"Take {ValeWord}"); i.Time = $"{R.TakeS} s"; i.Trail = g.Driver.Turned ? "T 0" : $"T +{R.TakeTrailUnturned}"; return i; } // Sky, route B: Vale stands in (or is hidden by) his car at the pickup; the car takes the click too
                     if (IsCellCar(t)) return CarActIntent(by, t); // brief 018: Extract retired into Board and Go; brief 096: either cell car (HostLent)
                     return null;
@@ -949,7 +950,7 @@ namespace Suborned.Play
         Intent Go(Target t)
         {
             var g = Game; var s = g.S; int first = Array.IndexOf(Selected, true); if (first < 0) return null;
-            string place = t.Kind switch { "door" => s.GuardPost, "cabinet" => "cabinet", "car" when t.Key == "getaway" => g.CurStand.Car, _ => "" }; // brief 059 K6: the car's current stand
+            string place = t.Kind switch { "door" => s.GuardPost, "cabinet" => t.Key, "car" when t.Key == "getaway" => g.CurStand.Car, _ => "" }; // brief 059 K6: the car's current stand
             Pt? to = place.Length > 0 ? s.Stand(place) : t.Kind switch
             {
                 "person" => CastOf(t.Key) is Person cp ? g.PersonPos(cp) : null, "patrol" => g.PatrolPose()?.pos, "rivals" => RivalPos(t), "security" => OfficerPos(t),
@@ -1327,7 +1328,7 @@ namespace Suborned.Play
             string place = ""; int reach = 0; Pt? tp = null;
             switch (o.Do)
             {
-                case "loop": case "disable": case "reroute": place = "cabinet"; break;
+                case "loop": case "disable": case "reroute": place = g.ControlPanel(o.Target); break;
                 case "enter": place = s.GuardPost; break;
                 case "board": if (LentOrder(o.Target)) return CarDoorWalk(by, LentCarId); place = g.CurStand.Car; break; // engine 0.53.0: the second car's door (HostTakeCar); brief 018: board within at-reach of the car; brief 059 K6: at the stand it stands at
                 case "watch": tp = o.Target == "car:rivals" ? g.RivalCarPose()?.pos : PosOf(t); reach = R.WatchReachCm(by); break; // brief 031: within the agent's own reach (Scout 30, Tech 24, Fixer 12, Enforcer 3 m), on a clear line
@@ -1431,7 +1432,7 @@ namespace Suborned.Play
             return s;
         }
 
-        string PlaceName(string place) => place == "cabinet" ? "the control cabinet" : place == Game.S.GuardPost ? "the public door" : place == Game.S.GetawayCar || Game.S.Stands.Exists(x => x.Car == place) ? "the getaway car" : place;
+        string PlaceName(string place) => place.StartsWith("panel-", StringComparison.Ordinal) ? CameraName(PanelDevice(place)) + " panel" : place == "cabinet" ? "the Office control cabinet" : place == Game.S.GuardPost ? "the public door" : place == Game.S.GetawayCar || Game.S.Stands.Exists(x => x.Car == place) ? "the getaway car" : place;
 
         /// <summary>The act an agent walks to give (verb, approach), or empty (brief 014: its glyph at the walk's end).</summary>
         public (string verb, string approach) PendingOf(int k) { var q = pending[k] ?? (Game != null && Game.Ops[k].Busy == null ? Game.Ops[k].Act : null); return q == null ? ("", "") : (q.Do, q.Approach ?? ""); } // engine 0.23: the act a walk-in walks to counts as the agent's queued act
@@ -1513,7 +1514,7 @@ namespace Suborned.Play
 
         public Vector3? TargetWorld(Target t)
         {
-            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => t.Key == "car:rivals" ? "car/rivals" : t.Key, "stand" => "stand/" + t.Key, "security" => OfficerView(t.Key), "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, "bystander" => views.BystanderKey(Game, t.Key), _ => null };
+            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/" + t.Key, "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => t.Key == "car:rivals" ? "car/rivals" : t.Key, "stand" => "stand/" + t.Key, "security" => OfficerView(t.Key), "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, "bystander" => views.BystanderKey(Game, t.Key), _ => null };
             if (t.Kind == "stand") return StandWorld(t.Key);
             var tr = key != null ? views.Find(key) : null; return tr ? tr.position : (Vector3?)null;
         }

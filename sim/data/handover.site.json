@@ -2556,6 +2556,16 @@
    "at": [270,-4760],
    "src": "mission.json crew Enforcer: §07 cell at getaway car"
   },
+  "panel-pickup": {
+   "at": [7300,-4000],
+   "src": "Pickup bay camera service pedestal",
+   "reason": "The Tech works beside the bay camera."
+  },
+  "panel-mast-z0": {
+   "at": [-285,-4255],
+   "src": "Records Square mast base",
+   "reason": "The three heads on this mast share its service panel."
+  },
   "cabinet": {
    "at": [4650,-4450],
    "src": "civic-block.json structures civic-control-cabinet (x 44.55-45.45, y -45.34 to -43.66; moved with the public door 2026-10-19, civic-block.adjust.json, Vantage, brief 023, Sky's door option (b)); Waymark 2026-10-15 (Aster, after Pulse): the point a Tech stands at, on free ground, not the cabinet's centre inside its solid",

@@ -14,7 +14,7 @@ namespace Suborned.Play
     {
         public static readonly bool EndPlayout = Juice109.Decide(System.Environment.GetCommandLineArgs(), "-endplay");
         const float EndPlayoutMaxS = 20f;
-        Suborned.Sim.Game endHeldFor; float endHeldSince; bool endHeldSkipped, endFollowOff;
+        Suborned.Sim.Game endHeldFor; float endHeldSince; bool endHeldSkipped, endFollowOff; Suborned.Sim.Game cordonFramedFor;
 
         string FinalFall => Game?.FailCode switch
         {
@@ -25,7 +25,7 @@ namespace Suborned.Play
             "driver-shot" => "body/driver",
             _ => null
         };
-        bool LiveEnding => Game.FailCode == "sealed" || FinalFall != null;
+        bool LiveEnding => HostViews.EndedAtCordon(Game) || FinalFall != null;
 
         /// <summary>The run has ended and its leaving is still playing: the end card waits.</summary>
         public bool EndHeld
@@ -37,7 +37,7 @@ namespace Suborned.Play
                 if (endHeldFor != Game) { endHeldFor = Game; endHeldSince = Time.unscaledTime; endHeldSkipped = false; endFollowOff = false; }
                 if (endHeldSkipped || Time.unscaledTime - endHeldSince > EndPlayoutMaxS) return false;
                 float elapsed = Time.unscaledTime - endHeldSince;
-                if (Game.FailCode == "sealed") return elapsed < 3f;
+                if (HostViews.EndedAtCordon(Game)) return elapsed < 3.5f;
                 if (FinalFall is string victim)
                 {
                     var progress = views.FallProgress(victim);
@@ -53,9 +53,33 @@ namespace Suborned.Play
             if (!EndHeld || FailCamOn || failPrep != null) return;
             var ms = UnityEngine.InputSystem.Mouse.current;
             if (Time.unscaledTime - endHeldSince > 0.75f && ms != null && ms.leftButton.wasPressedThisFrame) { endHeldSkipped = true; Debug.Log("Play: the end card shown before the leaving played out (a click)"); return; }
-            Vector3? at = views.OfficialLeavingAt ?? (views.GetawayLeavingNow && views.Find("car/getaway") is Transform gt ? gt.position : (Vector3?)null);
+            Vector3? at = (HostViews.EndedAtCordon(Game) ? views.SealedRoad : null) ?? views.OfficialLeavingAt ?? (views.GetawayLeavingNow && views.Find("car/getaway") is Transform gt ? gt.position : (Vector3?)null);
             if (FinalFall is string victim && views.Find(victim) is Transform fallen) at = fallen.position;
+            if (HostViews.EndedAtCordon(Game) && views.SealedRoad is Vector3 road && cordonFramedFor != Game)
+            {
+                cordonFramedFor = Game;
+                if (Driving) DriveExit(false, true); else if (Following) FollowExit();
+                int k = ClearRoadView(road);
+                if (k != YawIndex) TurnTo(k);
+            }
             if (!endFollowOff && at is Vector3 a && !Following && !JuiceFollow(a)) endFollowOff = true;
+        }
+
+        // Look across the cordon from open street. Check foreground space across the full width of the two cars.
+        int ClearRoadView(Vector3 road)
+        {
+            int best = YawIndex, bestScore = -1;
+            for (int n = 0; n < 4; n++)
+            {
+                int view = (YawIndex + n) % 4;
+                var yaw = Quaternion.Euler(0, baseYaw + 90f * view, 0);
+                int score = 0;
+                for (int side = -5; side <= 5; side += 5)
+                    for (int depth = 3; depth <= 24; depth += 3)
+                        if (Game.S.Grid.Free(frame.Engine(road + yaw * new Vector3(side, 0, -depth)))) score += 27 - depth;
+                if (score > bestScore) { best = view; bestScore = score; }
+            }
+            return best;
         }
 
         /// <summary>The fail camera was skipped by a click: the run as it ended shows its card at once (its leaving plays on behind it).</summary>

@@ -219,7 +219,7 @@ namespace Suborned.Sim
         // cancel (Sky 2026-10-15 playtest): the lines that may change; the rest are checked to say what the engine does
         public readonly string CancelTurn, CancelEnter, CancelTake;
         /// <summary>Engine 0.34.2 (rulebook cell.enter.seen.patrol): the patrol robot that sees an Enter reports it (a seen act, attention's found fault) instead of failing the mission.</summary>
-        public readonly bool EnterPatrolReports;
+        public readonly bool EnterPatrolReports, EnterCameraReports, EnterGuardBlocks, TakeCameraReports;
         // the summons and the secret (Motive, briefs/011/motive-lovers.md)
         public readonly bool DriverPickup;
         public readonly int SummonStayS, SummonWalkMaxS, SummonAlertMax, SummonsPerShift, SummonPressedStayS, SummonPressedSpeed; public readonly string? SummonPressedAct; // brief 085: summon.pressed; absent (a rulebook pinned before 0.38.0) no call is pressed
@@ -541,11 +541,11 @@ namespace Suborned.Sim
             c["enter"].Only("s", "alarm", "seen"); EnterS = RI(c["enter"]["s"]); EnterAlarmS = RI(c["enter"]["alarm"]);
             // engine 0.34.2 (Sky 2026-10-26: "entry seen by patrol" is "no, not a failure"): the patrol robot's sight of an Enter is a report, not a
             // fail; absent (a rulebook pinned before 0.34.2), it fails entry-seen-patrol as it did
-            if (c["enter"].Opt("seen") is JNode es) { es.Only("patrol", "rule", "tag", "src", "proposed", "reason"); EnterPatrolReports = OneOf(es["patrol"], new[] { "fail", "report" }) == "report"; }
+            if (c["enter"].Opt("seen") is JNode es) { EnterCameraReports = es.Opt("camera") is JNode ec && OneOf(ec, new[] { "fail", "report" }) == "report"; EnterGuardBlocks = es.Opt("guard") is JNode eg && OneOf(eg, new[] { "fail", "block" }) == "block"; es.Only("guard", "camera", "patrol", "rule", "tag", "src", "proposed", "reason"); EnterPatrolReports = OneOf(es["patrol"], new[] { "fail", "report" }) == "report"; }
             c["carry"].Only("s"); CarryS = RI(c["carry"]["s"]);
             c["board"].Only("s"); BoardS = RI(c["board"]["s"]); // brief 018 §2: Board, and stepping out
             if (BoardS < 1) throw new FormatException("cell.board.s is at least 1 s");
-            c["take"].Only("s", "trailUnturned", "struggle"); TakeS = RI(c["take"]["s"]); TakeTrailUnturned = RI(c["take"]["trailUnturned"]); TakeStruggleS = RI(c["take"]["struggle"]);
+            TakeCameraReports = c["take"].Opt("camera") is JNode takeCamera && OneOf(takeCamera, new[] { "fail", "report" }) == "report"; c["take"].Only("camera", "s", "trailUnturned", "struggle"); TakeS = RI(c["take"]["s"]); TakeTrailUnturned = RI(c["take"]["trailUnturned"]); TakeStruggleS = RI(c["take"]["struggle"]);
             var se = b["security"]; se.Only("response", "speed", "rivals", "unclaimed", "patrol", "sealWarns", "rule", "tag", "src");
             SealWarns = se.Opt("sealWarns") is JNode sealWarnsN && sealWarnsN.Bool(); // engine 0.30.0: the response's call says when the district seals (seal.starts); absent, as 0.29.0 // checkIn and seal retired by brief 013 (response.checkIn, response.levels)
             var re = se["response"]; re.Only("witness", "seen", "unseen", "civilian", "rivalsUnseen");

@@ -44,6 +44,19 @@ namespace Suborned.Play
             foreach (var c in g.Range ? new List<Suborned.Sim.Camera>() : s.Cameras)
             {
                 var at = frame.World(c.At);
+                var panel = g.ControlPanel(c.Id);
+                if (panel != "cabinet" && !things.ContainsKey("marker/" + panel))
+                {
+                    var stand = frame.World(s.Stand(panel));
+                    var footing = Vector3.MoveTowards(stand, at, 0.65f);
+                    Marker(panel, footing + Vector3.up * 0.75f, new Vector3(1.2f, 1.5f, 1.2f));
+                    if (host.localControlPanel)
+                    {
+                        var model = Object.Instantiate(host.localControlPanel, things["marker/" + panel].t, false).transform;
+                        model.localPosition = Vector3.down * 0.75f;
+                        model.rotation = Quaternion.LookRotation((stand - at).normalized, Vector3.up);
+                    }
+                }
                 var pole = Part(root, "camera/" + c.Id, cylinder, Lit(host.carColour), at + Vector3.up * 1.6f, new Vector3(0.25f, 1.6f, 0.25f));
                 var col = pole.gameObject.AddComponent<CapsuleCollider>(); col.radius = 2.5f; col.height = 2f; // a fat target, pole scale makes it ~1.2 m
                 things["camera/" + c.Id] = (pole, pole.position, pole.position, true);
@@ -406,7 +419,7 @@ namespace Suborned.Play
         public static float FeetRaisedMax;
         public void Frame(float alpha)
         {
-            RivalsLeaving(); GetawayLeaving(); LentLeaving(); OfficialLeaving(); TrafficFrame(alpha); // brief 109 round 2: a rival car driving off when the clock stopped drives on out (HostViews.LeavingRivals), before ours reads where it is // brief 098 step 1: the passing cars' headings, eased; brief 079: the car that left drives away (HostViews.Leaving); brief 096: Popovic's car too (HostViews.LeavingLent)
+            RoadClosure(); RivalsLeaving(); GetawayLeaving(); LentLeaving(); OfficialLeaving(); TrafficFrame(alpha); // brief 109 round 2: a rival car driving off when the clock stopped drives on out (HostViews.LeavingRivals), before ours reads where it is // brief 098 step 1: the passing cars' headings, eased; brief 079: the car that left drives away (HostViews.Leaving); brief 096: Popovic's car too (HostViews.LeavingLent)
             FallenSilhouettes();
             foreach (var kv in things)
             {

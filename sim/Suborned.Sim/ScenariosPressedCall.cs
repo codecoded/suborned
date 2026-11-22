@@ -110,9 +110,8 @@ namespace Suborned.Sim
                 r.To(g.GuardAwayUntil + 5);
                 r.Is(g.GuardAtDoor && g.Tick < plainEnd, "he is back, with an unpressed visit still to run");
                 r.Do(Tech, "loop", "entrance");
-                r.Do(Enf, "enter");
-                r.Is(r.Until(() => g.Over, T(60)), "the Enter ends the run");
-                r.Eq(g.FailCode, "entry-seen-guard", "seen by the guard, not the camera");
+                var answer = g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "enter" });
+                r.Is(answer.code == "door-held" && !g.EntryInProgress && !g.Over, "the returned guard blocks entry");
             }, Reads());
 
             Add("P85-ALARM", "085", "An alarm on his walk over ends a pressed visit as any: guard.recalled, at a guard's pace, not the pressed run.", r =>

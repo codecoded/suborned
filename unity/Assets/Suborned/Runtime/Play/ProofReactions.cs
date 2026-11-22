@@ -160,6 +160,25 @@ namespace Suborned.Play
             File.WriteAllText(Path.Combine(dir, "mission-selection.txt"), $"{(picked == 4 ? "PASS" : "FAIL")} {picked} operatives selected");
             h.Select(OpId.Tech, false);
             yield return null;
+            foreach (var device in new[] { "pickup", "mast-z0" })
+            {
+                string id = h.Game.ControlPanel(device);
+                var panel = h.Views.Find("marker/" + id);
+                bool drawn = panel && panel.GetComponentInChildren<Renderer>() != null;
+                if (drawn)
+                {
+                    h.LookAt(panel.position);
+                    yield return new WaitForEndOfFrame();
+                    ScreenCapture.CaptureScreenshot(Path.Combine(dir, id + ".png"));
+                    yield return null;
+                }
+                var pickedPanel = new HandoverHost.Target { Kind = "cabinet", Key = id, Label = id };
+                h.OpenPanel(pickedPanel, new Vector2(Screen.width / 2, Screen.height / 2));
+                bool linked = h.Panel?.Rows.Exists(r => r.I?.Order?.Do == "loop" && r.I.Order.Target == device) == true
+                    && !h.Panel.Rows.Exists(r => r.I?.Order?.Do is "loop" or "disable" && r.I.Order.Target != device);
+                h.ClosePanel();
+                File.WriteAllText(Path.Combine(dir, id + ".txt"), $"{(drawn && linked ? "PASS" : "FAIL")} mesh {drawn}, linked actions {linked}");
+            }
             h.OpenMenu(); h.ResumeFromMenu();
             bool pausedSelection = h.Selected[(int)OpId.Tech] && System.Array.FindAll(h.Selected, x => x).Length == 1;
             h.ContinueFrom(h.SessionPath);
@@ -225,10 +244,30 @@ namespace Suborned.Play
                     File.WriteAllText(Path.Combine(dir, "return-fire.txt"), $"{(answered ? "PASS" : "FAIL")} {shot.by} fires at {shot.target} on tick {shot.tick}; figure playing {clip}, {cues}");
                 }
                 bool seal = id == "N127";
-                h.ShowEnded(g);
+                if (seal)
+                {
+                    var inputs = h.PlayInputs;
+                    var run = Script.Parse(Script.Write(g, inputs.Hash));
+                    var before = Engine.Play(inputs, run.Start, run.Orders, g.Tick - 9 * Game.Hz);
+                    string path = Path.Combine(dir, "before-road-closure.script.json");
+                    File.WriteAllText(path, Script.Write(before, inputs.Hash));
+                    h.ContinueFrom(path); h.SetPaused(true);
+                    yield return null;
+                    bool clear = !h.Views.SealedRoad.HasValue;
+                    h.RunTo(g.Tick - 7 * Game.Hz);
+                    var sedan = GameObject.Find("District road closure/Response sedan");
+                    Vector3 from = sedan ? sedan.transform.position : Vector3.zero;
+                    h.RunTo(g.Tick - 1);
+                    bool moving = sedan && Vector3.Distance(from, sedan.transform.position) > 5f;
+                    bool playable = !h.Game.Over && h.Views.SealedRoad.HasValue;
+                    File.WriteAllText(Path.Combine(dir, "road-arrival.txt"), $"{(clear && moving && playable ? "PASS" : "FAIL")} open first {clear}, sedan moved {moving}, playable until closure {playable}");
+                    h.RunTo(g.Tick);
+                    g = h.Game;
+                }
+                else h.ShowEnded(g);
                 if (!seal && h.Views.Find("op/enforcer") is Transform t) h.LookAt(t.position);
                 float started = Time.unscaledTime, first = -1, last = -1;
-                bool cue = false, waited = false, captured = false, earlyBook = false;
+                bool closureOnScreen = false, cue = false, waited = false, captured = false, earlyBook = false;
                 int tick = g.Tick;
                 do
                 {
@@ -239,15 +278,20 @@ namespace Suborned.Play
                     cue |= HudToolkit.VisibleSealNotice.Contains("District sealed");
                     waited |= h.EndHeld;
                     earlyBook |= h.EndHeld && h.BookEnd;
-                    if (!captured && (seal ? cue : progress > 0.55f))
+                    if (seal && h.Views.SealedRoad is Vector3 road && Time.unscaledTime - started > 1.5f)
+                    {
+                        Vector3 view = h.View.WorldToViewportPoint(road);
+                        closureOnScreen |= view.z > 0 && Mathf.Abs(view.x - 0.5f) < 0.25f && Mathf.Abs(view.y - 0.5f) < 0.25f;
+                    }
+                    if (!captured && (seal ? cue && closureOnScreen : progress > 0.55f))
                     {
                         captured = true;
                         ScreenCapture.CaptureScreenshot(Path.Combine(dir, id + "-reaction.png"));
                     }
                 } while (h.EndHeld && Time.unscaledTime - started < 8f);
                 for (int i = 0; i < 3 && !h.BookEnd; i++) yield return null;
-                bool ok = waited && !earlyBook && h.BookEnd && !h.EndHeld && tick == g.Tick && (seal ? g.FailCode == "sealed" && cue : g.FailCode == "enforcer-down" && last >= 0.98f && first < last);
-                File.WriteAllText(Path.Combine(dir, id + "-reaction.txt"), $"{(ok ? "PASS" : "FAIL")} {g.FailCode} tick {tick}, held {Time.unscaledTime - started:F2}s, animation {first:F3} to {last:F3}, seal visible {cue}, debrief {h.BookEnd}, premature {earlyBook}");
+                bool ok = waited && !earlyBook && h.BookEnd && !h.EndHeld && tick == g.Tick && (seal ? g.FailCode == "sealed" && cue && closureOnScreen : g.FailCode == "enforcer-down" && last >= 0.98f && first < last);
+                File.WriteAllText(Path.Combine(dir, id + "-reaction.txt"), $"{(ok ? "PASS" : "FAIL")} {g.FailCode} tick {tick}, held {Time.unscaledTime - started:F2}s, animation {first:F3} to {last:F3}, seal visible {cue}, road in frame {closureOnScreen}, debrief {h.BookEnd}, premature {earlyBook}");
             }
         }
     }

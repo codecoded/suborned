@@ -634,7 +634,9 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
 
   test('engine 0.34.2 (Sky 2026-10-26: "entry seen by patrol" is no failure): the patrol reports an Enter it sees', () => {
     expect(rb.cell.enter.seen?.patrol).toBe('report');
-    expect(rb.cell.enter.seen?.rule).toMatch(/fails entry-seen-guard/); expect(rb.cell.enter.seen?.rule).toMatch(/fails entry-seen-camera/); // the guard and the live camera still fail
+    expect(rb.cell.enter.seen?.guard).toBe('block');
+    expect(rb.cell.enter.seen?.camera).toBe('report');
+    expect(rb.cell.take.camera).toBe('report');
     expect(rb.cell.enter.seen?.rule).toMatch(/The patrol robot is no fail/); expect(rb.cell.enter.seen?.rule).toMatch(/a found fault, Alert to at least attention\.alert, no Trail/);
     const old = structuredClone(raw); delete old.cell.enter.seen;
     expect(Rulebook.safeParse(old).success).toBe(true); // a rulebook pinned before 0.34.2 still parses (its engine fails entry-seen-patrol)

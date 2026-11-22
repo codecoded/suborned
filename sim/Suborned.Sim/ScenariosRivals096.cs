@@ -153,7 +153,7 @@ namespace Suborned.Sim
             Add("096-RIV-6b", "096", "The lookout sees a Take at the pickup (the front, the driver unturned, the pickup camera looped): he runs to it and reaches Popovic before it ends: rivals-reach-vale, cause lookout (P59-BEAT's place: the parked car's wheelman is retired).", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Tech, "cabinet")); r.To(T(300)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
+                r.To(r.Send(Tech, r.G.ControlPanel("pickup"))); r.To(T(300)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
                 r.To(r.SendTo(Enf, Beside(r, g.CarPos())!.Value)); r.To(T(g.ClockValeAtCar));
                 r.Is(LookoutAtPost(g), "the lookout is at his post");
                 r.Do(Enf, "take", Vale); r.Until(() => g.Over, T(60));

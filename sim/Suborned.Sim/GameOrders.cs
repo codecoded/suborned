@@ -630,9 +630,10 @@ namespace Suborned.Sim
             if (DoorHeld(EnterDoor)) return No("door-held", "a unit holds the scene at this door: nobody goes in (rev 4: a found body)");
             if (Vale != ValeAt.Office || EntryInProgress) return No("vale-not-inside", $"{Cap(ValeName)} is not inside");
             if (!G.Within(op.Pos, S.At(S.GuardPost), R.AtReachCm)) return No("stand-at-door", "stand at the public door", cm: R.AtReachCm);
+            if (GuardAtDoor && R.EnterGuardBlocks) return No("door-held", "the guard blocks the public door");
             op.Walk = null;
             if (GuardAtDoor) { Fail("entry-seen-guard", $"The guard is back at the door. {Cap(ValeName)} is warned.", () => With(Because("seen", true, Locate("guard", "saw", op.Pos)), "enforcer")); return ""; }
-            if (CameraWatching("entrance", op.Pos)) { Fail("entry-seen-camera", $"The entrance camera reports the breach. {Cap(ValeName)} is locked down.", () => With(Because("seen", true, Locate("camera:entrance", "saw", op.Pos)), "enforcer")); return ""; }
+            if (CameraWatching("entrance", op.Pos) && CameraBreachEnds("entrance", op.Pos)) return "";
             if (PatrolWatching(S.At(S.GuardPost)))
             {
                 if (!R.EnterPatrolReports) { Fail("entry-seen-patrol", $"The patrol reports the breach. {Cap(ValeName)} is locked down.", () => With(Because("seen", true, Locate("patrol", "saw", S.At(S.GuardPost))), "enforcer")); return ""; }
@@ -660,7 +661,7 @@ namespace Suborned.Sim
             var vp = ValePos()!.Value;
             if (!G.Within(op.Pos, vp, actReach)) return No("stand-beside-vale", $"stand beside {ValeName}", m: actReach / 100);
             op.Walk = null;
-            if (!PickupService && !TakeInCar && CameraWatching("pickup", op.Pos)) { Fail("abduction-seen-camera", $"The pickup camera reports the abduction. {Cap(ValeName)} is rescued.", () => With(Because("seen", true, Locate("camera:pickup", "saw", op.Pos), Locate("councillor", "victim")), "enforcer")); return ""; }
+            if (!PickupService && !TakeInCar && CameraWatching("pickup", op.Pos) && CameraBreachEnds("pickup", op.Pos)) return "";
             if (!PickupService && FrontCrew(op) is string who) // the front: the crew watching the pickup reaches him first (brief 059: the lookout posted, or the car parked with its wheelman; a drawn member within his reach)
             { Fail("rivals-reach-vale", $"The rival crew is watching the pickup and reaches {ValeName} first.", () => With(Because("beat-to-pickup", true, Locate(who, "reached", vp), Locate("councillor", "victim")), "enforcer")); return ""; }
             RouteKind = PickupService ? "service" : "pickup"; RouteRival = RivalsArrived ? RivalsDelayMethod : "";

@@ -107,6 +107,17 @@ public class FinalIntentTests
         // engine 0.40.0 (brief 096, rulebook camera): a Pay on the live pickup camera is recorded and its Alert sends the dial's robots, who meet the
         // cell: whom they fire on is the intent's own reading, so the hashes after it differ both ways by the rule; the outcome, Trail and Alert do not
         if (a.CameraRecords().Count > 0 || b.CameraRecords().Count > 0) { Assert.Equal((a.Result, a.FailCode, a.Alert), (b.Result, b.FailCode, b.Alert)); return; }
+        // A recorded breach calls the response. Its choice of targets can decide whether the road seals or the Enforcer falls first.
+        if (a.Log.Exists(l => l.Code == "entry.camera") || b.Log.Exists(l => l.Code == "entry.camera"))
+        {
+            foreach (var game in new[] { a, b })
+            {
+                var sight = Assert.Single(game.Log, l => l.Code == "entry.camera");
+                Assert.True(game.Tick > sight.Tick);
+                Assert.Contains(game.FailCode, new[] { "sealed", "enforcer-down" });
+            }
+            return;
+        }
         if (walked(a) || walked(b)) { Assert.Equal(("safe", "safe"), (a.FightBranch, b.FightBranch)); Assert.Equal((a.Result, a.FailCode), (b.Result, b.FailCode)); return; }
         Assert.Equal((a.Result, a.FailCode), (b.Result, b.FailCode));
         if (!name.StartsWith("careless-", StringComparison.Ordinal) && !name.StartsWith("fight-", StringComparison.Ordinal) && !Moves.Contains(name)) Assert.Equal((a.Trail, a.Alert), (b.Trail, b.Alert)); // the failure rows' Trail may fall (fight-loud-enforcer-down 9 -> 8: fewer hits)

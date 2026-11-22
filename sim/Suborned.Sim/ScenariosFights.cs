@@ -211,7 +211,7 @@ namespace Suborned.Sim
             Add("N23", "—", "A drawn weapon is an act (motive-fights.md §2.3): drawn among people out of security's sight, one witnessed incident (+1 T, Alert 1), and they hold the Fixer's face; drawn in the guard's cone, Alert 2, he engages and calls it in. Brief 101: the square's mast watches the Courtyard, so the Tech loops it first.", r =>
             {
                 var g = r.G;
-                r.Send(Fixer, "d:Courtyard"); LoopMast(r);
+                int arrived = r.Send(Fixer, "d:Courtyard"); LoopMast(r); r.To(Math.Max(arrived, T(46)));
                 var card = g.GoingLoud(new Order { Tick = g.Tick, Op = Fixer, Do = "draw" });
                 r.Is(!card.Loud && card.Why == "unseen-draw", $"no security sees him: drawing isn't going loud ({card.Why})");
                 int trail = g.Trail;

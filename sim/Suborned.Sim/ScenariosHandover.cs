@@ -506,7 +506,7 @@ namespace Suborned.Sim
                 // a call after the reroute lands put the shot at 1:55, its 45 s response after the 2:30 mark; the Fixer calls as the reroute
                 // starts (it lands at 1:19, before the shot), so the shot comes before 1:45 and the unit, not the mark, is the shot's
                 r.Do(Tech, "reroute", "patrol");
-                r.Do(Fixer, "call", Inez); r.Done(Tech); r.Do(Tech, "loop", MastCam); // brief 101: the square's mast watches the way to the north street; looped from 1:15
+                r.Done(Tech); r.To(r.Send(Tech, g.ControlPanel(MastCam), true)); r.Do(Fixer, "call", Inez); r.Do(Tech, "loop", MastCam); // brief 101: the square's mast watches the way to the north street; looped from 1:15
                 // engine 0.34.0 (M067-B1): at 1.8 m/s the shot would come at 0:55.8, before his 1:00 mark, which would then call the unit itself: the
                 // Enforcer lets the mark pass first, as N10 does, so the unit is the shot's (45 s), before the 2:30 mark
                 { int mk = g.NextMarkOf(g.GuardP, g.Tick); if (mk - g.Tick < T(45)) r.To(mk + 1); }

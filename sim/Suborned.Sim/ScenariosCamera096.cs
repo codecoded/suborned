@@ -25,7 +25,7 @@ namespace Suborned.Sim
             r.Do(Scout, "listen", Driver); r.Until(() => r.G.Log.Exists(l => l.Code == "scout.listen.heard"), T(240));
         }
         /// <summary>The Tech loops the pickup camera from the cabinet; returns when the loop runs.</summary>
-        static void LoopPickup(Run r) { r.To(r.Send(Tech, "cabinet", true)); r.Do(Tech, "loop", "pickup"); r.Done(Tech); r.Is(r.G.LoopOn && r.G.LoopCam == "pickup", "the pickup camera is looped"); }
+        static void LoopPickup(Run r) { r.To(r.Send(Tech, r.G.ControlPanel("pickup"), true)); r.Do(Tech, "loop", "pickup"); r.Done(Tech); r.Is(r.G.LoopOn && r.G.LoopCam == "pickup", "the pickup camera is looped"); }
         /// <summary>A message in the invariant culture (Redline E7: every report reads the same in every culture).</summary>
         static string Iv(FormattableString f) => FormattableString.Invariant(f);
         static string AlertWhy(Game g) { var l = new List<string>(); foreach (var x in g.Ledger) if (x.what == "alert") l.Add(Iv($"{Report.Clock(x.tick)} {x.cause}")); return l.Count == 0 ? "" : Iv($" [{string.Join("; ", l)}]"); }
@@ -144,7 +144,7 @@ namespace Suborned.Sim
             Add("CAM-7", "096", "Motive CAM-7: the pickup camera cut (Disable) before the Pay: no record; the card shows no eye.", r =>
             {
                 var g = r.G; ListenDriver(r);
-                r.To(r.Send(Tech, "cabinet", true)); r.Do(Tech, "disable", "pickup"); r.Done(Tech);
+                r.To(r.Send(Tech, r.G.ControlPanel("pickup"), true)); r.Do(Tech, "disable", "pickup"); r.Done(Tech);
                 r.Is(g.CameraDark("pickup"), "the pickup camera is dark");
                 r.Eq(g.Preview("pay", Driver).Recorded, "no", "the card shows no eye");
                 r.Do(Fixer, "turn", Driver, "pay"); r.Done(Fixer); r.Wait(T(g.R.CamScanS + g.R.CamCallS + 1));

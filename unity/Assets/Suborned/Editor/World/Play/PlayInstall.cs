@@ -117,6 +117,7 @@ namespace Suborned.World.Play
             host.jobs = jobBlocks.Keys.ToArray(); host.jobColours = jobBlocks.Values.Select(Block).ToArray();
             host.figures = People.FigureBuild.Library(); // brief 020: the stand-in figures, when installed (else capsules)
             GameObject Kit(string path) => AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/" + path); // brief 020: kit models (bun run kit), else the boxes
+            host.localControlPanel = Kit("Booths/DK_UtilityCabinet_Play.fbx");
             host.sedanOfficial = Kit("Vehicles/DK_Sedan_Official.fbx"); host.sedanGetaway = Kit("Vehicles/DK_Sedan_Getaway.fbx");
             host.sedanRival = Kit("Vehicles/DK_Sedan_Rival.fbx"); if (!host.sedanRival) Debug.LogWarning("Play: Kit/Models/Vehicles/DK_Sedan_Rival.fbx missing (run `bun run kit`): the rival car is its box"); // brief 067 L: Vela's Sedan_Rival (adopted 2026-10-26)
             host.robotUnit = host.patrolRobot = Kit("Robots/DK_PatrolBot104.fbx") ?? throw new FileNotFoundException("Play: Kit/Models/Robots/DK_PatrolBot104.fbx missing (run `bun run kit`)"); host.robotFaceLed = AssetDatabase.LoadAssetAtPath<Material>("Assets/Suborned/Kit/Materials/DK_Face_Amber.mat") ?? throw new FileNotFoundException("Play: Kit/Materials/DK_Face_Amber.mat missing (run `bun run kit`)"); // brief 104 (Sky: "he's awesome"): the patrol and the response's robot units are Vela's PatrolBot104 (was brief 031's PatrolRobot and the porter), its face the shared LED one

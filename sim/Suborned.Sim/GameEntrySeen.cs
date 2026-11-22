@@ -2,8 +2,7 @@
 // Enforcer go in at the public door no longer fails the mission: the Enter goes on, and the robot radios what it saw, a seen act reported
 // as attention reports a loiterer (GDD §05: a robot's report by radio after attention.report.call; a found fault, Alert at least
 // attention.alert, no Trail, a sighting, the dial's dispatch to the door). One report a mission; a patrol downed before it lands drops it.
-// Its attention clock on the Enforcer holds through the Enter as through any act (attention.rule). The guard's and the live entrance
-// camera's sight of an Enter still fail (entry-seen-guard, entry-seen-camera). A rulebook pinned before 0.34.2 (no cell.enter.seen) fails
+// Its attention clock on the Enforcer holds through the Enter as through any act (attention.rule). A rulebook pinned before 0.34.2 fails
 // entry-seen-patrol as it did. Hashed only once a report is made, so every run in which the patrol never saw an Enter hashes as before.
 namespace Suborned.Sim
 {
@@ -17,6 +16,30 @@ namespace Suborned.Sim
             if (entryRepFrom >= 0) return; // once a mission: the Office already has it
             entryRepFrom = Tick; entryRepLand = Tick + T(R.AttnCallS); entryRepAt = door;
             Note("entry.seen", $"The patrol sees the Enforcer go in and radios it (lands {Sim.Report.Clock(entryRepLand)}).");
+        }
+
+        bool CameraBreachEnds(string camera, Pt scene)
+        {
+            string watcher = "camera:" + camera;
+            bool entry = camera == "entrance";
+            if (entry && !R.EnterCameraReports)
+            {
+                Fail("entry-seen-camera", $"The entrance camera reports the breach. {Cap(ValeName)} is locked down.", () => With(Because("seen", true, Locate(watcher, "saw", scene)), "enforcer"));
+                return true;
+            }
+            if (!entry && !R.TakeCameraReports)
+            {
+                Fail("abduction-seen-camera", $"The pickup camera reports the abduction. {Cap(ValeName)} is rescued.", () => With(Because("seen", true, Locate(watcher, "saw", scene), Locate("councillor", "victim")), "enforcer"));
+                return true;
+            }
+            string incident = entry ? "entry" : "take";
+            Sightings.Add(new Sighting { Watcher = watcher, Op = "enforcer", From = Tick, To = Tick, At = scene });
+            Note(incident + ".camera", $"The {camera} camera reports the breach. Security is on its way.");
+            RaiseAlert(System.Math.Max(2, Alert), incident + ":" + watcher);
+            Alarm(null, scene, null, "");
+            var origin = OriginNow(incident + ":" + watcher, "seen", watcher, scene, null, scene, "enforcer");
+            SealFrom(System.Math.Max(Tick, SecurityArrives), () => origin);
+            return false;
         }
 
         /// <summary>Once a tick, after the loiterers' reports: the patrol's report of the Enter lands, or is dropped if the patrol is down.</summary>

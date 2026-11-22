@@ -48,16 +48,12 @@ namespace Suborned.Sim
 
         static void FailCauseCases()
         {
-            Add("N119", "—", "The fail camera: entry seen by the guard (§07). The Enforcer walks to the public door and enters with the guard at it: the culprit is the guard at his post, facing the way he watches the door; the Enforcer is the operative he saw.", r =>
+            Add("N119", "—", "A guard at the public door refuses the Enforcer entry. He stays outside and the mission continues.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Office entrance"));
-                r.Do(Enf, "enter");
-                r.Eq(g.FailCode, "entry-seen-guard", "the guard at the door sees the entry");
-                var c = CauseIs(r, "entry-seen-guard", "seen", true, "guard", "guard", Enf);
-                PosedAs(r, c?.Culprits.FirstOrDefault(), r.Stand(g.S.GuardPost), g.S.GuardFacing, "the guard at his post");
-                r.Eq(c?.Culprits.FirstOrDefault()?.Role, "saw", "he saw it");
-                r.Is(c?.Origin == null, "a single culprit: no origin");
+                var answer = g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "enter" });
+                r.Is(!answer.ok && answer.code == "door-held" && !g.Over && !g.EntryInProgress, "the guard blocks the door and play continues");
             });
 
             Add("N120", "—", "Entry and the patrol (§07; engine 0.34.2, Sky 2026-10-26: \"entry seen by patrol\" is \"no, not a failure\"; rulebook cell.enter.seen). The patrol robot that sees the Enter no longer fails the mission: the Enter goes on and the robot radios a report of the seen act, which lands attention.report.call later as a found fault (Alert at least 1, no Trail, a sighting, the dial's dispatch to the door). The yard sweep never sees the public door (brief 067 A), so the robot is brought there by an alarm: route G-kill with the reroute at 0:51 (the patrol back on its sweep at 3:31, after the carry), the guard's missed 4:00 mark walks it round to his post; it finds nothing (report.unfounded) and, standing down, faces the door. The Tech plants a second loop as the first runs out (4:30, live 4:50), and the Enforcer, waiting at the door, enters the first tick the patrol sees it. (0.33.1-0.34.1: entry-seen-patrol, a fail; a rulebook pinned before 0.34.2 still fails there: FailCauseTests.)", r =>
@@ -86,15 +82,12 @@ namespace Suborned.Sim
                 r.Is(g.FailCode != "entry-seen-patrol" && g.Vale == ValeAt.WithEnforcer, $"the Enter lands: Vale is with the Enforcer ({g.Result} {g.FailCode})");
             });
 
-            Add("N121", "—", "The fail camera: the abduction seen by the pickup camera (§07; route fail-take-seen-camera): the driver unturned, the rivals sent away, the Take at the official car under the live pickup camera. The culprit is the pickup camera, facing the car; Vale is the second, where he stood.", r =>
+            Add("N121", "—", "A live camera reports the pickup. The Enforcer continues taking Popovic while the desk sends security.", r =>
             {
                 var g = r.G;
                 Script(r, "[{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Boarding pavilion\"},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"rival-park\"},{\"tick\":3700,\"op\":\"enforcer\",\"do\":\"take\"}]");
-                r.Eq(g.FailCode, "abduction-seen-camera", "the pickup camera sees the Take");
-                var c = CauseIs(r, "abduction-seen-camera", "seen", true, "camera:pickup", "camera", Enf);
-                var cam = g.S.Cameras.Single(x => x.Id == "pickup");
-                PosedAs(r, c?.Culprits.FirstOrDefault(), cam.At, cam.Facing, "the pickup camera on its pole");
-                r.Is(c != null && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].At == g.ValePos() && g.CarBodyCm("car:official", c.Culprits[1].At) is int vb && vb >= 0 && vb <= g.R.CarReachCm, "then Vale, at his car (engine 0.33.1: at its kerb-side door)");
+                r.Is(!g.Over && g.Vale == ValeAt.Taking && g.Alert >= 2, "the pickup camera reports the Take while it continues");
+                r.Is(g.Sightings.Exists(x => x.Watcher == "camera:pickup") && g.Lockdown < T(1800), "the desk has a sighting and a seal is on the way");
             });
 
             Add("N122", "—", "The fail camera: the rivals beat the cell to Vale (§07; route fail-rivals-reach-vale; brief 059 F2): route B with the lookout ignored (brief 096: the tip and the car's tail are retired); the lookout follows Vale's car round on foot and reaches it before the Take in the service bay is done. The culprit is the lookout where he stands; no operative is named.", r =>

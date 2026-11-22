@@ -17,6 +17,12 @@ namespace Suborned.Sim
 
     public sealed partial class Game
     {
+        public string ControlPanel(string device)
+        {
+            string local = "panel-" + device;
+            return S.HasPlace(local) ? local : "cabinet";
+        }
+
         /// <summary>Loop v2: the tick the running loop ends (the feed returns at it); INF when no loop runs or the rulebook has the tether.</summary>
         public int LoopUntil = INF;
         /// <summary>Cameras the Tech has cut (brief 058 §2), by id: dead for the rest of the mission.</summary>
@@ -39,7 +45,7 @@ namespace Suborned.Sim
                 return;
             }
             var tech = OpOf(OpId.Tech);
-            if (LoopOn && (tech.Down || !G.Within(tech.Pos, S.At("cabinet"), R.TetherCm)))
+            if (LoopOn && (tech.Down || !G.Within(tech.Pos, S.Stand(ControlPanel(LoopCam)), R.TetherCm)))
             {
                 LoopOn = false; Note("loop.ends", tech.Down ? "The Tech is down. The camera feed returns." : "The Tech leaves the cabinet. The camera feed returns.");
             }
@@ -58,7 +64,7 @@ namespace Suborned.Sim
                 if (LoopOn && o.Target != LoopCam) return No("loop-holds", $"one loop at a time: the {LoopCam} loop runs until {Sim.Report.Clock(LoopUntil)}", tick: LoopUntil);
             }
             else if (LoopOn) return No("loop-holds", "the loop already holds");
-            if (!G.Within(op.Pos, S.At("cabinet"), R.AtReachCm)) return No("stand-at-cabinet", "stand at the cabinet", cm: R.AtReachCm);
+            if (!G.Within(op.Pos, S.Stand(ControlPanel(o.Target)), R.AtReachCm)) return No("stand-at-cabinet", "stand at the cabinet", cm: R.AtReachCm);
             Engage(op, o, R.LoopS); return "";
         }
 
@@ -81,7 +87,7 @@ namespace Suborned.Sim
             if (op.Id != OpId.Tech) return No("only-tech", "only the Tech cuts a camera's line (§03)");
             if (!LoopTarget(o.Target)) return No("disable-wrong-target", "the Tech's cabinet cuts the cameras it loops: the entrance camera, the pickup camera and the city's own cameras (the Records Square mast)");
             if (CameraDark(o.Target)) return No("camera-dead", $"the {o.Target} camera is dead already");
-            if (!G.Within(op.Pos, S.At("cabinet"), R.AtReachCm)) return No("stand-at-cabinet", "stand at the cabinet", cm: R.AtReachCm);
+            if (!G.Within(op.Pos, S.Stand(ControlPanel(o.Target)), R.AtReachCm)) return No("stand-at-cabinet", "stand at the cabinet", cm: R.AtReachCm);
             Engage(op, o, R.DisableS); return "";
         }
 

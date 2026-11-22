@@ -81,11 +81,11 @@ public class FailCauseTests
         // Engine 0.34.2 (Sky 2026-10-26: "entry seen by patrol" is no failure; rulebook cell.enter.seen.patrol report): no live run ends in
         // entry-seen-patrol on any site; the code stays for rulebooks pinned before 0.34.2 (APinnedRulebookStillFailsAnEntryThePatrolSees).
         // cell-down (Motive M067-K3 b) is new in 0.34.0.
-        var want = new[] { "abduction-seen-camera/seen", "cell-down/shot", "driver-shot/shot", "enforcer-down/shot", "entry-seen-camera/seen", "entry-seen-guard/seen", "getaway-lost/wrecked",
+        var want = new[] { "cell-down/shot", "driver-shot/shot", "enforcer-down/shot", "getaway-lost/wrecked",
             "rivals-reach-vale/downed-enforcer", "rivals-reach-vale/lookout", "sealed/sealed", // brief 096 (engine 0.41.0): the tail and the parked car's beat-to-pickup are retired; the lookout follows on foot (096-RIV-6) "vale-dead/killed", "vale-dead/shot", "vale-leaves/too-late",
             "vale-leaves/driven-away", "withdraw/car-left-without-vale", "withdraw/withdrew" };
         foreach (var w in want) Assert.True(seen.Contains(w), $"no scenario ends in {w} (seen: {string.Join(", ", seen)})");
-        Assert.DoesNotContain("entry-seen-patrol/seen", seen); // engine 0.34.2: the patrol's sight of an Enter is a report, never a fail
+        foreach (string sight in new[] { "entry-seen-guard", "entry-seen-camera", "abduction-seen-camera", "entry-seen-patrol" }) Assert.DoesNotContain(sight + "/seen", seen); // engine 0.34.2: the patrol's sight of an Enter is a report, never a fail
     }
 
     [Fact]
@@ -93,9 +93,9 @@ public class FailCauseTests
     {
         // Engine 0.34.2: N120's Enter, seen by the patrol robot alone, is a report on today's rulebook; on one pinned before 0.34.2 (no
         // cell.enter.seen) it fails entry-seen-patrol as it did, and the fail camera names the patrol where it stood (FailCause "patrol").
-        var at = I.Rulebook.IndexOf("\"seen\": {\"patrol\": \"report\"", StringComparison.Ordinal);
+        var at = I.Rulebook.IndexOf("\"patrol\": \"report\"", StringComparison.Ordinal);
         Assert.True(at > 0, "the live rulebook has cell.enter.seen.patrol report");
-        var pinned = Engine.FromTexts(I.Rulebook.Replace("\"seen\": {\"patrol\": \"report\"", "\"seen\": {\"patrol\": \"fail\""), I.PeopleRules, I.Site, I.People, I.Provisional.Length > 0 ? I.Provisional : null, I.Takedown.Length > 0 ? I.Takedown : null, I.Rounds.Length > 0 ? I.Rounds : null);
+        var pinned = Engine.FromTexts(I.Rulebook.Replace("\"patrol\": \"report\"", "\"patrol\": \"fail\""), I.PeopleRules, I.Site, I.People, I.Provisional.Length > 0 ? I.Provisional : null, I.Takedown.Length > 0 ? I.Takedown : null, I.Rounds.Length > 0 ? I.Rounds : null);
         var g = Scenarios.Run(pinned, Scenarios.Find("N120")!).G;
         Assert.Equal(Outcome.Failure, g.Result); Assert.Equal("entry-seen-patrol", g.FailCode);
         WellFormed(g, "N120 pinned");
@@ -118,7 +118,7 @@ public class FailCauseTests
     [Fact]
     public void AFailedDebriefCarriesTheCause()
     {
-        var g = Scenarios.Run(I, Scenarios.Find("N119")!).G;
+        var g = Scenarios.Run(I, Scenarios.Find("N127")!).G;
         var w = new JWriter(); Debrief.Of(g).Write(w);
         Assert.Contains("\"cause\":" + g.Cause!.Json(), w.ToString());
     }

@@ -59,7 +59,7 @@ namespace Suborned.Play
         /// <summary>A target's view (TargetWorld's map; a stand has no view of its own, so no line).</summary>
         string OutlineViewKey(Target t) => t.Kind switch
         {
-            "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol",
+            "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/" + t.Key, "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol",
             "rivals" => t.Key == "car:rivals" ? "car/rivals" : t.Key, "security" => OfficerView(t.Key), "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key,
             "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, "bystander" => views.BystanderKey(Game, t.Key), _ => null,
         };

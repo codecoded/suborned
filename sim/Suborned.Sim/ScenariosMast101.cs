@@ -25,7 +25,7 @@ namespace Suborned.Sim
         /// test the rule they were written for. Returns when the loop runs: loop.run from then (2:00), about 0:45 to 2:45 from the start.</summary>
         static void LoopMast(Run r, bool run = false)
         {
-            r.To(r.Send(Tech, "cabinet", run)); r.Do(Tech, "loop", MastCam); r.Done(Tech);
+            r.To(r.Send(Tech, r.G.ControlPanel("mast-z0"), run)); r.Do(Tech, "loop", MastCam); r.Done(Tech);
             r.Is(r.G.LoopOn && r.G.LoopCam == MastCam, $"the Tech loops the square's mast (brief 101: it watches the café front) until {Report.Clock(r.G.LoopUntil)}");
         }
 
@@ -58,7 +58,7 @@ namespace Suborned.Sim
                 var spot = WatchSpot(r, Mast);
                 r.To(r.SendTo(Scout, spot)); r.Do(Scout, "watch", Mast); r.Done(Scout);
                 r.Is(g.Known(Mast)!.Sight && g.ConeFan(Mast)!.More.Length == 2, "watched: its sight is known, a fan for each head");
-                r.To(r.Send(Tech, "cabinet"));
+                r.To(r.Send(Tech, r.G.ControlPanel("mast-z0")));
                 r.Do(Tech, "loop", MastCam); r.Done(Tech);
                 r.Is(g.LoopOn && g.LoopCam == MastCam && !g.CameraWatching(MastCam, r.Stand("d:Courtyard"), false), "looped: it sees nothing");
                 r.Is(g.CameraWatching("entrance", r.Stand("d:Office entrance"), false), "the entrance camera stays live");

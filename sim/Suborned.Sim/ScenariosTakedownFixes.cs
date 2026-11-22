@@ -105,7 +105,7 @@ namespace Suborned.Sim
                 if (g.DialNow.DoorsLock) r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "enter" }).code, "doors-locked", "Alert 3 at this level: the doors are locked");
             });
 
-            Add("N69b", "—", "What Waymark's careless camera fixture met (§6): the Enter given the moment the guard is out, under the live entrance camera, fails at once by §07's entry rule ('entry seen by guard, live camera or patrol': the Enforcer at the door in its view), before the camera's report of the takedown lands. The takedown's own report is still on its way: the fail is the entry, not the takedown.", r =>
+            Add("N69b", "—", "The Enforcer enters under the live entrance camera before the report about the downed guard lands. Security is dispatched while the entry continues.", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
@@ -121,10 +121,9 @@ namespace Suborned.Sim
                 var rep = g.Reps.Single(x => x.Act == a.Id && x.By == "camera:entrance");
                 r.Is(!g.Over && rep.LandAt > g.Tick, "the guard is out; the camera's report has not landed");
                 g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "enter" });
-                r.Eq(g.FailCode, "entry-seen-camera", "the Enter in the camera's view fails (§07)");
-                var cam = g.S.Cameras.Single(x => x.Id == "entrance"); // the fail camera (ScenariosFailCause.cs): the entrance camera, as it faces
-                PosedAs(r, CauseIs(r, "entry-seen-camera", "seen", true, "camera:entrance", "camera", Enf)?.Culprits.FirstOrDefault(), cam.At, cam.Facing, "the entrance camera on its pole");
-                r.Is(rep.Phase == "watcher" && !a.Landed, "the takedown's report never landed: it was not the takedown that failed");
+                r.Is(!g.Over && g.EntryInProgress && g.Alert >= 2, "the live camera reports the entry while the Enforcer continues inside");
+                r.Is(g.SecurityArrives < g.Lockdown && g.Lockdown < T(1800), "responders arrive before the district seals");
+                r.Is(rep.Phase == "watcher" && !a.Landed, "the separate report about the guard is still pending");
             });
 
             Add("N70", "—", "One incident, one dispatch (Aster 2026-10-16; Waymark §6: six dispatches in 0.1 s): clerk 27 knocked out at the public door at 6:30 in front of the group leaving behind her (engine 0.28.0: the clerks streaming out at the chime have their backs to the guard's post). Many report it, one incident; the first report to land dispatches the response; a later report that raises the incident's Alert tops the same dispatch up to the new Alert's counts (from the destinations the first set); every other later report lands (logged) and sends nothing.", r =>
@@ -190,7 +189,7 @@ namespace Suborned.Sim
             Add("N72", "—", "The Tech loops the pickup camera (Sky answer 6: 'if the tech takes out the camera, then taking out the guard and driver is possible'; Waymark §5.1; rulebook cell.loop.targets): one camera at a time, the same 62 s and +1 T. Looped, it sees nothing: official-entrance guard 29 knocked out beside the car is not on its screen (the driver beside him, a Mercenary at Alert 0, keeps quiet). The entrance camera stays live; one loop at a time.", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Tech, "cabinet"));
+                r.To(r.Send(Tech, r.G.ControlPanel("pickup")));
                 int trail = g.Trail;
                 r.Do(Tech, "loop", "pickup"); r.Done(Tech);
                 r.Is(g.LoopOn && g.LoopCam == "pickup" && g.Trail == trail + g.R.LoopTrail, "the pickup camera is looped (+1 T)");
@@ -207,11 +206,11 @@ namespace Suborned.Sim
             Add("N73", "—", "A Take seen is a takedown seen (Aster 2026-10-16; Waymark §5.2: guard 74 stood 4 m from Vale at 6:10 and did nothing): the pickup camera looped, the patrol rerouted and the rivals sent away, the Enforcer takes Vale at his car at 6:10 in front of guard 74 at the official entrance. At sight: the witnesses' reactions, +1 witness Trail and one step toward Menace, no Alert; guard 74 (staff) radios it, and when the first report lands, Alert 3 (a takedown seen) and the response. One incident; no assault Trail (the Take keeps its own, +2 T on an unturned driver, when it lands). An unseen Take opens nothing (N57b).", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, new Pt(8600, -3400)))); // c025 (brief 031): the tip waits outside the pickup camera's cone
+                r.To(Max(r.Send(Tech, r.G.ControlPanel("pickup")), r.SendTo(Scout, new Pt(8600, -3400)))); // c025 (brief 031): the tip waits outside the pickup camera's cone
                 r.To(T(g.S.RivalsArrive) + 1); /* brief 096: the false tip is retired; no crew here (NoCrew) */ 
-                r.To(T(300)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
-                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); // engine 0.48.0: and the patrol sent away over the Take, so only a person sees it (Vale's car 0.5 m out, brief 098: the patrol's sweep saw the Take itself, Alert 2 at once, another rule)
-                r.To(r.SendTo(Enf, Beside(r, g.CarPos())!.Value));
+                r.SendTo(Enf, Beside(r, g.CarPos())!.Value);
+                r.To(T(275)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
+                r.To(r.Send(Tech, "cabinet", true)); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
                 r.To(T(g.ClockValeAtCar));
                 r.Is(g.PatrolAwayUntil > g.Tick, "the patrol is away over the Take");
                 var w74 = WalkerById(r, "p-records-office-74");

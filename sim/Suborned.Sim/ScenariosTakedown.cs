@@ -417,7 +417,7 @@ namespace Suborned.Sim
                 // unseen (lands 4:25, away to 6:20, back on its sweep before Vale's report lands; at 1.8 m/s the carry is in its view at 5:21)
                 r.To(T(220)); r.Do(Tech, "reroute", "patrol");
                 r.To(T(240)); r.To(r.SendTo(Enf, g.S.Stand(g.S.CarBlock) + new Pt(-300, -300)));
-                r.To(T(290)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
+                r.Done(Tech); r.To(r.Send(Tech, g.ControlPanel("pickup"), true)); r.To(T(290)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
                 r.Is(!g.CameraWatching("pickup", g.DriverPos()!.Value, false), "the pickup camera is looped");
                 r.To(r.SendTo(Enf, Beside(r, g.DriverPos()!.Value)!.Value));
                 r.Takedown("driver", "kill"); r.Done(Enf);
@@ -452,7 +452,7 @@ namespace Suborned.Sim
                 r.SendTo(Scout, TipSpot(r)); r.To(T(g.S.RivalsArrive) + 1); /* brief 096: the false tip is retired; no crew here (NoCrew) */ // the false tip (route B), so the rivals don't reach Vale first
                 r.To(T(220)); r.Do(Tech, "reroute", "patrol"); // engine 0.34.0 (brief 067 A): as N57, the yard patrol away over the carry to the Dumpster
                 r.To(T(240)); r.To(r.SendTo(Enf, g.S.Stand(g.S.CarBlock) + new Pt(-300, -300)));
-                r.To(T(290)); r.Do(Tech, "loop", "pickup"); r.Done(Tech); // brief 059: the camera block is retired; the loop blinds it to 7:10
+                r.Done(Tech); r.To(r.Send(Tech, g.ControlPanel("pickup"), true)); r.To(T(290)); r.Do(Tech, "loop", "pickup"); r.Done(Tech); // brief 059: the camera block is retired; the loop blinds it to 7:10
                 r.To(r.SendTo(Enf, Beside(r, g.DriverPos()!.Value)!.Value));
                 r.Takedown("driver", "kill"); r.Done(Enf);
                 r.Body(Enf, "carry", "driver"); r.Done(Enf);

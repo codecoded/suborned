@@ -25,6 +25,9 @@ namespace Suborned.Sim
             {
                 var g = r.G; if (!r.Is(g.R.LoopRuns, "Loop v2 in the rulebook (cell.loop.run)")) return; var door = r.Stand("d:Office entrance");
                 TechAtCabinet(r);
+                foreach (var camera in new[] { "pickup", "mast-z0" })
+                    foreach (var action in new[] { "loop", "disable" })
+                        r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = action, Target = camera }).code, "stand-at-cabinet", $"the Office cannot {action} the {camera} camera");
                 r.Do(Tech, "loop", "entrance"); r.Eq(r.Op(Tech).BusyEnd - g.Tick, T(g.R.LoopS), "the splice takes loop.s (20 s)"); r.Done(Tech);
                 int landed = g.Tick, ends = landed + T(g.R.LoopRunS);
                 r.Eq(TrailFor(g, "loop"), g.R.LoopTrail, "+1 T when it lands");
@@ -73,7 +76,7 @@ namespace Suborned.Sim
                 r.Is(g.Trail == trail && r.Op(Tech).Busy == null && g.LoopCam == "entrance", "free: nothing charged, the Tech idle, the entrance loop still running");
                 r.To(g.LoopUntil);
                 r.Is(!g.LoopOn, "the entrance loop runs out");
-                r.Do(Tech, "loop", "pickup"); r.Done(Tech);
+                r.To(r.Send(Tech, g.ControlPanel("pickup"), run: true)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
                 r.Is(g.LoopOn && g.LoopCam == "pickup", "then the pickup camera loops");
             });
 
@@ -155,7 +158,7 @@ namespace Suborned.Sim
                 r.Do(Tech, "disable", "entrance"); r.Done(Tech);
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "disable", Target = "entrance" }).code, "camera-dead", "a dead camera can't be cut again");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "loop", Target = "entrance" }).code, "camera-dead", "nor looped");
-                r.Do(Tech, "disable", "pickup"); r.Done(Tech);
+                r.To(r.Send(Tech, g.ControlPanel("pickup"), run: true)); r.Do(Tech, "disable", "pickup"); r.Done(Tech);
                 r.Eq(g.CutCams.Count, 2, "two cameras cut");
                 r.Eq(TrailFor(g, "disable:entrance") + TrailFor(g, "disable:pickup"), 2 * g.R.DisableTrail, "+2 T each");
                 var lands = g.CutReps.Select(c => c.LandAt).OrderBy(x => x).ToList();
@@ -198,11 +201,11 @@ namespace Suborned.Sim
                 }
             });
 
-            Add("NC-5", "—", "Civilians remember a runner from Alert 2 (brief 054 §3.2 and §8, Sky 2026-10-25): at Alert 1 (one cut camera reported) a civilian who sees a run in her cone keeps nothing; at Alert 2 (a second cut, no gunfire, no fight) the move card names her and she remembers the runner's face (saw-runner, a sighting): no found fault, Alert unchanged, no Trail.", r =>
+            Add("NC-5", "—", "Running past civilians at Alert 1 and Alert 2 gives them no identifying memory and adds no Trail. The Tech raises Alert by cutting two cameras at their respective panels.", r =>
             {
                 var g = r.G; if (!r.Is(g.R.DisableOn && g.R.PeopleCone, "cell.disable and perception.people cone in the rulebook")) return;
                 TechAtCabinet(r);
-                r.Do(Tech, "disable", "pickup"); r.Done(Tech);
+                r.To(r.Send(Tech, g.ControlPanel("pickup"), run: true)); r.Do(Tech, "disable", "pickup"); r.Done(Tech);
                 r.To(g.CutReps[0].LandAt); r.Eq(g.Alert, 1, "the first cut reported: Alert 1");
                 bool RunPast(string op, out string who)
                 {
@@ -221,7 +224,7 @@ namespace Suborned.Sim
                 r.Is(c1.Length > 0, $"a civilian ahead of the Fixer's run ({c1})");
                 var p1 = g.PersonById(c1);
                 r.Is(!carded1 && p1 != null && !p1.Memory.Exists(m => m.Act == "saw-runner"), "at Alert 1: not on the card, and she keeps nothing");
-                r.Do(Tech, "disable", "entrance"); r.Done(Tech);
+                TechAtCabinet(r); r.Do(Tech, "disable", "entrance"); r.Done(Tech);
                 r.To(g.CutReps[1].LandAt); r.Eq(g.Alert, 2, "the second cut reported: Alert 2, no gunfire");
                 r.Is(g.Gunfire == 0 && !g.FightOn, "not a loud run: no shot, no fight");
                 int alert = g.Alert, faults = g.Ledger.Count(l => l.cause.StartsWith("runner-seen", StringComparison.Ordinal));

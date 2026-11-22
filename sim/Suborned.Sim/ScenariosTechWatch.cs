@@ -86,7 +86,7 @@ namespace Suborned.Sim
             Add("N110", "—", "Loop v2 (brief 058 §6, engine 0.31.0; it was the tether, rulebook sight): looping the mast camera, the Tech is refused run-tethered on no camera; he walks off, the loop still running, and Watches the mast camera: its sight is learned.", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Tech, "cabinet"));
+                r.To(r.Send(Tech, r.G.ControlPanel("mast-z0")));
                 r.Do(Tech, "loop", "mast-z0"); r.Done(Tech);
                 r.Is(g.LoopOn && g.LoopCam == "mast-z0", "the mast camera's loop holds");
                 var cams = g.WatcherIds().Where(w => w.StartsWith("camera:", StringComparison.Ordinal)).ToList();

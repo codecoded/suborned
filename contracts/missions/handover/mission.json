@@ -214,6 +214,20 @@
  ],
  "points": [
   {
+   "id": "panel-pickup",
+   "at": [73.0, -40.0],
+   "src": "Pickup bay camera service pedestal",
+   "reason": "The Tech works beside the bay camera.",
+   "level": "street"
+  },
+  {
+   "id": "panel-mast-z0",
+   "at": [-2.85, -42.55],
+   "src": "Records Square mast base",
+   "reason": "The three heads on this mast share its service panel.",
+   "level": "street"
+  },
+  {
    "id": "cabinet",
    "at": [46.5, -44.5],
    "src": "civic-block.json structures civic-control-cabinet (x 44.55-45.45, y -45.34 to -43.66; moved with the public door 2026-10-19, civic-block.adjust.json, Vantage, brief 023, Sky's door option (b)); Waymark 2026-10-15 (Aster, after Pulse): the point a Tech stands at, on free ground, not the cabinet's centre inside its solid",
