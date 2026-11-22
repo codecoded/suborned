@@ -615,7 +615,8 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
     expect(n(rb.cell.runSpeed)).toBe(2 * n(rb.cell.speed));
     expect(n(rb.crowd.run)).toBeLessThan(n(rb.cell.runSpeed)); // a fleeing person is never faster than the cell
     expect(rb.cell.runAlert).toBeUndefined(); expect(rb.values['run-alert']).toBeUndefined(); // retired: a run is no found fault on its own (kept optional in the schema only for pinned runs)
-    expect(rb.attention?.run).toMatchObject({ at: 'notice', counts: 'still' });
+    expect(rb.attention?.idle).toBe(false);
+    expect(rb.attention?.run).toBeUndefined();
     expect(n(rb.weapons.mod.running!)).toBe(375); // three-eighths: stand 1000 > walk 500 > run 375 > run away 125
     expect(n(rb.weapons.mod.moving)).toBeGreaterThan(n(rb.weapons.mod.running!)); expect(n(rb.weapons.mod.running!)).toBeGreaterThan(n(rb.weapons.mod.runningAway!));
     expect(rb.fight.unguarded).toMatch(/car-no-driver/); expect(rb.fight.unguarded).toMatch(/cell-down/); expect(rb.fight.unguarded).toMatch(/Nobody takes anyone out of a car/); // M067-K3, amended: a held car only; engine 0.53.0 (brief 105): no take from a car at all

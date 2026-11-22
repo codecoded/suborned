@@ -37,21 +37,24 @@ namespace Suborned.Play
         }
 
         /// <summary>The cell's own clip where the shared set has only idle or walk. Gun out: the armed idle and the armed walk (the gun stays in the
-        /// hand instead of vanishing between aims), and the holster clip while the engine puts it away. Gun away and standing at work: the act's
-        /// clip, by the engine's verb (watching looks about, the Tech works the cabinet while a loop or a reroute runs or holds, the Scout misleads,
+        /// hand instead of vanishing between aims), and the holster clip while the engine puts it away. At the cabinet Tech uses both hands,
+        /// even if he arrived armed. Otherwise the unarmed agent's clip follows the engine verb (watching looks about, the Scout misleads,
         /// a call is on the phone). `held`: down, carried, seated or speaking in a conversation scene, where the built state stands.</summary>
         string CellState(Fig f, int k, string state, bool armed, bool held)
         {
             if (f.own == null || k < 0 || held) return state;
             bool standing = state is "idle" or "idle_alt";
-            if (armed)
+            if (!standing) return armed && state is ("walk" or "walk_f") && f.own.Contains("walk_armed") ? "walk_armed" : state;
+            var d = host.DoingOf(k);
+            if (f.id == "tech" && d.Phase is ("acting" or "holding") && d.Verb is ("loop" or "reroute" or "disable"))
             {
-                if (standing) return host.DoingOf(k).Verb == "holster" && f.own.Contains("holster") ? "holster" : f.own.Contains("idle_armed") ? "idle_armed" : state;
-                return state is "walk" or "walk_f" && f.own.Contains("walk_armed") ? "walk_armed" : state;
+                if (d.Verb == "disable" && f.own.Contains("panel_open")) return "panel_open";
+                if (f.own.Contains("tinker")) return "tinker";
             }
-            if (!standing) return state;
-            var d = host.DoingOf(k); if (d.Phase is not ("acting" or "holding")) return state;
-            string act = d.Verb switch { "watch" => "look_around", "loop" or "reroute" => "tinker", "mislead" => "mislead", "call" => "phone", _ => null };
+            if (armed)
+                return d.Verb == "holster" && f.own.Contains("holster") ? "holster" : f.own.Contains("idle_armed") ? "idle_armed" : state;
+            if (d.Phase is not ("acting" or "holding")) return state;
+            string act = d.Verb switch { "watch" => "look_around", "mislead" => "mislead", "call" => "phone", _ => null };
             return act != null && f.own.Contains(act) ? act : state;
         }
     }

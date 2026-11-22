@@ -19,7 +19,8 @@ namespace Suborned.Sim
         public string Id = ""; public Person P = null!; public Walker? W; public int Act;
         public bool Dead, Seizing, Restrained; public Pt At; public OpId? Carrier; public string Stash = "";
         public int DownTick, WakeAt, Phase, NextCallOut = -1, FreeAt = -1;
-        public bool Open => Stash.Length == 0;
+        public bool Recovered;
+        public bool Open => !Recovered && Stash.Length == 0;
     }
 
     /// <summary>One takedown, one incident (Motive §2.3): what the city has learned of it. Take: Vale's abduction seen (How "take", no
@@ -781,6 +782,7 @@ namespace Suborned.Sim
             foreach (var b in Bodies.ToArray())
             {
                 if (Over) return;
+                if (b.Recovered) continue;
                 var a = ActOf(b);
                 if (b.Seizing) { ScanAct(a, BodyPos(b), "act", b); if (CrewOfPerson(b.P) is CrewMember sm) CrewSeesTakedown(sm); continue; } // the act is seen at any tick of it; engine 0.33.0: a crewmate who sees it fires (M059-S1.6)
                 if (b.Carrier.HasValue) { ScanAct(a, BodyPos(b), "carry", b); continue; }

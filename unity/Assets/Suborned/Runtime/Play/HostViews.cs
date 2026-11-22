@@ -228,9 +228,11 @@ namespace Suborned.Play
         void Bodies(Game g)
         {
             if (walkerIndex.Count == 0) for (int i = 0; i < g.Walkers.Count; i++) walkerIndex[g.Walkers[i].P] = i;
+            nextBodies.Clear(); deadBodies.Clear();
             foreach (var b in g.Bodies)
             {
                 var p = b.P; var key = "body/" + KeyOf(p);
+                nextBodies.Add(key); if (b.Dead) deadBodies.Add(key);
                 if (!things.ContainsKey(key))
                 {
                     var job = p.Role switch { "waitress" => "server", "driver" => "official-driver", "guard" => "guard", "councillor" => "councillor", _ => p.Job };
@@ -249,6 +251,8 @@ namespace Suborned.Play
                 if (b.Carrier.HasValue) { Set(key, g.BodyPos(b), true, 1.15f); carriers[key] = OpKeys[(int)b.Carrier.Value]; continue; } // over the carrier's shoulder
                 Set(key, b.At, true, Radius);                                            // where they fell, or were put down
             }
+            foreach (var old in lastBodies) if (!nextBodies.Contains(old)) Set(old, null);
+            (lastBodies, nextBodies) = (nextBodies, lastBodies);
         }
 
         /// <summary>Engine 0.34.0 (Game.FacingNow): crowd person i's facing as the engine reads it, while the view stands still this tick (a walker

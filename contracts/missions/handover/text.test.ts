@@ -513,9 +513,9 @@ describe('training hints, the run toast, the going-loud card', () => {
   });
   test('the run toast and the loss line exist; the loss line says what Motive asked', () => {
     expect(t.toasts['run-seen']!.line).toMatch(/run/i);
-    // engine 0.34.0 (brief 067, Motive M067-B2): a run is noticed, never an Alert on its own, so the toast says so and names no Alert
-    expect(t.toasts['run-seen']!.line).toMatch(/noticed/);
-    expect(t.toasts['run-seen']!.line).not.toMatch(/Alert/);
+    // engine 0.34.0 (brief 067, Motive M067-B2): a run is noticed, never an Alert on its own, so the toast explicitly keeps Alert unchanged
+    expect(t.toasts['run-seen']!.line).toMatch(/seen running/);
+    expect(t.toasts['run-seen']!.line).toMatch(/Alert stays the same/);
     expect(t.goingLoud.captured.toLowerCase()).toBe('anyone left behind in a fight is captured.');
   });
 });
@@ -1390,7 +1390,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
     expect(Object.keys(t.cards.items).length).toBe(108); // brief 105 (engine 0.53.0, Fable 2026-11-11): less rivals.for-car and rivals.back-to-cover (the walk on the car is retired), plus six (rivals.fire-car, car.health, car.shot-out, car.taken, take-car.wheelman, take-car.missed); 104 in brief 100 (Fable 2026-11-07): plus eight for a report on its way and an Alert's cause (attention.reporting, attention.landed, attention.stopped, car.reported, car.report-stopped, camera.recorded, drawn.seen, witness.weapon-drawn); 96 in brief 096 (engine 0.43.0, Fable 2026-11-05): plus go.missed (a waiting Go that didn't land); 95 (engines 0.40.0-0.42.0, Fable 2026-11-05): plus nineteen for the new codes (camera.record-lands, car.kerbside, car.boxed-in, car.report-lands; rivals.block, car.unboxed, rivals.drives-off, rivals.lookout-posted, rivals.lookout-follows, security.gang, security.gang-claimed; lend.lent, vale.out, split.police, lend.spring, lent.seen, car.leaves-split, car.lost, lend.goes-on); 76 in engine 0.41.0: less the six of the retired routine (rivals.arrive, drop, follows, warned, no-warning, at-vale); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
-    expect(t.toasts['run-seen']!.line).toMatch(/noticed/);
+    expect(t.toasts['run-seen']!.line).toMatch(/seen running/);
   });
 });
 
@@ -1549,7 +1549,7 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
     expect(t.actions.disable!.by).toEqual(['tech']); expect(t.actions['ring-disable']!.label.length).toBeLessThanOrEqual(8);
     expect(t.exchange.disable).toEqual(['ack', 'arrive', 'done']);
     expect(L.price.verbs.disable).toEqual(['name', 'trail', 'alert']); expect(L.price.examples.disable).toBe('Disable · +2 · ▲1 in 14 s'); expect(L.price.examples.loop).toBe('Loop · +1 · 2:00'); expect(L.price.verbs.loop).toEqual(['name', 'trail', 'lasts']); // brief 101: the desk's report and the loop's run are world windows, so they keep their time
-    expect(t.locks['camera-dead']!.verbs).toEqual(['loop', 'disable']); expect(t.locks['disable-wrong-target']!.verbs).toEqual(['disable']);
+    expect(t.locks['camera-dead']!.verbs).toEqual(['watch', 'loop', 'disable']); expect(t.locks['disable-wrong-target']!.verbs).toEqual(['disable']);
     expect(t.locks['loop-holds']!.line).toContain('{tick}'); expect(t.locks['loop-holds']!.short).toContain('{tick}');
     expect(t.cards.items['camera.cut']!.fate).toBe('icon'); expect(t.cards.items['camera.cut-reported']!.title).toBe('The desk sees a dead camera');
     for (const sp of ['tech']) for (const ev of ['ack', 'arrive', 'done']) expect(lookup(t, { event: ev, verb: 'disable', speaker: sp }), `${ev} disable ${sp}`).toBeTruthy();
@@ -1754,9 +1754,9 @@ describe('brief 067: engine 0.33.1, the beat heard anywhere, the Watch on the ri
   test('Glyph C4: a squad Board that skips an agent says why on the portrait in the same two words as a squad Fire, for every refusal a Board can meet', () => {
     const B = L.done.board;
     // Glyph\'s five, as written
-    expect({ down: B['agent-down'], inside: B['enforcer-inside'], running: B['board-running'], carrying: B['already-carrying'], looping: B['board-tethered'] }).toEqual({ down: 'down', inside: 'inside', running: 'stop first', carrying: 'hands full', looping: 'looping' });
+    expect({ down: B['agent-down'], inside: B['enforcer-inside'], carrying: B['already-carrying'], looping: B['board-tethered'] }).toEqual({ down: 'down', inside: 'inside', carrying: 'hands full', looping: 'looping' });
     // every code a Board can be refused with: the engine's pre-checks, Board itself and the host's BoardLock; an agent already aboard is skipped silently
-    const codes = ['mission-over', 'agent-down', 'enforcer-inside', 'agent-busy', 'board-running', 'board-tethered', 'already-carrying', 'stand-at-getaway', 'engine-error'];
+    const codes = ['mission-over', 'agent-down', 'enforcer-inside', 'agent-busy', 'board-tethered', 'already-carrying', 'stand-at-getaway', 'engine-error'];
     expect(Object.keys(B).sort()).toEqual([...codes].sort());
     expect('in-car' in B).toBe(false);
     for (const [k, x] of Object.entries(B)) { expect(words(x), k).toBeLessThanOrEqual(2); expect(x, k).not.toMatch(/[.!?,{}]/); expect(x, k).toBe(x.toLowerCase()); }
@@ -1767,7 +1767,7 @@ describe('brief 067: engine 0.33.1, the beat heard anywhere, the Watch on the ri
       const engine = new Set([...list.matchAll(/"([a-z-]+)"/g)].map((x) => x[1]!));
       for (const c of codes) expect(engine.has(c), `${c} is an engine code`).toBe(true);
       const board = simFile('GameGetaway.cs'), fn = board.slice(board.indexOf('string Board(Op op, Order o)'), board.indexOf('void LandBoard('));
-      for (const c of ['board-running', 'board-tethered', 'already-carrying', 'stand-at-getaway']) expect(fn, c).toContain(`No("${c}"`);
+      for (const c of ['board-tethered', 'already-carrying', 'stand-at-getaway']) expect(fn, c).toContain(`No("${c}"`);
     }
   });
   test('Go keeps one name for one thing now that Drive is an order: the car leaves, it does not "drive off"; Go before Vale is a withdraw and says so', () => {
@@ -1854,11 +1854,11 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
   });
   test('a run is noticed, never an Alert on its own (Motive M067-B2): no line says running raises the Alert; the card, the toast and the hint say who noticed and what to do', () => {
     const hits = strings.filter((s) => !s.path.startsWith('pending')).filter((s) => /\b(runs?|running|runner)\b/i.test(s.text.replace(/\bthis run\b/gi, '')) && /\balert\b/i.test(s.text)).map((s) => s.path); // "this run": the game played, the debrief page's word (Watch this run), not running
-    expect(hits).toEqual(['actions.run.does', 'hints.H12']); // the Run verb and the hint that teaches it: both say a run raises no Alert
+    expect(hits).toEqual(['actions.run.does', 'hints.H12', 'toasts.run-seen']); // the Run verb and the hint that teaches it: both say a run raises no Alert
     for (const x of [t.actions.run!.does, t.hints.items.H12!.line]) expect(x).toMatch(/raises no Alert/);
     expect(t.cards.items['run.seen']!.result).toBe('{who} noticed {agent} running.');
     expect(t.events['run-seen']!.trigger).not.toMatch(/Alert 1|a found fault \(/);
-    expect(t.toasts['run-seen']!.line).toBe('A watcher noticed an agent running. Walk, or keep out of its sight, to stay quiet.');
+    expect(t.toasts['run-seen']!.line).toBe('Your agent was seen running. Alert stays the same.');
     // H19 teaches the notice cue once, and a runner meets it too: Walk, where "Keep moving" would tell a runner to run on
     const h = t.hints.items.H19!;
     expect(h.line).toMatch(/standing still or running/); expect(h.short).toBe('Walk, or leave its sight.');

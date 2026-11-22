@@ -402,6 +402,7 @@ export const Rulebook = z.strictObject({
   // (bands ascending from heatFrom 0); machines by their cone, people also within near. Optional here only so runs pinned before it parse;
   // the engine requires it and rulebook.test.ts holds the live rulebook to having it.
   attention: ground({
+    idle: z.boolean().optional(), // false permits ordinary stationary presence; absent preserves pinned rules
     bands: z.array(z.strictObject({ id, heatFrom: Ref, notice: Ref, wary: Ref, report: Ref })).min(1),
     sense: z.strictObject({ camera: z.literal('cone'), patrol: z.literal('cone'), robot: z.literal('cone'), guard: z.enum(['cone', 'near']), officer: z.enum(['cone', 'near']) }),
     near: Ref, alert: Ref,

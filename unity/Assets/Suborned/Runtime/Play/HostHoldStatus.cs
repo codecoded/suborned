@@ -419,22 +419,6 @@ namespace Suborned.Play
         public bool HoverLock { get; private set; }
         public bool HoverWho { get; private set; }
 
-        /// <summary>Brief 067 E (Suture's 0.2.122 findings §2): the hover's lock state, the first locked calm way of the selection (the primary
-        /// agent's first, then ContextRank's tier) as an intent the pill draws locked: its way with its target and its short lock ("Call Inez",
-        /// "Alarm up"); null when the selection has no locked calm way here. Never an order.</summary>
-        Intent LockIntentOf(ContextPlan plan)
-        {
-            if (plan?.Pn == null) return null; PanelRow best = null; int bk = int.MaxValue;
-            for (int i = 0; i < plan.Pn.Rows.Count; i++)
-            {
-                var r = plan.Pn.Rows[i]; if (r.Available || r.I?.Order is not Order o || o.Do is "fire" or "takedown") continue;
-                int key = ContextRank.Tier(new ContextRank.Way { Do = o.Do }) * 1000 + (r.By == Agent ? 0 : 500) + i;
-                if (key < bk) { bk = key; best = r; }
-            }
-            if (best == null) return null; var bi = best.I;
-            return new Intent { Order = bi.Order, Slot = bi.Slot, Lead = bi.Lead, Label = PillName(bi, plan.T), Locked = true, More = true /* Glyph 067 E3: the cursor takes the ring's three dots (a click opens the shut ring) */, LockShort = ShortOf(bi.Order, best.Lock) ?? best.Reason, LockCode = best.Lock.code ?? "", LockLong = best.Unlock.Length > 0 ? best.Unlock : LockLine(bi.Order, best.Lock) ?? best.Reason, Doer = (int)best.By };
-        }
-
         /// <summary>Brief 067 E4 (Glyph): the agents not selected who have a row on `t` (a calm verb, open or locked), in cell order, up to three:
         /// the faces of the click's "who can" pop when the selection has no row there.</summary>
         List<int> WhoCanAgents(Target t)
@@ -443,8 +427,8 @@ namespace Suborned.Play
             for (int k = 0; k < 4 && l.Count < 3; k++)
             {
                 if (Selected[k] || !Able(k)) continue;
-                for (int i = 0; i < Slots[k].Length; i++) { Intent v = null; Guard("price", () => v = Verb((OpId)k, i, t)); if (v?.Order == null || v.Order.Do is "fire" or "takedown") continue; l.Add(k); break; }
-                if (!l.Contains(k) && k == (int)OpId.Fixer && t.Kind == "person" && CastOf(t.Key) is { Turned: true }) l.Add(k); // a turned contact's Call (BuildPanel's own row)
+                for (int i = 0; i < Slots[k].Length; i++) { Intent v = null; Guard("price", () => v = Verb((OpId)k, i, t)); if (v?.Order == null || v.Order.Do is "fire" or "takedown" || !Locked((OpId)k, v, t).ok) continue; l.Add(k); break; }
+                if (!l.Contains(k) && k == (int)OpId.Fixer && t.Kind == "person" && CastOf(t.Key) is { Turned: true } && CallOffered(t.Key) && CallLock(t.Key).ok) l.Add(k); // a turned contact's Call (BuildPanel's own row)
             }
             return l;
         }
@@ -494,13 +478,7 @@ namespace Suborned.Play
             if (way < 0 || fightTarget) // in a fight a hostile's offer is fire (the playground's inFight)
             {
                 views?.ShowPath(null);
-                if (!fightTarget)
-                {   // brief 067 E (Suture's 0.2.122 findings §2-§3: the door guard offered only "Fire" to three of four agents; Glyph 067 E3, E5): outside a
-                    // fight the pill is the offer, the locked pill ("Call Inez · Alarm up", a locked calm way of the selection), or nothing. Never Fire:
-                    // it stays one right hold away (priced on its charge) and on the ring, last and dashed
-                    if (LockIntentOf(plan) is Intent li) { HoverLock = true; if (li.Doer >= 0) HoverDoers.Add(li.Doer); return li; }
-                    return null;
-                }
+                if (!fightTarget) return null;
                 if (!FireOffered(t)) return null; // in a fight, on a hostile or a combatant: fire is the thing to do (the playground's inFight)
                 var fi = FireOfferFor(t); if (fi != null) HoverFire = true; return fi;
             }

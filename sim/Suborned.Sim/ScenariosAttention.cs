@@ -82,6 +82,7 @@ namespace Suborned.Sim
 
             Add("N167", "—", "Machines see by their cone only (brief 031 L2, Sky D3): the Enforcer standing still 3 m behind the entrance camera keeps it calm (no clock); 3 m in front of it, in its sight, it notices him at 8 s (Heat 0, unknown: noticed 8 s).", r =>
             {
+                if (!r.G.R.AttnIdle) { PublicIdle(r, "camera:entrance"); return; }
                 var g = r.G; const string cam = "camera:entrance";
                 r.Eq((g.Heat, g.HeatBand, g.AttentionMarks), (0, "unknown", (8, 20, 45)), "Heat 0: the unknown band, 8/20/45 s");
                 var back = CameraSpot(r, Enf, false); var front = CameraSpot(r, Enf, true);
@@ -98,6 +99,7 @@ namespace Suborned.Sim
 
             Add("N168", "—", "A loiterer reported at Heat 0 (brief 031 §2): the Enforcer idling 45 s in front of the live entrance camera; the report lands at the watcher's next scan + 3 s: a found fault, Alert 1, no Trail, a sighting, and the dial's Alert-1 response (robots). A robot sent doesn't sense an agent 2 m behind it (L2), and does in front.", r =>
             {
+                if (!r.G.R.AttnIdle) { PublicIdle(r, "camera:entrance"); return; }
                 var g = r.G;
                 LoiterReported(r, 45);
                 // the dial's Alert-1 robot at this level is the patrol robot, sent off its sweep (rulebook response: the first robot)
@@ -125,6 +127,7 @@ namespace Suborned.Sim
 
             Add("N170", "—", "Heat 10, infamous (brief 031 §2.1): the same idle in front of the entrance camera is reported at 18 s, less than a Watch.", r =>
             {
+                if (!r.G.R.AttnIdle) { PublicIdle(r, "camera:entrance"); return; }
                 var g = r.G;
                 r.Eq((g.Heat, g.HeatBand, g.AttentionMarks), (10, "infamous", (3, 12, 18)), "Heat 10: the infamous band, 3/12/18 s");
                 LoiterReported(r, 18);
@@ -132,6 +135,7 @@ namespace Suborned.Sim
 
             Add("N171", "—", "The clock drains (brief 031 §2): 10 s standing in the entrance camera's sight, then 10 s walking, and it is back to 0; once wary (20 s), walking away for 30 s leaves it at the wary mark, wary for the rest of the mission.", r =>
             {
+                if (!r.G.R.AttnIdle) { PublicIdle(r, "camera:entrance"); return; }
                 var g = r.G; const string cam = "camera:entrance";
                 var spot = CameraSpot(r, Enf, true); if (!r.Is(spot.HasValue, "ground in front of the camera")) return;
                 var away = r.Stand("crew:enforcer");
@@ -162,6 +166,7 @@ namespace Suborned.Sim
 
             Add("N173", "—", "A wary guard is aware at a takedown (brief 031 §2, Sky D1): the Enforcer standing 20 s within 3 m of the posted guard, out of his door cone (a person senses anyone within 3 m), makes him wary; the knockout then fails: he sees it coming and draws (Alert at least 2). A walk-in blow from the same spot with no lingering is the route G one (N46).", r =>
             {
+                if (!r.G.R.AttnIdle) { PublicIdle(r, GuardR); return; }
                 var g = r.G;
                 r.To(r.SendTo(Enf, BesideGuard));
                 r.Is(!g.GuardWatching(r.Op(Enf).Pos, false), "beside him, out of his door cone");

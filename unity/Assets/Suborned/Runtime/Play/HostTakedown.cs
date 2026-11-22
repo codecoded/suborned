@@ -188,7 +188,7 @@ namespace Suborned.Play
             {   // item 31 (Sky 0.2.99: "I've asked tec to move but he's dragging the downed scout"): carrying a downed agent is an explicit, priced way
                 // on the downed agent's ring and hold, never a click; on the carrier itself, Put down
                 var dn = g.Ops[(int)Op.Parse(t.Key)];
-                if (dn.Id != by && dn.Down && !dn.CarriedBy.HasValue && !op.Down && !op.Inside && !op.InCar && !carrying && !op.Carrying.HasValue && !(by == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer) && (only == null || only == "carry"))
+                if (dn.Id != by && dn.Down && !dn.InCar && !dn.LeftMap && !dn.CarriedBy.HasValue && !op.Down && !op.Inside && !op.InCar && !carrying && !op.Carrying.HasValue && !(by == OpId.Enforcer && g.Vale is ValeAt.WithEnforcer or ValeAt.Taking) && (only == null || only == "carry"))
                 {
                     var c = I("carry", t.Key, $"Carry the {Cap(t.Key)}", R.CarryS); c.Alert = "A 0";
                     c.Rows.Add(("s_carrying", by == OpId.Enforcer ? $"walk only · {R.CellSpeed * Game.Hz / 1000f:0.0} m/s" : $"slow · {R.CarryUntrainedSpeed * Game.Hz / 1000f:0.0} m/s"));
@@ -200,7 +200,7 @@ namespace Suborned.Play
             {
                 var b = g.BodyById(t.Key); if (b == null || b.Seizing || !b.Open) return l;
                 if (b.Carrier == by && (only == null || only == "drop")) { var d = I("drop", "", "Put down", R.DropS); d.Rows.Add(("drop", "Anyone who passes may find the body.")); l.Add(d); }
-                if (!b.Carrier.HasValue && b.P.Down && !carrying && (only == null || only == "carry"))
+                if (!b.Carrier.HasValue && b.P.Down && !carrying && !op.Carrying.HasValue && !(by == OpId.Enforcer && g.Vale is ValeAt.WithEnforcer or ValeAt.Taking) && (only == null || only == "carry"))
                 {
                     var c = I("carry", t.Key, $"Carry {t.Label}", R.CarryS);
                     c.Rows.Add(("s_carrying", by == OpId.Enforcer ? $"walk only · {R.CellSpeed * Game.Hz / 1000f:0.0} m/s" : $"slow · {R.CarryUntrainedSpeed * Game.Hz / 1000f:0.0} m/s"));
@@ -276,11 +276,12 @@ namespace Suborned.Play
         public string ComingShort(TakedownQuote q) => q.Coming.Count == 0 || Text == null ? "" : Text.TdComingShort.Replace("{who}", Cap(ComingName(q.Coming[0].id, q.Coming[0].name))).Replace("{s}", q.Coming[0].inS.ToString());
 
         /// <summary>A takedown a known watcher sees puts up the going-loud card (Glyph §1): the 0.5 s hold commits it, release backs off.</summary>
-        bool SeenGate(Intent i, Target t, Vector2? screen, string source)
+        bool SeenGate(Intent i, Target t, Vector2? screen, string source, System.Action commit = null)
         {
-            if (i?.Td == null || i.Td.Seen.Seen != "yes" || Loud != null) return false;
+            if (i?.Td == null || i.Td.Seen.Seen != "yes" || IsCrew(i.Order.Target) || holdCommits) return false;
+            if (Loud != null) return true;
             var card = new LoudCard { Loud = true, Why = "takedown-seen", AlertTo = i.Td.AlertIfSeen, PoliceInS = i.Td.PoliceInS, ReportedBy = "seen" };
-            Loud = new Gate { Card = card, Source = source, What = i.Label, Start = Time.unscaledTime, At = TargetWorld(t), Gui = screen.HasValue ? new Vector2(screen.Value.x, (cam ? cam.pixelHeight : Screen.height) - screen.Value.y) : Mouse, Takedown = true, Target = t, By = Agent };
+            Loud = new Gate { Card = card, Source = source, What = i.Label, Start = Time.unscaledTime, At = TargetWorld(t), Gui = screen.HasValue ? new Vector2(screen.Value.x, (cam ? cam.pixelHeight : Screen.height) - screen.Value.y) : Mouse, Takedown = true, Commit = commit ?? (() => Give(Op.Parse(i.Order.Op), i.Order, t, screen)) };
             Loud.Orders.Add(i.Order);
             Status = $"Seen: hold {SourceName(source)} {HoldSeconds:0.0} s to commit, release to back off";
             return true;
@@ -311,7 +312,7 @@ namespace Suborned.Play
             // bodies: one marker each over the torso; hidden ones on Alt at their stash
             foreach (var b in g.Bodies)
             {
-                if (b.Seizing || !b.P.Down) continue;
+                if (b.Recovered || b.Seizing || !b.P.Down) continue;
                 var key = "body/" + KeyOf(b.P); var tr = views.Find(key);
                 bool found = false; foreach (var r in g.Reps) if (r.Act == b.Act && r.Phase == "landed") found = true;
                 var m = new BodyMark { Key = KeyOf(b.P), Name = PersonName(b.P), Dead = b.Dead, Tied = b.Restrained, Found = found, Hidden = !b.Open };

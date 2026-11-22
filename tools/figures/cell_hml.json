@@ -5,28 +5,28 @@
  "store": "characters/cell_hml",
  "figures": {
   "scout": {
-   "bundle": "scout-game-bundle.zip",
-   "sha256": "e0e69fcd0af92557a9bfe7781d7b764a064328aaab12e143f3c32e7c7edacb5b",
+   "bundle": "scout-planted-holster-game-input.zip",
+   "sha256": "36f4c02356535fde7a41bdc64ed66449d3cc522ca52194dd9d990ddf0f5ccf69",
    "female": true,
    "label": "Scout (HML game bundle 2026-11-12: white hooded top, black shorts, sneakers)"
   },
   "fixer": {
-   "bundle": "fixer-game-bundle.zip",
-   "sha256": "ab1bd062bdaeca99ff616f927087a87facdee7f2d8baf535dd23d4d4529802f6",
+   "bundle": "fixer-planted-holster-game-input.zip",
+   "sha256": "9316a8edb91e7b5465126bca4e788996b00c53810aedabadfc623e2084bf54c3",
    "female": true,
-   "label": "Fixer (HML game bundle 2026-11-12: black and white halter jumpsuit, long gloves, white boots)"
+   "label": "Fixer (HML game bundle 2026-11-12: black jumpsuit, white cropped jacket, belt, gloves and boots)"
   },
   "tech": {
-   "bundle": "tech-game-bundle.zip",
-   "sha256": "95e9f4ecf2bcc07906a44f65d52adc7defd96559a6713ca4be3ec3bc00e98477",
+   "bundle": "tech-planted-holster-game-input.zip",
+   "sha256": "8cdccc77b1e8508b5d679093b6550a68bdf83b49569f0affd454fe7b4985609e",
    "female": false,
    "label": "Tech (HML game bundle 2026-11-12: black wrap vest, wide trousers, visor)"
   },
   "enforcer": {
-   "bundle": "enforcer-game-bundle.zip",
-   "sha256": "1f45d116fa59cbdb055e1bb94c0b634ebd0944f5b2480d1f718b5edccb8f1263",
+   "bundle": "enforcer-planted-holster-game-input.zip",
+   "sha256": "1524c328a582893a0da99b6c479ba145effa63630dcab85619bbe3c36f1178e0",
    "female": false,
-   "label": "Enforcer (HML game bundle 2026-11-12: white and black long coat, white boots, carbine)"
+   "label": "Enforcer (HML game bundle 2026-11-19, lap drape, 69 actions: white and black long coat, white boots, carbine)"
   }
  },
  "props": {

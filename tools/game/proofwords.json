@@ -8,7 +8,6 @@
   "Proof067.cs": [
    "Board",
    "Drive",
-   "Fire",
    "Get out",
    "Guard",
    "Move"
@@ -43,9 +42,11 @@
    "Let go"
   ],
   "Proof105.cs": [
-   "Enforcer only",
    "Get out",
    "Take car"
+  ],
+  "ProofReactions.cs": [
+   "District sealed"
   ]
  }
 }

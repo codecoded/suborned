@@ -36,10 +36,22 @@ namespace Suborned.Play
         /// <summary>Brief 051: this run was continued from a saved session (Continue on the main menu).</summary>
         public bool Continued { get; private set; }
         string continueScript;
+        int continueSelection = -1;
+
+        void SelectStartingSquad()
+        {
+            if (rangeMode) { Select(Suborned.Sim.OpId.Scout, false); return; }
+            if (!Continued || continueSelection < 0) { SelectAll(); return; }
+            for (int i = 0; i < Selected.Length; i++) Selected[i] = (continueSelection & (1 << i)) != 0;
+            int lead = System.Array.IndexOf(Selected, true);
+            if (lead >= 0) Agent = (Suborned.Sim.OpId)lead;
+        }
         /// <summary>Continue: a run rebuilt from a saved session (its start state and every order, replayed to its last tick, as a checkpoint loads),
         /// the clock stopped, no briefing. The session goes on in a new file with the same start and orders.</summary>
         public void ContinueFrom(string path)
         {
+            if (path == SessionPath) Save();
+            continueSelection = SavedSelection(path);
             continueScript = path; Begin();
             if (Continued) { ShowBriefing = false; BriefCamLand(); Status = "Continued."; }
         }

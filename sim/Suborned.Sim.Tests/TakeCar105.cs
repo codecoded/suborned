@@ -44,8 +44,8 @@ public class TakeCar105Tests
     public void APassingCarStoppedByGunfireIsTakenAndDrivenOut(int seed)
     {
         var g = New(seed); var id = Abandoned(g, null); Assert.NotNull(id);
-        Stand(g, OpId.Scout, AtCar(g, id!));
-        var a = Do(g, "scout", "take-car", id!); Assert.True(a.ok, a.code);
+        Stand(g, OpId.Scout, AtCar(g, id!)); g.OpOf(OpId.Scout).Running = true;
+        var a = Do(g, "scout", "take-car", id!); Assert.True(a.ok, a.code); Assert.False(g.OpOf(OpId.Scout).Running);
         for (int k = 0; k <= Game.T(g.R.BoardS) && !g.OpOf(OpId.Scout).InLent; k++) g.Step();
         Assert.True(g.Lent && g.LentId == id && g.OpOf(OpId.Scout).InLent, "at the wheel: the car is ours");
         Assert.Contains(g.Log, l => l.Code == "car.taken");

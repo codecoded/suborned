@@ -176,7 +176,7 @@ namespace Suborned.Sim
         void LookoutWatch()
         {
             var l = Lookout;
-            if (Over || FightBranch.Length > 0 || !Up(l) || l.Fight || l.Mode != CrewMode.Posted || l.Post != "lookout" || !ValeAtHisCar) return;
+            if (Over || FightBranch.Length > 0 || !Up(l) || l.Fight || l.Disp?.Contact == true || l.Mode != CrewMode.Posted || l.Post != "lookout" || !ValeAtHisCar) return;
             if (valeDriveStart < 0 && Vale != ValeAt.Taking) return; // in his car at the pickup, not yet driving: nothing to follow
             var pose = MemberPose(l); if (!pose.HasValue) return; var car = CarPos();
             // his job is the car: his cone is read along his post's facing (m.Base, toward the target's car), not turned by an idle beat's yaw
@@ -196,7 +196,7 @@ namespace Suborned.Sim
         void LookoutReach()
         {
             if (Over || FightBranch.Length > 0 || !ValeAtHisCar) return;
-            var l = Lookout; if (!Up(l) || l.Fight || !l.OnFoot || !(l.Goal == "follow" || l.Post == "follow")) return;
+            var l = Lookout; if (!Up(l) || l.Fight || l.Disp?.Contact == true || !l.OnFoot || !(l.Goal == "follow" || l.Post == "follow")) return;
             var at = MemberPos(l, Tick); if (!G.Within(at, CarPos(), actReach) && CarBodyCm("car:official", at) > actReach) return; // act reach of the car's centre or its body (car.footprint)
             Fail("rivals-reach-vale", $"The rival lookout followed {ValeName}'s car and reached him first.", () => With(Because("lookout", true, Locate(l.Id, "reached", at), Locate("councillor", "victim")), ""));
         }

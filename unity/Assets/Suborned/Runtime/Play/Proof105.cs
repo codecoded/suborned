@@ -74,16 +74,16 @@ namespace Suborned.Play
                 $"shot out {g.Log.Exists(l => l.Code == "car.shot-out")} ({g.Result} {g.FailCode}), everyone out {outAll}, drawn {drawn}, Popovic {g.Vale} {valeGap:0.0} m from the Enforcer, Board {boardCode}, Go {goLock}, warning card gone {cardGone}");
             if (enf) h.LookAt(enf.position); yield return Frames(3); yield return Shoot(h, dir, "r105-shot-out", log);
 
-            // takeRing: the rival car's ring, the Fixer's (shut: Enforcer only, while the wheelman sits at the wheel) and the Enforcer's (open)
+            // takeRing: the rival car's ring, the Fixer's (hidden while the wheelman sits at the wheel) and the Enforcer's (open)
             var rc = v.Find("car/rivals"); string ringF = "", ringE = ""; bool wheel = g.Crew.Count > 4 && !g.Crew[4].Gun.Down && g.Crew[4].Mode == CrewMode.Aboard;
             if (rc && !g.Over)
             {
                 h.Select(OpId.Fixer, false); yield return RingOn(h, rc.position); ringF = h.RingWords; yield return Shoot(h, dir, "r105-take-ring-fixer", log); h.CloseRing();
                 h.Select(OpId.Enforcer, false); yield return RingOn(h, rc.position); ringE = h.RingWords; yield return Shoot(h, dir, "r105-take-ring-enforcer", log);
             }
-            bool fixerShut = !wheel ? ringF.Contains("Take car") : ringF.Contains("~Take car") && ringF.Contains("Enforcer only");
+            bool fixerCanTake = ringF.Contains("Take car") == !wheel;
             bool enfOpen = ringE.Contains("Take car") && !ringE.Contains("~Take car");
-            Check("takeRing", rc && fixerShut && enfOpen, $"rival car drawn {(bool)rc}, wheelman aboard {wheel}; Fixer's ring [{ringF}], Enforcer's ring [{ringE}]");
+            Check("takeRing", rc && fixerCanTake && enfOpen, $"rival car drawn {(bool)rc}, wheelman aboard {wheel}; Fixer's ring [{ringF}], Enforcer's ring [{ringE}]");
 
             // taken (a line): the Enforcer takes it from the ring, its Go, and its view drives off
             bool took = h.Ring != null && h.RingTakeScripted("take-car"); yield return Frames(2);

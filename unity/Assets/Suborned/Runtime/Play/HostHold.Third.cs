@@ -17,20 +17,27 @@ namespace Suborned.Play
         /// <summary>The proof reads it: left taps in third person that opened a ring.</summary>
         public int TpLeftRings { get; private set; }
 
-        /// <summary>What a press is on when it is on something: under the pointer, or the focus when the pointer is just off it (a patrol walking out from under a still cursor). Null: the ground.</summary>
-        Target TpUnder(Vector2 p)
+        /// <summary>A left tap: the thing's ring, nothing taken (as the map's click: ClickRing), or who can if the selection has no way on it. On the ground, the selected agents walk there.</summary>
+        void TpLeftTap(Target t, Vector2 at, Vector2 p, bool run)
         {
-            var t = TargetAt(p); if (t != null && t.Kind != "op") return t;
-            if (DriveFocus is not Target f || f.Kind == "op" || !cam || TargetWorld(f) is not Vector3 w) return null;
-            var sp = cam.WorldToScreenPoint(w + Vector3.up); return sp.z > 0f && ((Vector2)sp - p).magnitude < FireAcquirePx * KitScale ? f : null;
+            if (OverHud(p) || (p - at).magnitude >= (t == null ? DragPanPx : TpTapSlopPx) * KitScale || TpResolve(TpIn.LeftTap, TpNow) != TpDo.Ring) return;
+            if (t == null) { TpGroundTap(p, run); return; }
+            if (ClickRing(t, at, out var plan)) { if (Ring != null) { TpLeftRings++; SideLog("click", "ring", t); } return; }
+            if (t.Kind != "crowd" && plan != null && plan.Pn.Rows.Count == 0 && WhoCanPop(t, at)) SideLog("click", "who-can", t);
         }
 
-        /// <summary>A left tap: the thing's ring, nothing taken (as the map's click: ClickRing), or who can if the selection has no way on it. On the ground, nothing: WASD walks.</summary>
-        void TpLeftTap(Target t, Vector2 at, Vector2 p)
+        int lastGroundAgent = -1;
+
+        void TpGroundTap(Vector2 p, bool run)
         {
-            if (t == null || (p - at).magnitude >= TpTapSlopPx * KitScale || TpResolve(TpIn.LeftTap, TpNow) != TpDo.Ring) return;
-            if (ClickRing(t, at, out var plan)) { TpLeftRings++; SideLog("click", "ring", t); return; }
-            if (t.Kind != "crowd" && plan != null && plan.Pn.Rows.Count == 0 && WhoCanPop(t, at)) SideLog("click", "who-can", t);
+            if (!Driving || Game == null || Game.Over || !cam || !frame.Ground(cam.ScreenPointToRay(p), out var ground)) return;
+            if (BusyClick(p, out var agents)) { lastGroundAgent = -1; return; }
+            float now = Time.unscaledTime;
+            bool twice = lastGroundAgent == dAgent && now - lastGroundAt < controls.doubleSeconds && (p - lastGround).magnitude < 24f * KitScale;
+            lastGroundAgent = twice ? -1 : dAgent; lastGroundAt = now; lastGround = p;
+            if (twice && UpgradeRun()) return;
+            GroupWalk(frame.Engine(ground), run || twice, p, agents, includeDriven: true);
+            SideLog("click", "walk-ground", null);
         }
 
         /// <summary>Per frame while driven. True when it took the pointer.</summary>
@@ -72,7 +79,8 @@ namespace Suborned.Play
             }
             if (mouse.leftButton.wasPressedThisFrame && !onHud && !Aiming)
             {
-                lTapTarget = TpUnder(p); var t = lTapTarget ?? DriveFocus;
+                lTapTarget = TargetAt(p);
+                var t = lTapTarget ?? DriveFocus;
                 var (plan, way) = MainOf(t, p);
                 lp = new Press { On = true, At = p, T0 = now, T = t };
                 if (way >= 0) Charge = new HoldCharge { T = t, Button = 0, Start = now, Plan = plan, Way = way, Run = shift, Verb = plan.Row(way).I.Label, Doers = DoersOf(plan, way) };
@@ -82,15 +90,15 @@ namespace Suborned.Play
             {
                 var c = Charge?.Button == 0 ? Charge : null;
                 if (lp.Cancelled) { if (!mouse.leftButton.isPressed) lp = default; return true; }
-                if (c == null && (p - lp.At).magnitude >= (lTapTarget != null ? TpTapSlopPx : RingMovePx) * KitScale && !lp.Used) { var from = lp.At; lp = default; dragFrom = from; dragging = true; orbiting = false; return false; } // a drag with no hold: the orbit takes it; on a thing a little more travel, so a trackpad click stays a click
+                if (c == null && (p - lp.At).magnitude >= (lTapTarget != null ? TpTapSlopPx : DragPanPx) * KitScale && !lp.Used) { var from = lp.At; lp = default; dragFrom = from; dragging = true; orbiting = false; return false; } // a drag with no hold: the orbit takes it; on a thing a little more travel, so a trackpad click stays a click
                 if (!mouse.leftButton.isPressed)
                 {
                     var was = lp; lp = default;
-                    if (c == null) { TpLeftTap(lTapTarget, was.At, p); return true; } // a thing with no calm way (a rival: Fire alone) rings as any other
+                    if (c == null) { TpLeftTap(lTapTarget, was.At, p, shift); return true; } // a thing with no calm way (a rival: Fire alone) rings as any other
                     Charge = null;
                     if (c.Ready) HoldGive(c.Plan, c.Way, c.T, was.At, c.Run || shift, "left", false, c.Doers);
                     else if (now - c.Start >= ChargeShowS) { HoldCancels++; Status = $"{c.Verb} cancelled"; }
-                    else TpLeftTap(lTapTarget, was.At, p); // under the pill's 0.2 s: a tap, not a hold let go (TpResolve: LeftTap opens the ring)
+                    else TpLeftTap(lTapTarget, was.At, p, shift); // under the pill's 0.2 s: a tap, not a hold let go (TpResolve: LeftTap opens the ring)
                     return true;
                 }
                 return true;

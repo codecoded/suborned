@@ -1,3 +1,5 @@
+// Idle and running clocks are independently enabled by attention.idle and attention.run.
+// Cameras still record observed acts, and private-ground car clocks still run when both are off.
 // Watchers notice loiterers (brief 031 §2, Keel; Sky 2026-10-20: "Standing in an observed area for a while without moving causes alert. So
 // standing behind a camera's LoS is fine … same for a robot (hence the digital face that changes expression on them)"; L1-L3). The rules are
 // the rulebook's `attention` section:
@@ -82,12 +84,12 @@ namespace Suborned.Sim
                     bool present = !op.Inside && !op.InCar && !op.Down && !op.CarriedBy.HasValue;
                     bool seen = live && present && AttnSees(w, sh!.Value, op);
                     if (seen) seenMask |= 1 << k;
-                    if (row == null) { if (!seen) continue; attn[w] = row = new AttnRow(); }
+                    if (row == null) { if (!seen || (!R.AttnIdle && !R.AttnRun)) continue; attn[w] = row = new AttnRow(); }
                     bool moving = op.Walk != null || (op.Driven && op.DriveMoved);
                     int c = row.C[k];
                     bool run = seen && moving && op.Running && R.AttnRun && !RunFree(op); // engine 0.34.0 (attention.run): a run in its sight, not loud, below Alert 2
                     if (seen && (AttnInAct(op) || (R.AttnSeated && SeatOf(op) != null))) { } // an act holds it (L1): the act's own seen-rules apply; engine 0.57.0 (attention.seated): so does a public seat, a customer's
-                    else if (seen && !moving) c++;
+                    else if (seen && !moving && R.AttnIdle) c++;
                     else if (run) c = Math.Max(c, nT) + 1; // engine 0.34.0 (brief 067, Motive M067-B2): the clock jumps to the notice mark on the run's first tick in sight, then counts each tick of it as standing still
                     else c = Math.Max(row.Wary[k] ? wT : 0, c - 1);
                     row.C[k] = c;

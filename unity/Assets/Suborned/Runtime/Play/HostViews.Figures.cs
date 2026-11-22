@@ -106,14 +106,14 @@ namespace Suborned.Play
             if (figs.Count == 0) return;
             SceneStands(host.ConvoNow); var g = host.Game; ListenView(g); var convo = host.ConvoViewKeys(); // brief 067 H (Sky on 0.2.122): a conversation scene holds the clock: its speakers stand idle facing each other; brief 085: everyone else carries on, at their own pace whatever the speed (HostViews.Scene)
             float pace = convo != null ? 1f : host.Paused || g.Over ? 0f : host.Speed;
-            carrying.Clear(); if (g.Vale == ValeAt.WithEnforcer) carrying.Add("op/enforcer"); // who has someone on the shoulder this frame
+            carrying.Clear(); if (g.Vale == ValeAt.WithEnforcer && !g.Enforcer.Down) carrying.Add("op/enforcer"); // who has someone on the shoulder this frame
             foreach (var kv in carriers) if (lifted.TryGetValue(kv.Key, out var lc) && lc > 0.5f && things.TryGetValue(kv.Key, out var bt) && bt.shown) carrying.Add(kv.Value);
             for (int pass = 0; pass < 2; pass++) // the carried after everyone else: they sit on their carrier's shoulders as he stands this frame
             foreach (var kv in figs)
             {
                 var key = kv.Key; var f = kv.Value; var (t, from, to, shown) = things[key];
                 if (!shown || !t.gameObject.activeInHierarchy) continue;
-                bool late = (key == "councillor" && g.Vale == ValeAt.WithEnforcer) || (lifted.TryGetValue(key, out var lf) && lf > 0.5f);
+                bool late = (key == "councillor" && g.Vale == ValeAt.WithEnforcer && !g.Enforcer.Down) || (lifted.TryGetValue(key, out var lf) && lf > 0.5f);
                 if (late != (pass == 1)) continue;
                 if (t.localScale != Vector3.one) t.localScale = Vector3.one;            // the capsule's cower squash: the figure crouches instead
                 bool down = lifted.TryGetValue(key, out var lift); if (down && t.localRotation != Quaternion.identity) t.localRotation = Quaternion.identity; // laid flat is the capsule's: the figure lies
@@ -144,7 +144,7 @@ namespace Suborned.Play
                 bool aiming = Aim.TryGetValue(key, out var aimAt);
                 if (aiming) { var ad = aimAt - t.position; ad.y = 0f; if (ad.sqrMagnitude > 0.04f) f.yaw = Mathf.SmoothDampAngle(f.yaw, Mathf.Atan2(ad.x, ad.z) * Mathf.Rad2Deg, ref f.yawVel, 0.05f, 1800f, Time.unscaledDeltaTime); else aiming = false; } // Sky 2026-10-20: a shooter faces its target (~0.15 s), walking or not (it strafes)
                 f.lastPos = t.position; // the driven agent's measured ground speed reads this next frame
-                bool vale = key == "councillor" && g.Vale == ValeAt.WithEnforcer, carried = (down && lift > 0.5f) || vale;
+                bool vale = key == "councillor" && g.Vale == ValeAt.WithEnforcer && !g.Enforcer.Down, carried = (down && lift > 0.5f) || vale;
                 string carrierKey = vale ? "op/enforcer" : carried && carriers.TryGetValue(key, out var ck) ? ck : null;
                 if (carried && carrierKey != null && things.TryGetValue(carrierKey, out var cv) && cv.shown)
                 {
@@ -185,10 +185,11 @@ namespace Suborned.Play
                 f.seated = seat is { }; /* Suture's triage: the feet checks read this, not sitTick (negative for 2.3 s for those seated at the opening) */ if (seat is { } st) { f.yaw = st.yaw; f.model.SetPositionAndRotation(st.at, Quaternion.Euler(0f, st.yaw, 0f)); } else f.sitTick = -1;
                 string state; float natural = 0f;
                 if (carried) state = Has(f, "carried_drape") ? "carried_drape" : "carried"; // Forma: never the flat "carried" when the drape is there
+                else if (down) state = FallenState(key, f);
                 else if (carrying.Contains(key) && Has(f, "carry_shoulder")) state = speed > 0.15f ? "carry_shoulder" : "carry_shoulder_idle"; // nobody runs carrying
-                else if (down) state = "lying";
                 else if (startled && speed < 0.3f) state = "crouch";
                 else if (speed > 2.0f || key == "guard" && g.GuardRunningBack && speed > 0.15f) state = armed ? "run_armed" : key.StartsWith("op/") && Has(f, "run_lean") ? "run_lean" : "run"; // Forma: the cell's double-click run leans (run_lean, 2.72 m/s natural); the crowd and its panic keep run
+                else if (speed > 0.15f && armed && aiming && IsCrewId(key) && Has(f, "walk_armed")) state = "walk_armed";
                 else if (speed > 0.15f) state = phases.TryGetValue(key, out var pw) && pw is "to table" or "from table" && Has(f, "serve_walk") ? "serve_walk" : f.female && !((speed > WalkFMaxS || f.state == "walk" && speed > WalkFMaxS - 0.3f) && Has(f, "walk")) ? "walk_f" : "walk"; // Forma: walk_armed is a 2.44 m/s clip, slow motion at a walk; round 2: the tray carried to and from the table; engine 0.34.0: walk_f (0.99 m/s) only up to WalkFMaxS
                 else if (phases.TryGetValue(key, out var ph) && ph == "serving") state = Has(f, "serve") ? "serve" : "talk"; // brief 022: at the table she serves (faces it), the tray on her hand
                 else if (phases.TryGetValue(key, out var pt) && pt == "together") state = "talk"; // with the guard they talk
@@ -207,11 +208,16 @@ namespace Suborned.Play
                 float stride = natural > 0f ? Mathf.Clamp(speed / natural, 0.4f, 1.8f) : 1f; // the floor was 0.6: a 0.52 m/s walker's legs walked 0.59 m/s and slid (crowd/33, brief 024 anim-fix)
                 if (state == "draw") stride = DrawClipS / Mathf.Max(0.2f, host.DrawS); // the draw clip fits the rulebook's draw time
                 if (strideOv > 0f) stride = strideOv;
-                f.anim.speed = (key == DriveKey ? 1f : pace) * stride; // the driven agent walks in an explore pause too
+                if (down && g.Over)
+                {
+                    f.anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                    f.anim.updateMode = AnimatorUpdateMode.UnscaledTime;
+                }
+                f.anim.speed = (key == DriveKey || down && g.Over ? 1f : pace) * stride; // the driven agent walks in an explore pause too
                 Tray(f, state is "serve" or "serve_walk"); CellProps(f, state);
                 if ((state == "shoot" || state == "cover_fire" && f.own != null) && shotNew && f.state == state) f.anim.CrossFadeInFixedTime(state, 0.03f, 0, 0f); // the next shot: the recoil again from its start (brief 112: the cell's fire from cover is one shot too)
                 else if (state != f.state && fadeOv >= 0f) { f.anim.CrossFadeInFixedTime(state, fadeOv, 0, state == "cower" ? 9f / 30f : 0f); f.state = state; } // engine 0.35: Forma's cross-fades (pin-poses.md §D); the duck plays frames 9→46, then holds its last (the clip doesn't loop)
-                else if (state != f.state) { bool lower = f.state is "aim_pistol" or "aim" or "shoot" && state is "idle" or "idle_alt"; f.anim.CrossFadeInFixedTime(state, f.state.Length == 0 || talking ? 0f : state == "shoot" ? 0.04f : lower ? 0.3f : f.state == "draw" ? 0.08f : 0.15f, 0, f.state.Length == 0 || (state is "sit" or "sit_alt" or "sit_talk" && f.state != "stand_to_sit") ? f.phase * 5f : 0f); f.state = state; } // Forma: seconds, not a share of the clip (an 8.8 s idle took 1.3 s to blend); lowering the gun eases over 0.3 s
+                else if (state != f.state) { bool lower = f.state is "aim_pistol" or "aim" or "shoot" && state is "idle" or "idle_alt"; f.anim.CrossFadeInFixedTime(state, f.state.Length == 0 || talking ? 0f : state == "shoot" ? 0.04f : lower ? 0.3f : f.state == "draw" ? 0.08f : 0.15f, 0, !down && f.state.Length == 0 || (state is "sit" or "sit_alt" or "sit_talk" && f.state != "stand_to_sit") ? f.phase * 5f : 0f); f.state = state; } // Forma: seconds, not a share of the clip (an 8.8 s idle took 1.3 s to blend); lowering the gun eases over 0.3 s
                 Layers(f, key, state, pz, shotNew, nowU);
                 if (AnimLog != null && opIdx >= 0) LogFigure(key, f, state, shotNew, speed, opIdx);
             }

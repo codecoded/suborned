@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Careless (brief 031 §7; Sky 2026-10-20 D1: being seen watching makes the target wary), the twin of route-g-fast: route-g-fast, but the Enforcer lingers beside the guard (1.2 m, inside his 3 m sense) for about 25 s before the knockout, where route-g-fast strikes as he arrives: the guard's attention clock runs to wary (Heat 0: 20 s), a wary guard is aware at the blow, he draws, the takedown fails, and the Enforcer goes down. c038: route-g-fast takes no Reroute, so neither does its twin; the Enforcer's own Watch is refused once the Scout has watched the guard, so he simply stands there.",
+ "note": "The Enforcer waits beside the guard. Waiting in public does not raise an alarm. This fixed sequence still misses Vale's departure.",
  "start": {},
  "until": 4900,
  "steps": [
@@ -19,7 +19,7 @@
     5650,
     -4750
    ],
-   "why": "brief 031 (Waymark): to wait on the forecourt 9.8 m from the public door, behind the entrance camera's cone, outside the guard's door cone and more than 3 m from him (2.4 m clear of every cone at any time before 3:20): by the door, in the camera's view until the loop lands, it grew wary of him (29 s; reported at 54 s on the loud route)"
+   "why": "The Enforcer waits on the forecourt before his next order."
   },
   {
    "op": "scout",
@@ -28,7 +28,7 @@
     3800,
     -5000
    ],
-   "why": "brief 031: to watch the guard from 27.4 m, beyond his door cone (26 m) and behind the entrance camera and the sweep: from the Office approach, inside his cone, the Watch made him wary of the Scout"
+   "why": "Scout watches the guard from the office approach."
   },
   {
    "op": "fixer",
@@ -70,7 +70,7 @@
     -4110
    ],
    "at": "1:17",
-   "why": "at 1:17 (c038: when the rerouted patrol left the door, before brief 067 A moved its sweep to the yard; no Reroute now), from the wait to the guard's blind side, 1.2 m from him (the walk drains his clock; standing there 39 s made him wary, so aware, and the knockout failed)"
+   "why": "At 1:17 the Enforcer moves from the forecourt to the guard."
   },
   {
    "op": "enforcer",
@@ -79,7 +79,7 @@
    "how": "knockout",
    "label": "td",
    "gap": 34,
-   "why": "careless (brief 031; Sky 2026-10-20 D1): the Enforcer lingers beside the guard, 1.2 m from him, for about 25 s before the blow (route-g-fast strikes as he arrives): the guard senses anyone within 3 m whatever his facing, his attention clock runs to wary (Heat 0: 20 s), and a wary guard is aware at the blow: he draws, the takedown fails, and it is a fight (§06). (A Watch of his own is refused: the Scout's Watch has taught the guard already.)"
+   "why": "The Enforcer waits beside the guard before this order. The wait does not make the guard wary. The action uses the guard’s awareness when the order starts."
   }
  ]
 }

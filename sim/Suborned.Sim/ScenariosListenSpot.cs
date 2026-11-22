@@ -265,7 +265,7 @@ namespace Suborned.Sim
                 if (!r.Is(!off.G.R.AttnSeated, "the rulebook without seated")) return;
                 var b = Sit(off);
                 if (!r.Is(b.HasValue, "there too she sits")) return;
-                r.Is(b!.Value.inView == 0 || b.Value.rose > 0, $"without the law, the seat in sight runs the clock ({b.Value.rose} ticks rose in {b.Value.inView / Game.Hz} s in sight)");
+                r.Is(!off.G.R.AttnIdle ? b!.Value.rose == 0 : b!.Value.inView == 0 || b.Value.rose > 0, $"without the law, the seat in sight runs the clock ({b.Value.rose} ticks rose in {b.Value.inView / Game.Hz} s in sight)");
             });
 
             Add("P110-PACE", "110", "The act-pace dial (rulebook pace, engine 0.55.0; Sky 2026-11-11: \"I think we need to reduce the time things take to happen\"): at 50 every act the dial names takes half its seconds, the card says so and the act takes exactly that: a Watch 10 s, a Listen 15 s (its clock in reach), a Loop 10 s; a world clock it does not name (the loop's run, 120 s) stays.", r =>

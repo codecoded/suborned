@@ -69,13 +69,16 @@ namespace Suborned.Play
             // the walks to the posts, and the posts held
             foreach (var (id, at, mode) in views.RivalsDrawn())
             {
-                if (mode == "posted") { var pg = Goal(id); if (pg is "" or "spot" or "lookout") m.Posts.Add(at); continue; }
-                if (mode != "walking") continue;
-                CrewMember cm = null; Guard("crew", () => cm = g.CrewOf(id)); var w = cm?.Walk; if (w == null || w.Points.Length < 2) continue;
+                var cm = g.CrewOf(id);
+                bool contact = cm?.Disp?.Contact == true;
+                if (contact && g.MemberBeat(id) != "walk") continue;
+                if (!contact && mode == "posted") { var pg = Goal(id); if (pg is "" or "spot" or "lookout") m.Posts.Add(at); continue; }
+                if (!contact && mode != "walking") continue;
+                var w = contact ? cm.Disp.P : cm?.Walk; if (w == null || w.Points.Length < 2) continue;
                 if (!walkPool.TryGetValue(id, out var full)) walkPool[id] = full = new List<Vector3>();
                 full.Clear(); foreach (var q in w.Points) full.Add(frame.World(q));
                 var line = new List<Vector3>(); Trim(at, full, line);
-                bool post = cm.Goal is "spot" or "lookout";
+                bool post = !contact && (cm.Goal is "spot" or "lookout");
                 m.Walks.Add((line, full[^1], post));
             }
             // after a Watch: the spring ring round the cell's stand (hover of the car or a posted member, or Alt), the follow line

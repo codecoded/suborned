@@ -145,6 +145,12 @@ namespace Suborned.Sim
                 int legs = 0;
                 r.To(r.SendTo(Scout, a)); // engine 0.49.0: she walks to the leg's start (a run there now ends in the camera's view, and its sighting is not the legs')
                 for (int k = 0; k < 30 && !g.Over && LogTick(g, "attention.reporting") < 0; k++) { r.To(r.SendTo(Scout, k % 2 == 0 ? b : a, run: true)); legs++; }
+                if (!g.R.AttnRun)
+                {
+                    r.Eq(g.AttentionTicks("camera:entrance", Scout), 0, "ordinary running keeps no camera clock");
+                    r.Is(!g.AttentionReported("camera:entrance", Scout) && g.Alert == 0, "running across public ground makes no report or Alert");
+                    return;
+                }
                 r.Is(legs >= 8 && !g.Log.Exists(l => l.Code == "order.rejected"), $"she ran {legs} legs between {a} and {b}, every one taken, until the report");
                 r.To(r.SendTo(Scout, new Pt(4600, -5600)));
                 r.Until(() => LogTick(g, "attention.landed") >= 0 || g.Over, T(60));
@@ -273,9 +279,10 @@ namespace Suborned.Sim
                 }
                 r.Until(() => g.Over || new[] { Scout, Fixer, Tech }.All(o => !r.Op(o).InCar), T(5)); int outAt = g.Tick, seen = g.Log.Count;
                 r.Is(new[] { Scout, Fixer, Tech }.All(o => !r.Op(o).Gun.Drawn), "the three stand outside, undrawn");
-                r.Until(() => g.Over, T(20));
+                r.Until(() => g.Over || r.Op(Scout).Down && r.Op(Fixer).Down && r.Op(Tech).Down, T(20));
                 r.Is(g.Log.Skip(seen).Any(l => (l.Code == "shot.hit" || l.Code == "shot.miss") && l.Text.StartsWith("rival-", StringComparison.Ordinal) && !l.Text.Contains("fires on car:")), "the rivals fire on the cell standing there");
-                r.Is(!g.Log.Exists(l => l.Code == "car.health" && l.Tick > outAt + T(2)), "nobody shoots the car while they stand");
+                r.Is(!r.Shots().Exists(s => s.tick > outAt + T(2) && s.by.StartsWith("rival-", StringComparison.Ordinal) && s.target == "car:getaway"), "nobody shoots the car while they stand");
+                r.To(outAt + T(20));
                 r.Is(!g.Over || (g.FailCode != "rivals-reach-vale" && g.FailCode != "getaway-lost"), $"no loss for standing at the car ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
             }, new Start { WeaponsFree = false, OneInput = false }); // as K3-BACK
 

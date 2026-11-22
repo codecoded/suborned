@@ -131,7 +131,7 @@ namespace Suborned.Sim
                     if (openSighting.TryGetValue(key, out var s) && s.To == Tick - Hz) { s.To = Tick; continue; }
                     var n = new Sighting { Watcher = id, Op = Sim.Op.Name(op.Id), From = Tick, To = Tick, At = op.Pos };
                     Sightings.Add(n); openSighting[key] = n;
-                    if (R.BandOf(Standing) == Band.Menace) // §05: in a Menace district a sighting counts as a witness report
+                    if (R.AttnIdle && R.BandOf(Standing) == Band.Menace) // legacy presence reports; current rules require a witnessed act
                     {
                         Reported++;
                         RaiseAlert(R.AlertByIncident[Math.Min(Reported, R.AlertByIncident.Length) - 1], "sighting:" + id);

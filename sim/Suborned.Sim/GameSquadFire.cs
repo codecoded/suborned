@@ -17,7 +17,7 @@ namespace Suborned.Sim
         /// <summary>Would `opId` take a fire order on `target` now (force: a civilian or contact named; focus: the focus click's order)? The
         /// answer Issue would give, without giving it. `walk`: taken, and it would walk into range or to a line first (never for a focus or a
         /// driven agent). Read-only: nothing changes but what PreviewFire also makes (a crowd person's gun the first time a shot names them).</summary>
-        public Answer FireQuery(OpId opId, string target, bool force, bool focus, out bool walk)
+        public Answer FireQuery(OpId opId, string target, bool force, bool focus, out bool walk, bool replaceBusy = false)
         {
             var saved = refusal; refusal = default; string why; walk = false;
             try
@@ -26,7 +26,7 @@ namespace Suborned.Sim
                 why = Over ? No("mission-over", "the mission is over")
                     : op.Down ? No("agent-down", $"the {name} is down")
                     : op.Inside ? No("enforcer-inside", "the Enforcer is inside the Office")
-                    : op.Busy != null ? No("agent-busy", $"{name} is busy until {op.BusyEnd}", tick: op.BusyEnd)
+                    : op.Busy != null && !(replaceBusy && ActivityOf(opId).CanCancel) ? No("agent-busy", $"{name} is busy until {op.BusyEnd}", tick: op.BusyEnd)
                     : op.InCar ? No("in-car", $"the {name} is in the car: a move steps out first")
                     : FireWouldTake(op, name, target, force, focus, out walk);
             }

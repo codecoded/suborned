@@ -287,13 +287,14 @@ namespace Suborned.Play
         {
             var gate = h.Loud; var c = gate.Card;
             LoudLines.Add($"<b>GOING LOUD</b>  ·  {gate.What}");
+            const string waiting = "Hold this card to confirm · Esc to cancel";
             if (gate.Takedown) // brief 013: a takedown a known watcher sees (Glyph §1): the same card, its own numbers
             {
                 LoudLines.Add($"Seen: Alert → {c.AlertTo}");
                 if (c.PoliceInS >= 0) LoudLines.Add($"Who comes: police in ~{c.PoliceInS} s");
                 LoudLines.Add("The body can't be hidden from who saw it.");
                 string s0 = gate.Source switch { "right" => "the right button", _ => "the button" };
-                LoudLines.Add($"Hold {s0} to commit · release or Esc to back off · the clock runs");
+                LoudLines.Add(gate.Source == "wait" ? waiting : $"Hold {s0} to commit · release or Esc to back off · the clock runs");
                 return;
             }
             LoudLines.Add($"Now: Alert → {c.AlertTo}{(c.Civilians > 0 ? $" ({c.Civilians} civilian{(c.Civilians > 1 ? "s" : "")} see it)" : "")}");
@@ -311,7 +312,7 @@ namespace Suborned.Play
             LoudLines.Add($"Costs: +{c.TrailPerShooting} T for the shooting, +{c.TrailPerHit} T per person hit, +{c.TrailPerDown} T more per person down");
             if (c.DownedCaptured && h.Text != null && h.Text.LoudCaptured.Length > 0) LoudLines.Add(h.Text.LoudCaptured);
             string src = gate.Source switch { "F" => h.controls.Label(PlayAction.Draw), "right" => "the right button", "both" => "both buttons", _ => "the button" };
-            LoudLines.Add($"Hold {src} to commit · release or Esc to back off · the clock runs");
+            LoudLines.Add(gate.Source == "wait" ? waiting : $"Hold {src} to commit · release or Esc to back off · the clock runs");
         }
 
         void BriefingParts(HandoverHost h)

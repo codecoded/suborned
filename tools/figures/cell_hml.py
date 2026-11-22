@@ -197,7 +197,8 @@ def build(fid):
     new = load(glb); arm = [o for o in new if o.type == 'ARMATURE'][0]; arm.name = 'Armature'
     for b in arm.data.bones:
         if b.name.startswith('mixamorig'): b.name = b.name[len('mixamorig'):].lstrip(':')
-    skinned = [o for o in new if o.type == 'MESH' and any(m.type == 'ARMATURE' for m in o.modifiers)]
+    # a bundle with detail levels imports its lower levels outside the view layer: only the full-detail mesh is built
+    skinned = [o for o in new if o.type == 'MESH' and any(m.type == 'ARMATURE' for m in o.modifiers) and o.name in bpy.context.view_layer.objects]
     props = {}
     for o in new:
         pid = o.get('hmlPropId')

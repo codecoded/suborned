@@ -44,6 +44,8 @@ namespace Suborned.Sim
         /// <summary>Does body `id` count operative `op` a foe before the final fight (ai.intent)? Its sight and reach are the caller's.</summary>
         bool Provoked(string id, Op op)
         {
+            if (IsRival(id) && GunOf(id) is Gun rivalGun && ShotByOpRecently(rivalGun, Sim.Op.Name(op.Id))) return true;
+            if (CrewOf(id) is CrewMember mate && CrewUnderFire(mate, op)) return true;
             var ir = R.Intent; string kind = IntentKind(id);
             string[] foes = kind == "police" ? ir.PoliceFoes : kind == "robots" ? ir.RobotFoes : RivalsAlert ? ir.RivalsAlerted : ir.RivalsCalm;
             foreach (var f in foes) if (HasFoe(f, op, id)) return true;

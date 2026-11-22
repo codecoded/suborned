@@ -56,10 +56,10 @@ namespace Suborned.Play
             var g = Game; var op = g.Ops[(int)k];
             Answer No(string code, string why) => new Answer { ok = false, code = code, why = why, m = -1, cm = -1, usd = -1, tick = -1 };
             // brief 067 C1 (Glyph): the engine's Board tests in its order (GameGetaway.Board: running, tethered, carrying a body), then the host's own
-            if (op.Running) return No("board-running", "running: stop first");
             if (k == OpId.Tech && g.LoopOn && !g.R.LoopRuns) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds"); // the engine's Tethered (a loop with a tether; Loop v2 runs on its own)
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body");
-            if (op.Down) return No("agent-down", "down");
+            if (op.Down || op.LeftMap) return No("agent-down", "unavailable");
+            if (op.Busy != null && (!HoldOn || !g.ActivityOf(k).CanCancel)) return No("agent-busy", "busy");
             if (op.Inside) return No("enforcer-inside", "inside the Office");
             if (op.InCar) return No("in-car", "already in the car");
             if (g.CarDisabled("car:getaway")) return No("car-disabled", "our car is shot out"); // engine 0.53.0 (brief 105): a shot-out car seats nobody
@@ -282,7 +282,7 @@ namespace Suborned.Play
             bool useBoard = board && (!fire || ab <= af); string code = useBoard ? boardRefused[k] : fireRefused[k]; float age = useBoard ? ab : af;
             var op = Game.Ops[k]; if (op.InCar || op.Busy != null || op.Act != null || pending[k] != null) return ("", "", 0f);
             string words = useBoard ? Text?.DoneWord("board." + code, null) ?? code.Replace('-', ' ') : FireRefusalWord(k) is { Length: > 0 } fw ? fw : Text?.DoneWord("fire." + code, null) ?? code.Replace('-', ' '); // Fable 067: less.done.board.* (down, inside, stop first, hands full, looping, busy, too far, mission over, restart)
-            string icon = code switch { "agent-down" => "s_downed", "enforcer-inside" => "s_inside", "already-carrying" or "fire-carrying" or "fire-carrying-vale" or "carry-vale" => "s_carrying", "board-tethered" => "s_looping", "board-running" => "run", _ => "refused" };
+            string icon = code switch { "agent-down" => "s_downed", "enforcer-inside" => "s_inside", "already-carrying" or "fire-carrying" or "fire-carrying-vale" or "carry-vale" => "s_carrying", "board-tethered" => "s_looping", _ => "refused" };
             return (icon, words, Mathf.Clamp01((FireRefusalS + 0.3f - age) / 0.3f));
         }
 

@@ -13,7 +13,7 @@ namespace Suborned.Play
     /// <summary>The proof's input checks (Latch, 2026-10-21), driven through the Input System's own devices (queued key and mouse states), so
     /// the host reads them as it reads the player's hands. Each writes one JSON object with "ok" for proof.json; game:check fails on ok false.
     ///  · driveClick (Sky: "if I click on a space, then the movement WASD keys fail to respond"): driven, W walks; a left click on the ground
-    ///    gives no walk and the drive holds; W walks again; an act out of reach hands the agent to the engine's walk and W takes the stick
+    ///    starts a walk with the camera following; W takes direct control again; an act out of reach hands the agent to the engine's walk and W takes the stick
     ///    back at once; the engine ending the drive (a move order) leaves the ground view and W takes control again.
     ///  · fireStop (Sky: "a fire order stops the walk"; running is the engine's, Motive): a walking agent given fire stands and fires; a running
     ///    one is left to the engine (today it refuses fire-running and runs on).</summary>
@@ -43,6 +43,28 @@ namespace Suborned.Play
             var b = h.Game.Ops[0].Pos; moved[0] = Mathf.Sqrt((float)Suborned.Sim.G.D2(a, b)) / 100f;
         }
 
+        internal static bool TryGroundPoint(HandoverHost h, out Vector2 screen)
+        {
+            screen = default;
+            if (h.DriveAgent < 0) return false;
+            var from = h.Game.Ops[h.DriveAgent].Pos;
+            for (int angle = 0; angle < 360; angle += 15)
+            {
+                float rad = angle * Mathf.Deg2Rad;
+                var dest = new Pt(from.X + Mathf.RoundToInt(Mathf.Cos(rad) * 600), from.Y + Mathf.RoundToInt(Mathf.Sin(rad) * 600));
+                var s = h.View.WorldToScreenPoint(h.World(dest));
+                if (s.z <= 0 || s.x < 30 || s.x > Screen.width - 30 || s.y < 30 || s.y > Screen.height - 30 ||
+                    HudToolkit.Blocks(s) || !h.CarWalk.Free(dest) || h.MoveRoute(from, dest) == null || h.TargetAt(s, true) != null) continue;
+                screen = s; return true;
+            }
+            return false;
+        }
+
+        static IEnumerator GroundClick(Vector2 sp)
+        {
+            MouseAt(sp, false); yield return null; MouseAt(sp, true); yield return null; yield return null; MouseAt(sp, false); yield return null;
+        }
+
         public static IEnumerator DriveClick(HandoverHost h, List<string> log, string[] json)
         {
             h.Begin(); h.IntelOpen = false; h.StartClock(); yield return null;
@@ -52,21 +74,30 @@ namespace Suborned.Play
             // 1 · W walks
             yield return HoldW(h, 1.2f, m, seen); float w1 = m[0]; bool keysReach = seen[0];
             parts.Add($"\"keysReach\": {B(keysReach)}, \"w1m\": {F(w1)}"); ok &= keysReach && w1 > 0.8f;
-            // 2 · a left click on the ground 4 m ahead of her (on screen, off the HUD)
-            var me = h.Views.Find("op/scout"); var cam = h.View; bool clicked = false;
-            if (me && cam)
-            {
-                var fwd = cam.transform.forward; fwd.y = 0f; fwd.Normalize();
-                var sp = cam.WorldToScreenPoint(me.position + fwd * 4f);
-                if (sp.z > 0f && !HudToolkit.Blocks(sp)) { MouseAt(sp, false); yield return null; MouseAt(sp, true); yield return null; yield return null; MouseAt(sp, false); yield return null; clicked = true; }
-            }
-            int orders0 = g.Orders.Count; yield return new WaitForSecondsRealtime(1f);
-            int moves = 0; for (int i = orders0; i < g.Orders.Count; i++) if (g.Orders[i].order.Do == "move") moves++;
-            bool holds = h.Driving && g.DrivePoseOf(OpId.Scout).Driven && g.Ops[0].Walk == null;
-            parts.Add($"\"clicked\": {B(clicked)}, \"clickMoves\": {moves}, \"drivenAfterClick\": {B(holds)}"); ok &= clicked && moves == 0 && holds;
-            // 3 · W walks again
+            // 2 · a left click on visible, reachable ground.
+            int orders0 = g.Orders.Count; bool clicked = TryGroundPoint(h, out var sp);
+            if (clicked) yield return GroundClick(sp);
+            yield return new WaitForSecondsRealtime(0.3f);
+            int moves = 0; for (int i = orders0; i < g.Orders.Count; i++) if (g.Orders[i].ok && g.Orders[i].order is { Do: "move", Op: "scout" }) moves++;
+            bool walkingToClick = h.Driving && h.DriveWalking && g.Ops[0].Walk != null;
+            parts.Add($"\"clicked\": {B(clicked)}, \"clickMoves\": {moves}, \"trailingAfterClick\": {B(walkingToClick)}"); ok &= clicked && moves == 1 && walkingToClick;
+            // 3 · W interrupts the walk and takes direct control again.
             yield return HoldW(h, 1.2f, m, seen); float w2 = m[0];
-            parts.Add($"\"w2m\": {F(w2)}"); ok &= w2 > 0.8f && h.Driving;
+            bool retook = h.Driving && !h.DriveWalking && g.DrivePoseOf(OpId.Scout).Driven && g.Ops[0].Walk == null;
+            parts.Add($"\"w2m\": {F(w2)}, \"wInterruptedClickWalk\": {B(retook)}"); ok &= w2 > 0.8f && retook;
+            h.SelectAll();
+            int start = g.Orders.Count;
+            if (TryGroundPoint(h, out var destination)) yield return GroundClick(destination);
+            var squad = g.Orders.GetRange(start, g.Orders.Count - start).FindAll(e => e.ok && e.order.Do == "move");
+            var movedAgents = new HashSet<string>();
+            foreach (var e in squad) movedAgents.Add(e.order.Op);
+            var move = squad.Find(e => e.order.Op == "scout").order;
+            for (int i = 0; i < 30 && move != null && g.Ops[0].Walk != null && !g.Over; i++)
+            { h.RunTo(g.Tick + Suborned.Sim.Game.Hz); yield return null; }
+            bool arrived = move?.Point is Pt end && h.Driving && g.Ops[0].Walk == null && Suborned.Sim.G.Dist(g.Ops[0].Pos, end) <= 50;
+            parts.Add($"\"arrivedAtClick\": {B(arrived)}"); ok &= arrived && movedAgents.Count == 4;
+            parts.Add($"\"squadMoved\": {movedAgents.Count}");
+            h.Select(OpId.Scout, false);
             // 4 · an act out of reach: the engine walks her in (DriveWalking); W takes the stick back at once
             h.GiveScripted(new Order { Op = "scout", Do = "watch", Target = "guard" }); yield return new WaitForSecondsRealtime(0.6f);
             bool walking = h.DriveWalking && g.Ops[0].Walk != null;

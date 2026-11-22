@@ -128,6 +128,7 @@ namespace Suborned.Sim
         /// <summary>Aim with a warm reacquire (Pulse §2.1 hold): a target lost and found again within ai.reacquire is shot at once.</summary>
         void AimAt(Gun g, string t, bool react)
         {
+            if (IsRival(g.Id)) g.Drawn = true; // Acquiring a combat target draws the rival's weapon; the host reads this for armed movement and sustained aim.
             if (g.Target == t) return;
             if (t == g.LostTarget && g.LostTick >= 0 && Tick - g.LostTick <= T(R.ReacquireS)) { g.Target = t; g.NextShot = Math.Max(g.NextShot, Tick); return; }
             Aim(g, t, react);
@@ -157,10 +158,22 @@ namespace Suborned.Sim
             }
             if (CrewOf(id) is CrewMember cm) // brief 059 K8: each member of the crew on foot, by his own cone (engine 0.19.0: the crew watches the street from its arrival)
             {
-                if (cm.Fight || !Up(cm) || !cm.OnFoot || CrewBrokenPre) { if (!cm.Fight) LoseTarget(cm.Gun); return; } // a broken crew makes for its car and fires nothing (Motive M059-3.5)
+                if (cm.Fight || !Up(cm) || !cm.OnFoot || CrewBrokenPre || cm.Paid || cm.Mode == CrewMode.Walking && LeavingStreet(cm.Goal)) { if (!cm.Fight) LoseTarget(cm.Gun); return; } // a broken crew makes for its car and fires nothing (Motive M059-3.5)
                 if (!RivalsDrawn && !R.Intent.RivalsStreet) return;
-                int nf = cm.Gun.NoFoeSince; PreFight(id, cm.Gun, MemberPose(cm)?.pos, p => MemberWatching(cm, p)); if (!RivalsDrawn && cm.Gun.Target.Length == 0) cm.Gun.NoFoeSince = nf; // no foe leaves its gun as it was (nothing reads NoFoeSince for the crew)
+                int nf = cm.Gun.NoFoeSince; PreFight(id, cm.Gun, MemberPose(cm)?.pos, p => MemberCombatWatching(cm, p)); if (!RivalsDrawn && cm.Gun.Target.Length == 0 && cm.Disp?.Contact != true) cm.Gun.NoFoeSince = nf; // no foe leaves its gun as it was (nothing reads NoFoeSince for the crew)
             }
+        }
+
+        // A routine cone is for watching passers-by. A rival under fire turns to his own
+        // attacker, or follows the target he already acquired; walls still break the line.
+        bool MemberCombatWatching(CrewMember member, Pt at)
+        {
+            if (MemberWatching(member, at)) return true;
+            var pose = MemberPose(member); if (!pose.HasValue) return false;
+            foreach (var op in Ops)
+                if (op.Pos == at && (member.Gun.Target == Sim.Op.Name(op.Id) || ShotByOpRecently(member.Gun, Sim.Op.Name(op.Id)) || CrewUnderFire(member, op)))
+                    return Sees(pose.Value.pos, at);
+            return false;
         }
 
         /// <summary>A body before the final fight (the guard engaging, the patrol, the response unit en route, the rival crew drawn by gunfire):
@@ -174,6 +187,7 @@ namespace Suborned.Sim
             if (t.Length == 0) { LoseTarget(g); if (g.NoFoeSince < 0) g.NoFoeSince = Tick; return; }
             g.NoFoeSince = -1;
             AimAt(g, t, true);
+            if (CrewOf(id) is CrewMember member && PosOf(t) is Pt target) EngageStreet(member, pos, target);
             if (Tick >= g.NextShot) { var at = PosOf(t)!.Value; Shoot(id, g, pos, t, at, Dist(pos, at), Moving(id) ? Gait.Walk : Gait.Stand, false); }
         }
 
@@ -188,6 +202,7 @@ namespace Suborned.Sim
             var foes = g.St == "break" ? new List<(string, Pt)>() : FoesInReach(h.Id, g, pos, sees, true);
             bool moving = h.Moving(Tick);
             bool pinHold = PinHolds(g); // brief 039 (weapons.pin.hold): a pinned body holds, it doesn't advance
+            string previous = g.St;
             switch (g.St) // one transition a tick (Pulse §1.4)
             {
                 case "alerted":
@@ -198,7 +213,7 @@ namespace Suborned.Sim
                     }
                     break;
                 case "advance":
-                    if (foes.Count > 0) { if (!h.Blocker) Stop(h); g.St = "engage"; moving = h.Moving(Tick); } // a blocker keeps walking to the road (brief 018 §1)
+                    if (foes.Count > 0) { if (!IsRival(h.Id) && !h.Blocker) Stop(h); g.St = "engage"; moving = h.Moving(Tick); } // Police blockers keep their lane approach; the rival transitions below.
                     else if (!moving) { g.St = "hold"; h.Closing = false; } // engine 0.34.1: the advance on an operative has ended
                     break;
                 case "engage":
@@ -226,6 +241,10 @@ namespace Suborned.Sim
                 case "break":
                     if (G.Within(pos, h.BreakTo ?? S.Stand(S.RivalsPark), R.RivalGoneCm) || !moving) { g.St = "gone"; h.Present = false; Note("ai.gone", $"{h.Id} is gone."); }
                     return;
+            }
+            if (g.St == "engage" && previous != "engage" && IsRival(h.Id) && moving)
+            {
+                Stop(h); moving = h.Moving(Tick);
             }
             if (g.St != "engage" || foes.Count == 0) { if (g.St != "engage") LoseTarget(g); return; }
             if (moving && !R.CoverStepFires && CoverStepping(h)) return; // tuning.md §8.3 fallback: a step to cover fires nothing

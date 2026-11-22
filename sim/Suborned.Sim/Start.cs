@@ -18,6 +18,8 @@ namespace Suborned.Sim
         /// Pre039 plays the fight before brief 039, for scenarios whose subject is another rule and that need a shot to land on a known tick.
         /// Never in a route or a session; hashed when set.</summary>
         public bool Pre080;
+        // Witness regression scenarios keep an unattended body in place through the clerks' shift change.
+        public bool RecoverCasualties = true;
         /// <summary>Test only (brief 080 pacing, engine 0.37.0): the clock before the shift came forward a minute: Vale out 5:50, close 8:30, the city's routines a minute later (the rivals never
         /// moved). For the scenarios of other rules, written to the old clock's ticks, until Waymark retimes them. Never in a route or a session; hashed when set.</summary>
         public bool OldClock;
@@ -100,8 +102,9 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("seed", "pre080", "oldClock", "rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone", "oneCar", "counts", "weather", "light");
+            n.Only("seed", "recoverCasualties", "pre080", "oldClock", "rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone", "oneCar", "counts", "weather", "light");
             if (n.Opt("seed") is JNode sd) { long sv = sd.Long(); if (sv < 0 || sv > int.MaxValue) throw new FormatException($"{sd.Path}: seed 0..2147483647"); s.Seed = (int)sv; } // brief 080
+            if (n.Opt("recoverCasualties") is JNode recovery) s.RecoverCasualties = recovery.Bool();
             if (n.Opt("pre080") is JNode p80) s.Pre080 = p80.Bool(); // brief 080, test only
             if (n.Opt("oldClock") is JNode oc) s.OldClock = oc.Bool(); // brief 080, test only
             if (n.Opt("valeWaits") is JNode vw) s.ValeWaits = vw.Bool(); if (n.Opt("oneCar") is JNode o1) s.OneCar = o1.Bool(); // brief 059, engine 0.42.0: test only
@@ -165,6 +168,7 @@ namespace Suborned.Sim
         {
             var w = new JWriter().Obj();
             if (Seed != 0) w.Prop("seed", Seed); // brief 080: only a seeded start adds bytes
+            if (!RecoverCasualties) w.Prop("recoverCasualties", false);
             if (Pre080) w.Prop("pre080", true); // brief 080, test only: likewise
             if (OldClock) w.Prop("oldClock", true); // brief 080, test only: likewise
             if (RivalsAtS.HasValue) w.Prop("rivalsAt", RivalsAtS.Value);

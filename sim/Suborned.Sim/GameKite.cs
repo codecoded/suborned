@@ -38,7 +38,7 @@ using System.Collections.Generic;
 namespace Suborned.Sim
 {
     /// <summary>A body walked off its scripted path by the kite answer (the pre-fight response unit, the pre-fight rival crew): out, hold, back.</summary>
-    public sealed class KiteDisp { public Path P = null!; public int Start, Phase, BackStart; public Pt Face; public bool Press; } // Press: engine 0.19.0, the drawn crew pressing for the Vale holder (ai.intent.rivals.press)
+    public sealed class KiteDisp { public Path P = null!; public int Start, Phase, BackStart; public Pt Face; public bool Press, Contact; } // Press: engine 0.19.0, the drawn crew pressing for the Vale holder (ai.intent.rivals.press)
 
     /// <summary>What a hostile would do if the agent fired on it now (brief 027 F2, Pulse §3 the chip): its side ("police" or "rivals"), where it
     /// goes (police: the stop point inside its ring of the agent; rivals: the cover or blind point), and the ticks until it is there. Read-only.</summary>
@@ -98,7 +98,7 @@ namespace Suborned.Sim
         }
         Func<Pt, bool> KiteSees(string id, Pt pos)
         {
-            if (CrewOf(id) is CrewMember sm && !sm.Fight) return p => MemberWatching(sm, p); // brief 059: a member's own cone
+            if (CrewOf(id) is CrewMember sm && !sm.Fight) return p => MemberCombatWatching(sm, p);
             int k = SecIndex(id); if (k >= 0 && !secJoined[k]) return p => SecOfficerWatching(k, p, false);
             return p => Sees(pos, p);
         }
@@ -304,6 +304,7 @@ namespace Suborned.Sim
         /// clock shifts by the detour.</summary>
         void KiteRivals(CrewMember m)
         {
+            if (m.Disp?.Contact == true) return;
             var g = m.Gun; if (!RivalsDrawn || m.Fight || !Up(m) || !m.OnFoot || g.Down) { m.Disp = null; return; }
             if (m.Mode == CrewMode.Walking && (m.Goal == "flee" || m.Goal == "exit")) return; // brief 081 (engine 0.37.0): a broken crew runs for its car: no answering fire, no walking on toward a shooter 38 m out
             if (IntentPress(m)) return; // engine 0.19.0 (ai.intent.rivals.press): the press owns the member's walk
@@ -341,7 +342,7 @@ namespace Suborned.Sim
             var shooter = OpOf(Sim.Op.Parse(g.KiteBy)); if (shooter.Down || shooter.Inside) { KiteClear(g); return; }
             var pose = MemberPose(m); if (!pose.HasValue || g.W == null) return;
             var pos = pose.Value.pos; var sp = shooter.Pos;
-            if (KiteCanAnswer(pos, g.W.EffCm, p => MemberWatching(m, p))) return;
+            if (KiteCanAnswer(pos, g.W.EffCm, p => MemberCombatWatching(m, p))) return;
             var dest = KiteHide(g, pos, sp, pos, out var c);
             Path? path;
             if (dest.HasValue) path = KitePath(g.Id, pos, dest.Value, int.MaxValue / 20);
@@ -474,7 +475,7 @@ namespace Suborned.Sim
             foreach (var x in Hostiles) G1(x.Gun);
             G1(RivalsGun); // brief 059: retired, never moves (its bytes stay)
             foreach (var u in Units) if (!u.Legacy && !u.Patrol && !u.Robot) G1(u.Gun); // retest R3
-            void D(KiteDisp d) { h.I(d.Start).I(d.Phase).I(d.BackStart).P(d.Face).I(d.P.Points.Length); foreach (var p in d.P.Points) h.P(p); if (d.Press) h.S("press"); }
+            void D(KiteDisp d) { h.I(d.Start).I(d.Phase).I(d.BackStart).P(d.Face).I(d.P.Points.Length); foreach (var p in d.P.Points) h.P(p); if (d.Press) h.S("press"); if (d.Contact) h.S("contact"); }
             foreach (var kv in secDisp) { h.I(kv.Key); D(kv.Value); }
             foreach (var kv in unitDisp) { h.S(kv.Key); D(kv.Value); }
             h.Z(false);

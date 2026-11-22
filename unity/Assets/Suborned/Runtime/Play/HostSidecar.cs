@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Path = System.IO.Path;
 using System.Text;
 using Suborned.Sim;
 using UnityEngine;
@@ -36,6 +37,27 @@ namespace Suborned.Play
         }
 
         /// <summary>The record for the session now: closed and reopened when the session file changes (Begin).</summary>
+        static int SavedSelection(string session)
+        {
+            var path = Path.ChangeExtension(session, null) + ".host.jsonl";
+            int last = -1;
+            try
+            {
+                if (!File.Exists(path)) return last;
+                foreach (var line in File.ReadLines(path))
+                {
+                    if (!line.Contains("\"sel\"")) continue;
+                    if (JNode.Parse(line).Opt("sel") is not JNode names || names.Kind != JKind.Arr) continue;
+                    int mask = 0;
+                    foreach (var n in names.Items)
+                        for (int k = 0; k < 4; k++) if (n.Kind == JKind.Str && n.Str() == Op.Name((OpId)k)) mask |= 1 << k;
+                    last = mask;
+                }
+            }
+            catch (Exception e) { Debug.LogWarning($"Play: could not read the last selection: {e.Message}"); }
+            return last;
+        }
+
         void SideEnsure()
         {
             if (sideBroken || string.IsNullOrEmpty(SessionPath)) return;
@@ -63,9 +85,9 @@ namespace Suborned.Play
         }
 
         /// <summary>Per frame, after the input: the selection, the hover and its pill, the ring opening or closing.</summary>
-        void SideFrame()
+        void RecordSelection()
         {
-            if (Game == null || sideBroken) return;
+            SideEnsure();
             int mask = 0; for (int k = 0; k < 4; k++) if (Selected[k]) mask |= 1 << k;
             if (mask != sideSel)
             {
@@ -73,6 +95,12 @@ namespace Suborned.Play
                 for (int k = 0; k < 4; k++) if ((mask & (1 << k)) != 0) { if (!first) sb.Append(','); sb.Append('"').Append(Op.Name((OpId)k)).Append('"'); first = false; }
                 SideWrite(sb.Append(']').ToString());
             }
+        }
+
+        void SideFrame()
+        {
+            if (Game == null || sideBroken) return;
+            RecordSelection();
             string hover = SideTarget(Hover), pill = HudToolkit.PillState ?? "";
             if (hover != sideHover || pill != sidePill)
             {

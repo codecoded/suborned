@@ -138,7 +138,7 @@ namespace Suborned.Sim
                 r.Eq(Report.Clock(g.Tick), "5:30.1", "found when the clerks step out after the 5:30 chime");
                 r.Is(near > 0, $"{near} found it within 1.5 m ({behind} of them with their back to it)"); // brief 098 L9: the clerks stepping out together are laid round the door, so whether one has her back to it is the moment's; the near sense behind one's back is ND-2's
 
-            }, new Start { FinalFight = false });
+            }, new Start { FinalFight = false, RecoverCasualties = false });
 
             Add("ND-2", "—", "A body at your feet, the café (brief 054 §9.1): a seated café customer faces her chair's way; a body 2 m behind her chair, outside her cone and the 1.5 m, is not found; 1 m behind it, it is (the near sense); 2 m in front, it is (her cone); a takedown 1 m behind her is not seen (the near sense is for bodies only).", r =>
             {

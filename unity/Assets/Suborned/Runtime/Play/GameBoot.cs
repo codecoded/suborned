@@ -36,6 +36,7 @@ namespace Suborned.Play
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Screen0()
         {
+            if (ArgValue("-gameProof") is string proofDir) HandoverHost.SessionDirOverride = Path.Combine(proofDir, "sessions");
             if (Application.isEditor || Application.isBatchMode) return;
             var r = Screen.currentResolution;
             if (!Arg("-novsync")) QualitySettings.vSyncCount = 1; // the display's own rate, no tearing, no heat for frames nobody sees (-novsync: uncapped, for the proof's headroom)
@@ -172,6 +173,9 @@ namespace Suborned.Play
             var r067 = new string[] { "null" }; if (Only("r067")) yield return Proof067.Run(h, Dir, log, r067); // batch 0.2.123: brief 067
             var r123 = new string[] { "null" }; if (Only("r123")) yield return Proof123.Run(h, Dir, log, r123); // batch 0.2.123 host round 4: the fight with no lines (each shooter's facing measured), the rival crew's four looks at 3:10 (not gated yet) (Sky's 0.2.122 notes, Glyph's spec): the square and the cars, cones on demand, portrait and third person, locked ways, squad Board and Drive, the conversation from the ground, the lock reticle, the host record // batch 0.2.123: brief 059 (the rival car seen arriving at 2:35, the drop at 2:46, the park at 3:10; the Watch; Vale driven round; the Take from the back seat; Drive)
             var r083 = new string[] { "null" }; if (Only("r083")) yield return Proof083.Run(h, Dir, log, r083); var r101 = new string[] { "null" }; if (Only("r101")) yield return Proof101.Run(h, Dir, log, r101); var r102 = new string[] { "null" }; if (Only("r102")) yield return Proof102.Run(h, Dir, log, r102); var r104 = new string[] { "null" }; if (Only("r104")) yield return Proof104.Run(h, Dir, log, r104); var r105 = new string[] { "null" }; if (Only("r105")) yield return Proof105.Run(h, Dir, log, r105); /* brief 105: the car shot, everyone out, Take car */ // brief 083: Sky's play notes on 0.2.159; brief 101: Sky's rule on numbers in play (the five pictures and the check, not gated); brief 102: the guard's call, a Call shut by violence, the Already turned lock (pictures, not gated)
+            if (only != null && only.Contains("actionMenu")) yield return ProofReactions.ActionMenu(h, Dir);
+            if (only != null && only.Contains("squadOrders")) yield return ProofReactions.SquadOrders(h, Dir);
+            if (only != null && only.Contains("reactions")) yield return ProofReactions.Run(h, Dir);
             var seed = new string[] { "null" }; if (only != null && only.Contains("seed") || only == null) Stamp("seed"); if (only != null && only.Contains("seed") || only == null) yield return ProofSeed.Run(h, Dir, log, seed); // brief 080: the seed, Replay, a saved run
             var rings = new string[] { "null" }; if (Only("rings")) yield return ProofRings.Handover(h, Dir, log, rings); // Glyph 0.2.79 #2: the plain target rings (brief 049) // brief 043: the done moment, the walk-in, the cancel, the window; next-batch item 7 (third person on the calm patrol)
             var fire = new string[] { "null" }; var fireSession = new string[1]; if (Only("fire")) yield return ProofFire.Fire(h, Dir, log, fire, drive, fireSession);

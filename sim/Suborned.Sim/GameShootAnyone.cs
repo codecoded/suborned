@@ -52,7 +52,7 @@ namespace Suborned.Sim
         /// case, and the ties grieve (between missions).</summary>
         void ShotBody(Person p, Pt at, string t)
         {
-            if (BodyOf(p) != null || p == ValeP) return;
+            if (BodyOf(p) != null) return;
             var a = new TdAct { Id = Acts.Count, Victim = p.Id, How = "shot", P = p, At = at, Scene = at, Tick = Tick, Kill = true, ActTrail = true, Landed = true };
             if (fireIncident.TryGetValue(t, out var inc)) a.Lead = inc;
             Acts.Add(a);

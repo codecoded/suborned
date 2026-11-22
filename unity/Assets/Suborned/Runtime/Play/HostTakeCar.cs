@@ -57,7 +57,6 @@ namespace Suborned.Play
             if (op.Down) return No("agent-down", "down");
             if (op.Inside) return No("enforcer-inside", "inside the Office");
             if (op.InCar) return No("in-car", "in a car: a move steps out first");
-            if (op.Running) return No("board-running", "running: stop first");
             if (k == OpId.Tech && g.LoopOn && !g.R.LoopRuns) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body");
             if (g.Lent && !g.LentGone && !g.CarDisabled(g.LentId)) return No(g.LentId == id ? "car-ours" : "car-taken", g.LentId == id ? "that car is ours: Board it" : "one taken car at a time");
@@ -111,22 +110,11 @@ namespace Suborned.Play
             {
                 var v = TakeCarIntent((OpId)k, id); var aw = CarDoorWalk((OpId)k, id);
                 if (aw != null) { v.Walk = $"walks {aw.Cm / 100} m ({aw.Seconds} s) to {t.Label}, then"; v.WalkS = aw.Seconds; }
-                var lk = Game.Ops[k].Busy != null && !HoldOn ? new Answer { ok = false, code = "agent-busy", why = "busy", m = -1, cm = -1, usd = -1, tick = -1 } : TakeCarLock((OpId)k, id);
+                var lk = Game.Ops[k].Busy != null && (!HoldOn || !Game.ActivityOf((OpId)k).CanCancel) ? new Answer { ok = false, code = "agent-busy", why = "busy", m = -1, cm = -1, usd = -1, tick = -1 } : TakeCarLock((OpId)k, id);
                 var r = new PanelRow { By = (OpId)k, Slot = -1, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : ShortOf(v.Order, lk) ?? lk.why, Available = lk.ok };
                 if (!r.Available) r.Unlock = LockLine(v.Order, lk) ?? "";
                 if (r.Available) pn.Rows.Insert(0, r); else pn.Rows.Add(r);
             }
-        }
-
-        /// <summary>The ring's Take car wedge when every agent's is locked and the ring has room: shut, its short lock as its word ("Draw first", "Enforcer only").</summary>
-        void TakeCarShutSeg(RingState rs, ContextPlan plan)
-        {
-            if (rs.Segs.Count >= RingMaxWays + 1 || rs.Segs.Exists(x => x.Row?.I?.Order?.Do == "take-car")) return;
-            var rows = plan.Pn.Rows.FindAll(r => r.I?.Order?.Do == "take-car" && !r.Available); if (rows.Count == 0) return;
-            var rep = rows.Find(r => r.By == Agent) ?? rows[0]; int at = Math.Max(0, rs.Segs.FindIndex(x => x.More)); if (rs.Segs.Count == 0 || !rs.Segs.Exists(x => x.More)) at = rs.Segs.Count;
-            var sg = new RingSeg { Way = -1, Row = rep, Word = RingWord(rep.I), Icon = "car", Shut = true, ShutText = ShortOf(rep.I.Order, rep.Lock) ?? rep.Reason, ShutIcon = "" };
-            foreach (var x in rows) if (!sg.By.Contains(x.By)) sg.By.Add(x.By);
-            rs.Segs.Insert(at, sg);
         }
 
         /// <summary>The walk to a car's door (Take car, or Board on the second cell car): round the standing cars to beside its body; null when already in reach.</summary>

@@ -503,7 +503,7 @@
   "nothing-to-call": {"line":"A call gives {who} nothing to do.","short":"Nothing to call","verbs":["call"]},
   "loop-wrong-target": {"line":"The cabinet can't loop that. Pick a camera.","short":"Can't loop that","verbs":["loop"]},
   "loop-holds": {"line":"One loop at a time. The running loop ends at {tick}.","short":"Loop ends {tick}","verbs":["loop"]},
-  "camera-dead": {"line":"That camera is already dead. Pick another one.","short":"Already dead","verbs":["loop","disable"]},
+  "camera-dead": {"line":"That camera is already dead. Pick another one.","short":"Already dead","verbs":["watch","loop","disable"]},
   "disable-wrong-target": {"line":"The cabinet can't cut that. Pick a camera.","short":"Can't cut that","verbs":["disable"]},
   "stand-at-cabinet": {"line":"Walk the Tech within {m} m of the control cabinet first.","short":"Too far · {m} m","verbs":["loop","disable","reroute"]},
   "patrol-down": {"line":"The patrol is down. Nothing to watch or reroute.","short":"Patrol down","verbs":["watch","reroute"]},
@@ -549,7 +549,6 @@
   "car-boxed": {"line":"Boxed in: a car is across the way out. It has to drive off or be blown up.","short":"Boxed in","verbs":["go"]},
   "drive-boxed": {"line":"Boxed in: a car is across the way out. It has to drive off or be blown up.","short":"Boxed in","verbs":["*"]},
   "stand-boxed": {"line":"Can't park there: a car is across its way out.","short":"Can't park there","verbs":["*"]},
-  "board-running": {"line":"{op} is running. Stop first, then Board.","short":"Stop running first","verbs":["board"]},
   "board-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to Board.","short":"Busy looping","verbs":["board"]},
   "in-car": {"line":"That agent is in the car. Walk them out first.","short":"In the car","verbs":["*"]},
   "no-charge": {"line":"Not enough charge. Wait for the bar, or fire fewer shots.","short":"No charge","verbs":["volley","field"]},
@@ -1329,6 +1328,8 @@
   "down": "a hostile who is down speaks nothing"
  },
  "silentLogs": {
+  "body.recovered": "The response removes the body on screen.",
+  "rivals.evacuated": "The evacuated rival leaves the street on screen.",
   "round.earshot": "engine 0.56.0 (brief 110; Keel): log only: a server listened to skips a table that would take her out of the Scout's reach (cell.listen.earshot); the host draws her at her post, no card",
   "start.weather": "engine 0.54.0 (brief 107; Keel): log only: the weather the game starts with, or the briefing's pick; a look only, the host draws it, no card",
   "start.light": "engine 0.54.0 (brief 107; Keel): log only: day or night, as the game starts or the briefing picks; a look only, the host draws it, no card",
@@ -1746,7 +1747,7 @@
  "toasts": {
   "run-seen": {
    "trigger": "the first `run.seen` of the run (Motive §8: shown on the next order)",
-   "line": "A watcher noticed an agent running. Walk, or keep out of its sight, to stay quiet."
+   "line": "Your agent was seen running. Alert stays the same."
   }
  },
  "goingLoud": {
@@ -2440,7 +2441,7 @@
    "run": {"noticed": "noticed by {who}", "unknown": "noticed by: ?"},
    "board": {
     "mission-over": "mission over", "agent-down": "down", "enforcer-inside": "inside", "agent-busy": "busy",
-    "board-running": "stop first", "board-tethered": "looping", "already-carrying": "hands full", "stand-at-getaway": "too far", "engine-error": "restart"
+    "board-tethered": "looping", "already-carrying": "hands full", "stand-at-getaway": "too far", "engine-error": "restart"
    },
    "focus": {
     "aiming": "taking aim",

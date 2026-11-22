@@ -459,7 +459,7 @@ namespace Suborned.Sim
             if (guard) return (R.RespSeenS, "The guard calls in the shooting.", "guard");
             if (PatrolWatching(shooter)) return (R.RespSeenS, "The patrol reports gunfire.", "patrol");
             if (CameraWatching("entrance", shooter)) return (R.RespSeenS, "The entrance camera reports gunfire.", "camera:entrance");
-            foreach (var c in S.Cameras) if (c.World && CameraWatching(c.Id, shooter)) return (R.RespSeenS, "A street camera reports gunfire.", "camera:" + c.Id);
+            foreach (var c in S.Cameras) if (CameraWatching(c.Id, shooter)) return (R.RespSeenS, "A street camera reports gunfire.", "camera:" + c.Id);
             return (R.RespUnseenS, "Shots are heard in the district.", "heard");
         }
 
@@ -535,17 +535,17 @@ namespace Suborned.Sim
             Note(name + ".hit." + (IsFightHostile(by) ? "fight" : by), $"{by} hits the {name}. {op.Gun.Health} health left.");
             if (op.Id == OpId.Enforcer && !down && Rolled && EnforcerWarnedAt < 0 && op.Gun.Health <= R.Sheet.WarnHealth) { EnforcerWarnedAt = Tick; Note("enforcer.warning", $"The Enforcer is badly hurt: {op.Gun.Health} health left. Get him into cover or out of the line."); } // brief 080: the warning, once, before he can drop
             if (!down) return;
+            if (op.Busy != null) { Cash += op.BusyPaid; op.Busy = null; op.BusyQuote = null; op.BusyPaid = 0; RoundHoldCut(op); } // an action cut short: the price comes back, as a refusal's does
+            op.Walk = null; op.WalkMm = 0; op.Running = false; op.Gun.Order = ""; op.Gun.Target = ""; op.CloseWalk = false; op.Gun.VolleyLeft = 0; ClearTrigger(op.Gun); // tuning.md §11
+            if (op.Carrying.HasValue) { OpOf(op.Carrying.Value).CarriedBy = null; op.Carrying = null; }
+            if (op.CarryBody.Length > 0) PutDown(op, name + " down");
+            Note(name + ".down", op.InCar ? $"The {name} is down in the car." : $"The {name} is down. Carry them into the car, or they are captured.");
             if (op.Id == OpId.Enforcer && Vale != ValeAt.Car && Vale != ValeAt.Lent && Vale != ValeAt.Out && !Range) /* engine 0.42.0 (car.lend): at the wheel of the lent car he is any operative */ // brief 029: in the range the Enforcer is any operative; brief 018 §2: once Vale is in the car, the Enforcer is any operative
             {
                 if (FightBranch == "safe" && Vale == ValeAt.WithEnforcer) Fail("rivals-reach-vale", $"The Enforcer is down and the rival crew takes {ValeName} off him.", () => ShotDown("downed-enforcer", "enforcer")); // the rivals' goal (Motive addendum Q7)
                 else Fail("enforcer-down", "The Enforcer is down.", () => ShotDown("shot", "enforcer"));
                 return;
             }
-            if (op.Busy != null) { Cash += op.BusyPaid; op.Busy = null; op.BusyQuote = null; op.BusyPaid = 0; RoundHoldCut(op); } // an action cut short: the price comes back, as a refusal's does
-            op.Walk = null; op.WalkMm = 0; op.Running = false; op.Gun.Order = ""; op.Gun.Target = ""; op.CloseWalk = false; op.Gun.VolleyLeft = 0; ClearTrigger(op.Gun); // tuning.md §11
-            if (op.Carrying.HasValue) { OpOf(op.Carrying.Value).CarriedBy = null; op.Carrying = null; }
-            if (op.CarryBody.Length > 0) PutDown(op, name + " down");
-            Note(name + ".down", op.InCar ? $"The {name} is down in the car." : $"The {name} is down. Carry them into the car, or they are captured.");
             CellDown(name); // engine 0.34.0 (Motive M067-K3 b): the last of the cell down fails the mission at once
         }
 
@@ -572,6 +572,8 @@ namespace Suborned.Sim
             if (!down) { Note("civilian.hit", $"{p.Name} ({p.Role}) is hit."); return; }
             if (p == ValeP)
             {
+                var at = ValePos() ?? resolving?.At;
+                if (at.HasValue) ShotBody(p, at.Value, "councillor");
                 Vale = ValeAt.Dead; ValeP.Down = true;
                 Fail("vale-dead", $"{Cap(ValeName)} is dead. The live capture objective has failed.", () => ShotDown("shot", "councillor"));
                 return;

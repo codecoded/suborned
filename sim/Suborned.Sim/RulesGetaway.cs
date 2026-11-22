@@ -23,19 +23,22 @@ namespace Suborned.Sim
         public int CarSightCm { get; private set; }
         /// <summary>Engine 0.57.0 (attention.seated): an operative in a public seat holds every watcher's loiter clock, as a café customer keeps none.</summary>
         public bool AttnSeated { get; private set; }
+        /// <summary>Whether ordinary stationary presence builds attention. Absent in older pinned rulebooks means true.</summary>
+        public bool AttnIdle { get; private set; } = true;
 
         void ReadAttention(JNode b)
         {
             var at = b.Opt("attention") ?? throw new FormatException("rulebook has no attention section: engine 0.11.0 runs the attention clock (brief 031)");
-            at.Only("bands", "sense", "near", "alert", "report", "run", "parked", "seated", "rule", "tag", "src", "proposed", "reason");
+            at.Only("bands", "sense", "near", "alert", "report", "run", "parked", "seated", "idle", "rule", "tag", "src", "proposed", "reason");
+            AttnIdle = at.Opt("idle")?.Bool() ?? true;
             if (at.Opt("seated") is JNode se) // engine 0.57.0 (brief 110, Sky: "Yes"): a seated operative is a customer; absent (pinned before it), a seat is ground like any other
             {
                 se.Only("counts", "rule", "tag", "src", "proposed", "reason"); OneOf(se["counts"], new[] { "customer" });
                 if (se["rule"].Str().Length == 0) throw new FormatException("attention.seated.rule is empty");
                 AttnSeated = true;
             }
-            { // engine 0.34.0 (brief 067, Motive M067-B2): the run counted on the clock; required (unknown = reject: a rulebook without it is pinned before 0.34.0)
-                var ar = at.Opt("run") ?? throw new FormatException("attention.run is missing: engine 0.34.0 counts a run on the watchers' clocks (cell.runAlert is retired; brief 067, Motive M067-B2)");
+            if (at.Opt("run") is JNode ar) // present only when running contributes to attention
+            {
                 ar.Only("at", "counts", "rule", "tag", "src", "proposed", "reason");
                 OneOf(ar["at"], new[] { "notice" }); OneOf(ar["counts"], new[] { "still" });
                 if (ar["rule"].Str().Length == 0) throw new FormatException("attention.run.rule is empty");

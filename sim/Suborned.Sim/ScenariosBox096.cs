@@ -68,7 +68,7 @@ namespace Suborned.Sim
             Add("BOX-4", "096", "Motive BOX-4: the cell shoots the rival car across the drive (engine 0.42.0: only its wheelman aboard, who stays at the wheel until it is disabled, F1; the cell fires together). Disabled, it still stands and still boxes; burning, still; exploded, the way is free.", r =>
             {
                 var g = r.G; r.To(DriveAtStart(r));
-                var spot = g.S.Grid.NearestFree(new Pt(7800, -2600))!.Value; r.To(r.SendTo(Scout, spot)); if (!r.Is(UntilBlocked(r), "the rival car stops across the drive's mouth")) return;
+                var spot = g.S.Grid.NearestFree(new Pt(7800, -2600))!.Value; r.To(Max(r.SendTo(Scout, spot), r.SendTo(Enf, spot + new Pt(0, 100)))); if (!r.Is(UntilBlocked(r), "the rival car stops across the drive's mouth")) return;
                 AllFire(r, "car:rivals");
                 r.Until(() => g.CarDisabled("car:rivals") || g.Over, T(240));
                 r.Is(g.CarDisabled("car:rivals") && g.GetawayBoxers().Contains("car:rivals"), Iv($"disabled at {Report.Clock(g.Tick)}: still boxed"));

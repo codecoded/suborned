@@ -4,7 +4,7 @@
 //  PARK-2 reroute-covers    the Reroute lands first: nothing while the patrol is away; reported 45-55 s after it is back
 //  PARK-3 wary-holds        seen past the wary mark, then rerouted: when the patrol is back the clock starts at the wary mark, reported within 25 s
 //  PARK-4 public-bay        our car at the square to the close: no clock, no report
-//  PARK-5 aboard-no-clock   agents in the parked car keep no clocks; out beside it, theirs and the car's both run
+//  PARK-5 aboard-no-clock   agents in the parked car keep no clocks; out beside it, only the private car keeps its clock under public-presence rules
 //  PARK-6 heat-scales       Heat 10: reported 18-25 s after it parks
 //  PARK-7 once-per-watcher  one report from the patrol per car per mission, however long the car stays
 //  PARK-8 drive-card        200 seeds: the Drive card's eye (the patrol) and marks match what happens
@@ -84,13 +84,13 @@ namespace Suborned.Sim
                 r.Is(!g.CarParkedPrivate && g.ParkedReports().Count == 0 && !g.Log.Exists(l => l.Code == "car.noticed") && g.WatcherIds().All(w => g.ParkedTicks(w) == 0), "no clock and no report at a public bay");
             });
 
-            Add("PARK-5", "096", "Motive PARK-5: the Tech in the parked car keeps no clock of his own while the car's runs; stepped out beside it, his and the car's both run.", r =>
+            Add("PARK-5", "096", "Motive PARK-5: the Tech in the parked car keeps no clock of his own while the car's runs; stepped out beside it, the private car still keeps its clock while ordinary public presence does not.", r =>
             {
                 var g = r.G; r.To(DriveAtStart(r)); r.Wait(T(15));
                 r.Is(g.ParkedTicks("patrol") > 0 && g.AttentionTicks("patrol", Tech) == 0, Iv($"aboard: the car's clock {g.ParkedTicks("patrol") / 10.0:0.0} s, the Tech's 0"));
                 var beside = g.S.Grid.NearestFree(g.GetawayCarPos() + new Pt(-300, -250))!.Value;
                 r.To(r.SendTo(Tech, beside)); r.Until(() => r.Op(Tech).Walk == null && !r.Op(Tech).InCar && g.PatrolWatching(r.Op(Tech).Pos), T(60)); int car0 = g.ParkedTicks("patrol"); r.Wait(T(3));
-                r.Is(g.AttentionTicks("patrol", Tech) > 0 && g.ParkedTicks("patrol") > car0, Iv($"out beside it: the Tech's clock {g.AttentionTicks("patrol", Tech) / 10.0:0.0} s and the car's both run"));
+                r.Is((g.AttentionTicks("patrol", Tech) > 0) == g.R.AttnIdle && g.ParkedTicks("patrol") > car0, Iv($"out beside it: the Tech's clock {g.AttentionTicks("patrol", Tech) / 10.0:0.0} s matches the idle rule; the private car's keeps running"));
             });
 
             Add("PARK-6", "096", "Motive PARK-6: at Heat 10 the marks are the band's (3 s, 12 s, 18 s): the patrol reports our car on the service drive 18-25 s after it parks.", r =>
