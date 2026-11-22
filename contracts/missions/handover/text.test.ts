@@ -1549,7 +1549,7 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
     expect(t.actions.disable!.by).toEqual(['tech']); expect(t.actions['ring-disable']!.label.length).toBeLessThanOrEqual(8);
     expect(t.exchange.disable).toEqual(['ack', 'arrive', 'done']);
     expect(L.price.verbs.disable).toEqual(['name', 'trail', 'alert']); expect(L.price.examples.disable).toBe('Disable · +2 · ▲1 in 14 s'); expect(L.price.examples.loop).toBe('Loop · +1 · 2:00'); expect(L.price.verbs.loop).toEqual(['name', 'trail', 'lasts']); // brief 101: the desk's report and the loop's run are world windows, so they keep their time
-    expect(t.locks['camera-dead']!.verbs).toEqual(['loop', 'disable']); expect(t.locks['disable-wrong-target']!.verbs).toEqual(['disable']);
+    expect(t.locks['camera-dead']!.verbs).toEqual(['watch', 'loop', 'disable']); expect(t.locks['disable-wrong-target']!.verbs).toEqual(['disable']);
     expect(t.locks['loop-holds']!.line).toContain('{tick}'); expect(t.locks['loop-holds']!.short).toContain('{tick}');
     expect(t.cards.items['camera.cut']!.fate).toBe('icon'); expect(t.cards.items['camera.cut-reported']!.title).toBe('The desk sees a dead camera');
     for (const sp of ['tech']) for (const ev of ['ack', 'arrive', 'done']) expect(lookup(t, { event: ev, verb: 'disable', speaker: sp }), `${ev} disable ${sp}`).toBeTruthy();
