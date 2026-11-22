@@ -209,6 +209,7 @@ namespace Suborned.Sim
                     if (Tick >= g.Until)
                     {
                         if (foes.Count > 0) { g.St = "engage"; var t0 = ChooseTarget(h.Id, g, pos, foes); g.Target = t0; g.Acc = AccFor(g, t0); g.NextShot = Math.Max(g.NextShot, Tick); } // the wait was the aim
+                        else if (g.Commit.Length > 0 && g.KiteBy == g.Commit && Tick - g.KiteSeen <= Kr.KiteLapse && PosOf(g.Commit) is Pt shooter && CommitHolds(h, shooter)) { g.St = "hold"; }
                         else if (!pinHold) { g.St = "advance"; Advance(h); } // brief 039: pinned, it waits where it is
                     }
                     break;

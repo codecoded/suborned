@@ -19,14 +19,14 @@ namespace Suborned.Sim
 
         static void HelpOnce096()
         {
-            Add("096-HELP-7", "096", "Q1 (b): after his Listen, Help on the driver (Mercenary, Help his worse approach) is the full offer once, one step dearer: the card $50,000, 35 s, +1 T, one order, turns (worse-once holds, the two-visit lines don't); given, he turns on the first visit and no not-yet is logged.", r =>
+            Add("096-HELP-7", "096", "Q1 (b): after his Listen, Help on the driver (Mercenary, Help his worse approach) is the full offer once, one step dearer: the card $50,000, 8 s, +1 T, one order, turns (worse-once holds, the two-visit lines don't); given, he turns on the first visit and no not-yet is logged.", r =>
             {
                 var g = r.G;
                 r.Eq(g.Driver.Temperament, "mercenary", "the cast's driver is a Mercenary");
                 ListenToDriver(r);
                 r.To(r.Send(Fixer, "d:Boarding pavilion"));
                 var q = g.Preview("help", Driver);
-                r.Eq((q.Outcome, q.Usd, q.WorstUsd, q.S, q.Trail, q.Orders), ("turned", 50000L, 50000L, 35L, 1L, 1L), "the full offer once: $50,000, 35 s, +1 T, one visit, turns");
+                r.Eq((q.Outcome, q.Usd, q.WorstUsd, q.S, q.Trail, q.Orders), ("turned", 50000L, 50000L, 8L, 1L, 1L), "the full offer once: $50,000, 8 s, +1 T, one visit, turns");
                 r.Eq((HoldsOn(q, "worse-once"), HoldsOn(q, "one-more-help"), HoldsOn(q, "visits-share-first"), HoldsOn(q, "visits-share-later")), ("yes", "no", "no", "absent"), "worse-once holds; the two-visit lines don't (visits-share-later is gone)");
                 int trail = g.Trail;
                 r.Do(Fixer, "turn", Driver, "help"); r.Done(Fixer);

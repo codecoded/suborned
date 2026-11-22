@@ -26,10 +26,10 @@ const BANDS: R.Band[] = ['hero', 'neutral', 'menace'];
 const val = (id: string) => raw.values[id].v as number;
 
 describe('brief 096: a worse Help once, one step dearer (Motive Q1 (b))', () => {
-  test('a Mercenary, heard: one visit, $50,000, 35 s, +1 T, turns, in every band; worse-once alone of the step lines holds', () => {
+  test('a Mercenary, heard: one visit, $50,000, 8 s, +1 T, turns, in every band; worse-once alone of the step lines holds', () => {
     for (const band of BANDS) {
       const q = card(person('mercenary'), band, HEARD);
-      expect([q.outcome, q.perOrder, q.orders], band).toEqual(['turned', { usd: 50000, s: 35, trail: 1 }, 1]);
+      expect([q.outcome, q.perOrder, q.orders], band).toEqual(['turned', { usd: 50000, s: 8, trail: 1 }, 1]);
       const on = q.lines.filter((l) => l.holds === true).map((l) => l.line);
       expect(on, band).toEqual(['base', 'worse-once']);
     }
@@ -37,7 +37,7 @@ describe('brief 096: a worse Help once, one step dearer (Motive Q1 (b))', () => 
   });
   test('after a refused small offer: $60,000 and +2 T, still one visit', () => {
     const q = card(person('mercenary', { memory: refusal }), 'neutral', HEARD);
-    expect([q.outcome, q.perOrder, q.orders]).toEqual(['turned', { usd: 60000, s: 35, trail: 2 }, 1]);
+    expect([q.outcome, q.perOrder, q.orders]).toEqual(['turned', { usd: 60000, s: 8, trail: 2 }, 1]);
   });
   test('the outcome is turned on the first order, the money charged once', () => {
     const r = R.resolve(rb, people, help, { subject: person('mercenary'), band: 'neutral', knows: HEARD });

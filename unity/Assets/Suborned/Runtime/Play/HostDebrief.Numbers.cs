@@ -18,7 +18,7 @@ namespace Suborned.Play
         void DebriefStats(BookPage p, DebriefWords dw, bool win)
         {
             var g = Game;
-            string timeWhy = win ? (g.S.ValeAtCar * Game.Hz - g.Tick is int spare && spare > 0 ? dw.F(new[] { "reasons", "time", "win" }, true, ("clock", MissionClock(spare))) : "") : NextWords(dw, "time") is { Length: > 0 } nt ? nt : p.Name;
+            string timeWhy = win ? (g.ClockValeAtCar * Game.Hz - g.Tick is int spare && spare > 0 ? dw.F(new[] { "reasons", "time", "win" }, true, ("clock", MissionClock(spare))) : "") : NextWords(dw, "time") is { Length: > 0 } nt ? nt : p.Name;
             p.Stats.Add(new BookStat { Id = "time", Icon = "p_time", Label = dw.W("numbers", "time"), Value = MissionClock(g.Tick), Why = timeWhy });
             var paid = Payments(); string key = paid.Count == 0 ? "none" : paid.Count > 1 ? "both" : paid[0].approach == "help" ? "help" : "pay";
             p.Stats.Add(new BookStat { Id = "cash", Icon = "p_cash", Label = dw.W("numbers", "cash"), Value = Usd(Spent()), Why = dw.F(new[] { "reasons", "cash", key }, true, ("who", paid.Count == 1 ? DebriefWho(paid[0].who) : null)) });

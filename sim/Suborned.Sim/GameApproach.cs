@@ -38,10 +38,10 @@ namespace Suborned.Sim
         /// <summary>The walk in now and its ticks to the act's start: the grid route from the operative to where the person will be when the
         /// operative comes within `reach` of her (a server's round read ahead, a second at a time, up to two minutes: the first second t at
         /// which the walk to her pose at t, less the reach, is no longer than t); anyone else where they stand. Null: no walk (or off the street).</summary>
-        (Path path, int ticks)? Intercept(Op op, Person p, int reach)
+        (Path path, int ticks)? Intercept(Op op, Person p, int reach, bool run = false)
         {
             var at = PersonPos(p); if (!at.HasValue) return null;
-            int speed = Math.Max(1, PaceOf(op, false));
+            int speed = Math.Max(1, PaceOf(op, run && CanRunUnladen(op)));
             (Path, int)? To(Pt where)
             {
                 var st = Walk.NearestFree(where); var rt = st.HasValue ? Walk.Route(op.Pos, st.Value) : null; if (rt == null) return null;
@@ -66,7 +66,7 @@ namespace Suborned.Sim
             var at = PersonPos(p); if (!at.HasValue) return false;
             var st = Walk.NearestFree(at.Value); return st.HasValue && Walk.Route(op.Pos, st.Value) != null;
         }
-        Path? WalkInRoute(Op op, Person p, Order o) => ListenSpots(op, o.Do) ? ListenWalk(op, p, o) : Intercept(op, p, ActReachOf(op, o.Do))?.path;
+        Path? WalkInRoute(Op op, Person p, Order o) => ListenSpots(op, o.Do) ? ListenWalk(op, p, o) : Intercept(op, p, ActReachOf(op, o.Do), o.Run)?.path;
 
         /// <summary>Ticks this operative walks before the act starts, as the card shows it (the intercept's walk less the act's reach, at a walk):
         /// 0 in place, -1 no walk. A best estimate from the person's known routine; the walk itself re-aims as she moves. A Watch may walk on
@@ -99,10 +99,10 @@ namespace Suborned.Sim
             if (!engage) return CanWalkIn(op, p) ? "" : No("no-walk", $"no walk to {p.Role}"); // engine 0.25.0 (brief 045 F5): a query needs only whether, not the walk
             var path = WalkInRoute(op, p, o); if (path == null) return No("no-walk", $"no walk to {p.Role}");
             if (CoverSnapOn) DropCover(op); // brief 027 B5: walking off a cover point, as a click move
-            op.Walk = path.Length > 0 ? path : null; op.WalkMm = 0; op.CloseWalk = false; op.Running = false; op.WalkSpeed = PaceOf(op, false);
+            op.Walk = path.Length > 0 ? path : null; op.WalkMm = 0; op.CloseWalk = false; op.Running = o.Run && CanRunUnladen(op); op.WalkSpeed = PaceOf(op, op.Running);
             if (op.Gun.Order.Length > 0) op.CloseSpent = true; // a standing fire order fires on the walk (engine 0.21.0) and its walk-in is spent, as a move
             op.Act = o; op.ActNext = Tick + T(R.ApproachRepathS);
-            Note("order.walk-in", $"{Sim.Op.Name(op.Id)} walks to {p.Role} to {(o.Do == "turn" ? o.Approach : o.Do)}.");
+            Note("order.walk-in", $"{Sim.Op.Name(op.Id)} {(op.Running ? "runs" : "walks")} to {p.Role} to {(o.Do == "turn" ? o.Approach : o.Do)}.");
             return "";
         }
 
@@ -119,7 +119,7 @@ namespace Suborned.Sim
             if (!at.HasValue) { DropAct(op, o, p.Down ? "person-down" : "person-away", p.Down ? $"{p.Role} is down" : $"{p.Role} is not out on the street"); return; }
             if (InPlace(op, o.Do, at.Value, ActReachOf(op, o.Do)))
             {
-                op.Act = null; op.Walk = null; op.WalkMm = 0;
+                op.Act = null; op.Walk = null; op.WalkMm = 0; op.Running = false;
                 var saved = refusal; refusal = default; string why;
                 listenArriving = true; // engine 0.39.0: in place was just asked; the act's own check asks reach alone
                 try { why = o.Do == "turn" ? Turn(op, o) : Scout(op, o); }
@@ -134,12 +134,13 @@ namespace Suborned.Sim
                 var path = WalkInRoute(op, p, o);
                 if (path == null) { DropAct(op, o, "no-walk", $"no walk to {p.Role}"); return; }
                 op.Walk = path.Length > 0 ? path : null; op.WalkMm = 0; op.ActNext = Tick + T(R.ApproachRepathS);
+                op.Running = op.Walk != null && o.Run && CanRunUnladen(op); op.WalkSpeed = PaceOf(op, op.Running);
             }
         }
 
         void DropAct(Op op, Order o, string code, string why)
         {
-            op.Act = null; if (!op.Down && !op.Inside && !op.InCar && !op.Driven && !op.CarriedBy.HasValue) { op.Walk = null; op.WalkMm = 0; }
+            op.Act = null; if (!op.Down && !op.Inside && !op.InCar && !op.Driven && !op.CarriedBy.HasValue) { op.Walk = null; op.WalkMm = 0; op.Running = false; }
             Dropped.Add((Tick, op.Id, o, code, why));
             Note("order.dropped", $"{Sim.Op.Name(op.Id)} {(o.Do == "turn" ? o.Approach : o.Do)} {o.Target}: {code}: {why}");
         }

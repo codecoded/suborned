@@ -33,7 +33,13 @@ namespace Suborned.Play
             if (!cam || Game == null || Game.Over) { StartClock(); return; }
             BriefMarkSeen(); BookStep = 1; BookWayOpen = ""; BookTourAt = -1; // brief 108: Skip to Begin from now on; in play the Job sign opens on the place page
             ShowBriefing = false; Paused = true; ClearHover(); Status = "";
-            StartT = BriefExitS + BriefGlideS; glideFrom = glideTo = focus; glideYawFrom = glideYawTo = yawNow; // no glide: the view behind the page is where play starts
+            bool arrival = Game.Tick == 0 && !Game.Range;
+            beginFrame = Time.frameCount;
+            StartT = arrival ? 0f : BriefExitS + BriefGlideS;
+            glideFrom = arrival ? frame.World(Game.GetawayCarPos()) : focus;
+            glideTo = arrival ? frame.World(OpeningFocus) : focus;
+            glideYawFrom = glideYawTo = yawNow;
+            ApplyGlide();
         }
 
         /// <summary>The view a hover or a click on the page turns the street to (a person's view key); "" for the page's own subject. A click pins it.</summary>

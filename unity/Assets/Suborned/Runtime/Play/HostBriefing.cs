@@ -13,7 +13,7 @@ namespace Suborned.Play
     /// engine sees the clock start, as before. Scripts and proofs that call StartClock or SetPaused(false) skip the sequence.</summary>
     public sealed partial class HandoverHost
     {
-        public const float BriefExitS = 0.3f, BriefGlideS = 3.0f, BriefSettleS = 0.3f, BriefRosterS = 0.25f;
+        public const float BriefExitS = 0.3f, BriefGlideS = 5.3f, BriefSettleS = 0.3f, BriefRosterS = 0.25f;
         /// <summary>When the clock starts, in seconds after Begin (3.6).</summary>
         public const float BriefPlayAt = BriefExitS + BriefGlideS + BriefSettleS;
         /// <summary>Seconds since Begin while the start sequence runs; -1 when it does not.</summary>
@@ -34,6 +34,7 @@ namespace Suborned.Play
         /// <summary>When the start sequence started the clock (the clock bar fades in from here); -100 when a script started it (no fade).</summary>
         public float SequencePlayedAt { get; private set; } = -100f;
 
+        int beginFrame;
         Vector3 glideFrom, glideTo; float glideYawFrom, glideYawTo;
 
         /// <summary>At a new run (Begin): the briefing's data, read once. Brief 096: the start is the book's Job page over the opening view, so the camera
@@ -59,7 +60,7 @@ namespace Suborned.Play
             ClearHover();
             if (!StartFreeze) StartT += Time.unscaledDeltaTime;
             bool skip = kb != null && kb.anyKey.wasPressedThisFrame || mouse != null && (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame || mouse.middleButton.wasPressedThisFrame);
-            if (skip && StartT < BriefExitS + BriefGlideS) { StartT = BriefExitS + BriefGlideS; StartSkips++; } // lands now; the settle and the clock follow as ever
+            if (skip && Time.frameCount != beginFrame && StartT < BriefExitS + BriefGlideS) { StartT = BriefExitS + BriefGlideS; StartSkips++; } // lands now; the settle and the clock follow as ever
             ApplyGlide();
             if (StartT >= BriefPlayAt) { StartT = -1f; BriefCamOn = false; StartClock(); SequencePlayedAt = Time.unscaledTime; }
             return true;

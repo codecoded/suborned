@@ -59,7 +59,7 @@ describe('rulebook.json: shape and the people rules it reads', () => {
       expect([base.usd, base.s, base.trail]).toEqual([`p:approaches.${a}.usd`, `p:approaches.${a}.timeS`, `p:approaches.${a}.trail`]);
     }
     expect(['ask', 'pay', 'help', 'pressure'].map((a) => [0, 1, 2].map((i) => num(rb, people, [`p:approaches.${a}.usd`, `p:approaches.${a}.timeS`, `p:approaches.${a}.trail`][i]!))))
-      .toEqual([[0, 20, 1], [70000, 35, 2], [40000, 35, 1], [0, 25, 3]]); // brief 080 pacing (Sky 2026-10-30): talking about 30 % shorter, Help still dearer in time than Pressure
+      .toEqual([[0, 4, 1], [70000, 5, 2], [40000, 8, 1], [0, 4, 3]]); // brief 080 pacing (Sky 2026-10-30): talking about 30 % shorter, Help still dearer in time than Pressure
     expect(collectRefs(rb).filter((r) => r.startsWith('p:')).length).toBeGreaterThan(10);
   });
 
@@ -92,14 +92,14 @@ describe('§04 approaches and the Handover purse (Inez, the driver)', () => {
     expect([role('waitress').need, role('waitress').approach, role('driver').need, role('driver').approach]).toEqual(['debt', 'help', 'cash', 'help']);
     const inez = card('help', person('idealist', 'debt'));
     const driver = card('help', person('idealist', 'cash'));
-    expect([inez.perOrder, inez.orders, inez.outcome]).toEqual([{ usd: 40000, s: 35, trail: 1 }, 1, 'turned']);
+    expect([inez.perOrder, inez.orders, inez.outcome]).toEqual([{ usd: 40000, s: 8, trail: 1 }, 1, 'turned']);
     expect([driver.perOrder.usd, driver.orders]).toEqual([40000, 1]);
     expect(inez.perOrder.usd + driver.perOrder.usd).toBeLessThanOrEqual(PURSE);
   });
 
   test('purse: Pay where it suits ($70,000, a Mercenary) plus the driver is over the purse; learning buys the second route', () => {
     const pay = card('pay', person('mercenary'));
-    expect([pay.perOrder, pay.outcome]).toEqual([{ usd: 70000, s: 35, trail: 2 }, 'turned']);
+    expect([pay.perOrder, pay.outcome]).toEqual([{ usd: 70000, s: 5, trail: 2 }, 'turned']);
     expect(pay.perOrder.usd + card('help', person('idealist', 'cash')).perOrder.usd).toBeGreaterThan(PURSE);
   });
 
@@ -108,9 +108,9 @@ describe('§04 approaches and the Handover purse (Inez, the driver)', () => {
     expect(asked.outcome).toBe('refused');
     expect(asked.changes.find((c) => c.do === 'charge')).toEqual({ do: 'charge', parts: ['s', 'trail'] });
     const inez = asked.after;
-    expect(card('help', inez).perOrder).toEqual({ usd: 50000, s: 35, trail: 2 });
-    expect(card('pay', { ...inez, temperament: 'mercenary' }).perOrder).toEqual({ usd: 80000, s: 35, trail: 3 });
-    expect(card('pressure', { ...inez, temperament: 'fearful' }).perOrder).toEqual({ usd: 0, s: 25, trail: 4 });
+    expect(card('help', inez).perOrder).toEqual({ usd: 50000, s: 8, trail: 2 });
+    expect(card('pay', { ...inez, temperament: 'mercenary' }).perOrder).toEqual({ usd: 80000, s: 5, trail: 3 });
+    expect(card('pressure', { ...inez, temperament: 'fearful' }).perOrder).toEqual({ usd: 0, s: 4, trail: 4 });
     expect(R.needsHold(rb, people, turn('ask'), { subject: inez, band: 'neutral', knows: ALL, given: { reach: true } })).toBe(false);
   });
 });
@@ -407,8 +407,8 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
     const unknown = structuredClone(raw); unknown.weapons.sheet.nope = 1;
     expect(Rulebook.safeParse(unknown).success).toBe(false);
   });
-  test('brief 080 pacing (Sky 2026-10-30): talking about 30 % shorter; Enter and Take stay at 38 s', () => {
-    expect(['listen-s', 'mislead-s', 'reroute-s', 'enter-s', 'take-s'].map((k) => rb.values[k]!.v)).toEqual([30, 30, 30, 38, 38]);
+  test('Listen takes ten seconds. Enter and Take take 38 seconds.', () => {
+    expect(['listen-s', 'mislead-s', 'reroute-s', 'enter-s', 'take-s'].map((k) => rb.values[k]!.v)).toEqual([10, 30, 30, 38, 38]);
   });
   test('health per kind and the costs of a hit and a down', () => {
     const h = rb.weapons.health, n = (r: string) => num(rb, people, r);
@@ -493,14 +493,14 @@ describe('sight: cones are the Scout\'s skill (Sky 2026-10-16), every agent watc
     expect(rb.sight).toBeDefined(); // the live rulebook has it (the schema lets runs pinned before it parse)
     const sight = rb.sight!;
     expect(sight.watch.s === R.event(rb, 'cell.watch').price![0]!.s).toBe(true); // the same Watch, the same time
-    expect(n(sight.watch.s)).toBe(20);
+    expect(n(sight.watch.s)).toBe(3);
     expect(typeof sight.watch.reach).toBe('object'); // brief 031: the reach is the agent's
     const reach = sight.watch.reach as Record<'scout' | 'fixer' | 'tech' | 'enforcer', string>;
     expect([reach.scout, reach.tech, reach.fixer, reach.enforcer].map(n)).toEqual([30, 24, 12, 3]);
     expect(n(reach.scout)).toBeGreaterThan(n('v:door-reach-m')); // the Scout watches from beyond every cone (the posted guard's 26 m)
     expect(n(reach.enforcer)).toBe(n('v:near-m')); // arm's length: inside a person's all-round sense
     expect(rb.values['watch-sight-reach-m']).toBeUndefined(); // retired
-    expect(n(sight.watch.routine)).toBe(40);
+    expect(n(sight.watch.routine)).toBe(6);
     expect(n(sight.watch.routine) % n(sight.watch.s)).toBe(0); // a whole number of Watches
     expect(Object.entries(sight.kinds).map(([k, v]) => `${k}:${v.learn}/${v.routine}`))
       .toEqual(['camera:watch/fixed', 'guard:watch/person', 'patrol:watch/watched', 'security:arrival/none', 'rivals:arrival/none']);
@@ -530,7 +530,7 @@ describe('sight: cones are the Scout\'s skill (Sky 2026-10-16), every agent watc
     expect(bad((k) => { k.patrol.by = ['scout', 'tech', 'tech']; })).toBe(false);
     expect(bad((k) => { k.patrol.by = ['scout', 'driver']; })).toBe(false);   // unknown = reject
   });
-  test('the attention clock: four Heat bands, generous at the start, wary within a Watch in every band (brief 031 §2.1)', () => {
+  test('the attention clock: four Heat bands, generous at the start, a Watch fits before the wary threshold in every band (brief 031 §2.1)', () => {
     const n = (r: string) => num(rb, people, r);
     expect(rb.attention).toBeDefined();
     const at = rb.attention!;
@@ -540,10 +540,10 @@ describe('sight: cones are the Scout\'s skill (Sky 2026-10-16), every agent watc
     for (const b of at.bands) {
       expect(n(b.notice)).toBeLessThan(n(b.wary));
       expect(n(b.wary)).toBeLessThan(n(b.report));
-      expect(n(b.wary)).toBeLessThanOrEqual(n(rb.sight!.watch.s)); // D1: a whole Watch in sight makes the watcher wary
+      expect(n(b.wary)).toBeGreaterThanOrEqual(n(rb.sight!.watch.s)); // A single Watch fits inside the wary threshold.
     }
     for (let i = 1; i < at.bands.length; i++) expect(n(at.bands[i]!.heatFrom)).toBeGreaterThan(n(at.bands[i - 1]!.heatFrom));
-    expect(at.bands.filter((b) => n(b.report) < n(rb.sight!.watch.s)).map((b) => b.id)).toEqual(['infamous']); // only a famous cell can't Watch from inside a sight line
+    expect(at.bands.filter((b) => n(b.report) < n(rb.sight!.watch.s)).map((b) => b.id)).toEqual([]); // One Watch fits before a report in every band.
     expect(at.sense).toEqual({ camera: 'cone', patrol: 'cone', robot: 'cone', guard: 'near', officer: 'near' }); // L2: machines by their cone only
     expect([at.near, at.alert, at.report.scan, at.report.call]).toEqual(['v:near-m', 'v:alert-inquiry', 'v:camera-scan-s', 'v:post-call-s']);
     const bad = structuredClone(raw); bad.attention.sense.robot = 'near';

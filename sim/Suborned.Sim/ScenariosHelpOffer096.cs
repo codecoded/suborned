@@ -1,5 +1,5 @@
 // Engine 0.44.0 (brief 096, Sky 2026-11-05 on paying Inez, option 1: "I think 1 is fine for now"; Motive briefs/096/motive/help-fearful.md):
-// Help before the need is heard is a small offer everyone refuses ($0, 35 s, +1 T, a remembered refusal); after the Listen a Fearful
+// Help before the need is heard is a small offer everyone refuses ($0, 8 s, +1 T, a remembered refusal); after the Listen a Fearful
 // person takes the full offer once ($40,000). H1-H7 of Motive's page, one scenario each where the engine can show it.
 using System.Collections.Generic;
 
@@ -21,7 +21,7 @@ namespace Suborned.Sim
             var g = r.G;
             r.To(r.Send(Fixer, at));
             var q = g.Preview("help", who);
-            r.Eq((q.Outcome, q.Usd, q.WorstUsd, q.S, q.Trail, q.Orders), ("small-offer", 0L, 0L, 35L, 1L, 1L), $"{who}: the card shows the small offer refused before the click: $0, 35 s, +1 T");
+            r.Eq((q.Outcome, q.Usd, q.WorstUsd, q.S, q.Trail, q.Orders), ("small-offer", 0L, 0L, 8L, 1L, 1L), $"{who}: the card shows the small offer refused before the click: $0, 8 s, +1 T");
             r.Is(q.Lines.TrueForAll(l => (l.Line == "small-offer") == (l.Holds == "yes")), $"{who}: the small-offer line alone holds");
             long cash = g.Cash; int trail = g.Trail;
             r.Do(Fixer, "turn", who, "help"); r.Done(Fixer);
@@ -36,7 +36,7 @@ namespace Suborned.Sim
 
         static void HelpOffer096()
         {
-            Add("096-HELP-1", "096", "H1 (Motive help-fearful.md): Help on Inez before the Listen, her debt only told by the briefing, is a small offer: the card says she refuses it, $0, 35 s, +1 T; given, she refuses, no money moves, she remembers a refusal (the Fixer's face) and Ask cold is closed. A person with no need told stays locked needs-need.", r =>
+            Add("096-HELP-1", "096", "H1 (Motive help-fearful.md): Help on Inez before the Listen, her debt only told by the briefing, is a small offer: the card says she refuses it, $0, 8 s, +1 T; given, she refuses, no money moves, she remembers a refusal (the Fixer's face) and Ask cold is closed. A person with no need told stays locked needs-need.", r =>
             {
                 var g = r.G;
                 r.Is(!g.Inez.KNeed && g.Inez.Suspected == "debt", "her debt is told (the briefing), not heard");
@@ -49,13 +49,13 @@ namespace Suborned.Sim
                 r.Eq(a.code, "needs-need", "the guard's need is not even told: Help stays locked (Listen first)");
             });
 
-            Add("096-HELP-2", "096", "H2: after the Listen, Help on a Fearful Inez is the full offer: the card $40,000, 35 s, +1 T, one order, turns; given, she turns on the first visit.", r =>
+            Add("096-HELP-2", "096", "H2: after the Listen, Help on a Fearful Inez is the full offer: the card $40,000, 8 s, +1 T, one order, turns; given, she turns on the first visit.", r =>
             {
                 var g = r.G;
                 ListenToInez(r);
                 r.To(r.Send(Fixer, "d:Courtyard"));
                 var q = g.Preview("help", Inez);
-                r.Eq((q.Outcome, q.Usd, q.WorstUsd, q.S, q.Trail, q.Orders), ("turned", 40000L, 40000L, 35L, 1L, 1L), "the full offer: $40,000, 35 s, +1 T, one visit, turns");
+                r.Eq((q.Outcome, q.Usd, q.WorstUsd, q.S, q.Trail, q.Orders), ("turned", 40000L, 40000L, 8L, 1L, 1L), "the full offer: $40,000, 8 s, +1 T, one visit, turns");
                 int trail = g.Trail;
                 r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
                 r.Is(g.Inez.Turned, "she turns on the first visit");
@@ -123,7 +123,7 @@ namespace Suborned.Sim
             {
                 var g = r.G; r.Wait(1); // a scenario that steps nothing has no checkpoint to replay
                 var a = g.Preview("help", Inez); var b = g.Preview("help", Driver);
-                r.Eq((a.Outcome, a.Usd, a.S, a.Trail, a.Reports), (b.Outcome, b.Usd, b.S, b.Trail, b.Reports), "one card for both: small-offer, $0, 35 s, +1 T");
+                r.Eq((a.Outcome, a.Usd, a.S, a.Trail, a.Reports), (b.Outcome, b.Usd, b.S, b.Trail, b.Reports), "one card for both: small-offer, $0, 8 s, +1 T");
                 r.Eq(a.Outcome, "small-offer", "the small offer");
             });
         }

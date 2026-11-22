@@ -118,6 +118,12 @@ namespace Suborned.Play
                 if (t.localScale != Vector3.one) t.localScale = Vector3.one;            // the capsule's cower squash: the figure crouches instead
                 bool down = lifted.TryGetValue(key, out var lift); if (down && t.localRotation != Quaternion.identity) t.localRotation = Quaternion.identity; // laid flat is the capsule's: the figure lies
                 var d = to - from; d.y = 0f; float speed = d.magnitude / 0.1f;          // the engine's step is a tenth of a second
+                bool arriving = host.Starting && g.Tick == 0 && key.StartsWith("op/", System.StringComparison.Ordinal);
+                if (arriving)
+                {
+                    d = t.position - f.lastPos; d.y = 0f;
+                    speed = Mathf.Min(4f, d.magnitude / Mathf.Max(0.001f, Time.unscaledDeltaTime));
+                }
                 bool talking = false;
                 if (convo is (string ca, string cb))
                 {
@@ -213,7 +219,7 @@ namespace Suborned.Play
                     f.anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                     f.anim.updateMode = AnimatorUpdateMode.UnscaledTime;
                 }
-                f.anim.speed = (key == DriveKey || down && g.Over ? 1f : pace) * stride; // the driven agent walks in an explore pause too
+                f.anim.speed = (arriving || key == DriveKey || down && g.Over ? 1f : pace) * stride; // the driven agent walks in an explore pause too
                 Tray(f, state is "serve" or "serve_walk"); CellProps(f, state);
                 if ((state == "shoot" || state == "cover_fire" && f.own != null) && shotNew && f.state == state) f.anim.CrossFadeInFixedTime(state, 0.03f, 0, 0f); // the next shot: the recoil again from its start (brief 112: the cell's fire from cover is one shot too)
                 else if (state != f.state && fadeOv >= 0f) { f.anim.CrossFadeInFixedTime(state, fadeOv, 0, state == "cower" ? 9f / 30f : 0f); f.state = state; } // engine 0.35: Forma's cross-fades (pin-poses.md §D); the duck plays frames 9→46, then holds its last (the clip doesn't loop)

@@ -16,7 +16,10 @@ public class BodiesIdleTests
     static readonly string Root = Engine.FindRoot(AppContext.BaseDirectory);
     static Game Play(string route, int seed, string counts, Action<Game> read)
     {
-        var s = Script.Parse(File.ReadAllText(IOPath.Combine(Root, "contracts/missions/handover/routes", route + ".json"))); s.Start.Seed = seed; s.Start.Counts.Clear();
+        var s = route == "LS-CHAIR"
+            ? Script.Parse(Script.Write(Scenarios.Run(Repo.Inputs, Scenarios.Find(route)!).G, Repo.Inputs.Hash))
+            : Script.Parse(File.ReadAllText(IOPath.Combine(Root, "contracts/missions/handover/routes", route + ".json")));
+        s.Start.Seed = seed; s.Start.Counts.Clear();
         if (counts != "unset") foreach (var kv in counts.Split(',')) { var p = kv.Split('='); s.Start.Counts[p[0]] = int.Parse(p[1]); }
         var g = Engine.New(Repo.Inputs, s.Start); int until = s.Until > 0 ? s.Until : Game.T(Repo.Inputs.SiteData.Over);
         var orders = s.Orders.Select((o, k) => (o, k)).OrderBy(x => x.o.Tick).ThenBy(x => x.k).Select(x => x.o).ToList(); int oi = 0;
@@ -55,7 +58,7 @@ public class BodiesIdleTests
     public void AListeningScoutSitsInHerChairOrStandsByAWallOutOfTheWay()
     {
         int seated = 0, ground = 0; var bad = new List<string>(); var seen = new HashSet<string>(); var chose = new HashSet<string>(); // engine 0.55.0 (cell.listen.follow): he settles after the start, so each Listen's arrival at its spot counts once
-        foreach (var route in new[] { "route-a", "route-a-pressure", "careless-takedown-seen-crowd" })
+        foreach (var route in new[] { "route-a", "route-a-pressure", "careless-takedown-seen-crowd", "LS-CHAIR" })
             foreach (var seed in new[] { 1, 2, 3, 4, 5, 6 })
                 Play(route, seed, "unset", g =>
                 {

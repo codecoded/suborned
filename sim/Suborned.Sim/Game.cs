@@ -92,7 +92,7 @@ namespace Suborned.Sim
         // numbers read once from the rules and the site
         readonly int eye, near, actReach, approachReach, listenReach, witnessRange;
         readonly int cellWalk, peopleWalk, secSpeed, guardSpeed, rivSpeed, chaseSpeed; // engine 0.34.0 (brief 067, Motive M067-B1): the cell's walk (cell.speed) and the city's (crowd.walk)
-        int walkT, stayT, backT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
+        int walkT, stayT, backT; int valeExitsS, valeAtCarS; readonly int rivalsArriveS, driverLastS, overS, blockMoveT, blockHoldT;
 
         public Game(Rules rules, Site site, Start? start = null, string? startText = null, Crowd? crowd = null, PopulationRules? population = null)
         {

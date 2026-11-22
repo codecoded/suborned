@@ -228,8 +228,8 @@ namespace Suborned.Sim
                 bool carded2 = RunPast(Scout, out var c2);
                 var p2 = g.PersonById(c2);
                 r.Is(c2.Length > 0 && p2 != null, $"a civilian ahead of the Scout's run ({c2})");
-                r.Is(carded2, "the move card names her (RunRememberedBy)");
-                r.Is(p2 != null && p2.Memory.Exists(m => m.Act == "saw-runner" && m.By == "scout"), "she remembers the Scout running (saw-runner, the face)");
+                r.Is(!carded2, "no penalty for ordinary movement at Alert 2");
+                r.Is(p2 != null && !p2.Memory.Exists(m => m.Act == "saw-runner" && m.By == "scout"), "running alone supplies no identifying memory");
                 r.Is(g.Alert == alert && g.Ledger.Count(l => l.cause.StartsWith("runner-seen", StringComparison.Ordinal)) == faults, "no found fault, Alert unchanged");
                 r.Eq(g.Trail - trail, g.R.DisableTrail, "no Trail but the second cut's");
             });

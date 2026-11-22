@@ -40,7 +40,7 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Code == "call.waitress" && l.Tick == g.Tick), "on call.waitress");
 
                 // brief 059 (Motive M059-6.1): the driver's Call, the camera block, is retired: no call:pickup window ever opens
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "call", Target = Driver }).code, "nothing-to-call", "the driver has nothing to do on a call");
+                r.Is(!g.PickupCalled, "without a pickup signal, the scheduled handover stands");
                 r.Is(WindowOf(g, "call", "pickup") == null, "no call:pickup window");
 
                 // the Tech: the loop, then the reroute

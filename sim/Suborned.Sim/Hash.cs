@@ -107,6 +107,7 @@ namespace Suborned.Sim
             g.HashCameraLines(h); // engine 0.31.0 (brief 058): Loop v2's end and the cut cameras; no bytes until either has state
             Gun(h, g.GuardGun); Gun(h, g.PatrolGun); Gun(h, g.RivalsGun); foreach (var s in g.SecGuns) Gun(h, s);
             foreach (var role in new[] { "waitress", "driver", "councillor" }) Gun(h, g.GunOf(role)!);
+            if (g.PickupCalled) h.S("early-pickup").I(g.ClockValeExits).I(g.ClockValeAtCar);
             h.I(g.LureTick).I(g.GuardAwayUntil).I(g.MissingNotice).Z(g.GuardHeld).Z(g.GuardEngaged).Z(g.GuardDown);
             var gp = g.GuardPose(); h.Z(gp.HasValue); if (gp.HasValue) h.P(gp.Value.pos);
             h.I(g.BlockMove).I(g.BlockedFrom).I(g.BlockedUntil).P(g.CarPos());

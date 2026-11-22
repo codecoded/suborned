@@ -17,6 +17,9 @@ namespace Suborned.Sim
         /// <summary>Whose call drew the visit under way or last made: the role called ("waitress", or "guard" for his own call), "" before any.
         /// Output only (the debrief's route line, RouteFacts.LuredBy), never hashed: the visit is the same from either end.</summary>
         public string LureCalled { get; private set; } = "";
+        public bool PickupCalled { get; private set; }
+        bool PickupAvailable => R.DriverPickup && !PickupCalled && !Over && !EntryInProgress && Vale == ValeAt.Office
+            && !OfficialOut && !Start.ValeWaits && PersonPos(Driver).HasValue && Tick + Hz < T(valeExitsS);
         string visitWarner = ""; // the role of the pair who remembers a Pressure on a pressed visit (the log's words only, never hashed)
 
         /// <summary>Whether this person keeps a post a visit leaves from. The engine walks a visit only from the door guard's door (GuardPose).</summary>
@@ -36,7 +39,7 @@ namespace Suborned.Sim
         /// doesn't play. Each is true from the first tick and nothing in play changes it, so the Call is absent there, never shut.</summary>
         (string code, string why)? CallAbsent(Person p)
         {
-            if (p == Driver) return ("nothing-to-call", "the driver has nothing to do on a call: his camera block is retired (brief 059, Motive M059-6.1)");
+            if (p == Driver) return ("nothing-to-call", "the driver cannot arrange a pickup now");
             if (p.Lover == null) return ("nothing-to-call", $"{p.Role} has nothing to do on a call");
             if (VisitPair(p) == null) return ("summon-no-visit", $"neither {p.Role} nor {p.Lover.Role} keeps a post to leave (only a visit from a post is modelled)");
             return null;
@@ -58,7 +61,7 @@ namespace Suborned.Sim
         {
             if (!IsPersonRoleName(role)) return false; // a crowd person or an unknown id is no contact
             var p = PersonByRole(role);
-            return p.Turned && CallAbsent(p) == null;
+            return p.Turned && (p == Driver ? PickupAvailable && !p.Down : CallAbsent(p) == null);
         }
 
         /// <summary>Whether the Fixer could call this contact now (the action card's Call): the call card's own answer, so they can't drift.</summary>
@@ -143,6 +146,8 @@ namespace Suborned.Sim
             var p = PersonByRole(role);
             if (p.Down) return No("person-down", $"{p.Role} is down");
             if (!p.Turned) return No("not-a-contact", $"{p.Role} is not a contact");
+            if (p == Driver && PickupAvailable)
+                return HoldsCellViolence(p) ? No("call-saw-violence", "the driver saw what you did and refuses to help") : "";
             if (CallAbsent(p) is { } absent) return No(absent.code, absent.why);
             var (code, why) = SummonRefusal(p, out int walk);
             return code != null ? No(code, why, tick: code == "summon-too-far" ? walk : -1) : "";
@@ -151,6 +156,17 @@ namespace Suborned.Sim
         string Call(Op op, Order o)
         {
             var no = CallRefusal(op, o.Target); if (no.Length > 0) return no;
+            if (o.Target == "driver")
+            {
+                int walkSeconds = valeAtCarS - valeExitsS;
+                valeExitsS = Tick / Hz + 1;
+                valeAtCarS = valeExitsS + walkSeconds;
+                PickupCalled = true;
+                AddTrail(R.CallTrail, "call:driver"); Remember(Driver, "job", "fixer", false);
+                Actions.Add("call:driver"); Chain.Add("driver-calls-pickup");
+                Note("call.driver", "The driver calls the office. " + Cap(ValeName) + " is coming out.");
+                return "";
+            }
             return Summon(PersonByRole(o.Target)); // CallRefusal let it through: the visit goes
         }
 

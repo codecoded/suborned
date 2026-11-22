@@ -41,7 +41,7 @@ namespace Suborned.Sim
         void GiveStart(int i)
         {
             ref var b = ref bds[i];
-            if (b.RoomFor != null && (Tick >= b.RoomEnd || !bdIx.TryGetValue(b.RoomFor, out var a) || Past(bds[a].At, b.RoomFrom, b.RoomDir, R.BodyMinCm) || Settled(in bds[a]) || !G.Within(b.Raw, b.RoomRaw, R.BodyMinCm + R.BodySpaceCm))) { b.RoomDone = b.RoomFor; b.RoomDoneUntil = Tick + RoomTicks; b.RoomFor = null; } // it stood aside once: not asked again by them for a while (engine 0.48.0: also once they stand at their own place, held by nobody, or its own way has moved on)
+            if (b.RoomFor != null && (Tick >= b.RoomEnd || !bdIx.TryGetValue(b.RoomFor, out var a) || (b.Kind == BkOp && !b.Idle && bds[a].Kind != BkOp) || Past(bds[a].At, b.RoomFrom, b.RoomDir, R.BodyMinCm) || Settled(in bds[a]) || !G.Within(b.Raw, b.RoomRaw, R.BodyMinCm + R.BodySpaceCm))) { b.RoomDone = b.RoomFor; b.RoomDoneUntil = Tick + RoomTicks; b.RoomFor = null; } // it stood aside once: not asked again by them for a while (engine 0.48.0: also once they stand at their own place, held by nobody, or its own way has moved on)
             if (b.SqzId == null) return;
             if (!bdIx.TryGetValue(b.SqzId, out var p) || bds[p].SqzId != b.Id) { b.SqzId = null; return; } // the other has left the street, or squeezes no more
             ref var o = ref bds[p];

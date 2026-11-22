@@ -142,7 +142,7 @@ namespace Suborned.Sim
                 r.Wait(1); var g = r.G;
                 r.Eq((g.S.Chime, g.S.DriverLast, g.S.ValeExits, g.S.ValeAtCar, g.S.Over, g.S.RivalsArrive), (310, 320, 330, 350, 490, 190), "the schedule");
                 r.Eq(g.NextMarkOf(g.GuardP, 1), T(60), "the guard's first mark, 1:00"); r.Eq(g.NextMarkOf(g.GuardP, T(61)), T(150), "2:30"); r.Eq(g.NextMarkOf(g.GuardP, T(151)), T(240), "4:00");
-                r.Eq(g.R.Num("v:listen-s") , 30, "Listen 30 s"); r.Eq(g.R.Num("v:mislead-s"), 30, "Mislead 30 s"); r.Eq(g.R.Num("v:reroute-s"), 30, "Reroute 30 s"); r.Eq(g.R.Num("v:enter-s"), 38, "Enter stays 38 s"); r.Eq(g.R.Num("v:take-s"), 38, "Take stays 38 s");
+                r.Eq(g.R.Num("v:listen-s") , 10, "Listen 10 s"); r.Eq(g.R.Num("v:mislead-s"), 30, "Mislead 30 s"); r.Eq(g.R.Num("v:reroute-s"), 30, "Reroute 30 s"); r.Eq(g.R.Num("v:enter-s"), 38, "Enter stays 38 s"); r.Eq(g.R.Num("v:take-s"), 38, "Take stays 38 s");
                 r.To(T(331)); r.Eq(g.Vale, ValeAt.Leaving, "at 5:31 Vale is walking to his car");
                 r.To(T(353) + 1); r.Is(g.Over && g.FailCode == "vale-leaves", $"by 5:53 he is driven away, no plan made ({g.FailCode})");
             });

@@ -19,11 +19,11 @@ describe('brief 096: the rivals round in the rulebook', () => {
     expect(rb.rivals?.block).toBeDefined(); expect(rb.rivals?.lookout).toBeDefined(); expect(rb.rivals?.turn).toBeDefined();
     expect(rb.security.unclaimed).toBeDefined(); expect(rb.car?.target?.blastStanding).toBeDefined();
   });
-  test("Motive's values: the block 10 m out, the misled man's 60 s, Pay $30,000 35 s +2 T, at most 60 % of one temperament (engine 0.42.0: the wheelman's 30 m ring retired, F1)", () => {
+  test("Motive's values: the block 10 m out, the misled man's 60 s, Pay $30,000 5 s +2 T, at most 60 % of one temperament (engine 0.42.0: the wheelman's 30 m ring retired, F1)", () => {
     const r = rb.rivals!;
     expect(r.block!.wheelmanNear).toBeUndefined(); expect(raw.values['rivals-wheelman-near-m']).toBeUndefined();
     expect([v(r.block!.standOff), v(r.block!.wheelmanOut), v(r.lookout!.follow), v(r.lookout!.misled)]).toEqual([10, 1, 280, 60]);
-    expect([v(r.turn!.pay), v(r.turn!.s), v(r.turn!.trail), v(r.turn!.maxShare)]).toEqual([30000, 35, 2, 60]);
+    expect([v(r.turn!.pay), v(r.turn!.s), v(r.turn!.trail), v(r.turn!.maxShare)]).toEqual([30000, 5, 2, 60]);
     expect([...r.turn!.kinds]).toEqual(['mercenary', 'loyal']);
   });
   test('the gang shooting holds the scene 60 s; a blast near city people is -1 Standing within 30 m', () => {

@@ -30,11 +30,11 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard"));
                 ulong before = Hash.Person(g.Inez);
-                r.Do(Scout, "watch", Inez); r.Wait(T(10));
+                r.Do(Scout, "watch", Inez); r.Wait(T(g.R.SightWatchS) / 2);
                 var a = g.ActivityOf(OpId.Scout);
                 r.Eq((a.Verb, a.Phase, a.Target, a.OnDone), ("watch", "acting", Inez, "learns the routine"), "the HUD reads Watch on Inez");
-                r.Eq(a.Progress, 500, "halfway through 20 s: 500 ‰");
-                r.Eq(a.TicksLeft, T(10), "10 s left");
+                r.Eq(a.Progress, 500, "halfway through Watch: 500 ‰");
+                r.Eq(a.TicksLeft, T(g.R.SightWatchS) / 2, "half the Watch remains");
                 r.Eq(a.CancelCost, "lost", "cancel: lost");
                 r.Do(Scout, "cancel"); r.Wait(T(15));
                 r.Eq(Hash.Person(g.Inez), before, "nothing learned: Inez's state hashes as before");
@@ -43,7 +43,7 @@ namespace Suborned.Sim
                 r.Is(g.Inez.KRoutine, "watched again in full, it lands");
                 r.To(r.Send(Scout, "beside-inez"));
                 before = Hash.Person(g.Inez);
-                r.Do(Scout, "listen", Inez); r.Wait(T(20)); r.Do(Scout, "cancel"); r.Wait(T(30));
+                r.Do(Scout, "listen", Inez); r.Wait(T(2)); r.Do(Scout, "cancel"); r.Wait(T(30));
                 r.Eq(Hash.Person(g.Inez), before, "a Listen cancelled learns nothing either");
             });
 
@@ -56,7 +56,7 @@ namespace Suborned.Sim
                 var q = g.Preview("help", Inez); // the card's outcome is the cast's: turned (an Idealist), not yet (a Fearful Inez's first of two)
                 r.Do(Fixer, "turn", Inez, "help");
                 r.Is(g.Cash < cash, "the price is held at the order");
-                r.Wait(T(20));
+                r.Wait(T((int)q.S) / 2);
                 var a = g.ActivityOf(OpId.Fixer);
                 r.Eq((a.Verb, a.OnDone, a.CancelCost), ("turn", q.Outcome, "aborted"), "the HUD reads the approach, the card's outcome and the cancel's cost");
                 r.Do(Fixer, "cancel");
@@ -93,7 +93,7 @@ namespace Suborned.Sim
                 r.Do(Tech, "reroute", "patrol"); r.Wait(T(20)); r.Do(Tech, "cancel"); r.Wait(T(30));
                 r.Is(g.PatrolAwayUntil <= g.Tick && g.Trail == trail, "the patrol keeps its sweep; no Trail");
                 r.Until(() => g.Crew[3].Mode == CrewMode.Posted && g.Crew[3].Post == "lookout", T(300));
-                r.Do(Scout, "mislead", "rival-4"); r.Wait(T(20)); r.Do(Scout, "cancel"); r.Wait(T(30));
+                r.Do(Scout, "mislead", "rival-4"); r.Wait(T(2)); r.Do(Scout, "cancel"); r.Wait(T(30));
                 r.Is(g.Crew[3].Post == "lookout" && !g.Crew[3].Misled && g.Trail == trail, "the lookout keeps his post; no Trail");
             });
 

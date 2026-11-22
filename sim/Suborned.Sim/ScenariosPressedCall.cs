@@ -42,6 +42,7 @@ namespace Suborned.Sim
             Add("P85-PRESSED", "085", "A pressed Inez's call (rulebook summon.pressed): he walks to her as ever, stays 5 s, runs back at security's speed, and the door is clear for less. No Alert and no Trail beyond the call's.", r =>
             {
                 var g = r.G; PressThenCall(r);
+                r.Until(() => g.CameraRecords().Exists(x => x.state == "landed"), T(g.R.CamScanS + g.R.CamCallS + 1));
                 if (!Window(r, Inez, out var w)) return;
                 r.Is(w.pressed < w.plain, $"the card's read: {w.pressed} ticks pressed, shorter than the plain {w.plain}");
                 long trail = g.Trail; int alert = g.Alert;
@@ -89,6 +90,7 @@ namespace Suborned.Sim
                 r.To(r.Send(Fixer, "d:Courtyard"));
                 r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer); r.Is(g.Inez.Has("help") && !g.Inez.Turned, "one Help, not yet turned");
                 r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer); r.Is(g.Inez.Turned, "the Pressure turned her");
+                r.Until(() => g.CameraRecords().Exists(x => x.state == "landed"), T(g.R.CamScanS + g.R.CamCallS + 1));
                 r.Is(g.CameraRecords().Exists(x => x.cam == "mast-z0" && x.subject == Inez && x.approach == "pressure" && x.state == "landed") && g.Log.Exists(l => l.Code == "report"), "the mast taped the Pressure and she reported it");
                 r.Eq((g.Alert, g.Reported), (1, 1), "one act, one incident: Alert 1");
                 if (!Window(r, Inez, out var w)) return;

@@ -208,7 +208,7 @@ namespace Suborned.Play
                 v.On = true; var full = new List<Vector3>(); foreach (var q in path) full.Add(frame.World(q));
                 var carT = views.Find("car/official");
                 if (v.Driving && carT && carT.gameObject.activeInHierarchy) Trim(carT.position, full, v.Route); else v.Route.AddRange(full);
-                int leave = Game.T(g.S.ValeAtCar) + Game.T(g.R.ValeInS), arrive = g.CarInBayTick >= 0 ? g.CarInBayTick : leave + DriveProfileTicks(path);
+                int leave = Game.T(g.ClockValeAtCar) + Game.T(g.R.ValeInS), arrive = g.CarInBayTick >= 0 ? g.CarInBayTick : leave + DriveProfileTicks(path);
                 bool shutHover = Drive.Ghosts.Exists(x => x.Hover && x.Shut);
                 v.From = MissionClock(leave); v.To = MissionClock(arrive); v.Plate = shutHover ? g.Driver.KRoutine : hov; // Glyph 2026-10-26 §3: on a shut stand's hover only once the driver's routine is known
                 v.PlateAt = full[full.Count / 2];

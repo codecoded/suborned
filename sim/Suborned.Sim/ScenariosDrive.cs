@@ -143,17 +143,17 @@ namespace Suborned.Sim
                 r.Is(free && !through, "never through the corner");
             }, DriveStart());
 
-            Add("D06", "—", "One run, one notice (cell.drive: a run is a span): the Scout clicked to the guard's forecourt, then run zig-zagging in his sight for 4 s with Shift held throughout: one span, so run.seen once however the heading turns (engine 0.34.0: no Alert, a run is no found fault). A walk sample ends the span; running again is a new span, noticed again.", r =>
+            Add("D06", "—", "The Scout runs across the forecourt in view of the guard, walks, then runs again. Neither run creates an incident.", r =>
             {
                 var g = r.G; int v = RunCm(r);
                 r.To(r.SendTo(Scout, r.Stand("d:Office approach")));
                 for (int k = 0; k < T(4); k++) Push(r, Scout, (k / 5) % 2 == 0 ? new Pt(v, v / 3) : new Pt(-v, v / 3), 1, run: true);
                 int seen = g.Log.Count(l => l.Code == "run.seen");
-                r.Eq((seen, g.Alert), (1, 0), "one span: seen once (run.seen), no Alert (engine 0.34.0, brief 067, Motive M067-B2: cell.runAlert is retired; 0.33.1: Alert 1)");
-                r.Is(r.Op(Scout).RunSeen.Count >= 1, $"the people who saw her remember the run once each ({r.Op(Scout).RunSeen.Count})");
+                r.Eq((seen, g.Alert), (0, 0), "ordinary running causes no incident");
+                r.Is(r.Op(Scout).RunSeen.Count == 0, $"the people who saw her remember the run once each ({r.Op(Scout).RunSeen.Count})");
                 Push(r, Scout, new Pt(0, WalkCm(r)), 3); // a walk: the span ends
                 for (int k = 0; k < T(2); k++) Push(r, Scout, new Pt(0, -v), 1, run: true);
-                r.Eq(g.Log.Count(l => l.Code == "run.seen"), 2, "a new span is noticed again");
+                r.Eq(g.Log.Count(l => l.Code == "run.seen"), 0, "changing gait creates no incident");
             }, DriveStart());
 
             Add("D07", "—", "Loop v2 (brief 058 §6, engine 0.31.0; it was the tether): the Tech runs (a click) to the cabinet and loops the entrance camera. Driven with Shift held she runs (no tether: a run is not refused), and 2 m off the cabinet and beyond the loop runs on.", r =>

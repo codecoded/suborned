@@ -98,6 +98,7 @@ namespace Suborned.Sim
                 r.Is(q.Recorded != "no" && q.RecordedBy == MastCam && q.RecordAlert == 1 && q.Reports == "yes" && q.AlertIfReported == 1, Iv($"the card: the mast would tape it and she would report it, ▲1 each ({Mark(q)}; reports {q.Reports} ▲{q.AlertIfReported})"));
                 int start = g.Tick;
                 r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
+                r.Until(() => g.CameraRecords().Exists(x => x.state == "landed"), T(g.R.CamScanS + g.R.CamCallS + 1));
                 r.Is(g.CameraRecords().Exists(x => x.cam == MastCam && x.subject == Inez && x.state == "landed") && g.Log.Exists(l => l.Code == "report" && l.Tick >= start), "the mast's record landed and she reported the approach");
                 r.Eq((g.Alert, g.Reported), (1, 1), "one act, one incident: Alert 1" + AlertWhy(g));
                 r.Eq(g.Log.Count(l => l.Code == "alarm.dispatches" && l.Tick >= start), 1, "the desk sent its robots once");

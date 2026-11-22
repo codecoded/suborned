@@ -111,7 +111,7 @@ namespace Suborned.Play
             if (Game == null || rangeMode || Fault != null) return;
             if (!DialPending) { dialEdit = null; if (ShowBriefing) BriefingBegin(); return; }
             var c = new SortedDictionary<string, int>(StringComparer.Ordinal);
-            foreach (var kv in dialEdit) if (DialTodayOf(kv.Key) is { } t && kv.Value != t.Today) c[kv.Key] = kv.Value; // a kind at today's number stays unset: today's world byte for byte
+            foreach (var kv in dialEdit) if (DialTodayOf(kv.Key) is { } t && (kv.Value != t.Today || DialPrefs && kv.Key == Population.Cars)) c[kv.Key] = kv.Value; // Remember an explicitly empty street too.
             if (DialPrefs) try { foreach (var k in Population.Kinds) { PlayerPrefs.DeleteKey(DialPrefPrefix + k); if (c.TryGetValue(k, out var n)) PlayerPrefs.SetInt(DialPrefKeyOf(k), n); else PlayerPrefs.DeleteKey(DialPrefKeyOf(k)); } PlayerPrefs.Save(); }
                 catch (Exception e) { Debug.LogWarning($"Dial: the numbers were not kept for the next launch ({e.Message}); this game plays them"); } // a save that fails never stops the game
             countsAgain = c; seedAgain = Game.Seed; dialEdit = null;
@@ -149,6 +149,8 @@ namespace Suborned.Play
                     if (PlayerPrefs.HasKey(DialPrefPrefix + k)) { dropped.Add($"{k} {PlayerPrefs.GetInt(DialPrefPrefix + k)}"); PlayerPrefs.DeleteKey(DialPrefPrefix + k); } // step 0's: people counted the zone then
                     var key = DialPrefKeyOf(k); if (DialTodayOf(k) != null && PlayerPrefs.HasKey(key)) (c ??= new SortedDictionary<string, int>(StringComparer.Ordinal))[k] = Mathf.Clamp(PlayerPrefs.GetInt(key), 0, Population.CountCap);
                 }
+                if (DialTodayOf(Population.Cars) is { } roads && (c == null || !c.ContainsKey(Population.Cars)))
+                    (c ??= new SortedDictionary<string, int>(StringComparer.Ordinal))[Population.Cars] = Mathf.Clamp(8, roads.Floor, roads.Max);
                 if (dropped.Count > 0) PlayerPrefs.Save(); // gone on disk too
                 Debug.Log($"Dial: the numbers last played: {(c == null ? "none" : string.Join(", ", System.Linq.Enumerable.Select(c, kv => $"{kv.Key} {kv.Value}")))}{(dropped.Count > 0 ? $"; dropped step 0's, kept when people counted the whole zone ({string.Join(", ", dropped)})" : "")}");
             }

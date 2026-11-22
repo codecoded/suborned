@@ -60,10 +60,12 @@ namespace Suborned.Sim
 
         /// <summary>mm a tick the operative may move driven: a walk (a carrier's while carrying), or a run when one is allowed (RunRefusal less
         /// "busy": a busy agent is pinned anyway), scaled by the playground pace.</summary>
+        bool CanRunUnladen(Op op) => !(op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking))
+            && !op.Carrying.HasValue && op.CarryBody.Length == 0 && !(op.Id == OpId.Tech && Tethered);
+
         int DriveCapMm(Op op, bool run)
         {
-            bool canRun = run && !(op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) && !op.Carrying.HasValue && op.CarryBody.Length == 0 && !(op.Id == OpId.Tech && Tethered);
-            int pace = PaceOf(op, canRun);
+            int pace = PaceOf(op, run && CanRunUnladen(op));
             return Math.Max(1, (int)((long)pace * DrivePacePm / 1000));
         }
         bool DriveCanRun(Op op) => op.DriveRun && DriveCapMm(op, true) > DriveCapMm(op, false);

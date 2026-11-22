@@ -167,7 +167,7 @@ public class SightTests
     public void TheRulebookSightSectionIsReadStrictly()
     {
         var r = Repo.Inputs.Rules;
-        Assert.Equal((20, 40), (r.SightWatchS, r.SightRoutineS));
+        Assert.Equal((3, 6), (r.SightWatchS, r.SightRoutineS));
         // brief 031: the reach is the agent's (Scout 30, Fixer 12, Tech 24, Enforcer 3 m); SightReachCm is the Scout's, for hosts that read one
         Assert.Equal(new[] { 3000, 1200, 2400, 300 }, r.WatchReachCms);
         Assert.Equal(3000, r.SightReachCm);

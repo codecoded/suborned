@@ -46,7 +46,7 @@ namespace Suborned.Play
         /// <summary>The words with their times, from the mission's own clock (the site's seconds).</summary>
         string BookTimes(string w)
         {
-            var s = Game.S; foreach (var (k, sec) in new[] { ("valeExits", s.ValeExits), ("valeAtCar", s.ValeAtCar), ("driverLast", s.DriverLast), ("chime", s.Chime) }) w = w.Replace("{t:" + k + "}", MissionClock(sec * Game.Hz));
+            var s = Game.S; foreach (var (k, sec) in new[] { ("valeExits", Game.ClockValeExits), ("valeAtCar", Game.ClockValeAtCar), ("driverLast", s.DriverLast), ("chime", s.Chime) }) w = w.Replace("{t:" + k + "}", MissionClock(sec * Game.Hz));
             return w;
         }
 

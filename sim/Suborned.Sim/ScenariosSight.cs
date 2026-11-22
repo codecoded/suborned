@@ -47,7 +47,7 @@ namespace Suborned.Sim
                 r.Eq(g.KnownFans().Count, 0, "no cone is drawn by default");
                 var door = r.Stand("d:Office entrance");
                 var q0 = g.QuoteMove(Scout, door);
-                r.Is(q0.RunSeenBy.Contains("camera:entrance"), "the engine's truth: the entrance camera would see the run");
+                r.Is(q0.RunFree && q0.RunRememberedBy.Count == 0, "ordinary movement has no running penalty");
                 r.Is(q0.Seen.Seen == "?" && q0.Seen.SeenBy.Count == 0 && q0.Seen.MaybeSeenBy.Contains("camera:entrance"), $"the card shows '?' (seen {q0.Seen.Seen}, maybe {string.Join(",", q0.Seen.MaybeSeenBy)})");
                 r.Eq(q0.Seen.AlertIfSeen, g.Alert, "and the Alert a seen run would raise: the Alert now (engine 0.34.0, brief 067, Motive M067-B2: cell.runAlert is retired; a run is noticed on the watchers' clocks, attention.run)");
                 var far = g.QuoteMove(Scout, r.Stand("crew:fixer"));
@@ -75,7 +75,7 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Code == "scout.watch.watched" && l.Text.Contains("entrance")), "the Scout says what was learned");
                 r.Eq(string.Join(",", g.KnownFans().Select(f => f.Watcher)), "camera:entrance", "the Alt view: the one cone learned");
                 var q1 = g.QuoteMove(Scout, door);
-                r.Is(!q1.Seen.MaybeSeenBy.Contains("camera:entrance") && q1.Seen.SeenBy.Contains("camera:entrance") == q1.RunSeenBy.Contains("camera:entrance"), "the card now shows the camera's true answer");
+                r.Is(!q1.Seen.MaybeSeenBy.Contains("camera:entrance") && q1.Seen.SeenBy.Contains("camera:entrance"), "the card now shows the camera's true answer");
                 var c = g.Preview("help", Inez).Seen;
                 r.Is(c != null && !c.MaybeSeenBy.Contains("camera:entrance"), "the action card's 'seen by' reads the same knowledge");
                 r.Eq(g.Routine("camera:entrance", T(60))!.Count, 0, "a camera has no schedule: it does not move");
@@ -90,14 +90,14 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => Watchable(r, "patrol"), T(120)), "the patrol comes within reach and in line");
                 r.Do(Scout, "watch", "patrol"); r.Done(Scout);
                 var k1 = g.Known("patrol")!;
-                r.Is(k1.Sight && !k1.Routine && k1.WatchedS == 20 && k1.RoutineNeedsS == 40, $"one Watch: its sight, not its routine ({k1.WatchedS} of {k1.RoutineNeedsS} s)");
+                r.Is(k1.Sight && !k1.Routine && k1.WatchedS == g.R.SightWatchS && k1.RoutineNeedsS == g.R.SightRoutineS, $"one Watch: its sight, not its routine ({k1.WatchedS} of {k1.RoutineNeedsS} s)");
                 r.Is(g.Routine("patrol", T(100)) == null, "no schedule yet");
                 r.Is(r.Until(() => Watchable(r, "patrol"), T(120)), "in reach and in line again");
                 r.Do(Scout, "watch", "patrol");
                 r.Eq(g.ActivityOf(OpId.Scout).OnDone, "learns the sight and the routine", "the HUD says the second Watch teaches the routine");
                 r.Done(Scout);
                 var k2 = g.Known("patrol")!;
-                r.Is(k2.Routine && k2.RoutineAt == g.Tick && k2.WatchedS == 40, "two Watches: the routine is known");
+                r.Is(k2.Routine && k2.RoutineAt == g.Tick && k2.WatchedS == g.R.SightRoutineS, "two Watches: the routine is known");
                 var ev = g.Routine("patrol", T(g.R.PatrolPeriodS))!;
                 r.Is(ev.Count > 0 && ev[0].Tick == g.Tick && (ev[0].What == "sees-door") == g.SweepSeesEntrance(g.Tick), $"the schedule starts with where it stands now ({ev[0].What})");
                 r.Is(ev.Exists(e => e.What == "turn-at-a") && ev.Exists(e => e.What == "turn-at-b"), "a whole period names both turns");

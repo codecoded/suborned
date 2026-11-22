@@ -165,7 +165,7 @@ namespace Suborned.Sim
                 r.Is(g.Log.Where(l => l.Code == "attention.noticed" || l.Code == "attention.wary" || l.Code == "attention.reporting").All(l => l.Tick <= reporting), "every stage while she runs in its sight");
             });
 
-            Add("PACE-RUN-NOT-ALERT", "067", "Motive's RUN-NOT-ALERT, M067-B2: route A's opening (the Scout runs to Inez, the Tech to the cabinet, the Fixer to the courtyard) runs past the Office's shift guards. Engine 0.34.0: they remember the runners and the sighting is logged (run.seen), but a run is no found fault: Alert 0 (0.33.1: Alert 1 at 0:02.8).", r =>
+            Add("PACE-RUN-NOT-ALERT", "067", "The opening crew run past the shift guards. Ordinary movement leaves no sighting, memory or Alert.", r =>
             {
                 var g = r.G;
                 g.Issue(new Order { Tick = 0, Op = Scout, Do = "move", To = "beside-inez", Run = true });
@@ -174,8 +174,8 @@ namespace Suborned.Sim
                 g.Issue(new Order { Tick = 0, Op = Enf, Do = "move", Point = new Pt(5650, -4750) });
                 r.To(T(30));
                 int seen = g.Log.Count(l => l.Code == "run.seen");
-                r.Is(seen >= 1, $"the runs are seen: {seen} sighting(s) logged ({string.Join(" | ", g.Log.Where(l => l.Code == "run.seen").Select(l => Report.Clock(l.Tick) + " " + l.Text))})");
-                r.Is(SawRunner(g) > 0, $"security staff remember the runners ({SawRunner(g)})");
+                r.Is(seen == 0, $"ordinary runs generate no report: {seen} sighting(s) logged ({string.Join(" | ", g.Log.Where(l => l.Code == "run.seen").Select(l => Report.Clock(l.Tick) + " " + l.Text))})");
+                r.Is(SawRunner(g) == 0, $"no running-specific memories ({SawRunner(g)})");
                 r.Eq(g.Alert, 0, "no Alert: seen and suspicious, never an Alert on its own");
                 r.Is(!g.Ledger.Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), "no found fault");
             });

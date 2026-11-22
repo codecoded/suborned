@@ -411,6 +411,12 @@ namespace Suborned.Play
             foreach (var kv in things)
             {
                 var (t, from, to, shown) = kv.Value;
+                if (host.Starting && host.Game.Tick == 0 && !host.Game.Range)
+                {
+                    var pose = to;
+                    ArrivalPose(kv.Key, host.StartT, ref pose, ref shown);
+                    if (kv.Key == GetawayKey || kv.Key.StartsWith("op/", System.StringComparison.Ordinal)) from = to = pose;
+                }
                 if (t.gameObject.activeSelf != shown) t.gameObject.SetActive(shown);
                 if (shown && kv.Key == DriveKey)
                 {   // the controller's (brief 025); brief 055: the floor comes in 0.25 m cells (a stair steps about 0.1 m a cell), so its height eases over ~0.1 s

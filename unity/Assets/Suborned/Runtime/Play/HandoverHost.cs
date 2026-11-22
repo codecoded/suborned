@@ -511,6 +511,7 @@ namespace Suborned.Play
             if (Game == null || i < 0 || i > 3) return;
             bool twice = !add && lastPortrait == i && Time.unscaledTime - lastPortraitAt < controls.doubleSeconds; lastPortrait = i; lastPortraitAt = Time.unscaledTime;
             if (Driving && !add) TakeInSquad(i); else Select((OpId)i, add); lastAgentKey = i; lastAgentKeyAt = Time.unscaledTime;
+            if (!add && !twice && !Driving && OpenEarnedCalls(i)) return;
             if (add || Following) return; // Glyph 067 G1: Shift or Ctrl adds or toggles and never moves the camera (a group can't be framed at play zoom)
             if (twice && cam) cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); // a double click frames at play zoom
             CentreOn((OpId)i); PortraitFrames++;
@@ -1073,7 +1074,7 @@ namespace Suborned.Play
         {
             var g = Game; int t = g.Tick, best = int.MaxValue;
             void C(int x) { if (x > t && x < best) best = x; }
-            var s = g.S; foreach (var k in new[] { s.RivalsArrive, s.Chime, s.DriverLast, s.ValeExits, s.ValeAtCar, s.Over }) C(Game.T(k));
+            var s = g.S; foreach (var k in new[] { s.RivalsArrive, s.Chime, s.DriverLast, g.ClockValeExits, g.ClockValeAtCar, s.Over }) C(Game.T(k));
             int speed = g.R.CellSpeed;
             foreach (var op in g.Ops) { if (op.Busy != null) C(op.BusyEnd); int sp = op.WalkSpeed > 0 ? op.WalkSpeed : speed; if (op.Walk != null) C(t + (int)((op.Walk.Length - op.WalkMm + sp - 1) / sp)); }
             if (g.LureTick >= 0) { int w = g.VisitWalkTicks, st = Game.T(g.R.SummonStayS); C(g.LureTick + w); C(g.LureTick + w + st); C(g.GuardAwayUntil); } // the summoned lover's walk (the engine's) and stay (the rulebook's)
@@ -1110,6 +1111,7 @@ namespace Suborned.Play
         ActionPanel BuildPanel(Target t, Vector2 screen, int onlyAgent = -1)
         {
             var pn = new ActionPanel { T = t, Gui = new Vector2(screen.x, (cam ? cam.pixelHeight : Screen.height) - screen.y), World = TargetWorld(t) };
+            if (t.Kind == "contacts") { EarnedCallRows(pn); return pn; }
             if (Text != null && KnownPerson(t) && Text.TargetAbout.TryGetValue(TextKey(t), out var about)) pn.About = about; // a person's about only once the Scout has heard them
             if (t.Kind == "crowd")
             {
@@ -1397,7 +1399,7 @@ namespace Suborned.Play
         void Give(OpId by, Order o, Target t, Vector2? screen)
         {
             if (o.Do == "drop" && Game.Ops[(int)by].Carrying.HasValue && Game.Ops[(int)by].CarryBody.Length == 0) { CancelAgent((int)by, screen); return; } // item 31: an agent is laid down by the engine's cancel
-            var order = new Order { Op = Op.Name(by), Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How, Force = o.Force };
+            var order = new Order { Op = Op.Name(by), Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How, Force = o.Force, Run = giveRun && RunInRulebook && WalksIn(by, o) };
             pending[(int)by] = null;
             ActWalk w = null; Guard("walk", () => w = ActPlace(by, order, t));
             var tw = TargetWorld(t);

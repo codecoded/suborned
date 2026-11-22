@@ -43,6 +43,28 @@ namespace Suborned.Play
             return i;
         }
 
+        static readonly string[] CallRoles = { "waitress", "guard", "driver" };
+
+        bool OpenEarnedCalls(int agent)
+        {
+            if (agent != (int)OpId.Fixer || Game.Range || !Able(agent) || !System.Array.Exists(CallRoles, CallOffered)) return false;
+            var at = UnityEngine.InputSystem.Mouse.current?.position.ReadValue() ?? lastHover;
+            return ClickRing(new Target { Kind = "contacts", Key = "fixer", Label = "Calls" }, at);
+        }
+
+        void EarnedCallRows(ActionPanel panel)
+        {
+            foreach (string role in CallRoles)
+            {
+                if (!CallOffered(role)) continue;
+                var row = TurnedRow(new Target { Kind = "person", Key = role, Id = role, Label = Name(role) });
+                row.Available = row.Lock.ok;
+                if (role == "driver") row.Verb = row.I.Name = row.I.Label = "Call for pickup";
+                panel.Rows.Add(row);
+            }
+            KeyRows(panel);
+        }
+
         Intent Call(Target t)
         {
             var i = new Intent { Slot = -1, Label = $"Call {t.Label}", Order = new Order { Op = "fixer", Do = "call", Target = t.Key } };

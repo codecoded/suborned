@@ -273,13 +273,13 @@ namespace Suborned.Sim
                 if (r.Inputs == null) { r.Wait(1); return; } // a test that plays bodies on its own inputs
                 var alt = Alt(r, With059(r.Inputs!, "\"act-pace-pct\": \\{ \"v\": 100,", "\"act-pace-pct\": { \"v\": 50,"));
                 var g = alt.G; r.Eq(g.R.ActPacePct, 50, "the dial at 50");
-                r.Eq((g.R.Num("v:watch-s"), g.R.Num("v:listen-s"), g.R.Num("v:loop-s"), g.R.Num("p:approaches.pay.timeS"), g.R.Num("v:loop-run-s")), (10L, 15L, 10L, 18L, 120L), "watch 10, listen 15, loop 10, pay 18 (35 x 0.5, rounded); the loop's run 120 (no act)");
-                r.Eq(g.Quote(g.R.Ev("scout.listen"), g.Inez).S, 15L, "the Listen's card: 15 s");
+                r.Eq((g.R.Num("v:watch-s"), g.R.Num("v:listen-s"), g.R.Num("v:loop-s"), g.R.Num("p:approaches.pay.timeS"), g.R.Num("v:loop-run-s")), (2L, 5L, 10L, 3L, 120L), "watch 2, listen 5, loop 10, pay 3 (rounded); the loop's run 120 (no act)");
+                r.Eq(g.Quote(g.R.Ev("scout.listen"), g.Inez).S, 5L, "the Listen's card: 5 s");
                 alt.To(alt.Send(Tech, "cabinet")); alt.Do(Tech, "loop", "entrance"); r.Eq(alt.Op(Tech).BusyEnd - g.Tick, T(10), "the Loop takes 10 s"); alt.Done(Tech);
                 alt.To(alt.Send(Scout, "beside-inez")); alt.Do(Scout, "listen", Inez);
                 if (!r.Is(alt.Until(() => alt.Op(Scout).Busy?.Do == "listen", T(60)), "the Listen starts")) return;
                 int start = g.Tick, inReach = 0; while (alt.Op(Scout).Busy?.Do == "listen" && !g.Over) { g.Step(); var her = g.PersonPos(g.Inez); if (her.HasValue && G.Within(alt.Op(Scout).Pos, her.Value, g.R.ListenReachCm)) inReach++; }
-                r.Is(g.Inez.KNeed && Math.Abs(inReach - T(15)) <= 1, $"heard after {inReach} ticks in reach ({(g.Tick - start) / Game.Hz} s in all)");
+                r.Is(g.Inez.KNeed && Math.Abs(inReach - T(5)) <= 1, $"heard after {inReach} ticks in reach ({(g.Tick - start) / Game.Hz} s in all)");
                 foreach (var c in alt.Checks) if (!c.ok) r.Is(false, "alt: " + c.what);
             });
         }

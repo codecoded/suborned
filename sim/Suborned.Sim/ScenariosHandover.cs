@@ -200,6 +200,7 @@ namespace Suborned.Sim
                     r.Done(Fixer);
                 }
                 r.Is(g.Inez.Turned, "Inez is turned");
+                r.To(g.RivalAt - T(45)); // keep the entrance feed covered for the planned entry after the car arrives
                 r.Done(Tech); r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from 0:34 by the tether)
                 r.Do(Fixer, "call", Inez);
                 r.To(g.RivalAt); r.To(Math.Max(g.Tick, r.Arrival(Scout))); /* brief 096: the false tip is retired; no crew here (NoCrew) */ 
@@ -568,7 +569,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 // FIX → start state: the driver is turned at the start (the mechanics, not the turn, are under test)
                 r.Send(Enf, "d:Service lane"); r.Send(Scout, "d:Meet driver"); r.Send(Tech, "cabinet");
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "call", Target = Driver }).code, "nothing-to-call", "the driver's Call is retired (M059-6.1): nothing-to-call");
+                r.Is(!g.PickupCalled, "without a pickup signal, the scheduled handover stands");
                 // a car stands on the drive grid, at its place's nearest drivable cell (rulebook car.drive)
                 var pickup = g.S.CarStand(g.S.CarPickup); var bay = g.S.CarStand(g.S.CarService);
                 r.Eq(g.CarPos(), pickup, "the car starts at Vale's pickup");
@@ -861,7 +862,7 @@ namespace Suborned.Sim
                 r.Is(g.ExposedByWatcher.Contains(Driver), "logged beside the driver: the driver is exposed");
                 // brief 059 (Motive M059-6.1): the driver's Call, his only job for the cell, is retired, so his exposure has no job to show:
                 // the job-exposed ladder is Inez's call's (N17 family) now
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "call", Target = Driver }).code, "nothing-to-call", "no Call on the driver");
+                r.Is(!g.PickupCalled, "without a pickup signal, the scheduled handover stands");
                 r.To(T(200));
                 var next = g.BetweenMissions(g.Investigate());
                 r.Is(!next.Lines.Exists(l => l.Line == "ladder" && l.Who == Driver && l.Detail.StartsWith("job-exposed", StringComparison.Ordinal)), "no job, nothing exposed on the ladder");

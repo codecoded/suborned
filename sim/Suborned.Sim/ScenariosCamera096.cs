@@ -3,7 +3,7 @@
 //  CAM-1 pay-live-camera      the Pay at Lukac's spot under the live pickup camera: recorded, lands at the desk's next scan + 3 s; +1 T on the Pay's own;
 //                             Alert 1; one incident; Standing unmoved; the Fixer's face on the lead; the card said so before the commit
 //  CAM-2 pay-under-loop       the same under a loop that covers the whole Pay: no record, the Pay's own Trail, Alert 0; the card shows no eye
-//  CAM-3 loop-ends-mid-pay    the loop runs out 10 s into the Pay: recorded from the loop's end; the card said "loop ends · on camera"
+//  CAM-3 loop-ends-mid-pay    the loop runs out halfway through the Pay: recorded from the loop's end; the card said "loop ends · on camera"
 //  CAM-4 help-stays-private   Help with the camera live: no record
 //  CAM-5 pressure-one-incident a Pressure seen by a camera and by people: one incident, +1 T, not +2
 //  CAM-6 out-of-view          a Pay where no camera sees either person (Inez at the café): no record
@@ -72,12 +72,12 @@ namespace Suborned.Sim
                 r.Eq(g.Alert, 0, "Alert 0" + AlertWhy(g));
             });
 
-            Add("CAM-3", "096", "Motive CAM-3: the loop runs out 10 s into the Pay. Before the commit the card says the loop ends inside the act, on camera; the camera records it from the loop's end.", r =>
+            Add("CAM-3", "096", "Motive CAM-3: the loop runs out halfway through the Pay. Before the commit the card says the loop ends inside the act, on camera; the camera records it from the loop's end.", r =>
             {
                 var g = r.G; ListenDriver(r); LoopPickup(r);
                 r.To(r.SendTo(Fixer, g.S.Grid.NearestFree(g.PersonPos(g.Driver)!.Value + new Pt(-150, 0)) ?? r.Op(Fixer).Pos)); // in reach: no walk in
                 var q0 = g.Preview("pay", Driver);
-                r.To(g.LoopUntil - T(10) - T(q0.WalkS));
+                r.To(g.LoopUntil - T((int)q0.S) / 2 - T(q0.WalkS));
                 var q = g.Preview("pay", Driver);
                 r.Is(q.Recorded != "no" && q.RecordLoopEnds == g.LoopUntil, Iv($"the card: loop ends {Report.Clock(g.LoopUntil)}, on camera ({Mark(q)})"));
                 int ends = g.LoopUntil;

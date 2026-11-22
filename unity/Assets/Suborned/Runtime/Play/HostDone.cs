@@ -303,7 +303,7 @@ namespace Suborned.Play
                     }
                     break;
                 case "call":
-                    if (l.Code == "call.driver") { chip.AnchorKey = "camera/pickup"; Line("eye_shut", DW("gain.camera-blind", "Camera blind")); }
+                    if (l.Code == "call.driver") { chip.AnchorKey = "car/official"; Line("call", "Pickup called"); }
                     else if (l.Code is "call.waitress" or "call.guard") { chip.AnchorKey = "guard"; /* brief 102 (option 1): the guard's own call clears the door too */ Line("eye_shut", DW("gain.guard-away", "Guard away")); }
                     else { chip.AnchorKey = l.Code[5..]; Line("call", VerbWord("call")); }
                     break;

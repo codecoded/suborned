@@ -136,9 +136,9 @@ namespace Suborned.Sim
             if (rt == null) return No("no-walk", $"no walk to {m.Id}");
             if (!engage) return "";
             if (CoverSnapOn) DropCover(op);
-            op.Walk = new Path(rt); if (op.Walk.Length == 0) op.Walk = null; op.WalkMm = 0; op.CloseWalk = false; op.Running = false; op.WalkSpeed = PaceOf(op, false);
+            op.Walk = new Path(rt); if (op.Walk.Length == 0) op.Walk = null; op.WalkMm = 0; op.CloseWalk = false; op.Running = o.Run && CanRunUnladen(op); op.WalkSpeed = PaceOf(op, op.Running);
             op.Act = o; op.ActNext = Tick + T(R.ApproachRepathS);
-            Note("order.walk-in", $"{Sim.Op.Name(op.Id)} walks to {m.Id} to {(o.Do == "turn" ? o.Approach : o.Do)}.");
+            Note("order.walk-in", $"{Sim.Op.Name(op.Id)} {(op.Running ? "runs" : "walks")} to {m.Id} to {(o.Do == "turn" ? o.Approach : o.Do)}.");
             return "";
         }
         /// <summary>ApproachStep's for a member: in reach, the act is given there (refused: dropped); else re-aimed at where he stands.</summary>
@@ -149,7 +149,7 @@ namespace Suborned.Sim
             int reach = o.Do == "listen" ? listenReach : o.Do == "watch" ? R.WatchReachCm(op.Id) : actReach;
             if (G.Within(op.Pos, p.Value.pos, reach))
             {
-                op.Act = null; op.Walk = null; op.WalkMm = 0;
+                op.Act = null; op.Walk = null; op.WalkMm = 0; op.Running = false;
                 var saved = refusal; refusal = default;
                 string why = o.Do == "turn" ? CrewTurn(op, o) : o.Do == "mislead" ? CrewMislead(op, o) : CrewLearn(op, o, true);
                 var code = refusal.code ?? "uncoded"; refusal = saved;
@@ -161,6 +161,7 @@ namespace Suborned.Sim
                 var to = Walk.NearestFree(p.Value.pos); var rt = to.HasValue ? Walk.Route(op.Pos, to.Value) : null;
                 if (rt == null) { DropAct(op, o, "no-walk", $"no walk to {m.Id}"); return; }
                 op.Walk = new Path(rt); if (op.Walk.Length == 0) op.Walk = null; op.WalkMm = 0; op.ActNext = Tick + T(R.ApproachRepathS);
+                op.Running = op.Walk != null && o.Run && CanRunUnladen(op); op.WalkSpeed = PaceOf(op, op.Running);
             }
         }
 

@@ -71,8 +71,15 @@ namespace Suborned.Play
             yield return Shot(fe, "briefing");
             // the start (board 03): Begin, then stills at 0.15 s (the exit), 1.8 s (the glide), 3.4 s (the settle), then play; the clock holds until 3.6 s
             HandoverHost.StartFreeze = true; h.BriefingBegin(); int tick0 = h.Game.Tick;
-            foreach (var (at, name) in new[] { (0.15f, "start-1-begin"), (1.8f, "start-2-glide"), (3.4f, "start-3-settle") })
-            { h.StartSeek(at); yield return null; yield return new WaitForSecondsRealtime(0.1f); yield return Shot(fe, name); }
+            foreach (var (at, name, outside) in new[] { (0.15f, "start-1-begin", 0), (1.8f, "start-2-glide", 1), (HandoverHost.BriefPlayAt - 0.2f, "start-3-settle", 4) })
+            {
+                h.StartSeek(at); yield return null; yield return new WaitForSecondsRealtime(0.1f);
+                int visible = new[] { "scout", "fixer", "tech", "enforcer" }.Count(key => h.Views.Find("op/" + key)?.gameObject.activeInHierarchy == true);
+                var car = h.Views.Find("car/getaway");
+                float distance = car ? Vector3.Distance(car.position, h.frame.World(h.Game.GetawayCarPos())) : float.PositiveInfinity;
+                Check(name + "-arrival", visible == outside && (outside == 0 ? distance > 5f : distance < 0.5f), $"{visible} outside, car {distance:0.0} m from bay");
+                yield return Shot(fe, name);
+            }
             Check("startHeld", h.Starting && h.Paused && h.Game.Tick == tick0, $"starting {h.Starting}, paused {h.Paused}, tick {h.Game.Tick} (was {tick0})");
             HandoverHost.StartFreeze = false; h.StartSeek(HandoverHost.BriefPlayAt); yield return new WaitForSecondsRealtime(0.5f);
             Check("startPlays", !h.Starting && !h.Paused && !h.BriefCamOn && Mathf.Abs(Mathf.DeltaAngle(h.Yaw, 30f)) < 0.5f, $"starting {h.Starting}, paused {h.Paused}, yaw {h.Yaw:0.#}");

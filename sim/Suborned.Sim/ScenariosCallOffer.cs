@@ -42,15 +42,19 @@ namespace Suborned.Sim
 
         static void CallOfferCases()
         {
-            Add("C102-OFFER", "102", "The offer law (Motive §1.1, Aster's (b)): a Call is offered on a turned contact only where it has a use under the rules. Inez's and the turned guard's are offered (option 1: a visit from either end); the turned driver's is absent (his camera block is retired), and an order given anyway gets nothing-to-call.", r =>
+            Add("C102-OFFER", "102", "The offer law (Motive §1.1, Aster's (b)): a Call is offered on a turned contact only where it has a use under the rules. Inez's and the turned guard's are offered (option 1: a visit from either end); the turned driver can arrange an early pickup once on duty.", r =>
             {
                 var g = r.G;
                 r.Is(g.CallOffered(Inez) && g.CallOffered(GuardR), "offered: Inez and the turned guard");
-                r.Is(!g.CallOffered(Driver), "absent: the turned driver");
+                r.Eq(g.CallOffered(Driver), g.PersonPos(g.Driver).HasValue, "the driver can take a pickup call when on duty");
                 r.Is(!g.CallOffered(Vale) && !g.CallOffered("p-cafe-05"), "absent: Popovic and a crowd person, who are no contacts");
                 r.Is(g.CallQuery(Inez).ok && g.CallQuery(GuardR).ok && g.CanCall(Inez) && g.CanCall(GuardR), "both ways are open now");
-                r.Eq(g.CallQuery(Driver).code, "nothing-to-call", "the driver's card: nothing to call");
-                RefusedCall(r, Driver, "nothing-to-call", "the driver's order, given anyway: nothing-to-call");
+                r.Until(() => g.CallOffered(Driver), T(100));
+                int normal = g.ClockValeExits;
+                r.Do(Fixer, "call", Driver);
+                r.Is(g.PickupCalled && !g.CallOffered(Driver) && g.ClockValeExits < normal, "one call brings the departure forward");
+                r.To(T(g.ClockValeExits));
+                r.Eq(g.Vale, ValeAt.Leaving, "Popovic comes out on the signal");
                 r.Wait(1);
             }, Turned(Inez, GuardR, Driver));
 

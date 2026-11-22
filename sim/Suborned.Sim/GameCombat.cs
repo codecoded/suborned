@@ -672,7 +672,7 @@ namespace Suborned.Sim
         /// Running is free once a fight is on or the run is loud.</summary>
         void RunAttention(Op op)
         {
-            if (RunLoud(op)) return;
+            if ((!R.AttnIdle && !R.AttnRun) || RunLoud(op)) return;
             string name = Sim.Op.Name(op.Id);
             if (RunFree(op)) // Alert ≥ 2, not loud (engine 0.31.0, brief 054 §8 confirmed): security is free of the run as before; a civilian who sees it in their cone remembers the face, and raises nothing
             {
@@ -1000,7 +1000,8 @@ namespace Suborned.Sim
             q.WalkS = (int)((path.Length + cellWalk * Hz - 1) / (cellWalk * Hz));
             q.RunS = (int)((path.Length + R.RunSpeed * Hz - 1) / (R.RunSpeed * Hz));
             { var at = new List<Pt>(); for (long mm = 0; ; mm += 1000) { at.Add(path.At(Math.Min(mm, path.Length))); if (mm >= path.Length) break; } q.Seen = SeenAt(at); } // the same samples as below
-            q.RunFree = RunFree(op); q.AlertIfRun = Alert;
+            q.RunFree = RunFree(op) || (!R.AttnIdle && !R.AttnRun); q.AlertIfRun = Alert;
+            if (!R.AttnIdle && !R.AttnRun) return q;
             if (q.RunFree && !RunLoud(op) && R.PeopleCone) // engine 0.31.0 (brief 054 §8): free for security from Alert 2, a civilian still remembers the face
             {
                 for (long mm = 0; ; mm += 1000)
