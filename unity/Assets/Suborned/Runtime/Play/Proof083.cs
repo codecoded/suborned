@@ -14,7 +14,7 @@ namespace Suborned.Play
     ///  · pan: a left drag pans (on the ground and from a person), its release is no click; a click still walks; a still press is still a hold.
     ///  · busy: on an act the first ground click asks and stops nothing, a double click is one slip, a second click stops and walks; a squad click leaves the busy agent at its act; the same act given again restarts nothing.
     ///  · third: T in and T out leave the act running with no order; the first WASD press asks, the second stops and takes the stick; the button in Squad's place goes back to the map.
-    ///  · wasd: Sky's run of 22:18 to 22:21: a restart in third person, and T under the briefing, each come up with WASD live and a ground click giving no walk.</summary>
+    ///  · wasd: Sky's run of 22:18 to 22:21: a restart in third person, and T under the briefing, each come up with WASD live and a ground click giving a walk.</summary>
     public static class Proof083
     {
         /// <summary>The ground point the play camera frames (where its axis meets the ground). Brief 096's PlayStandOff slides the orthographic camera along
@@ -185,13 +185,17 @@ namespace Suborned.Play
                 $"tabs at rest '{atRest}', hovered '{word}', with the Fixer selected '{fixerOnly}', on her face {onFace}, over HUD {over}; took her {took} (driving {drove}), orders [{string.Join(",", e1)}]; eye '{eye}', chevrons {carets}; capsule key '{key}', back {back}, her Watch {(g.Ops[0].Busy != null && g.Ops[0].BusyEnd == end ? "running" : "gone")}, orders [{string.Join(",", e2)}]");
         }
 
-        /// <summary>In third person the agent is in hand, W walks her and a ground click gives no walk.</summary>
+        /// <summary>In third person the agent is in hand, W walks her and a ground click gives one walk.</summary>
         static IEnumerator Dead(HandoverHost h, string name, System.Action<string, bool, string> row)
         {
             var g = h.Game; bool driving = h.Following && h.Driving; int who = h.DriveAgent >= 0 ? h.DriveAgent : 0; var p0 = g.Ops[who].Pos;
             Keys(Key.W); yield return Wait(1f); Keys(); yield return Wait(0.3f); float w = Mathf.Sqrt((float)Suborned.Sim.G.D2(p0, g.Ops[who].Pos)) / 100f;
-            var cam = h.View; int n0 = g.Orders.Count; var me = h.Views.Find("op/" + Suborned.Sim.Op.Name((OpId)who)); var sp = cam.WorldToScreenPoint(me.position + cam.transform.forward * 4f + cam.transform.right); yield return Click(new Vector2(sp.x, sp.y)); var o = Since(h, n0);
-            row(name, driving && w > 0.5f && !o.Exists(x => x.EndsWith(":move")), $"driving {driving}, W walked {w:0.0} m, click orders [{string.Join(",", o)}]");
+            int n0 = g.Orders.Count;
+            bool ground = ProofInput.TryGroundPoint(h, out var sp);
+            if (ground) yield return Click(sp);
+            var orders = Since(h, n0);
+            row(name, driving && w > 0.5f && ground && orders.FindAll(x => x.EndsWith(":move")).Count == 1 && h.DriveWalking,
+                $"driving {driving}, W walked {w:0.0} m, following the walk {h.DriveWalking}, click orders [{string.Join(",", orders)}]");
         }
     }
 }

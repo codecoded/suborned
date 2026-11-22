@@ -228,9 +228,9 @@ namespace Suborned.Play
 
         /// <summary>The selection walks (or runs) to an engine point in formation: each keeps its place relative to the others when they are already
         /// spaced (1.1 m apart, within 4 m of their middle), else they spread on a 1.2 m ring; each spot the nearest walkable one.</summary>
-        public void GroupWalk(Pt centre, bool run, Vector2? screen, List<int> agents = null)
+        public void GroupWalk(Pt centre, bool run, Vector2? screen, List<int> agents = null, bool includeDriven = false)
         {
-            agents ??= SelectedList(); agents = agents.FindAll(k => !Game.Ops[k].Inside && !Game.Ops[k].Down && !(Driving && k == dAgent));
+            agents ??= SelectedList(); agents = agents.FindAll(k => !Game.Ops[k].Inside && !Game.Ops[k].Down && !Game.Ops[k].LeftMap && (includeDriven || !Driving || k != dAgent));
             lastGroupWalk.Clear();
             if (agents.Count == 0) return;
             int n = agents.Count; long cx = 0, cy = 0; foreach (var k in agents) { cx += Game.Ops[k].Pos.X; cy += Game.Ops[k].Pos.Y; }
@@ -258,7 +258,12 @@ namespace Suborned.Play
             if (Game == null || Game.Over) return;
             if (Game.Ops[k].Busy != null || Game.Ops[k].Act != null || pending[k] != null) CancelAgent(k, null); // brief 043: an act dropped by a walk says so
             pending[k] = null;
-            if (Issue(new Order { Op = Op.Name((OpId)k), Do = "move", Point = to, Run = run && RunInRulebook }, screen, null)) { Pulses.Add((frame.World(to), Feedback.Ok, Time.unscaledTime)); while (Pulses.Count > 8) Pulses.RemoveAt(0); }
+            if (Issue(new Order { Op = Op.Name((OpId)k), Do = "move", Point = to, Run = run && RunInRulebook }, screen, null))
+            {
+                if (Driving && k == dAgent) DriveTrailIfBusy(k);
+                Pulses.Add((frame.World(to), Feedback.Ok, Time.unscaledTime));
+                while (Pulses.Count > 8) Pulses.RemoveAt(0);
+            }
         }
 
         /// <summary>A double click on the walk just given turns it into a run (the same ends, Run on).</summary>

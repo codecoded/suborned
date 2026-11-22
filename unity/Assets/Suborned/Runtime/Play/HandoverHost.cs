@@ -641,7 +641,7 @@ namespace Suborned.Play
             if (!ModalGate.AllowsClicks(Modal)) return;
             var t = TargetAt(screen, true);
             if (t != null && t.Kind == "op") { Select(Op.Parse(t.Key), shift); return; }
-            if (Driving) return; // brief 024 §2 (Sky 2026-10-21: "if I click on a space, then the movement WASD keys fail to respond"): in third person walking is the keys; a click on the ground gives no walk (it was a move order, which ends the drive in the engine and left WASD dead)
+            if (Driving) { if (t == null && !OverHud(screen)) TpGroundTap(screen, shift); return; }
             if (controls.DoubleClick) { if (t != null && ThingClick(t, screen, shift)) return; ClearSel(); } // brief 041: a thing selects (twice: its act); the ground walks (twice: runs)
             bool twice = Time.unscaledTime - lastGroundAt < controls.doubleSeconds && (screen - lastGround).magnitude < 24f;
             lastGroundAt = Time.unscaledTime; lastGround = screen;
@@ -727,7 +727,7 @@ namespace Suborned.Play
 
         /// <summary>The thing under a screen point. Left clicks look for agents first; hover and right clicks for the city's people, then things
         /// (an agent standing in front of Inez must not swallow the order meant for her).</summary>
-        Target TargetAt(Vector2 screen, bool agents = false)
+        internal Target TargetAt(Vector2 screen, bool agents = false)
         {
             if (!cam || viewRoot == null) return null;
             // people before things: the door, cabinet and car markers are generous boxes, and the guard stands in the door's. Everything under the
