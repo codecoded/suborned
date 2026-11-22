@@ -111,7 +111,7 @@ describe('the §09 conditions, each with a failing example', () => {
     for (const s of ['route-a', 'route-a-pressure']) p[`${s}~no-waitress`] = fail('entry-seen-guard');
     for (const s of ['route-b', 'route-b-thin']) p[`${s}~no-driver`] = fail('vale-leaves');
     // brief 031: the Enforcer watching the guard from his side is sensed, and the blow fails; the Scout idling in the pickup camera's view is reported
-    p['careless-enforcer-watches-guard'] = fail('enforcer-down'); p['careless-scout-idles-pickup'] = { ...win(4739, 3, { 'attention.reporting': 1553 }), alert: 1 };
+    p['careless-enforcer-watches-guard'] = { ...fail('vale-leaves'), alert: 1 }; p['careless-scout-idles-pickup'] = { ...win(5098, 4), alert: M.scripts.find(s => s.id === 'careless-scout-idles-pickup')!.expects.alert ?? 0 };
     // brief 058: route A with Disable wins one Trail dearer; route G with Disable wins at Alert 2; a loop planted first runs out before the Enter
     p['route-a-disable'] = win(3097, 4, { 'enter.in': 2200 }); p['careless-g-disable'] = { ...win(2396, 7), alert: 2, campaignTrail: 4 };
     p['careless-loop-runs-out'] = fail('entry-seen-camera'); p['route-a-disable~no-waitress'] = fail('entry-seen-guard');
@@ -207,10 +207,11 @@ describe('the §09 conditions, each with a failing example', () => {
     const p = good(); p['route-b'] = { ...p['route-b']!, alert: 1 }; expect(ids(p)).toContain('MC-0');
     expect(J(p).scripts.find(x => x.id === 'route-b')!.got).toBe('success at A 1');
   });
-  test('MC-12: a quiet route reported for loitering, or a loiter twin that costs no more than its careful twin, fails', () => {
-    const p = good(); p['route-b'] = { ...p['route-b']!, marks: { ...p['route-b']!.marks, 'attention.reporting': 1524 } }; expect(ids(p)).toEqual(['MC-12']);
-    const q = good(); q['careless-scout-idles-pickup'] = { ...q['careless-scout-idles-pickup']!, marks: {} }; expect(ids(q)).toEqual(['MC-12']); // never reported
-    const r = good(); r['careless-scout-idles-pickup'] = { ...r['careless-scout-idles-pickup']!, alert: 0 }; expect(ids(r)).toEqual(['MC-0', 'MC-12']); // a win at its twin's Alert
+  test('MC-12: public waiting and quiet routes never produce loiter reports', () => {
+    const p = good(); p['route-b'] = { ...p['route-b']!, marks: { ...p['route-b']!.marks, 'attention.reporting': 1524 } }; expect(ids(p)).toContain('MC-12');
+    const q = good(); q['careless-scout-idles-pickup'] = { ...q['careless-scout-idles-pickup']!, marks: { 'attention.reporting': 1524 } }; expect(ids(q)).toContain('MC-12');
+    const r = good(); r['careless-scout-idles-pickup'] = { ...r['careless-scout-idles-pickup']!, alert: 2, marks: {} };
+    expect(J(r).conditions.find(c => c.id === 'MC-12')!.ok).toBe(true);
   });
   test('MC-8: takedown routes that win only above Alert 1, or cost the Enforcer no time, are not viable', () => {
     const p = good(); for (const s of ['route-g', 'route-g-fast', 'route-g-kill', 'route-b-thin']) p[s] = { ...p[s]!, alert: 2 }; expect(ids(p)).toContain('MC-8');

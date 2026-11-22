@@ -138,7 +138,7 @@ namespace Suborned.Play
                 h.Issue(new Order { Op = "tech", Do = "move", To = "cabinet" });
                 for (int i = 0; i < 90 * Suborned.Sim.Game.Hz && !Suborned.Sim.G.Within(g.Ops[(int)OpId.Tech].Pos, g.S.At("cabinet"), g.R.AtReachCm) && !g.Over; i += 5) h.RunTo(g.Tick + 5);
                 bool atCab = Suborned.Sim.G.Within(g.Ops[(int)OpId.Tech].Pos, g.S.At("cabinet"), g.R.AtReachCm);
-                string ringTech = "", ringScout = "", holds = "", marker = "", cut = "", desk = "", after = ""; bool shutLoop = false; int deadDiscs0 = HudToolkit.DeadDiscsShown;
+                string ringTech = "", ringScout = "", holds = "", marker = "", cut = "", desk = "", after = ""; bool loopHidden = false; int deadDiscs0 = HudToolkit.DeadDiscsShown;
                 var ec = h.Views.Find("camera/entrance"); var pc = h.Views.Find("camera/pickup");
                 if (ec)
                 {
@@ -159,7 +159,7 @@ namespace Suborned.Play
                 {
                     h.Select(OpId.Tech, false); h.LookAt(pc.position); yield return Frames(3);
                     h.LeftClickScripted(Sp(h, pc.position)); yield return Frames(4); holds = RingWords(h);
-                    shutLoop = h.Ring != null && h.Ring.Segs.Exists(x => x.Shut && x.Row?.Lock.code == "loop-holds"); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-loop-holds", log, "active"); h.CloseRing();
+                    loopHidden = h.Ring != null && !h.Ring.Segs.Exists(x => x.Row?.I?.Order?.Do == "loop"); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-loop-holds", log, "active"); h.CloseRing();
                     h.Issue(new Order { Op = "tech", Do = "disable", Target = "pickup" });
                     for (int i = 0; i < 30 * Suborned.Sim.Game.Hz && g.CameraDeadAs("pickup") != "cut" && !g.Over; i++) h.RunTo(g.Tick + 1);
                     h.RunTo(g.Tick + 2); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.4f); h.SetPaused(true); yield return Frames(2);
@@ -172,11 +172,11 @@ namespace Suborned.Play
                 string price = h.FireTrail(OpId.Scout, "camera:entrance");
                 bool loopMarker = marker.Contains("loop:entrance:1:5") || marker.Contains("loop:entrance:2:00");
                 bool cOk = atCab && ringTech.Contains("Loop") && ringTech.Contains("Disable") && ringTech.Contains("Fire") && !ringTech.Contains("⋯")
-                    && ringScout.Contains("Fire") && !ringScout.Contains("Loop") && !ringScout.Contains("Disable") && loopMarker && shutLoop
+                    && ringScout.Contains("Fire") && !ringScout.Contains("Loop") && !ringScout.Contains("Disable") && loopMarker && loopHidden
                     && g.CameraDeadAs("pickup") == "cut" && cut.Contains("Camera cut") && desk.Contains("disable:pickup:") && !after.Contains("disable:pickup:") && HudToolkit.DeadDiscsShown > deadDiscs0 && price == "+2";
                 ok &= cOk;
-                parts.Add($"\"cam058\": {{\"ok\": {B(cOk)}, \"atCabinet\": {B(atCab)}, \"ringTech\": \"{J(ringTech)}\", \"ringScout\": \"{J(ringScout)}\", \"loopMarker\": \"{J(marker)}\", \"loopHolds\": \"{J(holds)}\", \"shutLoop\": {B(shutLoop)}, \"cutChip\": \"{J(cut)}\", \"desk\": \"{J(desk)}\", \"afterReport\": \"{J(after)}\", \"deadDiscs\": {HudToolkit.DeadDiscsShown - deadDiscs0}, \"alert\": {g.Alert}, \"firePrice\": \"{price}\"}}");
-                log.Add($"r118 cam058: {(cOk ? "ok" : "FAILED")}: cabinet {atCab}; Tech ring [{ringTech}]; Scout ring [{ringScout}]; marker [{marker}]; second loop [{holds}] shut {shutLoop}; cut chip [{cut}] desk [{desk}] after [{after}] discs {HudToolkit.DeadDiscsShown - deadDiscs0}; Alert {g.Alert}; fire price {price}");
+                parts.Add($"\"cam058\": {{\"ok\": {B(cOk)}, \"atCabinet\": {B(atCab)}, \"ringTech\": \"{J(ringTech)}\", \"ringScout\": \"{J(ringScout)}\", \"loopMarker\": \"{J(marker)}\", \"loopHolds\": \"{J(holds)}\", \"loopHidden\": {B(loopHidden)}, \"cutChip\": \"{J(cut)}\", \"desk\": \"{J(desk)}\", \"afterReport\": \"{J(after)}\", \"deadDiscs\": {HudToolkit.DeadDiscsShown - deadDiscs0}, \"alert\": {g.Alert}, \"firePrice\": \"{price}\"}}");
+                log.Add($"r118 cam058: {(cOk ? "ok" : "FAILED")}: cabinet {atCab}; Tech ring [{ringTech}]; Scout ring [{ringScout}]; marker [{marker}]; second loop [{holds}] shut {loopHidden}; cut chip [{cut}] desk [{desk}] after [{after}] discs {HudToolkit.DeadDiscsShown - deadDiscs0}; Alert {g.Alert}; fire price {price}");
             }
 
             // ---- Glyph's unverified 0.2.122 states (Aster 0.2.123 item 4): the looped camera's hollow dashed cone (the Tech watches the entrance camera

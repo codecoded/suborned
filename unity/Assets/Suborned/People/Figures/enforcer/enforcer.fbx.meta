@@ -339,7 +339,7 @@ ModelImporter:
       takeName: Armature|take_fire_armed
       internalID: 0
       firstFrame: 0
-      lastFrame: 17
+      lastFrame: 35
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -1093,7 +1093,7 @@ ModelImporter:
       takeName: Armature|take_holster
       internalID: 0
       firstFrame: 0
-      lastFrame: 77
+      lastFrame: 15
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

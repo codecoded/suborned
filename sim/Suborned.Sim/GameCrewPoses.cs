@@ -83,6 +83,7 @@ namespace Suborned.Sim
         {
             var m = CrewOf(id); if (m == null || m.Fight || m.Gun.Down) return "";
             if (m.Mode == CrewMode.Aboard) return m == Wheelman ? CrewRules.BeatAt(Cr.WheelmanLoop, m.Id, Tick - CarStTick).beat.Pose : "";
+            if (m.Disp?.Contact == true) return DispMoving(m.Disp, rivSpeed, Tick) ? "walk" : "watch";
             if (m.Mode == CrewMode.Talking) return "talk";
             if (m.Mode == CrewMode.Boarding) return "board";
             if (m.Mode == CrewMode.Walking) return "walk";

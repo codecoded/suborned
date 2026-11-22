@@ -43,7 +43,7 @@ namespace Suborned.Sim
             if (!her.HasValue)
             {
                 bool down = p != null ? p.Down : m != null && m.Gun.Down;
-                EndListen(op, o, down ? "person-down" : m != null && m.Paid ? "crew-gone" : "person-away", $"{o.Target} {(down ? "is down" : "is not out on the street")}: the Listen ends, nothing heard");
+                EndObservation(op, o, down ? "person-down" : m != null && m.Paid ? "crew-gone" : "person-away", $"{o.Target} {(down ? "is down" : "is not out on the street")}: the Listen ends, nothing heard");
                 return;
             }
             var at = her.Value;
@@ -74,7 +74,7 @@ namespace Suborned.Sim
             }
             if (G.Within(op.Pos, at, still ? reach : R.ListenFollowCm)) return;
             Path? path = p != null ? Intercept(op, p, R.ListenNearWalkingCm)?.path : Walk.NearestFree(at) is Pt to && Walk.Route(op.Pos, to) is Pt[] rt ? new Path(rt) : null;
-            if (path == null) { EndListen(op, o, "no-walk", $"no walk to {o.Target}: the Listen ends, nothing heard"); return; }
+            if (path == null) { EndObservation(op, o, "no-walk", $"no walk to {o.Target}: the Listen ends, nothing heard"); return; }
             if (path.Length > 0) SetFollowWalk(op, path); else { op.Walk = null; op.WalkMm = 0; }
         }
 
@@ -121,11 +121,11 @@ namespace Suborned.Sim
         void SetFollowWalk(Op op, Path path) { op.Walk = path; op.WalkMm = 0; op.Running = false; op.WalkSpeed = PaceOf(op, false); op.CloseWalk = false; }
 
         /// <summary>A Listen under way ends early: the person is gone or out of every walk. Nothing is learned or charged; the log says so (order.dropped).</summary>
-        void EndListen(Op op, Order o, string code, string why)
+        void EndObservation(Op op, Order o, string code, string why)
         {
             op.Busy = null; op.BusyQuote = null; op.BusyPaid = 0; op.BusyEnd = Tick; op.Spot = null; op.Walk = null; op.WalkMm = 0;
             Dropped.Add((Tick, op.Id, o, code, why));
-            Note("order.dropped", $"{Sim.Op.Name(op.Id)} listen {o.Target}: {code}: {why}");
+            Note("order.dropped", $"{Sim.Op.Name(op.Id)} {o.Do} {o.Target}: {code}: {why}");
         }
     }
 }

@@ -380,15 +380,16 @@ namespace Suborned.Sim
                 r.Eq(g.Result, Outcome.None, "a report escalates the mission instead of ending it");
             });
 
-            Add("S13", "210", "Out of the guard's cone but in the patrol's: the patrol reports the drawn weapon and the gunfire (+18 s).", r =>
+            Add("S13", "210", "Out of the guard's cone but in the patrol's: the patrol reports a drawn weapon (+18 s).", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
+                var patrol = g.PatrolPose()!.Value; var front = g.Walk.NearestFree(patrol.pos + new Pt(patrol.facing.X * 8, patrol.facing.Y * 8)) ?? patrol.pos;
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, front)));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
-                if (!r.Until(() => g.PatrolWatching(r.Op(Enf).Pos), T(300))) { r.Is(false, "the patrol's cone reaches the Enforcer beside the door within 5 min"); return; } // bounded (brief 055: an unbounded wait hung `hashes` when the grid moved him)
+                if (!r.Until(() => g.PatrolWatching(r.Op(Enf).Pos), T(300))) { r.Is(false, "the patrol sweep sees the Enforcer in the yard within 5 min"); return; } // bounded (brief 055: an unbounded wait hung `hashes` when the grid moved him)
                 r.Is(!g.GuardWatching(r.Op(Enf).Pos), "out of the guard's cone");
                 r.Is(g.PatrolWatching(r.Op(Enf).Pos), "in the patrol's cone");
-                r.Fire(Enf, GuardR);
+                r.Do(Enf, "draw");
                 r.Wait(1);
                 r.Eq(g.Result, Outcome.None, "no instant fail");
                 r.Eq(g.SecurityArrives, g.Tick + T(18), "the patrol calls an early response");
@@ -483,7 +484,7 @@ namespace Suborned.Sim
             Add("S18", "293", "The patrol's 4 health: two carbine hits disable it; its cone goes; the shots draw the rivals.", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Enf, "d:Office approach"));
+                r.To(r.SendTo(Enf, new Pt(8075, -725)));
                 r.To(T(100));
                 r.Fire(Enf, "patrol");
                 r.Is(r.Until(() => g.PatrolHealth < g.R.HealthPatrol, T(20)), "a hit");

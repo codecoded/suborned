@@ -25,7 +25,7 @@ namespace Suborned.Play
     ///  · locked (E): the Scout on the guard once heard: the locked pill (no Fire), the shut ring (Listen shut first, Fire last and dashed), a press
     ///    on the shut wedge (its pop, the ring closed); the Tech's click on the guard: the who-can pop, no walk (gated).
     ///  · board (C): three selected, one running: the squad Board pill (the givers' faces), the ring's one Board wedge taken (one order each in
-    ///    the same tick), the running Tech's why chip, the pending and filled pips, the boarded out of the selection; then with nobody selected the
+    ///    the same tick, including the running Tech), the pending and filled pips, the boarded out of the selection; then with nobody selected the
     ///    car's Drive pill (its stand live) and ring (Drive, Go last with the struck Vale cameo and the hold, no dashes; its Alt line Fable's
     ///    less.go.noVale), the Drive taken and parked (gated).
     ///  · convo (H): Inez (the Fixer's Help) and the driver (the Fixer's Pay, the Scout's Listen) from the ground view at two headings each: both
@@ -172,16 +172,15 @@ namespace Suborned.Play
                 h.GiveWatchScripted(OpId.Scout, "guard"); yield return WaitSim(h, () => h.CastOf("guard")?.KRoutine == true || g.Known("guard") is { Sight: true }, 150 * Suborned.Sim.Game.Hz);
                 h.GiveScripted(new Order { Op = "scout", Do = "listen", Target = "guard" }); yield return WaitSim(h, () => h.CastOf("guard")?.KNeed == true && g.Ops[0].Busy == null, 150 * Suborned.Sim.Game.Hz);
                 yield return Settle(h); h.Select(OpId.Scout, false);
-                var gw = ViewAt(h, "guard"); string pill = "", ring = "", popWords = "", whoFaces = ""; bool shutFirst = false, fireLast = false, closed = false, noWalk = false, whoPop = false;
+                var gw = ViewAt(h, "guard"); string pill = "", ring = "", whoFaces = ""; bool unavailableHidden = false, noWalk = false, whoPop = false;
                 if (gw.HasValue)
                 {
                     h.TurnSnap(0); h.View.orthographicSize = 14f; h.LookAt(gw.Value); yield return Frames(3);
                     HandoverHost.PointerWorld = gw.Value + Vector3.up * 1.2f; yield return Frames(8); yield return new WaitForSecondsRealtime(0.25f);
                     pill = HudToolkit.PillState + ": " + HudToolkit.PillWords; yield return Shoot(h, dir, "r067-lock-pill-guard", log, "active");
                     if (Screen(h, gw.Value + Vector3.up * 1.2f) is Vector2 gs) { h.LeftClickScripted(gs); yield return Frames(4); }
-                    ring = h.RingWords; var segs = h.Ring?.Segs; shutFirst = segs != null && segs.Count > 0 && segs[0].Shut; fireLast = segs != null && segs.FindLastIndex(s => !s.More) is int li && li >= 0 && segs[li].Row?.I?.Order?.Do == "fire" && segs[li].Violent;
-                    yield return Shoot(h, dir, "r067-shut-ring-guard", log, "active");
-                    if (segs != null && segs.Count > 0 && segs[0].Shut) { int pops0 = h.Pops.Count; h.RingTakeScripted(segs[0].Row?.I?.Order?.Do ?? "listen"); yield return Frames(3); closed = h.Ring == null && h.Pops.Count > pops0; popWords = h.Pops.Count > 0 ? h.Pops[^1].Text : ""; yield return Shoot(h, dir, "r067-shut-pop", log, "active"); }
+                    ring = h.RingWords;
+                    unavailableHidden = h.Ring == null && !h.HoverLock;
                     HandoverHost.PointerWorld = null;
                     // the Tech has no row on the guard (no Watch once watched, no Listen): a click pops who can, and never walks
                     h.Select(OpId.Tech, false); yield return Frames(2); int who0 = h.WhoCanPops; var tp0 = g.Ops[(int)OpId.Tech].Pos;
@@ -194,17 +193,17 @@ namespace Suborned.Play
                     log.Add($"r067 stack: {h.HoverStackCount} under the cursor at the door, tab [{HudToolkit.StackShown}]"); if (h.HoverStackCount >= 2) yield return Shoot(h, dir, "r067-stack-tab", log, "active");
                     HandoverHost.PointerWorld = null;
                 }
-                bool eOk = pill.StartsWith("lock") && !pill.Contains("Fire") && shutFirst && closed && whoPop && noWalk; // Fire last and dashed is logged: the Scout has no Fire row on the guard (only the Enforcer's knob gives one), so his shut ring is Listen and the panel
+                bool eOk = unavailableHidden && whoPop && noWalk;
                 ok &= eOk;
-                parts.Add($"\"locked\": {{\"ok\": {B(eOk)}, \"pill\": \"{J(pill)}\", \"ring\": \"{J(ring)}\", \"shutFirst\": {B(shutFirst)}, \"fireLastDashed\": {B(fireLast)}, \"pressPop\": \"{J(popWords)}\", \"ringClosed\": {B(closed)}, \"whoCanPop\": {B(whoPop)}, \"whoFaces\": \"{whoFaces}\", \"noWalk\": {B(noWalk)}}}");
-                log.Add($"r067 locked: {(eOk ? "ok" : "FAILED")}: pill [{pill}]; ring [{ring}] shut first {shutFirst} fire last {fireLast}; press [{popWords}] closed {closed}; who-can {whoPop} [{whoFaces}] no walk {noWalk}");
+                parts.Add($"\"locked\": {{\"ok\": {B(eOk)}, \"hidden\": {B(unavailableHidden)}, \"whoCanPop\": {B(whoPop)}, \"noWalk\": {B(noWalk)}}}");
+                log.Add($"r067 unavailable actions: {(eOk ? "ok" : "FAILED")}: hidden {unavailableHidden}, who can {whoFaces}, no walk {noWalk}");
             }
 
             // ---- board (C): one order boards the squad; the refused one says why; then the car's Drive with nobody selected
             {
                 yield return Fresh(h); var g = h.Game; To(h, 30); yield return Settle(h); bool keepPlan = h.controls.planTogether; h.controls.planTogether = false; // orders given while paused go now (no "start together" queue), as Proof29
                 var carW = h.GetawayWorld; h.TurnSnap(0); h.View.orthographicSize = 14f; h.LookAt(carW); yield return Frames(3);
-                // the Tech runs off: his Board is refused (board-running); the Scout and the Fixer board
+                // The Tech is already running. Board redirects the selected squad to the car.
                 var tp = g.Ops[(int)OpId.Tech].Pos; var far = g.Walk.NearestFree(new Pt(tp.X + 1800, tp.Y)) ?? tp; h.Issue(new Order { Op = "tech", Do = "move", Point = far, Run = true }); h.RunTo(g.Tick + 3);
                 h.Select(OpId.Scout, false); h.Select(OpId.Fixer, true); h.Select(OpId.Tech, true); yield return Frames(2);
                 HandoverHost.PointerWorld = carW + Vector3.up * 0.6f; yield return Frames(8); yield return new WaitForSecondsRealtime(0.25f);
@@ -213,14 +212,14 @@ namespace Suborned.Play
                 string ring1 = h.RingWords; yield return Shoot(h, dir, "r067-car-ring-board", log, "active");
                 int sq0 = h.SquadBoards, orders0 = g.Orders.Count, tick0 = g.Tick; h.RingTakeScripted("board"); HandoverHost.PointerWorld = null; yield return Frames(2);
                 var (wi, ww, _) = h.WhyChipOf((int)OpId.Tech); string why = $"{wi} {ww}".Trim();
-                bool leftSel = !h.Selected[(int)OpId.Scout] && !h.Selected[(int)OpId.Fixer];
+                bool leftSel = !h.Selected[(int)OpId.Scout] && !h.Selected[(int)OpId.Fixer] && !h.Selected[(int)OpId.Tech];
                 h.RunTo(g.Tick + 10); yield return Settle(h, 0.3f); var (_, pend, _) = h.SeatState(); string pendWords = string.Join("", pend.Select(x => x ? "p" : "-"));
                 yield return Shoot(h, dir, "r067-board-pending", log, "active");
-                yield return WaitSim(h, () => g.Ops[0].InCar && g.Ops[1].InCar, 40 * Suborned.Sim.Game.Hz); yield return Settle(h, 0.4f);
-                var (filled, _, _) = h.SeatState(); string filledWords = string.Join("", filled.Select(x => x ? "f" : "-")); bool aboard = g.Ops[0].InCar && g.Ops[1].InCar;
+                yield return WaitSim(h, () => g.Ops[0].InCar && g.Ops[1].InCar && g.Ops[2].InCar, 40 * Suborned.Sim.Game.Hz); yield return Settle(h, 0.4f);
+                var (filled, _, _) = h.SeatState(); string filledWords = string.Join("", filled.Select(x => x ? "f" : "-")); bool aboard = g.Ops[0].InCar && g.Ops[1].InCar && g.Ops[2].InCar;
                 // read once they are aboard: the squad's Board may go out after the take's frame (a paused clock's plan-together queue), on one tick
                 // one order for the squad: each doer's first order (the walk-in's move, or the Board itself in reach) on the same tick; the Boards then go as each arrives
-                var sameTick = new[] { "scout", "fixer" }.Select(op => g.Orders.Skip(orders0).Where(o => o.order.Op == op && o.order.Do is "board" or "move").Select(o => o.order.Tick).DefaultIfEmpty(-1).First()).Where(t => t >= 0).Distinct().ToList();
+                var sameTick = new[] { "scout", "fixer", "tech" }.Select(op => g.Orders.Skip(orders0).Where(o => o.order.Op == op && o.order.Do is "board" or "move").Select(o => o.order.Tick).DefaultIfEmpty(-1).First()).Where(t => t >= 0).Distinct().ToList();
                 log.Add($"r067 board orders: [{string.Join(",", g.Orders.Skip(orders0).Select(o => $"{o.order.Tick}:{o.order.Op}:{o.order.Do}:{(o.ok ? "taken" : o.code)}"))}]");
                 yield return Shoot(h, dir, "r067-board-landed", log, "active");
                 // nobody selected: the car answers (Drive is the hold with one stand open and Vale not aboard)
@@ -237,7 +236,7 @@ namespace Suborned.Play
                 bool driveTook = driveTaken; driveTaken &= g.GetawayDriving;
                 log.Add($"r067 board drive: take {driveTook}, driving {g.GetawayDriving}, paused {h.Paused}, orders [{string.Join(",", g.Orders.Skip(dOrders0).Select(o => $"{o.order.Op}:{o.order.Do}:{o.order.Target}:{(o.ok ? "taken" : o.code)}"))}]"); yield return WaitSim(h, () => !g.GetawayDriving, 60 * Suborned.Sim.Game.Hz); yield return Settle(h, 0.4f); h.LookAt(h.GetawayWorld); yield return Frames(3);
                 bool parked = !g.GetawayDriving && g.CurStand != g.S.Stands[0]; h.controls.planTogether = keepPlan; yield return Shoot(h, dir, "r067-drive-parked", log, "active");
-                bool cOk = boardPill.Contains("Board") && faces == 2 && h.SquadBoards > sq0 && sameTick.Count == 1 && ww.Length > 0 && leftSel && aboard && drivePill.Contains("Drive") && standsHover.Contains(":hover") && goLast && goAlt.Length > 0 && getOut && driveTaken && parked;
+                bool cOk = boardPill.Contains("Board") && faces == 3 && h.SquadBoards > sq0 && sameTick.Count == 1 && ww.Length == 0 && leftSel && aboard && drivePill.Contains("Drive") && standsHover.Contains(":hover") && goLast && goAlt.Length > 0 && getOut && driveTaken && parked;
                 ok &= cOk;
                 parts.Add($"\"board\": {{\"ok\": {B(cOk)}, \"pill\": \"{J(boardPill)}\", \"faces\": {faces}, \"ring\": \"{J(ring1)}\", \"sameTick\": \"{string.Join(",", sameTick)}\", \"techWhy\": \"{J(why)}\", \"leftSelection\": {B(leftSel)}, \"pending\": \"{pendWords}\", \"filled\": \"{filledWords}\", \"drivePill\": \"{J(drivePill)}\", \"standsOnHover\": \"{J(standsHover)}\", \"driveRing\": \"{J(ring2)}\", \"goLastStruckHeld\": {B(goLast)}, \"getOut\": {B(getOut)}, \"goAlt\": \"{J(goAlt)}\", \"standsOnWedge\": \"{J(standsWedge)}\", \"driven\": {B(driveTaken)}, \"parked\": {B(parked)}}}");
                 log.Add($"r067 board: {(cOk ? "ok" : "FAILED")}: pill [{boardPill}] faces {faces}; ring [{ring1}]; orders on ticks [{string.Join(",", sameTick)}]; Tech why [{why}]; left selection {leftSel}; pips pending {pendWords} filled {filledWords}; drive pill [{drivePill}] stands [{standsHover}]; ring [{ring2}] go last {goLast} alt [{goAlt}]; wedge stands [{standsWedge}]; driven {driveTaken} parked {parked}");

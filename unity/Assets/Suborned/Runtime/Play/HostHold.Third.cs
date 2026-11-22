@@ -29,7 +29,7 @@ namespace Suborned.Play
         void TpLeftTap(Target t, Vector2 at, Vector2 p)
         {
             if (t == null || (p - at).magnitude >= TpTapSlopPx * KitScale || TpResolve(TpIn.LeftTap, TpNow) != TpDo.Ring) return;
-            if (ClickRing(t, at, out var plan)) { TpLeftRings++; SideLog("click", "ring", t); return; }
+            if (ClickRing(t, at, out var plan)) { if (Ring != null) { TpLeftRings++; SideLog("click", "ring", t); } return; }
             if (t.Kind != "crowd" && plan != null && plan.Pn.Rows.Count == 0 && WhoCanPop(t, at)) SideLog("click", "who-can", t);
         }
 

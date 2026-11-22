@@ -61,13 +61,14 @@ namespace Suborned.Play
         }
 
         /// <summary>After End(): a failure with something to orbit starts the fail camera (the end card waits for it).</summary>
-        void FailCamAfterEnd() { endGame = Game; if (Game.Result == Outcome.Failure && FailCamAvailable) FailCamStart(); }
+        void FailCamAfterEnd() { endGame = Game; if (Game.Result == Outcome.Failure && FailCamAvailable && !(EndPlayout && LiveEnding)) FailCamStart(); }
 
         /// <summary>Scripted checks and shots: adopt a run played elsewhere (a scenario, headless) as this host's ended run, with its views, end
         /// card and debrief, and start its fail camera. The played game is only read.</summary>
         public void ShowEnded(Suborned.Sim.Game played)
         {
             if (FailCamOn) FailCamStop();
+            if (BookOpen) BookShut(true);
             if (viewRoot) Destroy(viewRoot.gameObject);
             Game = played; Fault = null;
             viewRoot = new GameObject("engine").transform; viewRoot.SetParent(transform, false);

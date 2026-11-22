@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Careless loiter (brief 031), the twin of route-b, recomposed on engine 0.43.0 (Keel for Waymark, brief 096: it lost to the lookout since 0.41.0, which is not what it tests): route-b as today (the lend, the lookout misled), but once the Listen is over the Scout walks back to stand by the driver in the pickup camera's view and waits there before his walk to the lookout. Standing there is the carelessness: the camera notices him and reports him; the route still wins, at a higher Alert than its twin.",
+ "note": "After listening, Scout waits in public at the pickup before rejoining route B. The live camera has no suspicious act to report. Both this route and its reference finish at Alert 0.",
  "start": {},
  "until": 4900,
  "steps": [
@@ -53,7 +53,7 @@
     "heard"
    ],
    "label": "loiter",
-   "why": "the carelessness (engine 0.39.0): the discreet Listen ends out of every cone; he walks back to stand by the driver in the pickup camera's view and waits there"
+   "why": "Scout waits by the driver in public while the pickup camera is live."
   },
   {
    "op": "tech",
@@ -78,7 +78,7 @@
    "do": "move",
    "to": "d:Boarding pavilion",
    "gap": 62,
-   "why": "to the driver once at the corner (the walk is about 60 s, then 6 s on), for the Pay, which holds the pickup camera's clock (an act, Sky L1); waiting idle by the car in its view would be noticed. Brief 054: Pay needs no Watch on the driver"
+   "why": "Fixer approaches the driver for Pay. The payment has its own camera check."
   },
   {
    "op": "fixer",

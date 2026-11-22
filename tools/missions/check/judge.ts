@@ -20,9 +20,7 @@
 // MC-11 no stop holds the car (brief 018 §1, §5): every place the final fight posts a hostile at (the ambush spots, the police stands)
 //      stands outside fight-hold-m of the car and outside the exit lane, so only a hostile that comes for the car (the blocker, or one
 //      that walks in) holds it; and every reference win's car left free (none waits on a hostile it merely stands at).
-// MC-12 loitering costs (brief 031): no quiet script has a watcher report an agent loitering (the attention clock's report: a found
-//      fault, Alert ≥ 1), and each careless-loiter script (its careful twin with an agent left standing in a watcher's sight) is
-//      reported and fails, or ends at a higher Alert, where its twin wins.
+// MC-12 public presence: quiet routes and their public-wait twins produce no loiter reports.
 // MC-13 every stand's loud-wait twin is held (brief 059, Motive M059-5.3): for each getaway stand the site places, a loud run whose cell
 //      waits in the car while the Enforcer brings Vale out (`holds: <stand>`) never wins: with Vale aboard its Go is refused car-held (the
 //      car held at his Board), or it is lost before he gets Vale in (the square: the Enforcer alone is shot down on the long walk), so no
@@ -287,14 +285,14 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
         ...joined.map(({ s, h }) => `${s.id}: ${h.who} holds the car at ${clock(h.tick)} ${h.join ? `on its way to the response unit's join point ${h.join}` : 'at a post the mission does not place'} (not counted)`)].join('; '),
     });
   }
-  // MC-12 (brief 031): loitering in a watcher's sight is reported, so the quiet routes stand out of sight
+  // MC-12: ordinary public waiting is permitted, including inside a camera view.
   const quietRep = live.filter(s => s.kind === 'quiet' && loiterReported(plays[s.id])), loiter = live.filter(s => s.kind === 'careless' && s.careless === 'loiter');
-  const loiterRows = loiter.map(s => { const d = plays[s.id]!, tw = plays[s.twin!]; return { s, d, tw, ok: loiterReported(d) && !!tw && (d.alert > tw.alert || (d.outcome === 'failure' && tw.outcome === 'success')) }; });
+  const loiterRows = loiter.map(s => { const d = plays[s.id]!, tw = plays[s.twin!]; return { s, d, tw, ok: !loiterReported(d) && !!tw }; });
   C.push({
-    id: 'MC-12', rule: 'Loitering costs: no quiet route has a watcher report an agent loitering, and each careless-loiter twin is reported and fails or ends at a higher Alert than its careful twin', ok: !quietRep.length && loiter.length > 0 && loiterRows.every(x => x.ok),
-    value: `${live.filter(s => s.kind === 'quiet').length - quietRep.length}/${live.filter(s => s.kind === 'quiet').length} quiet scripts unreported; ${loiterRows.filter(x => x.ok).length}/${loiter.length} loiter twins dearer`,
+    id: 'MC-12', rule: 'Public waiting: quiet routes and their public-wait twins produce no loiter report', ok: !quietRep.length && loiter.length > 0 && loiterRows.every(x => x.ok),
+    value: `${live.filter(s => s.kind === 'quiet').length - quietRep.length}/${live.filter(s => s.kind === 'quiet').length} quiet scripts unreported; ${loiterRows.filter(x => x.ok).length}/${loiter.length} public-wait twins unreported`,
     detail: [...quietRep.map(s => `${s.id}: a loiterer reported at ${clock(plays[s.id]!.marks['attention.reporting']!)} (NOT QUIET)`),
-      ...loiterRows.map(x => `${x.s.id}: ${loiterReported(x.d) ? `reported at ${clock(x.d.marks['attention.reporting']!)}` : 'never reported'}, ${got(x.d)} at A ${x.d.alert} against ${x.s.twin}'s ${x.tw ? `${got(x.tw)} at A ${x.tw.alert}` : '?'}${x.ok ? '' : ' (NOT DEARER)'}`)].join('; ') || 'no careless-loiter script',
+      ...loiterRows.map(x => `${x.s.id}: ${loiterReported(x.d) ? `reported at ${clock(x.d.marks['attention.reporting']!)}` : 'never reported'}, ${got(x.d)} at A ${x.d.alert} against ${x.s.twin}'s ${x.tw ? `${got(x.tw)} at A ${x.tw.alert}` : '?'}${x.ok ? '' : ' (PUBLIC WAIT REPORTED)'}`)].join('; ') || 'no careless-loiter script',
   });
   // MC-13 (brief 059, Motive M059-5.3): every stand's loud-wait twin is held: the cell waits in the car and fights nobody, so it may never win;
   // with Vale aboard its Go is refused car-held (the car held at the Enforcer's Board), or it is lost before he gets Vale in

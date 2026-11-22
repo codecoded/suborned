@@ -321,6 +321,24 @@ namespace Suborned.Sim
         bool ArrivesKnown(string target) => IsWatcher(target) && R.SightKinds[WatcherKind(target)].learn == "arrival";
         bool WatchesKind(Op op, string target) => IsWatcher(target) && Array.IndexOf(R.SightBy[WatcherKind(target)], Sim.Op.Name(op.Id)) >= 0;
 
+        /// <summary>A Watch loses its subject when its camera, vehicle or person is taken out.
+        /// A looped camera still exists and a moving subject can still be observed.</summary>
+        public (string code, string why)? LostWatchTarget(string target)
+        {
+            if (IsCameraId(target) && CameraDark(target.Substring(7)))
+                return ("camera-dead", "That camera is out of action.");
+            if (target is "car:rivals" or "rivals" && CarDisabled("car:rivals"))
+                return ("car-disabled", "The rival car is wrecked.");
+            if (target == "patrol" && PatrolDown) return ("patrol-down", "The patrol is down.");
+            if (!Range && IsCrewId(target) && CrewOf(target) is CrewMember member)
+            {
+                if (member.Gun.Down) return ("person-down", "That crew member is down.");
+                if (member.Mode == CrewMode.Gone) return ("crew-gone", "That crew member has left.");
+            }
+            if (IsPersonRoleName(target) && PersonByRole(target).Down) return ("person-down", "That person is down.");
+            return null;
+        }
+
         /// <summary>A Watch on a camera or the patrol (rulebook sight.watch) by the Scout or the Tech (sight.kinds.*.by): within its reach of the
         /// watcher on a clear line; it takes watch.s and lands as WatchedWatcher, the cell's knowledge whoever watched (the patrol's seconds add
         /// up across both). The Tech doesn't Watch while his loop holds (tethered to the cabinet: run-tethered, as for a run). The guard is

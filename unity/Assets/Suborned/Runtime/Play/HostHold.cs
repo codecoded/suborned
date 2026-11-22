@@ -126,18 +126,21 @@ namespace Suborned.Play
         public int RightTaps { get; private set; }
         /// <summary>Proofs: a left click as the hold preset reads one (HoldClick) at a screen point.</summary>
         public void LeftClickScripted(Vector2 p) => HoldClick(p, false);
-        bool ClickRing(Target t, Vector2 p) => ClickRing(t, p, out _);
+        internal bool ClickRing(Target t, Vector2 p) => ClickRing(t, p, out _) && Ring != null;
         bool ClickRing(Target t, Vector2 p, out ContextPlan plan)
         {
             plan = null; if (t == null || Game == null) return false;
             ContextPlan pl = null; if (!Guard("panel", () => pl = ContextFor(t, p)) || pl == null) return false; plan = pl;
-            // a held Go still rings (shut, with its holders: brief 057 §4.2); brief 067 E (Suture's 0.2.122 findings §2): so does any thing whose
-            // ways are all locked for the selection, its ways shut with their short locks (Sky's ten clicks on Inez at 7:47 to 8:01 all walked)
-            if (plan.Choice.Order.Count == 0 && !plan.Pn.Rows.Exists(r => !r.Available && r.I?.Order != null)) return false;
+            if (plan.Choice.Order.Count == 0)
+            {
+                var blocked = plan.Pn.Rows.Find(r => !r.Available);
+                if (blocked == null) return false;
+                Pop(blocked.Reason, p, null, Feedback.Info, 2f);
+                return true; // A click on an unavailable target never becomes a ground move.
+            }
             OpenRing(plan, p, false); if (Ring == null) return false;
             Ring.Sticky = true; Ring.Always = false; Ring.FromHold = false; Ring.ByClick = true; ClickRings++; RightClickUsed = true; // brief 057 (Aster): the first-act hint retires on the first ring a left click opens (item 33: the right tap does nothing now)
-            if (plan.Choice.Order.Count == 0) ShutRings++;
-            SideLog("ring", plan.Choice.Order.Count == 0 ? "open-shut" : "open", t); return true;
+            SideLog("ring", "open", t); return true;
         }
 
         bool BusyAgent(int k) => Game != null && (Game.Ops[k].Busy != null || Game.Ops[k].Act != null || pending[k] != null || Plan.Exists(x => x.K == k));
@@ -167,9 +170,7 @@ namespace Suborned.Play
                 var r = RowFor(plan, way, k); if (r == null) continue;
                 var row = r; int kk = k;
                 if (Queueing) { QueuePlan(k, PlanLabel(row.I, t), HudModel.AtlasIcon(row.I.Order.Do, row.I.Order.Approach, ""), PlanRoute(k, row.I.Order, t), () => GiveNow(kk, row, t, at, run, source)); given.Add(k); continue; }
-                int n0 = Game.Orders.Count; GiveNow(k, row, t, at, run, source);
-                bool ok = pending[k] != null || Game.Ops[k].Busy != null; for (int i = n0; i < Game.Orders.Count && !ok; i++) ok = Game.Orders[i].ok && Game.Orders[i].order.Op == Op.Name((OpId)k) && Game.Orders[i].order.Do != "cancel";
-                if (ok) given.Add(k);
+                if (GiveNow(k, row, t, at, run, source)) given.Add(k);
             }
             bool board = rep.I.Order?.Do == "board";
             if (board && given.Count > 0) { if (given.Count > 1) SquadBoards++; BoardRefusals(plan, given); } // brief 067 C4: the rest say why (their why chips)
@@ -183,17 +184,34 @@ namespace Suborned.Play
             Status = $"{string.Join(", ", left)} {(left.Count > 1 ? "leave" : "leaves")} the squad";
         }
 
-        void GiveNow(int k, PanelRow r, Target t, Vector2 at, bool run, string source)
+        bool GiveNow(int k, PanelRow r, Target t, Vector2 at, bool run, string source, bool confirmed = false)
         {
-            if (Game == null || Game.Over) return;
+            if (Game == null || Game.Over) return false;
             var op = Game.Ops[k];
-            if (SameActRunning(k, r.I.Order, run)) return; // brief 083: the act already under way is never restarted (Sky's 0.2.159 run: a hold on Inez while Watching her: "Watch cancelled · 3 s lost", then the same Watch again)
+            if (SameActRunning(k, r.I.Order, run)) return false; // brief 083: the act already under way is never restarted (Sky's 0.2.159 run: a hold on Inez while Watching her: "Watch cancelled · 3 s lost", then the same Watch again)
+            if (t != null && !BuildPanel(t, at, k).Rows.Exists(row => SameAvailableRow(r, row)))
+            {
+                Pop("Action no longer available", at, null, Feedback.Info, 2f);
+                return false;
+            }
+            if (!confirmed && SeenGate(r.I, t, at, source, () => GiveNow(k, r, t, at, run, source, true))) return false;
             if (op.Busy != null || op.Act != null || pending[k] != null) CancelAgent(k, null); // a new order replaces the old one (engine 0.23: a walk in too; brief 043: the cancel pops) (CancelAgent's card says what was lost)
             EndLasting(k); // and a lasting fire order (brief 041: a fire order lasts until down, X or a new order)
+            int first = Game.Orders.Count;
+            giveRun = run;
+            try { DoRow(r, t, at, TargetWorld(t), source, seenChecked: true); }
+            finally { giveRun = false; }
+            bool accepted = pending[k] != null;
+            for (int i = first; !accepted && i < Game.Orders.Count; i++)
+            {
+                var entry = Game.Orders[i];
+                accepted = entry.ok && entry.order.Op == r.I.Order.Op && entry.order.Do == r.I.Order.Do;
+            }
+            if (!accepted) return false;
             Unfresh(t, r.I.Order); // brief 043: the pip goes once the opened act is given
             acts[k] = new ActMem { T = t, O = r.I.Order, At = Time.unscaledTime, Active = true, Ing = IngOf(r.I.Order, t), Done = DoneOf(r.I.Order, t), Head = r.I.Label };
-            giveRun = run; try { DoRow(r, t, at, TargetWorld(t), source); } finally { giveRun = false; }
             HoldActsDone++;
+            return true;
         }
 
         // ---------------------------------------------------------------- walking: a click on a thing or the ground
@@ -482,16 +500,16 @@ namespace Suborned.Play
         /// agent a portrait locked when `unpinned` (a focus click leaves portrait locks alone); in third person the driven agent and the squad. With `mark`, each
         /// selected agent it refuses gets its two words on the plate (Fable's less.done.fire.&lt;code&gt;) for FireRefusalS. With no target id
         /// (nothing to ask about) the armed selection, as before but without the drawn-first filter that left holstered agents out.</summary>
-        List<int> Shooters(bool unpinned, string id = "", bool force = false, bool focus = false, bool mark = false)
+        List<int> Shooters(bool unpinned, string id = "", bool force = false, bool focus = false, bool mark = false, bool replaceBusy = false)
         {
             var able = new List<int>();
             for (int k = 0; k < 4; k++)
             {
-                if (Driving && k == dAgent) { if (Armed(k)) able.Add(k); continue; } // brief 085 (Sky: "only one agent would start to shoot ... unless I pressed F"): the agent in hand fires as he always did (a busy one is cancelled: Playable) and the squad with him; it was the driven agent alone
+                if (Driving && k == dAgent && id.Length == 0) { if (Armed(k)) able.Add(k); continue; } // brief 085 (Sky: "only one agent would start to shoot ... unless I pressed F"): the agent in hand fires as he always did (a busy one is cancelled: Playable) and the squad with him; it was the driven agent alone
                 if (!Selected[k] || unpinned && FireLocks.Exists(s => s.Pin && s.Agents.Contains(k))) continue;
                 if (id.Length == 0) { if (Armed(k) && !(k == (int)OpId.Enforcer && Game.Vale == ValeAt.WithEnforcer)) able.Add(k); continue; }
                 Answer a = default; bool walk = false;
-                if (!Guard("fire-query", () => a = Game.FireQuery((OpId)k, id, force, focus, out walk))) continue;
+                if (!Guard("fire-query", () => a = Game.FireQuery((OpId)k, id, force, focus, out walk, replaceBusy: replaceBusy || Driving && k == dAgent))) continue;
                 if (a.ok) { able.Add(k); continue; }
                 if (!mark) continue;
                 if (a.code == "engine-error") { FireLogAdd($"fire-query\t{k}\tengine-error\t{a.why}"); continue; } // logged, never shown (Aster: no "restart" on a plate)

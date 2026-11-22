@@ -600,11 +600,11 @@
    "twin": "route-g-fast",
    "expects": {
     "outcome": "failure",
-    "fail": "enforcer-down",
-    "alert": 2
+    "fail": "vale-leaves",
+    "alert": 1
    },
-   "src": "brief 031 §7 (Waymark 4); Sky 2026-10-20 D1 (being seen watching makes the target wary)",
-   "note": "c038 (Waymark, engine 0.34.1): Careless (brief 031 §7; Sky 2026-10-20 D1: being seen watching makes the target wary), the twin of route-g-fast: route-g-fast, but the Enforcer lingers beside the guard (1.2 m, inside his 3 m sense) for about 25 s before the knockout, where route-g-fast strikes as he arrives: the guard's attention clock runs to wary (Heat 0: 20 s), a wary guard is aware at the blow, he draws, the takedown fails, and the Enforcer goes down. c038: route-g-fast takes no Reroute, so neither does its twin; the Enforcer's own Watch is refused once the Scout has watched the guard, so he simply stands there."
+   "src": "Sky, 2026-11-21. Public presence and camera reporting.",
+   "note": "The Enforcer waits beside the guard. Waiting in public does not raise an alarm. This fixed sequence still misses Vale's departure."
   },
   {
    "id": "careless-scout-idles-pickup",
@@ -615,10 +615,10 @@
    "twin": "route-b",
    "expects": {
     "outcome": "success",
-    "alert": 1
+    "alert": 0
    },
-   "src": "brief 031 §7 (Waymark 4)",
-   "note": "c053 (Keel for Waymark, engine 0.43.0, brief 096): recomposed on today's route-b (the lend, the lookout misled; since 0.41.0 it lost to the lookout, which is not what it tests). Careless loiter (brief 031), the twin of route-b, recomposed on engine 0.43.0 (Keel for Waymark, brief 096: it lost to the lookout since 0.41.0, which is not what it tests): route-b as today (the lend, the lookout misled), but once the Listen is over the Scout walks back to stand by the driver in the pickup camera's view and waits there before his walk to the lookout. Standing there is the carelessness: the camera notices him and reports him; the route still wins, at a higher Alert than its twin. Alert 1 against route-b's band (Alert 0 across seeds)."
+   "src": "Sky, 2026-11-21. Public presence and camera reporting.",
+   "note": "After listening, Scout waits in public at the pickup before rejoining route B. The live camera has no suspicious act to report. Both this route and its reference finish at Alert 0."
   },
   {
    "id": "careless-g-disable",

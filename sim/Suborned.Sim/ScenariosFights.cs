@@ -60,7 +60,7 @@ namespace Suborned.Sim
                 r.Eq(g.Alert, 0, "security saw a runner: seen and suspicious, no Alert (engine 0.34.0, M067-B2; 0.33.1: a found fault, Alert 1)");
                 r.Is(!g.Ledger.Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), "no found fault in the ledger");
                 r.Eq(g.Log.FindAll(l => l.Code == "run.seen").Count, 1, "the sighting logged once a run, however many watchers saw it (run.seen)");
-                r.Is(g.Log.Exists(l => l.Code == "attention.noticed" && l.Text.Contains("running")), "a watcher that keeps a clock noticed him running (attention.run: its cue shows noticed)");
+                r.Eq(g.Log.Exists(l => l.Code == "attention.noticed" && l.Text.Contains("running")), g.R.AttnRun, "a watcher that keeps a clock noticed him running (attention.run: its cue shows noticed)");
                 r.Is(SawRunner(g) > 0, $"security staff remember the runner, place and time ({SawRunner(g)})");
                 r.Eq(SawRunnerOrdinary(g), 0, "nobody else remembers the run (engine 0.22.0)");
                 r.Is(g.GuardP.Has("saw-runner"), "the guard saw him: he holds a memory, so he won't fight at the cell's side (§07 never saw you)");
@@ -118,13 +118,13 @@ namespace Suborned.Sim
                 var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "move", Point = FrontOfGuard(r), Run = true });
                 if (!r.Is(ok, $"the Fixer runs to the guard ({why})")) return;
                 int noticeT = T(g.AttentionMarks.notice);
-                r.Until(() => g.AttentionTicks("guard", Fixer) > 0, T(30));
-                r.Is(g.AttentionTicks("guard", Fixer) > noticeT, $"on the run's first tick in his sight his clock jumps past the notice mark ({g.AttentionTicks("guard", Fixer)} ticks against {noticeT}: attention.run)");
+                if (g.R.AttnRun) r.Until(() => g.AttentionTicks("guard", Fixer) > 0, T(30));
+                r.Eq(g.AttentionTicks("guard", Fixer) > noticeT, g.R.AttnRun, $"on the run's first tick in his sight his clock jumps past the notice mark ({g.AttentionTicks("guard", Fixer)} ticks against {noticeT}: attention.run)");
                 r.To(r.Arrival(Fixer));
                 r.Eq(g.Alert, 0, "no Alert: a run is no found fault (engine 0.34.0; 0.33.1: Alert 1)");
                 var seenBy = g.Log.FindAll(l => l.Code == "run.seen");
                 r.Is(seenBy.Count == 1 && !g.Ledger.Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), $"the sighting once a run, by the first security watcher to see it, and no found fault ({string.Join(" | ", seenBy.ConvertAll(l => l.Text))}; at 3.6 m/s the entrance camera sees him 2 s before the guard does)");
-                r.Is(g.Log.Exists(l => l.Code == "attention.noticed" && l.Text.StartsWith("guard ", StringComparison.Ordinal) && l.Text.Contains("running")), "the guard notices him running (his clock)");
+                r.Eq(g.Log.Exists(l => l.Code == "attention.noticed" && l.Text.StartsWith("guard ", StringComparison.Ordinal) && l.Text.Contains("running")), g.R.AttnRun, "the guard notices him running (his clock)");
                 r.Is(g.GuardP.Memory.Exists(m => m.Act == "saw-runner" && m.By == "fixer") && g.HoldsFace(g.GuardP), "the guard remembers the run and the Fixer's face");
                 r.Eq(SawRunnerOrdinary(g), 0, "nobody else remembers it");
                 r.Eq(g.Trail, trail, "no Trail");
@@ -152,7 +152,7 @@ namespace Suborned.Sim
                 r.To(r.Send(op, to, run: true));
                 var seenBy = g.Log.FindAll(l => l.Code == "run.seen");
                 r.Is(seenBy.Count == 1 && seenBy[0].Text.Contains("camera"), $"the sighting once, by a camera ({string.Join(" | ", seenBy.ConvertAll(l => l.Text))})");
-                r.Is(g.Log.Exists(l => l.Code == "attention.noticed" && l.Text.StartsWith("the camera", StringComparison.Ordinal) && l.Text.Contains("running")), "the camera notices him running on its clock (attention.run)");
+                r.Eq(g.Log.Exists(l => l.Code == "attention.noticed" && l.Text.StartsWith("the camera", StringComparison.Ordinal) && l.Text.Contains("running")), g.R.AttnRun, "the camera notices him running on its clock (attention.run)");
                 r.Eq(g.Alert, 0, "no Alert: a run is no found fault (engine 0.34.0; 0.33.1: Alert 1)");
                 r.Eq(SawRunnerOrdinary(g), 0, "nobody on the street remembers it");
                 r.Eq(g.Trail, trail, "no Trail");

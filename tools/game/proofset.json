@@ -43,7 +43,7 @@
         { "name": "r067-stack-tab", "what": "two or more people under the pointer at the door: the stack tab to choose between them", "optional": true },
         { "name": "r067-squad-board-pill", "what": "three agents selected (the Tech running), the pointer on the getaway car: the squad Board pill with the givers' faces" },
         { "name": "r067-car-ring-board", "what": "the ring on the car with its one Board wedge for the whole squad" },
-        { "name": "r067-board-pending", "what": "the Board taken, one order each in the same tick: the boarded agents out of the selection, the pending pips and the running Tech's why chip", "crop": ["roster"] },
+        { "name": "r067-board-pending", "what": "the Board taken, one order each in the same tick: the boarded agents out of the selection, the pending seat pips, including the Tech who was running", "crop": ["roster"] },
         { "name": "r067-board-landed", "what": "the Scout and the Fixer aboard: the seat pips filled", "crop": ["roster"] },
         { "name": "r067-drive-pill-car", "what": "nobody selected, the pointer on the car: the Drive pill with its stand live" },
         { "name": "r067-car-ring-go-alt", "what": "the car's ring with Alt held: Go last with its struck Vale cameo and the line under it (Fable's less.go.noVale)" },

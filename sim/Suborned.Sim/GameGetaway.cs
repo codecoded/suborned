@@ -211,7 +211,6 @@ namespace Suborned.Sim
             if (o.Target.Length > 0 && o.Target != "car" && o.Target != "car:getaway") return No("target-unknown", $"board names the getaway car (\"car\") or the lent car (\"car:official\"), not '{o.Target}'");
             if (GetawayGone) return No("car-left", "the getaway car has left");
             if (GetawayLost) return No("car-disabled", "the getaway car is disabled"); // engine 0.53.0 (brief 105): shot out, it seats nobody
-            if (op.Running) return No("board-running", "a running operative doesn't board: stop first");
             if (op.Id == OpId.Tech && Tethered) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body: the car seats the cell and the target");
             if (!AtGetaway(op.Pos)) return No("stand-at-getaway", "stand at the getaway car", cm: R.CarReachCm); // brief 059: not while it drives; engine 0.33.1: within car.footprint.reach of its body
@@ -380,7 +379,7 @@ namespace Suborned.Sim
                 var (_, _, h) = scored[i];
                 var post = BlockPost(h.Pos(Tick), out var cv); Pt to = cv != null ? post : Walk.NearestFree(post) ?? post;
                 if (cv != null) TakeCover(h.Gun, cv); else ReleaseCover(h.Gun); // the cover it held before (a joined officer's) is free again
-                h.Blocker = true; h.Home = to; MoveTo(h, to); h.Why = "blocker"; Blockers.Add(h.Id);
+                h.Blocker = true; h.Home = to; if (!IsRival(h.Id) || h.Gun.St != "engage") { MoveTo(h, to); h.Why = "blocker"; } Blockers.Add(h.Id);
                 Note("fight.blocker", $"{h.Id} goes for the road ({(cv != null ? "cover at " + cv.Id : "the lane, in the open")}).");
             }
         }

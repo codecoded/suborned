@@ -603,7 +603,7 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- brief 018 §6.5 (Glyph r1): the Go commit card. One row, about 160 x 44: the hold ring
         // with the car glyph inside, then each one left (a 20 px cameo and its 14 px fate glyph), and "+1 T" when police would see the car leave;
         // at the Go card's top-left (the sheet it was given from), else beside the click.
-        VisualElement goCard, goRing, goPairs; readonly List<VisualElement> goDots = new(); Vector2 sheetTL; float sheetTLAt = -10f; string goKey = "";
+        VisualElement goCard, goRing, goPairs; Label goConfirm; readonly List<VisualElement> goDots = new(); Vector2 sheetTL; float sheetTLAt = -10f; string goKey = "";
         void GoCommit(float W, float H)
         {
             var gate = host.Loud; bool on = gate?.Left != null && !m.Ended;
@@ -615,10 +615,12 @@ namespace Suborned.Play
                 for (int k = 0; k < 24; k++) { float a = Mathf.PI / 2 - k * Mathf.PI * 2 / 24; var dt = E(goRing, null, 20 + 16 * Mathf.Cos(a) - 2, 20 - 16 * Mathf.Sin(a) - 2, 4, 4); Round(dt, 2); goDots.Add(dt); }
                 Icon(E(goRing, null, 12, 12, 16, 16), "car", Cream);
                 goPairs = E(goCard); goPairs.style.flexDirection = FlexDirection.Row; goPairs.style.alignItems = Align.Center; goPairs.style.marginLeft = 8;
+                goConfirm = L(goCard, "chip-value"); goConfirm.style.marginLeft = 10; goConfirm.text = "Hold to leave · Esc to cancel";
                 manifest.Add((goCard, "image", () => "go commit card")); Show(goCard, false);
             }
             Show(goCard, on); if (!on) { goKey = ""; return; }
             Show(loud, false);
+            Show(goConfirm, gate.Source == "wait" || gate.Source == "card");
             var key = string.Join(",", gate.Left.ConvertAll(x => x.op + x.fate)) + gate.SeenLeaving;
             if (key != goKey)
             {
@@ -999,7 +1001,7 @@ namespace Suborned.Play
         {
             if (!m.LoudOpen || host.Loud == null) { loudKey = ""; return; }
             var c = host.Loud.Card;
-            Show(loudSub, alt); foreach (var l in loudRows) Show(l.parent, alt && l.text.Length > 0); Show(loudHold, alt); Show(loudTitle, alt);
+            Show(loudSub, alt); foreach (var l in loudRows) Show(l.parent, alt && l.text.Length > 0); Show(loudHold, alt || host.Loud.Source == "wait" || host.Loud.Source == "card"); Show(loudTitle, alt);
             var left = host.Loud.Left;
             var key = $"{c.AlertTo}|{c.PoliceInS}|{c.RivalsInS}|{c.Seal}|{c.GuardAllyLost}|{c.WarningLost}|{c.DownedCaptured}|{c.TrailPerHit}|{host.Loud.Takedown}|{(left == null ? "-" : string.Join(",", left.ConvertAll(x => x.op + x.fate)))}|{host.Loud.SeenLeaving}|{c.Fails}|{host.Loud.What}";
             if (key == loudKey) return; loudKey = key; loudIcons.Clear(); loudLost.Clear();

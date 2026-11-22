@@ -1013,6 +1013,7 @@ namespace Suborned.Play
             if (FailCamHud()) return; // the fail camera: its caption alone
             if (ConvoHud()) return; // brief 032: the conversation scene: its bubble, dots, bars and Skip, the pill (HudToolkit.Live)
             m.Frame(host);
+            SealNotice(host, host.SealOn && !host.PoliceOn);
             // a folded hint rings nothing (Glyph #8: the ring only while the plate is open)
             if (m.Hint != null && !(Time.unscaledTime - hintAt < HintOpenS || hintHover || HintPinned) && m.Hint == hintSeen) { m.HintRing = null; for (int i = 0; i < 4; i++) m.Slots[i].HintRing = false; }
             // the objective (the clock's words: HudToolkit.Clock, in the less-reading pass)

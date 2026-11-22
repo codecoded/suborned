@@ -240,6 +240,8 @@ namespace Suborned.Sim
             foreach (var op in Ops)
             {
                 op.StepFrom = op.Pos; // tuning.md §8.3: the gait's direction is this tick's step
+                if (op.Busy is { Do: "watch" } watch && LostWatchTarget(watch.Target) is { } lost)
+                    EndObservation(op, watch, lost.code, lost.why + " The Watch ends.");
                 ListenFollow(op); if (op.Busy != null && op.BusyEnd <= Tick) { var o = op.Busy; op.Busy = null; Land(op, o); if (Over) break; } // engine 0.55.0 (GameListenFollow.cs): a Listen keeps to its person, its clock only in reach
                 if (op.Walk != null)
                 {
@@ -264,7 +266,8 @@ namespace Suborned.Sim
             if (!Over) GetawayAfterFire(); // brief 018: the blocker picked among those still standing after this tick's fire; blocker.out, car.free
             if (!Over) TrafficStep(); // brief 098 step 1 (GameTraffic.cs): passing cars hear this tick's shots before the crowd does; nothing without traffic
             if (!Over) CrowdStep();
-            if (!Over) TakedownStep(); // brief 013: bodies, reports, check-in marks, suspicion, the response's units
+            if (!Over) TakedownStep();
+            if (!Over) RecoveryStep(); // brief 013: bodies, reports, check-in marks, suspicion, the response's units
             if (!Over && Tick >= Lockdown) Fail("sealed", "Security seals the district before the getaway car leaves.", Sealed); // brief 018: the car must leave, not only be reached
             if (!Over && !Range) CloseStep(); // Motive's ruling on Redline E8 (brief 080; GameSeed.cs): Vale's absence is noticed, then the close is a verdict
             // brief 059 K4: at the close the turned driver gives up and drives Vale on (a Take begun before it holds him until it ends); with no

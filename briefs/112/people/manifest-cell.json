@@ -24,12 +24,12 @@
    "role": "scout",
    "label": "Scout (HML game bundle 2026-11-12: white hooded top, black shorts, sneakers)",
    "fbx": "Figures/scout/scout.fbx",
-   "sha256": "6facec305661c35d9e7400a556b9531e51c5a8ad50f32795d4471255cede25b0",
+   "sha256": "a9fb82569919483230e3e6871b8d4a0aadffcbd5a6a48d840dd9811708d98216",
    "bundle": {
-    "file": "scout-game-bundle.zip",
-    "sha256": "e0e69fcd0af92557a9bfe7781d7b764a064328aaab12e143f3c32e7c7edacb5b",
+    "file": "scout-planted-holster-game-input.zip",
+    "sha256": "36f4c02356535fde7a41bdc64ed66449d3cc522ca52194dd9d990ddf0f5ccf69",
     "glb": "assets/scout-prop-free-b84dfd8b/models/rig-exports/e3023e8d-6e30-88fa-a2d3-c06f4c9d22c8/model.glb",
-    "glbSha256": "0a30aa6ba5cb1cf800128d6db20b25d57421fffe5a92112f97eb36ef248e2bc2",
+    "glbSha256": "c1b433e1933d6facf736c688f2dd79c9852cbab1c6b9963ddbe27fe12a41daee",
     "rigVersionId": "7920940b-1493-40c4-a1ac-4ef08e1d530b"
    },
    "rig": {
@@ -689,9 +689,9 @@
     {
      "name": "holster",
      "action": "Holster",
-     "clip": "Pistol To Idle",
+     "clip": "Holster Pistol at Hip",
      "take": "holster",
-     "frames": 51,
+     "frames": 15,
      "fps": 30,
      "loop": false,
      "props": [
@@ -925,46 +925,46 @@
   {
    "id": "fixer",
    "role": "fixer",
-   "label": "Fixer (HML game bundle 2026-11-12: black and white halter jumpsuit, long gloves, white boots)",
+   "label": "Fixer (HML game bundle 2026-11-12: black jumpsuit, white cropped jacket, belt, gloves and boots)",
    "fbx": "Figures/fixer/fixer.fbx",
-   "sha256": "42851f3154d2b98a978d216e05817e423820f21f16f6de831be2cb4708a7665f",
+   "sha256": "1291176c00a3e62b6a0d4fbcd9c1cc1c098b3bb2733711a1cfd5683a77ccfd11",
    "bundle": {
-    "file": "fixer-game-bundle.zip",
-    "sha256": "ab1bd062bdaeca99ff616f927087a87facdee7f2d8baf535dd23d4d4529802f6",
-    "glb": "assets/fixer-player-cell-adc07eb2/models/rig-exports/8c9e7e6e-a4b2-8ccb-8db4-96d61c8e5c5b/model.glb",
-    "glbSha256": "92815dfa36c068d2e6fce311ad9d1a791d1ebd01a8c8aff18e2ba7b0b6e22b23",
-    "rigVersionId": "0129c284-8660-49cf-a6d8-098810442ddc"
+    "file": "fixer-planted-holster-game-input.zip",
+    "sha256": "9316a8edb91e7b5465126bca4e788996b00c53810aedabadfc623e2084bf54c3",
+    "glb": "assets/fixer-player-cell-adc07eb2/models/rig-exports/d1676eaa-8834-8d7e-a849-044e3dd0e373/model.glb",
+    "glbSha256": "d9f60b217e09e5c878e3f425a6366805357caedd072bba8926263a582bd317bb",
+    "rigVersionId": "62fcd152-80d6-4029-be9c-3817b1c27eb2"
    },
    "rig": {
     "type": "generic",
     "bones": 65,
     "root": "Armature/Hips",
-    "bakedScale": 1.7999,
+    "bakedScale": 1.8,
     "exposed": [
-     "Armature/Hips/Spine/Extra_12/Chest/Neck/Head",
+     "Armature/Hips/Spine/Spine1/Chest/Neck/Head",
      "Armature/Hips",
-     "Armature/Hips/Spine/Extra_12/Chest/RightShoulder"
+     "Armature/Hips/Spine/Spine1/Chest/RightShoulder"
     ]
    },
    "heightM": 1.8,
    "restBounds": [
     [
-     -0.503,
-     -0.152,
+     -0.555,
+     -0.197,
      0
     ],
     [
-     0.503,
-     0.152,
+     0.555,
+     0.197,
      1.8
     ]
    ],
-   "idleGroundM": -0.004,
+   "idleGroundM": 0.001,
    "female": true,
    "lods": [
     {
      "name": "fixer_LOD0",
-     "tris": 29714
+     "tris": 29999
     }
    ],
    "props": [
@@ -998,8 +998,8 @@
     {
      "name": "fixer_body",
      "file": "Figures/fixer/Materials/fixer_body.mat",
-     "source": "tripo_material_9bd79c1e-a936-4599-8452-b026aa2f6811",
-     "doubleSided": false,
+     "source": "tripo_material_bc2de1f2-85b2-4f02-a7a8-c6cad995585e",
+     "doubleSided": true,
      "tint": [
       1,
       1,
@@ -1011,20 +1011,20 @@
       "mask": "Figures/fixer/Textures/fixer_body_mask.png"
      },
      "texturePx": {
-      "albedo": 2048,
-      "normal": 2048,
-      "mask": 2048
+      "albedo": 4096,
+      "normal": 4096,
+      "mask": 4096
      },
      "smoothness": {
-      "mean": 0.287,
+      "mean": 0.439,
       "from": "map"
      },
-     "metallicMean": 0.029
+     "metallicMean": 0.035
     },
     {
      "name": "fixer_pistol",
      "file": "Figures/fixer/Materials/fixer_pistol.mat",
-     "source": "Cell pistol authored surface v2.001",
+     "source": "Cell pistol authored surface v2.003",
      "doubleSided": false,
      "tint": [
       1,
@@ -1052,9 +1052,9 @@
     {
      "name": "idle",
      "action": "Idle",
-     "clip": "Breathing Idle (2)",
+     "clip": "Catwalk Idle",
      "take": "idle",
-     "frames": 298,
+     "frames": 300,
      "fps": 30,
      "loop": true,
      "props": []
@@ -1062,9 +1062,9 @@
     {
      "name": "idle_alt",
      "action": "Idle",
-     "clip": "Breathing Idle (2)",
+     "clip": "Catwalk Idle",
      "take": "idle",
-     "frames": 298,
+     "frames": 300,
      "fps": 30,
      "loop": true,
      "props": []
@@ -1072,9 +1072,9 @@
     {
      "name": "walk",
      "action": "Walk",
-     "clip": "Walking",
+     "clip": "Standard Walk",
      "take": "walk",
-     "frames": 37,
+     "frames": 35,
      "fps": 30,
      "loop": true,
      "props": []
@@ -1082,9 +1082,9 @@
     {
      "name": "walk_f",
      "action": "Walk",
-     "clip": "Walking",
+     "clip": "Standard Walk",
      "take": "walk",
-     "frames": 37,
+     "frames": 35,
      "fps": 30,
      "loop": true,
      "props": []
@@ -1428,9 +1428,9 @@
     {
      "name": "idle_armed",
      "action": "Idle Armed",
-     "clip": "W1 Stand Relaxed Idle IPC",
+     "clip": "Catwalk Idle (2)",
      "take": "idle_armed",
-     "frames": 41,
+     "frames": 300,
      "fps": 30,
      "loop": true,
      "props": [
@@ -1440,9 +1440,9 @@
     {
      "name": "holster",
      "action": "Holster",
-     "clip": "Pistol To Idle",
+     "clip": "Holster Pistol at Hip",
      "take": "holster",
-     "frames": 51,
+     "frames": 15,
      "fps": 30,
      "loop": false,
      "props": [
@@ -1596,7 +1596,7 @@
      "action": null,
      "authoredFrom": "walk",
      "take": "carry_shoulder",
-     "frames": 37,
+     "frames": 35,
      "fps": 30,
      "loop": true,
      "props": []
@@ -1606,142 +1606,26 @@
      "action": null,
      "authoredFrom": "idle",
      "take": "carry_shoulder_idle",
-     "frames": 298,
+     "frames": 300,
      "fps": 30,
      "loop": true,
      "props": []
     }
    ],
    "clipSpeedsMs": {
-    "walk": 0.96,
-    "walk_f": 0.96,
-    "run": 3.65,
-    "run_lean": 3.65,
-    "walk_armed": 1.23,
-    "run_armed": 3.24,
-    "crouch_walk": 1.18,
-    "carry_shoulder": 0.96
+    "walk": 1.35,
+    "walk_f": 1.35,
+    "run": 3.47,
+    "run_lean": 3.47,
+    "walk_armed": 1.21,
+    "run_armed": 3.09,
+    "crouch_walk": 1.17,
+    "carry_shoulder": 1.35
    },
    "groundLiftM": {
-    "walk": {
-     "drop": 0,
-     "liftMax": 0.016
-    },
-    "run": {
-     "drop": 0,
-     "liftMax": 0.058
-    },
-    "walk_armed": {
-     "drop": 0,
-     "liftMax": 0.028
-    },
-    "run_armed": {
-     "drop": 0,
-     "liftMax": 0.042
-    },
-    "draw": {
-     "drop": 0,
-     "liftMax": 0.033
-    },
-    "melee": {
-     "drop": 0,
-     "liftMax": 0.026
-    },
-    "hit": {
-     "drop": 0,
-     "liftMax": 0.036
-    },
-    "hit_large": {
-     "drop": 0,
-     "liftMax": 0.044
-    },
-    "cower": {
-     "drop": 0,
-     "liftMax": 0.08
-    },
-    "duck": {
-     "drop": 0,
-     "liftMax": 0.089
-    },
-    "crouch": {
-     "drop": 0,
-     "liftMax": 0.03
-    },
     "crouch_walk": {
-     "drop": 0,
-     "liftMax": 0.019
-    },
-    "look_around": {
-     "drop": 0,
-     "liftMax": 0.035
-    },
-    "talking": {
-     "drop": 0,
-     "liftMax": 0.011
-    },
-    "point": {
-     "drop": 0,
-     "liftMax": 0.012
-    },
-    "pick_up": {
-     "drop": 0,
-     "liftMax": 0.088
-    },
-    "cover_in": {
-     "drop": 0,
-     "liftMax": 0.062
-    },
-    "cover_out": {
-     "drop": 0,
-     "liftMax": 0.065
-    },
-    "crouch_aim_armed": {
-     "drop": 0,
-     "liftMax": 0.023
-    },
-    "crouch_fire_armed": {
-     "drop": 0,
-     "liftMax": 0.023
-    },
-    "crouch_armed": {
-     "drop": 0,
-     "liftMax": 0.025
-    },
-    "idle_armed": {
-     "drop": 0,
-     "liftMax": 0.014
-    },
-    "holster": {
-     "drop": 0,
-     "liftMax": 0.011
-    },
-    "reload": {
-     "drop": 0,
-     "liftMax": 0.014
-    },
-    "wait": {
-     "drop": 0,
-     "liftMax": 0.014
-    },
-    "shrug": {
-     "drop": 0,
-     "liftMax": 0.013
-    },
-    "argue": {
-     "drop": 0,
-     "liftMax": 0.042
-    },
-    "dodge": {
-     "drop": 0,
-     "liftMax": 0.054
-    },
-    "phone_talk": {
-     "drop": 0,
-     "liftMax": 0.024
-    },
-    "persuade": {
-     "drop": 0,
-     "liftMax": 0.056
+     "drop": 0.01,
+     "liftMax": 0
     }
    },
    "seat": {
@@ -1753,39 +1637,39 @@
     "takes": {
      "sit_idle": {
       "slide": [
-       -0.003,
-       0.074,
-       -0.044
+       -0.007,
+       0.068,
+       -0.02
       ],
-      "proud": 0.076,
+      "proud": 0.019,
       "solesUp": 0
      },
      "sit_talk": {
       "slide": [
-       -0.018,
+       -0.007,
        0.075,
-       -0.061
-      ],
-      "proud": 0,
-      "solesUp": 0.001
-     },
-     "sit_down": {
-      "slide": [
-       -0.01,
-       0.073,
-       -0.004
+       -0.034
       ],
       "proud": 0.033,
       "solesUp": 0
      },
+     "sit_down": {
+      "slide": [
+       -0.008,
+       0.071,
+       0.018
+      ],
+      "proud": 0,
+      "solesUp": 0.042
+     },
      "stand_up": {
       "slide": [
-       -0.01,
-       0.073,
-       -0.004
+       -0.008,
+       0.071,
+       0.018
       ],
-      "proud": 0.042,
-      "solesUp": 0
+      "proud": 0,
+      "solesUp": 0.019
      }
     }
    },
@@ -1799,12 +1683,12 @@
    "role": "tech",
    "label": "Tech (HML game bundle 2026-11-12: black wrap vest, wide trousers, visor)",
    "fbx": "Figures/tech/tech.fbx",
-   "sha256": "a5f3335ce85d2a89d566a6cd0f6a2ec8ee89c582d34eb137686f070f62eb12e6",
+   "sha256": "54ac7864e6d64a3a5467a1cb02e42cc7eee720c154f7c2e84331222e3520ea6b",
    "bundle": {
-    "file": "tech-game-bundle.zip",
-    "sha256": "95e9f4ecf2bcc07906a44f65d52adc7defd96559a6713ca4be3ec3bc00e98477",
+    "file": "tech-planted-holster-game-input.zip",
+    "sha256": "8cdccc77b1e8508b5d679093b6550a68bdf83b49569f0affd454fe7b4985609e",
     "glb": "assets/tech-player-cell-d7cb0e3a/models/rig-exports/ccd54801-c637-8f8e-b5e3-7086897f0478/model.glb",
-    "glbSha256": "ac3ea889513cce852b257f62f36bd299ef0a2413f0df79cc58c00a970fec666a",
+    "glbSha256": "f1c135166306585a04c555d80bcdcd4512de40892948e6cddd52ca8719c0e800",
     "rigVersionId": "f24c6f4a-fec7-44cb-9552-266538c72f9c"
    },
    "rig": {
@@ -2461,9 +2345,9 @@
     {
      "name": "holster",
      "action": "Holster",
-     "clip": "Pistol To Idle",
+     "clip": "Holster Pistol at Hip",
      "take": "holster",
-     "frames": 51,
+     "frames": 15,
      "fps": 30,
      "loop": false,
      "props": [
@@ -2782,19 +2666,19 @@
   {
    "id": "enforcer",
    "role": "enforcer",
-   "label": "Enforcer (HML game bundle 2026-11-12: white and black long coat, white boots, carbine)",
+   "label": "Enforcer (HML game bundle 2026-11-19, lap drape, 69 actions: white and black long coat, white boots, carbine)",
    "fbx": "Figures/enforcer/enforcer.fbx",
-   "sha256": "04cba09308ac88731f61b0a679b8f2d091cea57e5d70d663f43c01cb25e67492",
+   "sha256": "d440a6473cbfcba5e7180b9a53ddd18610a33c6ac7dbf90011bcb9a530eedec1",
    "bundle": {
-    "file": "enforcer-game-bundle.zip",
-    "sha256": "1f45d116fa59cbdb055e1bb94c0b634ebd0944f5b2480d1f718b5edccb8f1263",
-    "glb": "assets/enforcer-player-cell-16f54c8c/models/rig-exports/1c240136-6605-8f38-95b0-93fa77012ab6/model.glb",
-    "glbSha256": "eb808f386c3726c51bd3a20666c08f9072c87511ce47575148aa9d011b0cc090",
+    "file": "enforcer-planted-holster-game-input.zip",
+    "sha256": "1524c328a582893a0da99b6c479ba145effa63630dcab85619bbe3c36f1178e0",
+    "glb": "assets/enforcer-player-cell-16f54c8c/models/rig-exports/6801976c-53d7-8177-b6de-5a4ccf65f47d/model.glb",
+    "glbSha256": "1d7ab46563584cbb0d838eed6a176478fbe467895c7577a7dbdae44e9d744507",
     "rigVersionId": "0595c0fe-4cba-4ff9-87b0-ead117d5798c"
    },
    "rig": {
     "type": "generic",
-    "bones": 65,
+    "bones": 67,
     "root": "Armature/Hips",
     "bakedScale": 1.9,
     "exposed": [
@@ -2808,7 +2692,7 @@
     [
      -0.708,
      -0.203,
-     0
+     -0.0
     ],
     [
      0.708,
@@ -2862,9 +2746,9 @@
      "source": "tripo_material_bab6729c-e7be-4fb1-a57f-1fe3a8501f12",
      "doubleSided": true,
      "tint": [
-      1,
-      1,
-      1
+      1.0,
+      1.0,
+      1.0
      ],
      "textures": {
       "albedo": "Figures/enforcer/Textures/enforcer_body_albedo.jpg",
@@ -2885,12 +2769,12 @@
     {
      "name": "enforcer_carbine",
      "file": "Figures/enforcer/Materials/enforcer_carbine.mat",
-     "source": "tripo_material_517b4acc-1e7a-40c2-8d70-bf03c3d977f3",
+     "source": "tripo_material_517b4acc-1e7a-40c2-8d70-bf03c3d977f3.001",
      "doubleSided": true,
      "tint": [
-      1,
-      1,
-      1
+      1.0,
+      1.0,
+      1.0
      ],
      "textures": {
       "albedo": "Figures/enforcer/Textures/enforcer_carbine_albedo.jpg",
@@ -3021,9 +2905,9 @@
     {
      "name": "shoot",
      "action": "Fire Armed",
-     "clip": "Firing Rifle",
+     "clip": "Firing Rifle (2)",
      "take": "fire_armed",
-     "frames": 17,
+     "frames": 35,
      "fps": 30,
      "loop": false,
      "props": [
@@ -3301,9 +3185,9 @@
     {
      "name": "holster",
      "action": "Holster",
-     "clip": "Put Back Rifle",
+     "clip": "Stow Rifle Behind Hip",
      "take": "holster",
-     "frames": 77,
+     "frames": 15,
      "fps": 30,
      "loop": false,
      "props": [
@@ -3563,17 +3447,17 @@
    },
    "groundLiftM": {
     "idle": {
-     "drop": 0,
+     "drop": 0.0,
      "liftMax": 0.011
     },
     "cover_idle": {
      "drop": 0.022,
-     "liftMax": 0
+     "liftMax": 0.0
     }
    },
    "seat": {
     "hipJointsTarget": [
-     0,
+     0.0,
      0.05,
      0.577
     ],
@@ -3585,7 +3469,7 @@
        -0.028
       ],
       "proud": 0.027,
-      "solesUp": 0
+      "solesUp": 0.0
      },
      "sit_talk": {
       "slide": [
@@ -3594,7 +3478,7 @@
        -0.047
       ],
       "proud": 0.046,
-      "solesUp": 0
+      "solesUp": 0.0
      },
      "sit_down": {
       "slide": [
@@ -3602,7 +3486,7 @@
        0.05,
        0.011
       ],
-      "proud": 0,
+      "proud": 0.0,
       "solesUp": 0.026
      },
      "stand_up": {
@@ -3611,7 +3495,7 @@
        0.05,
        0.011
       ],
-      "proud": 0,
+      "proud": 0.0,
       "solesUp": 0.013
      }
     }

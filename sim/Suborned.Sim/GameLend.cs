@@ -89,7 +89,6 @@ namespace Suborned.Sim
         string BoardLent(Op op, Order o)
         {
             if (!Lent || lentLeft) return No("car-left", $"{Cap(ValeName)}'s car is not ours to board");
-            if (op.Running) return No("board-running", "a running operative doesn't board: stop first");
             if (op.Id == OpId.Tech && Tethered) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body: the car seats the cell and the target");
             if (CarDisabled(lentId)) return No("car-disabled", $"{Cap(LentName)} is disabled");

@@ -404,13 +404,8 @@ namespace Suborned.Play
         void RingTakeTry(int seg, string src)
         {
             var rs = Ring; if (rs == null || seg < 0 || seg >= rs.Segs.Count) return;
-            if (rs.Segs[seg].Shut) // brief 057 §4.2: a shut Go says why and pulses the holders; brief 058: a shut Loop its end; brief 067 E2 (Glyph): any shut way pops its short lock with the lock's own icon at the wedge (Alt: the long line), and the ring closes; nothing taken
-            {
-                var sr = rs.Segs[seg].Row; var at = WedgeScreen(rs, seg);
-                if (sr != null) { if (sr.Lock.code == "car-held") HolderPulseAt = Time.unscaledTime; var full = sr.Unlock.Length > 0 ? sr.Unlock : LockLine(sr.I.Order, sr.Lock) ?? sr.Reason; popCode = sr.Lock.code ?? ""; Pop(ShortOf(sr.I.Order, sr.Lock) ?? sr.Reason, at, null, Feedback.Refused, 2f, PopIcon(sr.Lock.code ?? ""), full); }
-                SideTake(rs.Segs[seg], rs.Plan?.T); CloseRing(); return;
-            }
             if (!rs.Segs[seg].HoldWedge) { RingTake(seg); return; }
+            if (!CheckOpenMenu()) return;
             rs.Sticky = true; rs.Always = true; rs.FromHold = false;
             if (src == "release") { Status = "Hold to take it"; return; }
             if (rs.HoldSeg != seg) { rs.HoldSeg = seg; rs.HoldStart = Time.unscaledTime; rs.HoldSrc = src; }

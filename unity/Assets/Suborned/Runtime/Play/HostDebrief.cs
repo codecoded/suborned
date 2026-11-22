@@ -26,7 +26,7 @@ namespace Suborned.Play
         public bool DebriefOwnsEnd => !rangeMode && Fault == null;
 
         /// <summary>The run has ended and nothing else wants the screen (the fail camera, its replays, the pause menu): the debrief may open.</summary>
-        bool BookEndMay => Ending.Length > 0 && Game != null && !FailCamOn && failPrep == null && !MenuOpen && !rangeMode && Fault == null;
+        bool BookEndMay => Ending.Length > 0 && Game != null && !FailCamOn && failPrep == null && !MenuOpen && !rangeMode && Fault == null && !EndHeld;
 
         /// <summary>From BookKeys each frame the book is shut: the ended run opens the book on its debrief.</summary>
         bool BookOpenEnd()

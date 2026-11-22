@@ -114,7 +114,7 @@ namespace Suborned.Sim
         {
             if (seconds < 1) seconds = 1; // the rulebook bounds every duration to 1 s or more at load (Redline E3); a 1 s floor is the belt
 
-            op.Walk = null; op.WalkMm = 0; // engaging stops the approach walk
+            op.Walk = null; op.WalkMm = 0; op.Running = false; // engaging stops the approach walk or run
             if (op.Id == OpId.Enforcer) EndCoveringFire("an act"); // brief 039: an act ends it, as it ends a fire order
             if (op.Gun.Order.Length > 0) { Note("fire.cancelled", $"{Sim.Op.Name(op.Id)} stops firing on {op.Gun.Order} for the {o.Do}."); OrderEnd(op, false); } // engine 0.21.0 (Sky 2026-10-22, brief 041): a new act ends a lasting fire order (a walk or a run keeps it)
             op.Busy = o; op.BusyStart = Tick; op.BusyEnd = Tick + T(seconds);
@@ -168,6 +168,8 @@ namespace Suborned.Sim
         /// rivals) is nothing to watch for anyone (target-unknown).</summary>
         string Scout(Op op, Order o, bool engage = true)
         {
+            if (o.Do == "watch" && LostWatchTarget(o.Target) is { } lost)
+                return No(lost.code, lost.why);
             if (IsCrewId(o.Target) && !Range) return CrewLearn(op, o, engage); // engine 0.41.0: a member of the rival crew (GameCrewTurn.cs)
             bool machine = o.Do == "watch" && !IsPersonRoleName(o.Target);
             if (o.Do == "listen" && op.Id != OpId.Scout) return No("only-scout", "only the Scout listens (§03)");

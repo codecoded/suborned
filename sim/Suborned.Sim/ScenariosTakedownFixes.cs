@@ -79,7 +79,7 @@ namespace Suborned.Sim
                 var o = fc?.Origin;
                 r.Is(o != null && o.Because == "confirmed" && o.Report.StartsWith("report:dead:", StringComparison.Ordinal) && o.Reporter?.Id == "camera:entrance" && o.Confirmer != null && o.Confirmer.Placed, $"the origin: the entrance camera's report of the dead guard, confirmed by a unit (got {o?.Report}, {o?.Because}, {o?.Reporter}, {o?.Confirmer})");
                 }
-            }, new Start { FinalFight = false, ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
+            }, new Start { FinalFight = false, ValeWaits = true, RecoverCasualties = false }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N69", "—", "A takedown under the live entrance camera (Waymark §6): route G without the Loop. The camera is a watcher like any other: it records the act, its watcher reads the screen at the next scan and the report lands 3 s later (Alert 3, a takedown seen); nothing fails at the act or when he is out. At this level Alert 3 locks the Office doors: the Enter is refused, and the response comes by the dial. (The old guard-down rule is kept only for a guard shot: his missed mark calls the response, as gunfire's own rule.)", r =>
             {

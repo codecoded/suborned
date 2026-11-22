@@ -19,7 +19,7 @@ namespace Suborned.Play
     {
         // ---------------------------------------------------------------- the going-loud gate
 
-        public sealed class Gate { public LoudCard Card; public readonly List<Order> Orders = new(); public string Source = "", What = ""; public float Start; public Vector2 Gui; public Vector3? At; /** brief 013: a takedown a known watcher sees */ public bool Takedown; public Target Target; public OpId By; /** brief 018: a Go that leaves someone behind (who, fate, why), and whether security sees the car leave */ public List<(string op, string fate, string why)> Left; public bool SeenLeaving; /** brief 038 §5: a hold that is not going loud (panic in a fight): no loud feed line on commit */ public bool Plain; }
+        public sealed class Gate { public LoudCard Card; public readonly List<Order> Orders = new(); public string Source = "", What = ""; public float Start; public Vector2 Gui; public Vector3? At; /** brief 013: a takedown a known watcher sees */ public bool Takedown; public Action Commit; /** brief 018: a Go that leaves someone behind (who, fate, why), and whether security sees the car leave */ public List<(string op, string fate, string why)> Left; public bool SeenLeaving; /** brief 038 §5: a hold that is not going loud (panic in a fight): no loud feed line on commit */ public bool Plain; }
         /// <summary>The going-loud card while it is held open, else null.</summary>
         public Gate Loud { get; private set; }
         /// <summary>For scripted checks: the open hold card closes, nothing given.</summary>
@@ -104,11 +104,12 @@ namespace Suborned.Play
                 if (off) { Status = "Going loud: backed off"; Loud = null; } else Loud.Start = Time.unscaledTime;
                 return;
             }
-            if (kb != null && kb.escapeKey.wasPressedThisFrame) held = false;
+            if (kb != null && kb.escapeKey.wasPressedThisFrame) { Status = "Order cancelled"; Loud = null; return; }
+            if (!held && Loud.Source == "left") { Loud.Source = "wait"; Loud.Start = Time.unscaledTime; return; }
             if (!held) { Status = "Going loud: backed off"; Loud = null; return; } // the card closing is the answer (Fable B9)
             if (GateProgress < 1f) return;
             var g = Loud; Loud = null;
-            if (g.Takedown) { Give(g.By, g.Orders[0], g.Target, null); Status = "Committed: the takedown is seen."; return; } // walk-then-act like any order
+            if (g.Takedown) { g.Commit(); return; } // walk-then-act like any order
             if (g.Left != null) { Issue(g.Orders[0], null, g.At); Status = "Go: the car leaves."; return; } // brief 018: the Go that leaves someone behind
             Send(new List<Order>(g.Orders), null, g.At);
             if (g.Plain) { Status = "Panic."; return; }

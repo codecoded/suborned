@@ -150,7 +150,7 @@ namespace Suborned.Sim
             foreach (var s in g.Sightings) h.S(s.Watcher).S(s.Op).I(s.From).I(s.To).P(s.At);
             foreach (var x in g.ExposedByWatcher) h.S(x);
             g.HashSight(h); // what the cell knows of watchers: no bytes until it knows something (rulebook sight)
-            g.HashTakedown(h);
+            g.HashTakedown(h); g.HashRecovery(h);
             g.HashGetaway(h);
             if (g.AutoHolsterDue >= 0) h.S("auto-holster").I(g.AutoHolsterDue); // brief 030: only while one is due
             g.HashAttention(h); // brief 031: no bytes until a watcher's clock has moved

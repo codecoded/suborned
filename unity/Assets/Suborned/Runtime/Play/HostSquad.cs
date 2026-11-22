@@ -38,8 +38,8 @@ namespace Suborned.Play
         /// reach is handed to the engine's walk, as FireRow does for him (the way was priced with its walk in).</summary>
         bool SquadFire(Order o, Target t, Vector2 at, string source)
         {
-            var who = Shooters(false, o.Target, o.Force); if (who.Count == 0) return false;
-            Shooters(false, o.Target, o.Force, mark: true); // each one left out says why
+            var who = Shooters(false, o.Target, o.Force, replaceBusy: true); if (who.Count == 0) return false;
+            Shooters(false, o.Target, o.Force, mark: true, replaceBusy: true); // each one left out says why
             if (Driving && who.Contains(dAgent) && Game.PosOf(o.Target) is Pt tp && !(G.Within(Game.Ops[dAgent].Pos, tp, Game.Ops[dAgent].Gun.W.MaxCm) && Game.S.Sight(Game.Ops[dAgent].Pos, tp, Game.R.Eye))) DriveAutoBegin();
             var list = new List<Order>(); foreach (var k in who) list.Add(new Order { Op = Op.Name((OpId)k), Do = "fire", Target = o.Target, Force = o.Force });
             sweepLast = o.Target; Fight(list, source, at, TargetWorld(t), $"fire on {Name(o.Target)}");
@@ -50,7 +50,7 @@ namespace Suborned.Play
         /// <summary>The faces on a Fire wedge: who it will reach now (the same Shooters as the order and the right hold's pill), else the row's givers.</summary>
         List<OpId> FireFaces(Order o, List<OpId> givers)
         {
-            var who = Shooters(false, o.Target, o.Force); if (who.Count == 0) return givers;
+            var who = Shooters(false, o.Target, o.Force, replaceBusy: true); if (who.Count == 0) return givers;
             return who.ConvertAll(k => (OpId)k);
         }
 
@@ -58,6 +58,7 @@ namespace Suborned.Play
         bool RingKeyFire(RingState rs, int seg)
         {
             var s = rs.Segs[seg]; if (s.Row?.I?.Order?.Do != "fire" || !s.Row.Available) return false;
+            if (!CheckOpenMenu()) return true;
             var plan = rs.Plan; var at = rs.Screen; SideTake(s, plan.T); CloseRing(); DoRow(s.Row, plan.T, at, plan.Pn.World, "left"); return true;
         }
 

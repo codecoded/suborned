@@ -51,7 +51,6 @@ namespace Suborned.Sim
         {
             if (!LendOn) return No("unknown-verb", "take-car runs with car.lend.split 1 (the two cars)");
             if (op.InCar) return No("in-car", $"the {Sim.Op.Name(op.Id)} is in a car: a move steps out first");
-            if (op.Running) return No("board-running", "a running operative doesn't board: stop first");
             if (op.Id == OpId.Tech && Tethered) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body: the car seats the cell and the target");
             if (id == "car:getaway" || id == "car") return No("car-ours", "the getaway car is ours: Board it");

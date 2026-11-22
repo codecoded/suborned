@@ -304,6 +304,8 @@ namespace Suborned.Play
         /// keeps the same sight rule: an event whose scenes are all in-sight only, or that happens at a place, makes no card when no agent sees it.</summary>
         void FeedEvent(LogLine l)
         {
+            if (l.Code == "takedown.fails")
+                Pop("Spotted · takedown failed", null, AgentWorld((int)OpId.Enforcer), Feedback.Refused, 3f, "icons/singles/p_alert", l.Text);
             if (PressedStreet(l)) { quiet = l; return; } /* brief 085: a pressed call's arrival (HostConvo.Street) */ if (l.Code == "fight.safe" && CrewWipedAt(l.Tick)) { quiet = l; return; } // engine 0.33.0: every rival killed or tied, the safe fight is over at its start (rivals.wiped has the card): no "they wait at the car"
             if (l.Code == "rivals.for-car") { if (forCarCard) return; forCarCard = true; } // brief 096: one card a walk on the car, not one a rival (the engine logs each)
             if (CrewBeatCodes.Contains(l.Code)) { bool again = crewCodeAt.TryGetValue(l.Code, out var was) && l.Tick - was < CrewBeatS * Game.Hz; crewCodeAt[l.Code] = l.Tick; if (again) return; } // one card a beat, not one a member

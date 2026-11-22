@@ -188,17 +188,16 @@ namespace Suborned.Sim
                 r.Is(live.Stretches.Exists(x => x.Seen == "no") || live.Seen != "no", "seen and unseen stretches are told apart");
             });
 
-            Add("N87", "—", "A searching officer sent on by what he finds (Keel 2026-10-16, found trying driver-route variants for Waymark; re-pinned to Waymark's orders 2026-10-19, the service door on the east face): the driver and guard 29 killed at 2:31 and 2:35 and put through the service door, guard 74 knocked out in front of the outgoing shift at 5:40, Vale taken at 6:10. At 6:56.1 police-3, searching the lane, opens the service door: the driver's body lands its own incident, and the desk sends police-3 on to it. Before, the search then took the opened stash off a list the reassignment had emptied (ArgumentOutOfRange, engine-error); now the stash comes off the list before it is opened, and the officer walks to the new scene. Rewritten for brief 098, law L9 (Bodies): the script stops at its rule, the search that finds the driver at 5:08.6 and is sent on; its tail (guard 74 at 5:40, Vale at 6:10, the 6:56 search) stood on where the crowd stood to the centimetre, which the law moves.", r =>
+            Add("N87", "—", "A searching officer opens the service-door stash, discovers the driver's body and is reassigned without mutating the search list during enumeration. The Enforcer kills and stashes the driver; at 4:05 the Tech cuts the pickup feed, creating a real security incident that brings a search to the lane. Ordinary public waiting creates no incident.", r =>
             {
                 var g = r.G;
                 OrdersWhileOn(r, DriverOpening().Concat(new[] {
-                    Act(400, Tech, "reroute", "patrol") /* engine 0.34.0 (brief 067 A): the yard patrol would see the kills at the official car and the carry into the yard: rerouted over them (lands 1:25, away to 3:20) */, Act(1300, Tech, "loop", "pickup") /* Loop v2 (engine 0.31.0): re-spliced at 2:10 and 4:05, blind from 0:36 to 6:25 as the held loop was */, MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
+                    Act(400, Tech, "reroute", "patrol") /* engine 0.34.0 (brief 067 A): the yard patrol would see the kills at the official car and the carry into the yard: rerouted over them (lands 1:25, away to 3:20) */, Act(1300, Tech, "loop", "pickup") /* Loop v2 (engine 0.31.0): re-spliced at 2:10, then cut at 4:05 */, MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
                     Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1875, Enf, "stash", ServiceDoorId),
                     new Order { Tick = 1975, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, // engine 0.30.0: guard 29 sees the driver's takedown and radios it, so he lies where he fell: no second carry
-                    MvTo(2279, Enf, new Pt(7625, -2880)), Mv(2410, Scout, "crew:scout"), Act(2450, Tech, "loop", "pickup") }).ToArray());
+                    MvTo(2279, Enf, new Pt(7625, -2880)), Mv(2410, Scout, "crew:scout"), Act(2450, Tech, "disable", "pickup") }).ToArray());
                 r.To(T(330));
-                // engine 0.30.0: on the face-margin grid guard 29 radios the driver's takedown (Alert 2) and police-1's search opens the service door at
-                // 5:07, finds the driver and is sent on to that scene: the path this fixture was written for
+                // The cut feed gives the search a concrete nearby incident; discovering the driver must safely redirect the officer.
                 int op0 = g.Log.FindIndex(l => l.Code == "stash.opened" && l.Text.Contains("driver"));
                 r.Is(op0 >= 0 && g.Log.Exists(l => l.Code == "alarm.reassigns" && l.Tick == g.Log[op0].Tick), $"an officer opens the service door, finds the driver and is sent on to the scene it found{(op0 >= 0 ? " (" + Report.Clock(g.Log[op0].Tick) + ")" : "")}");
                 r.Is(g.FailCode != "engine-error", $"no engine error{(g.FailCode == "engine-error" ? ": " + g.FailText : "")}");

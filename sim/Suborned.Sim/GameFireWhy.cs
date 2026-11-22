@@ -59,6 +59,8 @@ namespace Suborned.Sim
             var op = OpOf(id); var ir = R.Intent; string kind = IntentKind(by);
             string[] foes = kind == "police" ? ir.PoliceFoes : kind == "robots" ? ir.RobotFoes : RivalsAlert ? ir.RivalsAlerted : ir.RivalsCalm;
             var have = new HashSet<string>(StringComparer.Ordinal);
+            if (CrewOf(by) is CrewMember mate && CrewUnderFire(mate, op)) have.Add("crewmate");
+            if (IsRival(by) && GunOf(by) is Gun rivalGun && ShotByOpRecently(rivalGun, Sim.Op.Name(id))) have.Add("fired");
             foreach (var f in foes) if (HasFoe(f, op, by)) have.Add(f);
             if (Alert >= FaceAt(kind) && faces.Contains(Sim.Op.Name(id))) have.Add("face"); // as Provoked
             var l = new List<string>(); foreach (var c in FireCauseOrder) if (have.Contains(c)) l.Add(c);
