@@ -482,7 +482,8 @@ namespace Suborned.Sim
 
         void Damage(string t, Gun tg, int dmg, string by, bool cell, bool untraced)
         {
-            var kb = KoBody(t); if (kb != null) tg.Health = 0; // tuning.md §9.1: a shot on a knocked-out body kills
+            if (CitizenDefends(t, by, dmg)) return;
+            var kb = KoBody(t); if (kb != null) tg.Health = 0;
             tg.Health = Math.Max(0, tg.Health - dmg);
             bool traced = cell && !untraced && !IsPropertyId(t); // tuning.md §9.2, §10.7: a camera or a car costs no hit or down Trail
             if (traced && !tg.Hit) AddTrail(R.HitTrail, "hit:" + t);
@@ -527,7 +528,6 @@ namespace Suborned.Sim
                 else Note("fight.hit", $"{who} hits {t}.");
             }
         }
-
         void OpHit(Op op, bool down, string by)
         {
             string name = Sim.Op.Name(op.Id);

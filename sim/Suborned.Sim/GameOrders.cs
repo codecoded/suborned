@@ -56,7 +56,6 @@ namespace Suborned.Sim
                 default: return No("needs-" + c.K, why);
             }
         }
-
         string Check(Order o)
         {
             if (o.Do == "spawn") return Range ? Spawn(o) : No("unknown-verb", "spawn is the fight range's (brief 029): unknown = reject"); // GameRange.cs
@@ -65,6 +64,7 @@ namespace Suborned.Sim
             if (!HandoverOpen && (o.Do == "go" || o.Do == "enter" || o.Do == "take")) return No("mission-over", "The councillor has left. Check the district book for another lead.");
             if (o.Do == "end" || (o.Do == "withdraw" && ValeOutTick != INF)) return EndOrder(); if (o.Do == "withdraw") { RecordsAtEnd(); Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
             if (OneInputOn && (o.Do == "panic" || o.Do == "free" || o.Do == "cease" || o.Do == "stance")) return No("unknown-verb", $"'{o.Do}' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses"); // unknown = reject
+            if (o.Do == "district-recall" && District != null && o.Op == "cell") return RecallCitizen(o);
             if (o.Do == "panic") return Panic(o);
             if (o.Do == "follow") return FollowSet(o); // tuning.md §11.5 (engine 0.17.0): the follow setting, op "cell"
             if (o.Do == "free") return FreeSet(o); if (o.Do == "weather" || o.Do == "light") return LookSet(o); // tuning.md §14 (engine 0.19.0): weapons free, op "cell"; brief 107 (GameLook.cs): the briefing's weather and light, op "cell", at tick 0 only
@@ -84,7 +84,7 @@ namespace Suborned.Sim
             }
             switch (o.Do)
             {
-                case "district-back": case "district-refer": case "district-visit": case "district-help": case "district-bluff": if (District != null) return DistrictOrder(op,o); return No("unknown-verb", "No district is open.");
+                case "district-block": case "district-rally": case "district-guard": case "district-protect": case "district-bond": case "district-back": case "district-refer": case "district-visit": case "district-help": case "district-bluff": if (District != null) return DistrictOrder(op,o); return No("unknown-verb", "No district is open.");
                 case "move": return Move(op, o);
                 case "watch": case "listen": return Scout(op, o);
                 case "turn": return Turn(op, o);

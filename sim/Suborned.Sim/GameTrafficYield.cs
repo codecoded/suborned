@@ -32,13 +32,18 @@ namespace Suborned.Sim
         /// not been shot; a wreck there it pushes aside.</summary>
         void MissionYieldStep()
         {
-            if (tr == null || Range) return;
+            if (Range) return;
+            bool districtOrders = District != null && District.Network.Requests.Count > 0;
+            if (districtOrders) DistrictSecondYield();
+            if (tr == null && !districtOrders) return;
             foreach (var c in Traffic) if (c.Clears.Length > 0 && !missionHeld.ContainsKey(c.Clears)) c.Clears = ""; // the mission car it was in the way of has gone on
             foreach (var id in CarIds)
             {
                 if (!MissionDriving(id)) { EndHold(id); continue; }
                 var was = MissionCarAt(id, Tick - 1); // where it stood last tick, and where its leg takes it now
                 var now = MissionCarAt(id, Tick); if (!now.HasValue || !was.HasValue || now.Value.at == was.Value.at) { EndHold(id); continue; }
+                if (districtOrders && District!.Network.StopsApproach(was.Value.at, now.Value.at)) { HoldCarClock(id); continue; }
+                if (tr == null) continue;
                 var me = CarGeo.Rect(now.Value.at, now.Value.h, R.CarLenCm / 2, R.CarWCm / 2); var before = CarGeo.Rect(was.Value.at, was.Value.h, R.CarLenCm / 2, R.CarWCm / 2);
                 TrafficCar? solid = null, wreck = null; bool pinned = false;
                 foreach (var c in Traffic)
@@ -54,12 +59,21 @@ namespace Suborned.Sim
                 missionHeld[id] = held + 1; MissionWaits[id] = (MissionWaits.TryGetValue(id, out var w) ? w : 0) + 1;
                 if (solid != null && solid.WaitsFor == id && solid.V == 0 && held + 1 >= T(tr.PassWaitS)) solid.Clears = id; // each waits for the other: the passing car makes room
                 OpenHold(id, by, () => solid == null ? (pinned ? "wreck-pinned" : "pushing") : HoldWhy(solid, id));
-                switch (id) // its leg's clock waits a tick
-                {
-                    case "car:getaway": getawayStart++; foreach (var op in Ops) if (op.InCar && op.Busy != null) op.BusyEnd++; break;
-                    case "car:official": valeDriveStart++; break;
-                    case "car:rivals": ccStart++; break;
-                }
+                HoldCarClock(id);
+            }
+        }
+
+        void HoldCarClock(string id)
+        {
+            switch (id)
+            {
+                case "car:getaway":
+                    getawayStart++;
+                    foreach (var op in Ops)
+                        if (op.InCar && (District == null || !op.InLent) && op.Busy != null) op.BusyEnd++;
+                    break;
+                case "car:official": valeDriveStart++; break;
+                case "car:rivals": ccStart++; break;
             }
         }
         /// <summary>The mission car has been held by traffic traffic.pass.waitS in a row: it is not coming soon, so the road it would drive is no car in

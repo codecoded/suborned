@@ -148,6 +148,17 @@ namespace Suborned.Sim
             return "";
         }
 
+        void DistrictSecondYield()
+        {
+            if (secondRoute == null || secondProfile == null) return;
+            int k = Math.Clamp(Tick - secondStart, 0, secondProfile.Length - 1);
+            var was = secondRoute.At(secondProfile[Math.Max(0, k - 1)]);
+            if (!District!.Network.StopsApproach(was, secondRoute.At(secondProfile[k]))) return;
+            secondStart++;
+            foreach (var op in Ops)
+                if (op.InLent && op.Busy != null) op.BusyEnd++;
+        }
+
         void LandSecondCar()
         {
             if (secondStreet == null)

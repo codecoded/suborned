@@ -52,7 +52,7 @@ namespace Suborned.Sim
                 if (!op.InCar && !op.LeftMap && !op.Inside)
                     people.Add(op.Pos);
             for (int i = 0; i < map.People.Length; i++)
-                if (d.Roams(i) && g.DistrictPersonAt(i)is Pt p && !g.S.Grid.InGrid(p))
+                if ((d.Roams(i) || d.Network.Away(i)) && g.DistrictPersonAt(i)is Pt p && !g.S.Grid.InGrid(p))
                     people.Add(p);
             for (int i = 0; i < trams.Length; i++)
                 trams[i] = Tram(i, g.Tick);
@@ -62,7 +62,7 @@ namespace Suborned.Sim
                 if (!car.Moving || g.S.Grid.InGrid(car.At))
                     continue;
                 var ahead = CarGeo.Ahead(car.At, car.Facing, 400);
-                bool blocked = G.Within(ahead, g.GetawayCarPos(), 370);
+                bool blocked = d.Network.HoldsRoad(ahead) || G.Within(ahead, g.GetawayCarPos(), 370);
                 for (int k = 0; k < trams.Length && !blocked; k++)
                     blocked = G.Within(ahead, trams[k].At, 620);
                 for (int k = 0; k < people.Count && !blocked; k++)

@@ -70,6 +70,7 @@ namespace Suborned.Sim
 
         void DistrictEndStep()
         {
+            CitizenStep();
             District!.Traffic.Step(this, District);
             if (Tick % Hz == 0)
                 foreach (var job in District.Jobs)
@@ -155,19 +156,20 @@ namespace Suborned.Sim
         public Pt? DistrictPersonAt(int who)
         {
             var d = District!;
+            if (d.Network.Fallen[who]) return null;
             var key = d.Map.People[who].Id;
             if (districtWalkers.TryGetValue(key, out var w))
             {
                 if (w.P.Down)
                     return null;
-                if (w.St.Length > 0)
+                if (w.St.Length > 0 || !d.Roams(who) && !d.Network.Away(who))
                     return CrowdPos(w);
             }
 
             return d.Pose(who, Tick).at;
         }
 
-        bool ContactLost(int who) => districtWalkers.TryGetValue(District!.Map.People[who].Id, out var w) && w.P.Down;
+        public bool ContactLost(int who) => District!.Network.Fallen[who] || districtWalkers.TryGetValue(District.Map.People[who].Id, out var w) && w.P.Down;
         readonly System.Collections.Generic.Dictionary<string, Walker> districtWalkers = new System.Collections.Generic.Dictionary<string, Walker>();
         void BindDistrictCast()
         {
@@ -187,6 +189,7 @@ namespace Suborned.Sim
             if (!at.HasValue)
                 return No("person-away", "This contact is off the street.");
             var place = at.Value;
+            if (d.Network.Away(who)) return No("agent-busy", "They are already out on a request.");
             if (o.Do == "district-visit")
             {
                 if (op.InCar)
@@ -203,6 +206,23 @@ namespace Suborned.Sim
 
             if (!G.Within(op.Pos, place, 650))
                 return No("too-far", $"Meet {person.Name} on foot within six metres.");
+            switch (o.Do)
+            {
+                case "district-block": return SendCitizen(op, o, who, CitizenAct.Block);
+                case "district-rally": return SendCitizen(op, o, who, CitizenAct.Rally);
+                case "district-guard": return SendCitizen(op, o, who, CitizenAct.Guard);
+                case "district-protect": return SendCitizen(op, o, who, CitizenAct.Protect);
+                case "district-bond":
+                    if (d.Trust[who] != 1) return No("no-leverage", "Only a contact who already trusts you can ask for your guarantee.");
+                    if (Cash < 25) return No("no-cash", "The guarantee costs $25.", usd: 25);
+                    Cash -= 25;
+                    d.Trust[who]++;
+                    d.Network.KnowsCell[who] = true;
+                    d.News = d.Memory[who] = $"{person.Name} trusts you to stand by them. You guaranteed {person.Need}.";
+                    d.Release(who, Tick);
+                    Note("district.guarantee", d.News);
+                    return "";
+            }
             if (o.Do == "district-back" || o.Do == "district-refer")
             {
                 string line;
@@ -213,6 +233,7 @@ namespace Suborned.Sim
                     if (Cash < 15)
                         return No("no-cash", "You need $15 to cover the favour.", usd: 15);
                     Cash -= 15;
+                    d.Network.KnowsCell[who] = true;
                     d.Trust[who]++;
                     line = $"{person.Name} accepted help with {person.Need}.";
                 }
@@ -220,10 +241,11 @@ namespace Suborned.Sim
                 {
                     if (d.Trust[who] < 1)
                         return No("not-a-contact", "Earn their trust first.");
-                    if (!d.Map.Index.TryGetValue(o.To, out int friend) || !person.Ties.Exists(t => t.person == friend))
+                    if (!d.Map.Index.TryGetValue(o.To, out int friend) || !d.Network.Neighbours(who).Any(t => t.person == friend))
                         return No("no-leverage", "They do not know that person.");
                     if (d.Trust[friend] > 0)
                         return No("already-turned", "That contact already trusts the cell.");
+                    d.Network.KnowsCell[who] = true;
                     d.Trust[friend]++;
                     line = $"{person.Name} vouched for the cell with {d.Map.People[friend].Name}.";
                     d.Memory[friend] = line;
@@ -271,6 +293,7 @@ namespace Suborned.Sim
                 d.Finish(job);
             }
 
+            d.Network.KnowsCell[who] = true;
             d.Memory[who] = news;
             d.News = news;
             d.Release(who, Tick);

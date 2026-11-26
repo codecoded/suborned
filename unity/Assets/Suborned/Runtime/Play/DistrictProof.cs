@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Suborned.Sim;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Directory = System.IO.Directory;
 using IOPath = System.IO.Path;
 
@@ -54,6 +55,15 @@ namespace Suborned.Play
         {
             if (!ok)
                 throw new InvalidOperationException(why);
+        }
+
+        static void Submit(VisualElement panel, string words)
+        {
+            var button = panel.Query<Button>().ToList().FirstOrDefault(b => b.text.StartsWith(words, StringComparison.Ordinal));
+            Need(button != null, "Missing button " + words);
+            using var submit = NavigationSubmitEvent.GetPooled();
+            submit.target = button;
+            button.SendEvent(submit);
         }
 
         IEnumerator Play()
@@ -123,6 +133,33 @@ namespace Suborned.Play
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "street-dialogue.png"));
             Need(h.Issue(new Order { Op = "scout", Do = "district-help", Target = source.Id, To = j.Key }), "Native contact order refused");
             Need(j.Stage == 1, "The first contact did not vouch for the cell");
+            Need(h.Issue(new Order { Op = "scout", Do = "district-back", Target = source.Id }), "Could not earn the first contact's trust");
+            journal.Open(j.A);
+            var panel = h.transform.Find("District book").GetComponent<UIDocument>().rootVisualElement;
+            Submit(panel, "Call in a favour");
+            yield return new WaitForSecondsRealtime(.2f);
+            var routes = g.CitizenRoutes(j.A);
+            int choice = routes.FindIndex(chain => chain.Length >= 3 && d.Roams(chain[chain.Length - 1]));
+            Need(choice >= 0, "The source lacks a second-hand introduction");
+            var fields = panel.Query<DropdownField>().ToList();
+            Need(fields.Count == 3, "The citizen order form did not open");
+            fields[1].index = 1 + Array.FindIndex(d.Map.Streets, s => s.Id == "road/market-street");
+            panel.Query<DropdownField>().ToList()[2].index = choice;
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "citizen-order.png"));
+            Submit(panel, "Pass the word");
+            yield return new WaitForSecondsRealtime(.2f);
+            Need(d.Network.Requests.Count == 1, "Submitting the citizen form did not dispatch the request");
+            var request = d.Network.Requests[0];
+            journal.Close();
+            for (int k = 0; k < 20000 && request.Stage != CitizenStage.Acting && !g.Over; k++) g.Step();
+            Need(request.Stage == CitizenStage.Acting && d.Network.HoldsRoad(request.Site), "The citizen did not block the street");
+            Need(!d.Network.KnowsCell[request.Actor] && d.Network.AskedBy[request.Actor] == d.Map.People[request.Chain[request.Chain.Length - 2]].Name, "The cell's identity leaked along the chain");
+            h.LookAt(h.frame.World(request.Site));
+            yield return new WaitForSecondsRealtime(.5f);
+            journal.Open();
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "street-order.png"));
             journal.Close();
             var rail = DistrictMap.Shuttle(d.Map.Trams[0].Path, g.Tick, 1200, 730, 95);
             h.LookAt(h.frame.World(rail.at));
@@ -131,7 +168,7 @@ namespace Suborned.Play
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "tram-street.png"));
             yield return new WaitForSecondsRealtime(.4f);
-            File.WriteAllText(IOPath.Combine(directory, "proof.txt"), $"OldTown opened. The district book and contact page opened. A ground click drove the boarded scout to {d.Map.StreetAt(point)}. The Handover closed and play continued at tick {g.Tick}. {source.Name} vouched for the cell with {d.Map.People[j.B].Name}. Residents {d.Map.People.Length}, open leads {d.Jobs.Length}, visible vehicles at the rail {street.VisibleVehicles}.");
+            File.WriteAllText(IOPath.Combine(directory, "proof.txt"), $"OldTown opened. The district book and contact page opened. A ground click drove the boarded scout to {d.Map.StreetAt(point)}. The Handover closed and play continued at tick {g.Tick}. {source.Name} vouched for the cell with {d.Map.People[j.B].Name}. The district book sent a request through {d.Network.Describe(request.Chain)}. The last citizen blocked {request.Place} knowing only who called them. Residents {d.Map.People.Length}, open leads {d.Jobs.Length}, visible vehicles at the rail {street.VisibleVehicles}.");
         }
     }
 }

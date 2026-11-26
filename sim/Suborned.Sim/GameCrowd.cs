@@ -210,8 +210,6 @@ namespace Suborned.Sim
         Pt? RoutinePos(Walker w, int tick)
         {
             if (w.P.Down) return null;
-            if (District != null && District.Map.Index.TryGetValue(w.P.Id, out int person) && District.Roams(person))
-                return District.Pose(person,tick).at;
             return RoutineAt(w,tick);
         }
         /// <summary>Where the routine has a person at this tick, down or not (brief 098: where an added guard's beat has him when his mark is missed).</summary>
@@ -219,6 +217,8 @@ namespace Suborned.Sim
         Pt? RoutineAt(Walker w, int tick, out string? stop, out Path? leg, out long legMm)
         {
             stop = null; leg = null; legMm = 0;
+            if (District != null && District.Map.Index.TryGetValue(w.P.Id, out int person) && (District.Roams(person) || District.Network.Away(person)))
+                return District.Pose(person, tick).at;
             for (int i = 0; i < w.Place.Length; i++)
             {
                 if (tick >= w.From[i] && tick < w.To[i]) { if (!w.Out[i]) return null; stop = w.Place[i]; return CrowdPlace(w.Place[i]); }

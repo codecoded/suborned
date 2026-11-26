@@ -242,6 +242,7 @@ namespace Suborned.Sim
             long allowedMm = best == long.MaxValue ? long.MaxValue : best - Gap(c, gapKind);
             int k = NextTurn(c);
             if (k >= 0 && k != c.Turn) allowedMm = Math.Min(allowedMm, c.Route.Turns[k].enter - c.Front - 100);
+            if (!warm && District?.Network.HoldsRoad(c.Route.Path.At(c.Front + 3500)) == true) allowedMm = 0;
             if (trafficClosed && !warm && c.Front < c.Route.InMm) allowedMm = Math.Min(allowedMm, c.Route.InMm - c.Front - 100);
             int allowed = allowedMm == long.MaxValue ? int.MaxValue : allowedMm <= 0 ? 0 : (int)Math.Min(int.MaxValue, G.Isqrt(2L * brake * allowedMm));
             int v = Math.Min(Math.Min(c.V + accel, vmax), allowed);

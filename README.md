@@ -22,7 +22,11 @@ bun run game          # builds out/build/play/The Suborned.app if it is missing 
 bun run game -- --windowed
 ```
 
-The Handover opens on its briefing. Esc opens the pause menu (Resume, Restart mission, Quit). `bun run game:build` forces a build; `bun run game:check` proves the built app (all scenarios against headless, then the briefing, play and menu shots with frame times, into `out/build/play/proof/`). A fresh build is proved to draw before it is trusted: Unity sometimes ships a player that draws only a black screen (a second build in one Editor session), so `game:build` and `game:check` run the proof after building and, if its frame is blank, build once more on their own. Building needs Unity 6000.6.2f1. With Unity closed the build runs in batch mode. With the project open in Unity it builds through the Editor (menu Suborned/Build Game), and refuses while Unity is in Play.
+The Handover briefing opens into the Harbour district. Click the ground to walk. Once aboard a car, click a street to drive and click again to change course. Press **N** for district leads and people at work. The clock advances routines and the Handover. If the opportunity passes, the cell can keep exploring and taking other jobs.
+
+Click a resident or walk to a contact from the district book. Earn their trust, choose **Call in a favour**, then pick the request, location and person who will carry it out. A request can pass through several acquaintances while your operatives do something else. Residents remember who called them. People who meet at a gathering can introduce one another later. The district uses a cast and relationship graph baked from SurrealDB and plays offline.
+
+Esc opens the pause menu (Resume, Restart mission, Quit). `bun run game:build` forces a build; `bun run game:check` proves the built app (all scenarios against headless, then the briefing, play and menu shots with frame times, into `out/build/play/proof/`). A fresh build is proved to draw before it is trusted: Unity sometimes ships a player that draws only a black screen (a second build in one Editor session), so `game:build` and `game:check` run the proof after building and, if its frame is blank, build once more on their own. Building needs Unity 6000.6.2f1. With Unity closed the build runs in batch mode. With the project open in Unity it builds through the Editor (menu Suborned/Build Game), and refuses while Unity is in Play.
 
 On another Mac (the MacBook Air):
 

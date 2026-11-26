@@ -207,7 +207,7 @@ namespace Suborned.Sim
             o.Target = n.Opt("target")?.Str() ?? "";
             o.Approach = n.Opt("approach")?.Str() ?? "";
             if (n.Opt("to") is JNode to) { if (to.Kind == JKind.Str) o.To = to.Str(); else o.Point = Pt.Of(to); }
-            if (n.Opt("run") is JNode run) { o.Run = run.Bool(); if (o.Run && o.Do != "move" && o.Do != "drive" && o.Do != "turn" && o.Do != "watch" && o.Do != "listen" && o.Do != "mislead") throw new FormatException($"{n.Path}: run requires movement or an approach"); }
+            if (n.Opt("run") is JNode run) { o.Run = run.Bool(); if (o.Run && o.Do != "move" && o.Do != "district-visit" && o.Do != "drive" && o.Do != "turn" && o.Do != "watch" && o.Do != "listen" && o.Do != "mislead") throw new FormatException($"{n.Path}: run requires movement or an approach"); }
             if (n.Opt("face") is JNode fc) { o.Face = fc.Int(); if (o.Do != "drive" || o.Face < 0 || o.Face > 359) throw new FormatException($"{n.Path}: face is a drive sample's facing, 0..359 degrees"); }
             if (n.Opt("release") is JNode rl) { o.Release = rl.Bool(); if (o.Do != "drive") throw new FormatException($"{n.Path}: release is for a drive order"); }
             if (n.Opt("stance") is JNode st) { o.Stance = st.Str(); if (o.Do != "stance") throw new FormatException($"{n.Path}: stance is for the stance order"); }

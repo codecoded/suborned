@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace Suborned.Play
 {
-    public sealed class DistrictJournal : MonoBehaviour
+    public sealed partial class DistrictJournal : MonoBehaviour
     {
         HandoverHost host;
         Game bound;
@@ -206,6 +206,7 @@ namespace Suborned.Play
 
             open = true;
             person = resident;
+            writingOrder = false;
             reply = "";
             sheet.style.display = DisplayStyle.Flex;
             tab.style.display = DisplayStyle.None;
@@ -239,7 +240,7 @@ namespace Suborned.Play
             float best = Mathf.Pow(15 * Mathf.Max(1f, Screen.height / 1080f), 2);
             for (int i = 0; i < d.Map.People.Length; i++)
             {
-                if (!d.Roams(i) || !(g.DistrictPersonAt(i)is Pt at))
+                if ((!d.Roams(i) && !d.Network.Away(i)) || !(g.DistrictPersonAt(i)is Pt at))
                     continue;
                 var p = host.View.WorldToScreenPoint(host.frame.World(at) + Vector3.up);
                 if (p.z <= 0 || p.z > 100)
@@ -317,6 +318,7 @@ namespace Suborned.Play
                         Close();
                         host.LookAt(host.frame.World(g.S.Stand(g.S.GuardPost)));
                     });
+                NetworkOverview();
                 Label(pages, "Word on the street", 19, Gold);
                 foreach (var j in d.Jobs)
                 {
@@ -352,6 +354,11 @@ namespace Suborned.Play
             Button(pages, "‹  District book", () => Open());
             Label(pages, r.Name, 25, Ivory);
             Label(pages, r.Job.Replace('-', ' ') + "  ·  " + (at.HasValue ? d.Map.StreetAt(at.Value) : "off the street"), 14, Blue);
+            if (writingOrder)
+            {
+                CitizenOrderPage();
+                return;
+            }
             var job = d.Available(person);
             if (job != null)
             {
@@ -367,6 +374,12 @@ namespace Suborned.Play
             }
 
             int by = Speaker(at.Value, true);
+            if (d.Network.Away(person))
+            {
+                Label(pages, d.Memory[person] ?? "Out on a request.", 15, Gold);
+                Button(pages, "Locate on the street", () => Locate(person));
+                return;
+            }
             if (by < 0)
             {
                 Button(pages, "Show on the street", () =>
@@ -430,10 +443,14 @@ namespace Suborned.Play
                         Button(pages, d.Choice(job, true), () => Speak(by, "district-bluff", job.Key));
                 }
 
+                if (d.Trust[person] > 0 || g.Standing >= 4)
+                    Button(pages, "Call in a favour  ›", OpenCitizenOrders);
                 Label(pages, "Personal favours", 17, Gold);
+                if (d.Trust[person] == 1)
+                    Button(pages, "Stand surety for " + r.Need + "  ·  $25", () => Speak(by, "district-bond", ""));
                 if (d.Trust[person] <= 0)
                     Button(pages, "Help with " + r.Need + "  ·  $15", () => Speak(by, "district-back", ""));
-                foreach (var tie in r.Ties)
+                foreach (var tie in d.Network.Neighbours(person))
                 {
                     var friend = d.Map.People[tie.person];
                     if (!d.Roams(tie.person))

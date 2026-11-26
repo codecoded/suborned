@@ -71,7 +71,12 @@ namespace Suborned.Play
             for (int i = 0; i < d.Map.People.Length; i++)
             {
                 var p = d.Map.People[i];
-                if (host.Game.HasCivicActor(p.Id) || !d.Roams(i))
+                if (d.Network.FellAt[i] is Pt fell && !host.Game.HasCivicActor(p.Id))
+                {
+                    if (scan || activeViews.ContainsKey(i)) Draw(i, fell, new Pt(0, 100), false, scan, true);
+                    continue;
+                }
+                if (host.Game.HasCivicActor(p.Id) || (!d.Roams(i) && !d.Network.Away(i)))
                     continue;
                 if (!scan && !activeViews.ContainsKey(i))
                     continue;
@@ -113,7 +118,7 @@ namespace Suborned.Play
             }
         }
 
-        void Draw(int id, Pt at, Pt heading, bool moving, bool scan)
+        void Draw(int id, Pt at, Pt heading, bool moving, bool scan, bool fallen = false)
         {
             Vector3 pos = host.frame.World(at);
             if (scan)
@@ -144,6 +149,7 @@ namespace Suborned.Play
             Vector3 dir = host.frame.Dir(heading);
             if (dir.sqrMagnitude > .01f)
                 view.root.transform.rotation = Quaternion.LookRotation(dir);
+            if (fallen) view.root.transform.rotation *= Quaternion.Euler(0, 0, 85);
             if (view.animator && moving != view.moving)
             {
                 view.moving = moving;

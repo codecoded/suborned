@@ -341,7 +341,7 @@ namespace Suborned.Sim
             long back = guardBack.Length * (age - walkT - stayT) / backT;
             return (guardBack.At(back), guardBack.Heading(back), "returning to door");
         }
-        public bool GuardAtDoor => !GuardDown && !GuardHeld && (LureTick < 0 || Tick >= GuardAwayUntil);
+        public bool GuardAtDoor => District?.Network.GuardOccupied != true && !GuardDown && !GuardHeld && (LureTick < 0 || Tick >= GuardAwayUntil);
 
         Pt ParkedCar(int t)
         {
@@ -528,7 +528,7 @@ namespace Suborned.Sim
         /// <summary>The guard's cone; crowd: people on the street block it (Pulse §4: watchers), false for his own aim (§1.6).</summary>
         public bool GuardWatching(Pt p, bool crowd = true)
         {
-            var g = GuardPose(); if (!g.HasValue) return false;
+            var g = GuardPose(); if (!g.HasValue || District?.Network.GuardOccupied == true) return false;
             var (pos, f, phase) = g.Value;
             if (phase == "door") return G.InCone(pos, f, R.DoorReachCm, R.DoorHalfCm, 0, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
             return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, near, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));

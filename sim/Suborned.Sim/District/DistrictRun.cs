@@ -20,6 +20,7 @@ namespace Suborned.Sim
         public string HandoverNews = "The Handover is open at the Records Office.";
         public readonly DistrictJob[] Jobs = new DistrictJob[3];
         public readonly DistrictTraffic Traffic;
+        public readonly DistrictNetwork Network;
         public readonly int[] Trust;
         public readonly string[] Memory;
         public readonly Pt? [] Meetings;
@@ -32,6 +33,7 @@ namespace Suborned.Sim
         {
             this.seed = seed;
             Traffic = new DistrictTraffic(Map);
+            Network = new DistrictNetwork(this);
             Trust = new int[Map.People.Length];
             Memory = new string[Trust.Length];
             Meetings = new Pt? [Trust.Length];
@@ -130,6 +132,7 @@ namespace Suborned.Sim
         public (Pt at, Pt facing, bool moving) Pose(int person, int tick)
         {
             var r = Map.People[person];
+            if (Network.TryPose(person, tick, out var outing)) return outing;
             if (Meetings[person] is Pt p)
                 return (p, new Pt(0, 100), false);
             return DistrictMap.Shuttle(r.Walk, tick - heldTicks[person], r.Phase + seed % 1709, 112, 850);
@@ -228,6 +231,7 @@ namespace Suborned.Sim
         {
             h.S("harbour").S(Map.Digest).I((int)Handover).S(HandoverNews).I(Completed).S(News);
             Traffic.Hash(h);
+            Network.Hash(h);
             foreach (bool bluff in firstBluff)
                 h.Z(bluff);
             foreach (var j in Jobs)

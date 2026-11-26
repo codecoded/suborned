@@ -110,6 +110,20 @@ namespace Suborned.Sim
             return Walk.NearestFreeIn(p, WalkPiece) ?? throw new InvalidDataException("The district has no accessible meeting place");
         }
 
+        public Pt ClosestStreetPoint(Pt point)
+        {
+            long best = long.MaxValue;
+            Pt nearest = point;
+            foreach (var road in Streets)
+            {
+                var path = road.Path;
+                var p = path.At(path.NearestMm(point, 0, path.Length));
+                long distance = G.D2(p, point);
+                if (distance < best) { nearest = p; best = distance; }
+            }
+            return nearest;
+        }
+
         public string StreetAt(Pt point)
         {
             long best = long.MaxValue;
