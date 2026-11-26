@@ -87,11 +87,14 @@ public sealed class HarbourStreetTests
             Assert.True(district.Map.Ground.IsWall(corner.At));
             Assert.False(district.Map.Walk.Free(corner.At));
         }
-        foreach (var podium in new[] { Plan(-232,-60), Plan(-132,-431) })
+        foreach (var building in new[] { Plan(-232, -60), Plan(-167, -456) })
         {
-            Assert.True(district.Map.Ground.IsWall(podium));
-            Assert.False(district.Map.Walk.Free(podium));
+            Assert.True(district.Map.Ground.IsWall(building));
+            Assert.False(district.Map.Walk.Free(building));
         }
+        var lanternPassage = Plan(-132, -431); // The old housing podium now opens onto Market Street.
+        Assert.False(district.Map.Ground.IsWall(lanternPassage));
+        Assert.True(district.Map.Walk.Free(lanternPassage));
         Assert.Contains(district.Map.Ground.Galleries, g => G.Within(Plan(-244,-64),g.At,200));
         var a = traffic.Robot(1, 0);
         Assert.Contains(Enumerable.Range(1, 90).Select(t => traffic.Robot(1, t * 10)), p => p.Moving && p.At != a.At);
