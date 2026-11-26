@@ -64,6 +64,7 @@ export function streetscape(world: World, clear: (p: Point, radius: number) => b
   const courts: Court[] = [],
     buildings: StreetBuilding[] = [],
     fixtures: Fixture[] = [];
+  const galleries: { at: Point; yaw: number; widthCm: number; variant: number }[] = [];
   const used = furnished.map((f) => ({ at: f.at, radius: f.radius }));
   const buildable = world.ground.plots.filter((p) => ['residential', 'mixed', 'commercial'].includes(p.surface));
   function fits(p: Point, radius: number) {
@@ -158,10 +159,11 @@ export function streetscape(world: World, clear: (p: Point, radius: number) => b
           const samples: Point[] = [];
           for (let along = -width / 2; along <= width / 2; along += 2)
             for (let across = near; across <= far; across += 2) samples.push(place(along, across));
+          const housing = buildable.some((plot) => corners.every((p) => inside(p, plot.ring)));
           if (
             !foot &&
             style !== 'quay' &&
-            buildable.some((plot) => corners.every((p) => inside(p, plot.ring))) &&
+            housing &&
             [...samples, ...corners].every((p) => fits(p, 0.65))
           ) {
             buildings.push({
@@ -179,10 +181,48 @@ export function streetscape(world: World, clear: (p: Point, radius: number) => b
             variant === 0 &&
             world.ground.plots.some((plot) => plot.surface === 'park' && inside(home, plot.ring))
           ) {
-            item('DecoPavilion', 0, depth + 6, 5.1);
+            const centre = depth + 6;
+            const room = place(0, centre);
+            const ring = [[-5,-3],[5,-3],[5,3],[-5,3]].map(([u,v]) => place(u!, centre + v!));
+            const pad: Point[] = [];
+            for (let u=-5; u<=5; u+=2) for (let v=-3; v<=3; v+=2) pad.push(place(u,centre+v));
+            if (!buildings.some(b => Math.hypot(b.at[0]-room[0],b.at[1]-room[1]) < 100) && pad.every(p=>fits(p,.45))) {
+              buildings.push({ at:room, yaw:face, width:10, depth:6, floors:2, palette:index%4, ring });
+              used.push({ at:room, radius:6 });
+            } else item('DecoPavilion', 0, centre, 5.1);
           }
         }
     }
   }
-  return { courts, buildings, fixtures };
+  // The south colonnades already have authored shops. Give the other public faces
+  // shallow glazed galleries on the actual podium line, beside their open pavement.
+  for (const mega of world.megastructures) {
+    const frontages = world.frontages.filter(f => f.host.startsWith(mega.id) && f.level === 'street');
+    for (const podium of mega.parts.filter(p => p.id.includes('/podium/') && p.base < 1)) {
+      const ring = podium.ring;
+      const winding = Math.sign(ring.reduce((sum, a, i) => {
+        const b = ring[(i + 1) % ring.length]!;
+        return sum + a[0] * b[1] - b[0] * a[1];
+      }, 0));
+      for (let i = 0; i < ring.length; i++) {
+        const a = ring[i]!, b = ring[(i + 1) % ring.length]!;
+        const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        if (length < 10) continue;
+        const dx = (b[0] - a[0]) / length, dy = (b[1] - a[1]) / length;
+        const nx = winding * dy, ny = -winding * dx;
+        const bays = Math.max(1, Math.round((length - 2) / 11));
+        const step = (length - 2) / bays;
+        for (let k = 0; k < bays; k++) {
+          const along = 1 + step * (k + .5);
+          const at: Point = [a[0] + dx * along, a[1] + dy * along];
+          if (frontages.some(f => f.normal[0] * nx + f.normal[1] * ny > .95 &&
+            Math.abs((at[0] - (f.a[0] + f.b[0]) / 2) * dx + (at[1] - (f.a[1] + f.b[1]) / 2) * dy) < (f.w + step) / 2)) continue;
+          if (![-.42, 0, .42].every(t => clear([at[0] + dx * t * step + 2.3 * nx, at[1] + dy * t * step + 2.3 * ny], 0))) continue;
+          galleries.push({ at, yaw: Math.round(Math.atan2(nx, ny) * 180 / Math.PI),
+            widthCm: Math.round((step - .55) * 100), variant: (k + i) % 4 });
+        }
+      }
+    }
+  }
+  return { courts, buildings, fixtures, galleries };
 }

@@ -26,6 +26,14 @@ namespace Suborned.World.Play
                 Vertex(a, top); Vertex(b, top); Vertex(c, top); Vertex(d, top);
                 indices[mat].AddRange(new[] { i, i + 1, i + 2, i, i + 2, i + 3 });
             }
+            public void Picture(int mat, float x, float y, float z, float width, float height)
+            {
+                int first = vertices.Count;
+                float l = x - width/2, r = x + width/2;
+                vertices.AddRange(new[] { new Vector3(l,y,z),new Vector3(r,y,z),new Vector3(r,y+height,z),new Vector3(l,y+height,z) });
+                uv.AddRange(new[] { Vector2.zero,Vector2.right,Vector2.one,Vector2.up });
+                indices[mat].AddRange(new[] { first, first+1, first+2, first, first+2, first+3 });
+            }
             // The clockwise profile includes a vertex at each end of each straight.
             public void Solid(int mat, float x, float z, float width, float depth, float y, float h, float radius, int steps = 3)
             {
@@ -161,6 +169,64 @@ namespace Suborned.World.Play
             return s.Finish("Oval planted bed " + (near ? "near" : "far"));
         }
 
+        static Mesh GalleryMesh(DistrictGround.Gallery bay, bool near)
+        {
+            // Local +Z is the pavement. The lower windows stand proud of the retained
+            // podium, with a continuous transom and a curved canopy above the footway.
+            float w = bay.WidthCm * .01f;
+            var s = new Surface(8);
+            s.Solid(0,0,.12f,w,.40f,0,.48f,.16f);
+            s.Solid(1,0,.18f,w-.20f,.36f,.48f,3.02f,.12f);
+            s.Solid(3,0,.25f,w,.47f,2.73f,.09f,.16f);
+            s.Solid(0,0,.60f,w+.27f,1.63f,3.56f,.23f,.61f);
+            s.Solid(2,0,.62f,w+.34f,1.72f,3.79f,.18f,.67f);
+            s.Solid(0,0,.20f,w,.50f,3.97f,.28f,.19f);
+            s.Solid(1,0,.12f,w-.46f,.28f,4.32f,1.32f,.11f);
+            s.Solid(3,0,.18f,w-.28f,.39f,5.64f,.09f,.13f);
+            s.Solid(0,0,.15f,w-.17f,.40f,5.73f,.32f,.14f);
+            for (int k = 0; k <= 4; k++)
+            {
+                float x = (k * .25f - .5f) * (w - .28f);
+                s.Solid(3,x,.37f,.075f,.10f,.44f,3.13f,.03f,1);
+                s.Solid(0,x,.27f,.12f,.13f,4.28f,1.38f,.04f,1);
+            }
+            if (near)
+            {
+                // Bronze shop doors, a lit reveal beneath the eave and a display with real depth.
+                float door = w * (bay.Variant % 2 == 0 ? -.27f : .27f);
+                s.Solid(3,door,.40f,1.64f,.19f,.04f,2.68f,.07f);
+                s.Solid(1,door,.51f,1.44f,.07f,.10f,2.50f,.03f);
+                s.Solid(3,door+.46f,.58f,.065f,.10f,1.0f,.48f,.026f);
+                s.Solid(4,0,1.21f,w-.87f,.075f,3.535f,.045f,.03f,1);
+                if (bay.Variant == 0 || bay.Variant == 3)
+                {
+                    float x = -door;
+                    s.Solid(0,x,.43f,2.05f,.73f,.04f,.39f,.30f);
+                    s.Solid(2,x,.43f,2.12f,.78f,.43f,.10f,.32f);
+                    for (int f = -2; f <= 2; f++)
+                    {
+                        var v = new Vector3(x+f*.34f,.65f,.50f);
+                        s.Foliage(5,v,new Vector3(.34f,.33f,.24f),6);
+                        if (f%2==0) s.Foliage(6,v+Vector3.up*.22f,new Vector3(.13f,.14f,.12f),5);
+                    }
+                }
+                else
+                {
+                    // A shallow mounted poster box faces the pavement between two window frames.
+                    float x = -door;
+                    s.Solid(3,x,.42f,1.29f,.20f,.81f,1.67f,.11f);
+                    float z=.532f;
+                    s.Picture(7,x,.90f,z,1.10f,1.46f);
+                }
+                if (bay.Variant == 1)
+                {
+                    s.Solid(2,w*.40f,.45f,.22f,.91f,4.34f,2.38f,.09f);
+                    s.Solid(4,w*.40f,.90f,.12f,.08f,4.56f,1.94f,.035f);
+                }
+            }
+            return s.Finish("Street gallery " + (near ? "near" : "far"));
+        }
+
         static void Draw(Transform root, string name, Vector3 p, float yaw, (Mesh near, Mesh far) model, Material[] mats, bool building)
         {
             var go = new GameObject(name);
@@ -187,6 +253,15 @@ namespace Suborned.World.Play
             if (!meshes.TryGetValue(key,out var model)) meshes[key] = model = (BuildingMesh(b,true),BuildingMesh(b,false));
             var mats = new[] { "Limestone_Tex", "Window_Teal", b.Palette % 2 == 0 ? "Enamel_Seafoam" : "Enamel_Coral", "Bronze","Leaf_CoreShrub" };
             Draw(root,"Neighbourhood corner",p,b.Yaw,model,mats.Select(m=>Colour(m,true)).ToArray(),true);
+        }
+        public void Gallery(Transform root, Vector3 p, DistrictGround.Gallery bay)
+        {
+            string key = $"gallery/{bay.WidthCm}/{bay.Variant}";
+            if (!meshes.TryGetValue(key, out var model)) meshes[key] = model = (GalleryMesh(bay,true), GalleryMesh(bay,false));
+            var mats = new[] { "Limestone_Tex", "Window_Teal", bay.Variant==1 ? "Enamel_Coral" : "Enamel_Seafoam",
+                "Bronze", "Glow_Amber", "Leaf_CoreShrub", "Flower_Coral", "Lightbox_Travel" };
+            p.y=.18f;
+            Draw(root,"Housing gallery",p,bay.Yaw,model,mats.Select(m=>Colour(m,true)).ToArray(),true);
         }
         public void PlantedBed(Transform root, Vector3 p, int yaw)
         {

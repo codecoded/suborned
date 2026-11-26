@@ -55,6 +55,14 @@ public sealed class HarbourStreetTests
     {
         var district = Open().District!;
         var traffic = district.Traffic;
+        var roads = district.Map.Roads;
+        var origin = roads.NearestFree(Plan(-186, -406))!.Value;
+        foreach (var street in district.Map.Streets)
+            foreach (int quarter in new[] { 1, 2, 3 })
+            {
+                var target = roads.NearestFree(street.Path.At(street.Path.Length * quarter / 4));
+                Assert.True(target.HasValue && roads.PieceOf(target.Value) == roads.PieceOf(origin), street.Id);
+            }
         Assert.True(traffic.CarCount > district.Map.Streets.Length);
         Assert.True(traffic.RobotCount > 10);
         Assert.True(traffic.TramCount >= 4);
@@ -79,6 +87,12 @@ public sealed class HarbourStreetTests
             Assert.True(district.Map.Ground.IsWall(corner.At));
             Assert.False(district.Map.Walk.Free(corner.At));
         }
+        foreach (var podium in new[] { Plan(-232,-60), Plan(-132,-431) })
+        {
+            Assert.True(district.Map.Ground.IsWall(podium));
+            Assert.False(district.Map.Walk.Free(podium));
+        }
+        Assert.Contains(district.Map.Ground.Galleries, g => G.Within(Plan(-244,-64),g.At,200));
         var a = traffic.Robot(1, 0);
         Assert.Contains(Enumerable.Range(1, 90).Select(t => traffic.Robot(1, t * 10)), p => p.Moving && p.At != a.At);
     }

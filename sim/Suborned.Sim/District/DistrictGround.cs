@@ -58,6 +58,13 @@ namespace Suborned.Sim
         }
         public readonly Court[] Courts;
         public readonly Building[] Buildings;
+        public readonly struct Gallery
+        {
+            public readonly Pt At;
+            public readonly int Yaw, WidthCm, Variant;
+            public Gallery(JNode n) { At = Pt.Of(n["at"]); Yaw = n["yaw"].Int(); WidthCm = n["widthCm"].Int(); Variant = n["variant"].Int(); }
+        }
+        public readonly Gallery[] Galleries;
         public readonly Fixture[] StreetFixtures;
         readonly Dictionary<(int,int), List<Court>> courtCells = new();
         readonly Grid grid;
@@ -87,6 +94,7 @@ namespace Suborned.Sim
                 .Concat(Venues.Where(v => v.Court.Length >= 3).Select(v => new Court(v.Name, "coffee", v.Court))).ToArray();
             StreetFixtures = data["streetFixtures"].Items.Select(x => new Fixture(x)).ToArray();
             Buildings = data["buildings"].Items.Select(x => new Building(x)).ToArray();
+            Galleries = data["galleries"].Items.Select(x => new Gallery(x)).ToArray();
             foreach (var court in Courts)
             {
                 int x0 = Grid.FloorDiv(court.Ring.Min(p => p.X), 2400), x1 = Grid.FloorDiv(court.Ring.Max(p => p.X), 2400);

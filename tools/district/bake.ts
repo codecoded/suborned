@@ -127,9 +127,10 @@ for (const p of [...ground.medians, ...(ground.islands ?? [])])
   polygon(p.ring, (i) => {
     drive[i] = 0;
   });
-// Cars use the flanking carriageways. Keep the rail reservation open at road junctions.
+// The trunk has a reserved bed, with cross traffic at junctions. The turnaround rails
+// share the circus carriageway, including the narrow mouth where they split in two.
 const junctions = Object.values(plan.nodes).map(block);
-for (const tram of world.transit.tram) {
+for (const tram of world.transit.tram.filter(t => t.id.endsWith('/trunk'))) {
   const rail = line(tram).points;
   for (let k=1; k<rail.length; k++) {
     const [ax,ay]=rail[k-1]!, [bx,by]=rail[k]!, dx=bx-ax,dy=by-ay;
@@ -148,6 +149,12 @@ for (const p of [...ground.water, ...world.buildings.filter((b) => b.base < 2 &&
     walk[i] = drive[i] = 0;
   });
 for (const b of world.buildings.filter(b => b.base < 2 && b.base + b.height > 1)) polygon(b.ring,i=>{ occupied[i]=1; });
+// The two stepped housing estates are retained from the district plan in OldTown.
+// Their street-level podiums are separate from the flyby's exported building meshes.
+for (const m of world.megastructures)
+  for (const part of m.parts)
+    if (part.base < 1.8 && part.base + part.height > 1)
+      polygon(part.ring, i => { solid[i] = 1; occupied[i] = 1; });
 for (const c of ground.circuses) {
   const [a, b] = block(c.centre),
     r = c.radius * 100;
@@ -260,6 +267,7 @@ const data = {
   waterfront:surface,
   courts:neighbourhood.courts.map(c=>({...c,ring:c.ring.map(block)})),
   buildings:neighbourhood.buildings.map(b=>({at:block(b.at),yaw:b.yaw,width:b.width,depth:b.depth,floors:b.floors,palette:b.palette})),
+  galleries:neighbourhood.galleries.map(g=>({...g,at:block(g.at)})),
   streetFixtures:neighbourhood.fixtures.map(f=>({kit:f.kit, at:block(f.at),yaw:f.yaw})),
   venues:venues.map(v=>({id:v.id, name:v.name, at:block(v.at), style:v.style, court:cafeCourt(v).map(block), fixtures:v.fixtures.map(f=>({kit:f.kit,at:block(f.at),yaw:f.yaw}))})),
   platforms:world.transit.stops.map(s=>{

@@ -161,6 +161,7 @@ namespace Suborned.World.Play
             var templates = new DistrictStreetArchitecture();
             var prefabs = new Dictionary<string, GameObject>();
             foreach (var building in ground.Buildings) templates.Frontage(root.transform, frame.World(building.At), building);
+            foreach (var gallery in ground.Galleries) templates.Gallery(root.transform, frame.World(gallery.At), gallery);
             void PlaceFixture(DistrictGround.Fixture fixture, string name)
             {
                 var pos = frame.World(fixture.At);

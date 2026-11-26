@@ -164,9 +164,13 @@ namespace Suborned.Play
         /// <summary>Scripted shots and the proof: turn the follow view (no ease, no swing) to look from the agent towards a world point.</summary>
         public void FollowFace(Vector3 world)
         {
-            if (!Following) return; var d = world - fPivot; d.y = 0f; if (d.sqrMagnitude < 0.01f) return;
+            if (!Following) return;
+            if (FollowPoint(fAgent) is Vector3 p)
+            {
+                fPivot = fLast = p; fPivotVel = fHeadVel = Vector3.zero;
+            }
+            var d = world - fPivot; d.y = 0f; if (d.sqrMagnitude < 0.01f) return;
             fYaw = fYawFrom = fYawTo = Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg; fTurnStart = -1f; fSwingStart = -100f;
-            if (FollowPoint(fAgent) is Vector3 p) { fPivot = p; fPivotVel = Vector3.zero; }
             FollowPlace(true);
         }
 
