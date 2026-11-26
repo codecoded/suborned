@@ -3,5 +3,5 @@
   "mission": "handover",
   "start": { "seed": 9 },
   "orders": [{ "tick": 0, "op": "scout", "do": "move", "to": [23100,-900] }],
-  "until": 3200
+  "until": 5400
 }

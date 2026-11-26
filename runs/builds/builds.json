@@ -867,6 +867,66 @@
    "zip": null,
    "sent": [],
    "whatsNew": "Harbour Travel, a public ferry forecourt and a booking clerk, porter and tram conductor with playable introductions. Corrected the Skyport walking floor and cleared the estate roof stand-ins."
+  },
+  {
+   "build": 378,
+   "version": "0.2.378",
+   "date": "2026-11-26T20:09:20.902Z",
+   "builtAt": "2026-11-26T20:09:05.0931440Z",
+   "sha": "f9685b3e1",
+   "dirty": true,
+   "engine": "0.61.0",
+   "engineSource": "commit 6e20172822df",
+   "dllSha256": "a14a9efe8b457ec36d8d9d0ed4f6dc1e01c5145eb07789a76ad75e035c1bbb94",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Harbour Travel gained a recessed ticket room, fitted ground-floor doors and occupied windows. The estate facades gained stonework and fitted glazing."
+  },
+  {
+   "build": 379,
+   "version": "0.2.379",
+   "date": "2026-11-26T20:40:16.644Z",
+   "builtAt": "2026-11-26T20:40:00.2015840Z",
+   "sha": "b999fb275",
+   "dirty": true,
+   "engine": "0.61.0",
+   "engineSource": "commit 73096ec311bc",
+   "dllSha256": "7114cd61ee3778a173c2716ee30bf055cfb5c3a72c5e7f81dfd379ffa30e908b",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Lantern Court opens between Lantern Lane and the Market Street tram. Six rounded residential wings surround the brass globe, clock tower and glazed passage. Sixteen neighbours take up their rounds and visit the Lantern newsstand."
+  },
+  {
+   "build": 380,
+   "version": "0.2.380",
+   "date": "2026-11-26T20:48:15.126Z",
+   "builtAt": "2026-11-26T20:47:59.5110010Z",
+   "sha": "84fd743d6",
+   "dirty": true,
+   "engine": "0.61.0",
+   "engineSource": "commit 84fd743d6014",
+   "dllSha256": "8262f09e294f25c39de382c7e92aac3f6fd4b19c6db59d464dc1cf17cb706441",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Court residents wear street clothes and walk from the globe to Market Street. Added two seats, softened the palm foliage and opened the central entrance."
+  },
+  {
+   "build": 381,
+   "version": "0.2.381",
+   "date": "2026-11-26T20:51:02.880Z",
+   "builtAt": "2026-11-26T20:50:47.4954570Z",
+   "sha": "6d030c8fd",
+   "dirty": true,
+   "engine": "0.61.0",
+   "engineSource": "commit 6d030c8fdf28",
+   "dllSha256": "399031a254809be1b9e052c55416365506289df5c1fbf954362ca6036cbf045c",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Removed the stock curved kiosk from the Lantern Lane night market and its walking grid. The open entrance, market cart and neighbourhood contacts are present in the playable district."
   }
  ]
 }
