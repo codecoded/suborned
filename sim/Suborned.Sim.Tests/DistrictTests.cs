@@ -36,7 +36,15 @@ public sealed class DistrictTests
         var sea = new Pt(outer.Centre.X, outer.B.Y + 300);
         Assert.True(map.Ground.IsWater(sea));
         Assert.False(map.Walk.Free(sea));
-        Assert.Contains(map.People, p => p.Id.Contains("ferry-landing") && p.Ties.Count > 0);
+        var passengers = map.People.Where(p => p.Id.Contains("ferry-landing")).ToArray();
+        var boarding = map.Ground.Waterfront.Single(s => s.Id == "quay/1");
+        Assert.Equal(12, passengers.Length);
+        Assert.All(passengers, p => Assert.True(boarding.Contains(p.Walk.End)));
+        var clerk = passengers.Single(p => p.Job == "booking-clerk");
+        var porter = passengers.Single(p => p.Job == "ferry-porter");
+        var conductor = System.Array.FindIndex(map.People, p => p.Job == "tram-conductor");
+        Assert.Contains(clerk.Ties, t => t.person == map.Index[porter.Id] && t.kind == "workmate");
+        Assert.Contains(porter.Ties, t => t.person == conductor && t.kind == "regular");
         Order(g, "move", landing.At);
         Arrive(g);
         Assert.True(G.Within(g.Ops[0].Pos, landing.At, 210));

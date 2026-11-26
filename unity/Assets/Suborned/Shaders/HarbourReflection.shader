@@ -58,7 +58,7 @@ Shader "Suborned/Harbour Reflection"
                 half3 reflected=base*(SampleSH(n)+sun.color*saturate(dot(n,sun.direction))*.70)+lamps*.72;
                 float ripples=sin(i.water.z*3.3+i.water.x*.71+_Time.y*1.6)+.56*sin(i.water.x*1.8-i.water.z*4.1-_Time.y);
                 half grazing=1-saturate(GetWorldSpaceNormalizeViewDir(i.water).y);
-                half opacity=(.12+.42*grazing*grazing)*(.75+.17*ripples);
+                half opacity=(.11+.34*grazing*grazing)*(.75+.17*ripples);
                 return half4(MixFog(reflected*half3(.70,.85,.91),i.fog),opacity);
             }
             ENDHLSL

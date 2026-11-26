@@ -29,7 +29,7 @@ namespace Suborned.World.Play
                 this.finish=finish; this.thresholds=thresholds;
             }
 
-            public MeshRenderer Place(Transform parent, Vector3 at, Quaternion heading, float widthScale=1f)
+            public MeshRenderer Place(Transform parent, Vector3 at, Quaternion heading)
             {
                 var holder=new GameObject(prefab.name).transform;
                 holder.SetParent(parent,false);
@@ -42,7 +42,6 @@ namespace Suborned.World.Play
                 model.localScale/=axis.magnitude;
                 model.rotation=Quaternion.FromToRotation(axis.normalized,Vector3.forward)*model.rotation;
                 if(Vector3.Dot(east.position-model.position,Vector3.right)<0) holder.localScale=new Vector3(-1,1,1);
-                holder.localScale=Vector3.Scale(holder.localScale,new Vector3(widthScale,1,1));
                 holder.SetPositionAndRotation(at,heading);
                 var tiers=model.GetComponentsInChildren<MeshRenderer>(true).OrderByDescending(r=>r.GetComponent<MeshFilter>().sharedMesh.vertexCount).ToArray();
                 if(tiers.Length!=3) throw new BuildFailedException(prefab.name+" needs three authored LODs");
@@ -65,13 +64,12 @@ namespace Suborned.World.Play
 
         public static void Install(Scene scene, Transform root, SiteFrame frame, DistrictGround ground)
         {
-            var outer=ground.Waterfront.Where(s=>s.Id=="quay/3").OrderByDescending(s=>s.B.Y).First();
-            var shore=frame.World(new Pt(outer.Centre.X,outer.B.Y));
-            shore.y=outer.EastCm*.01f;
+            var skyport=ground.Waterfront.Single(s=>s.Id=="quay/1");
+            var apron=frame.World(new Pt(skyport.A.X,skyport.B.Y));
+            apron.y=skyport.EastCm*.01f;
             var east=frame.Dir(new Pt(0,100)).normalized;
             var north=frame.Dir(new Pt(-100,0)).normalized;
-            var heading=Quaternion.LookRotation(north);
-            var paint=new Material(Shader.Find("DecoKit/Lit Cutaway")) { name="Harbour stone, glazing and planted terraces", enableInstancing=true };
+            var paint=new Material(Shader.Find("DecoKit/Lit Cutaway")) { name="Harbour ferry stone and glazing", enableInstancing=true };
             paint.SetTexture("_BaseMap",Sheet("Colour"));
             paint.SetTexture("_MetallicGlossMap",Sheet("Metal")); paint.EnableKeyword("_METALLICSPECGLOSSMAP");
             paint.SetFloat("_Smoothness",.93f);
@@ -79,8 +77,10 @@ namespace Suborned.World.Play
             paint.EnableKeyword("_EMISSION");
 
             var hall=new Kit("FerryPavilion",paint,.36f,.105f,.0035f);
-            var pavilion=hall.Place(root,shore+east*12.70f,heading);
-            int beds=ResidentialGardens(scene,root,frame,ground,paint,heading);
+            // The long public front meets the south face of the Skyport apron. Turning the
+            // concourse east keeps the clock and both salons outside the elevated railway's branching piers.
+            var pavilion=hall.Place(root,apron+east*5f-north*12.65f,Quaternion.LookRotation(east));
+            ClearEstateRoofStandIns(scene,frame,ground);
             var sea=scene.GetRootGameObjects().SelectMany(o=>o.GetComponentsInChildren<MeshRenderer>())
                 .FirstOrDefault(r=>r.name=="Sea" && r.transform.parent && r.transform.parent.name=="Harbour");
             if(!sea || !sea.sharedMaterial.HasProperty("_Waves")) throw new BuildFailedException("Harbour Ferries requires the played harbour sea");
@@ -92,7 +92,7 @@ namespace Suborned.World.Play
             water.SetColor("_Scatter",new Color(.07f,.42f,.38f));
             sea.sharedMaterial=water;
             Reflection(root,pavilion,sea.bounds.center.y,paint);
-            Debug.Log($"Harbour Ferries at {pavilion.bounds.center}, {pavilion.bounds.size} m, {beds} residential roof beds above the public streets");
+            Debug.Log($"Harbour Ferries at {pavilion.bounds.center}, {pavilion.bounds.size} m on the boarding apron");
         }
 
         static void Reflection(Transform root, MeshRenderer source, float level, Material finish)

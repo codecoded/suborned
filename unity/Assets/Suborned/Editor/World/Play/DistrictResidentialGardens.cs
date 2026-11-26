@@ -10,36 +10,19 @@ namespace Suborned.World.Play
 {
     static partial class DistrictFerryGardens
     {
-        static int ResidentialGardens(Scene scene, Transform root, SiteFrame frame, DistrictGround ground, Material paint, Quaternion heading)
+        static void ClearEstateRoofStandIns(Scene scene, SiteFrame frame, DistrictGround ground)
         {
-            var palm=new Kit("TerracePlanter",paint,.26f,.105f,.031f);
-            var flowers=new Kit("TerraceBorder",paint,.26f,.105f,.031f);
-            var bay=new Kit("TerraceBay",paint,.30f,.115f,.019f);
-            var oldGardens=new List<Bounds>();
-            int beds=0;
+            var gardens=new List<Bounds>();
             foreach(var roof in ground.RoofTerraces)
             {
                 var sw=frame.World(roof.A); sw.y=roof.HeightCm*.01f;
                 var ne=frame.World(roof.B); ne.y=sw.y;
-                float length=ne.x-sw.x;
-                int bays=Mathf.Max(1,Mathf.RoundToInt(length/8f));
-                int row=Mathf.RoundToInt(sw.y/3.6f);
-                for(int i=0;i<bays;i++)
-                {
-                    var at=sw+Vector3.right*((i+.5f)*length/bays);
-                    bay.Place(root,at+Vector3.forward*.09f,heading,length/(8*bays));
-                    // Interleave flowering terraces, occasional tall palms and open sun decks.
-                    if((i+row)%6==4 || length/bays<7.4f) continue;
-                    var kit=(i+2*row)%4==0 ? palm : flowers;
-                    kit.Place(root,at+Vector3.forward*(1.02f+(i+row)%3*.22f),heading);
-                    beds++;
-                }
-                // The earlier roof programme has a 3 m crown centred 1.2 m inside the parapet.
-                var box=new Bounds();box.SetMinMax(sw+new Vector3(-.45f,-.06f,-.48f),ne+new Vector3(.45f,5.56f,.48f));
-                oldGardens.Add(box);
+                // The old spherical crowns are 3 m wide, centred 1.2 m inside the roof edge.
+                var box=new Bounds();
+                box.SetMinMax(sw+new Vector3(-.45f,-.06f,-.48f),ne+new Vector3(.45f,5.56f,.48f));
+                gardens.Add(box);
             }
-            RemoveOldPlanting(scene,oldGardens);
-            return beds;
+            RemoveOldPlanting(scene,gardens);
         }
 
         static void RemoveOldPlanting(Scene scene, List<Bounds> gardens)
@@ -72,11 +55,11 @@ namespace Suborned.World.Play
                 if(lost==0) continue;
                 removed+=lost;
                 if(kept==0) {renderer.enabled=false;filter.sharedMesh=null;continue;}
-                var replacement=Object.Instantiate(source);replacement.name=source.name+" with planted terraces";
+                var replacement=Object.Instantiate(source);replacement.name=source.name+" cleared roof";
                 for(int sub=0;sub<indices.Length;sub++) replacement.SetTriangles(indices[sub],sub,false);
                 replacement.RecalculateBounds();filter.sharedMesh=replacement;
             }
-            Debug.Log($"Harbour roofs replaced {removed} baked stand-in planting triangles across {gardens.Count} housing terraces");
+            Debug.Log($"Harbour cleared {removed} baked placeholder planting triangles from {gardens.Count} estate roofs");
         }
     }
 }

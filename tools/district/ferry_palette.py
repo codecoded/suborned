@@ -51,14 +51,31 @@ for i,(colour,metal,gloss) in enumerate(paints):
         d.line((45,42,64,64,91,51),fill=(23,68,67),width=5)
         d.ellipse((60,60,68,68),fill=(152,75,47))
     if i==15:
-        d.rectangle((6,25,121,102),outline=(206,177,108),width=2)
         candidates=['/System/Library/Fonts/Supplemental/Futura.ttc','/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf']
-        font=ImageFont.truetype(next((f for f in candidates if Path(f).exists()),'DejaVuSans.ttf'),17)
-        # The UV patch is wide in the world. Give the lettering its own aspect before resampling.
-        label=Image.new('RGBA',(520,98))
-        f=ImageFont.truetype(font.path,53)
-        ImageDraw.Draw(label).text((260,49),'HARBOUR FERRIES',font=f,anchor='mm',fill=(244,224,174,255))
-        label=label.resize((110,43),Image.Resampling.LANCZOS);p.paste(label,(9,43),label);e.paste(label,(9,43),label)
+        font=next((f for f in candidates if Path(f).exists()),'DejaVuSans.ttf')
+        fascia=Image.new('RGB',(600,100),(26,72,73)); fd=ImageDraw.Draw(fascia)
+        fd.rounded_rectangle((4,5,595,94),radius=14,outline=(192,163,112),width=5)
+        fd.text((300,37),'HARBOUR TRAVEL',font=ImageFont.truetype(font,48),anchor='mm',fill=(247,226,181))
+        fd.text((300,72),'RAIL    •    FERRY',font=ImageFont.truetype(font,15),anchor='mm',fill=(215,188,140))
+        p.paste(fascia.resize((124,56),Image.Resampling.LANCZOS),(2,3))
+        e.paste(fascia.point(lambda v: max(0,int((v-105)*.72))).resize((124,56),Image.Resampling.LANCZOS),(2,3))
+        # Two illustrated destination prints and the ticket clerk's enamel route map.
+        board=Image.new('RGB',(468,150),(42,73,70)); bd=ImageDraw.Draw(board)
+        for x,cream in [(6,(230,211,168)),(154,(225,205,161)),(302,(227,211,170))]:
+            bd.rectangle((x,5,x+139,144),fill=cream,outline=(181,142,78),width=3)
+        bd.rectangle((14,13,136,99),fill=(91,154,157));bd.ellipse((79,19,112,52),fill=(236,184,98))
+        bd.polygon([(20,74),(129,74),(112,88),(43,88)],fill=(39,65,67))
+        bd.rectangle((44,60,105,72),fill=(236,215,170));bd.rectangle((66,46,76,60),fill=(164,83,61))
+        bd.rectangle((162,13,284,99),fill=(186,122,85))
+        bd.polygon([(163,92),(237,36),(284,89)],fill=(106,140,123));bd.line((165,90,280,65),fill=(44,79,76),width=5)
+        bd.rounded_rectangle((184,61,257,77),radius=7,fill=(234,212,167));bd.line((192,67,251,67),fill=(54,97,94),width=4)
+        for dx,dy,tint in [(0,0,(44,110,105)),(12,11,(177,95,71))]:
+            points=[(315+dx,76+dy),(343+dx,43+dy),(377+dx,58+dy),(407+dx,28+dy)]
+            bd.line(points,fill=tint,width=5)
+            for x,y in points:bd.ellipse((x-4,y-4,x+4,y+4),fill=(239,218,172),outline=tint,width=2)
+        for x,label in [(76,'HARBOUR'),(222,'CROWN'),(371,'CONNECTIONS')]:
+            bd.text((x,120),label,font=ImageFont.truetype(font,13),fill=(52,74,68),anchor='mm')
+        p.paste(board.resize((124,56),Image.Resampling.LANCZOS),(2,69))
     xy=(i%cols*tile,i//cols*tile)
     albedo.paste(p,xy);mask.paste(m,xy);light.paste(e,xy)
 for tex,suffix in [(albedo,'Colour'),(mask,'Metal'),(light,'Lights')]:

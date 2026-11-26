@@ -67,11 +67,12 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
         v.name + ' walk-ups',
         standing(project(v, u * v.span, w * v.width), v),
       );
+      const destination = v.boarding ?? v;
       const post = atPlace(
         id + '-post',
         'stand',
-        v.name,
-        standing(project(v, -u * v.span, ((k % 3) - 1) * v.width * 0.77), v),
+        v.boarding ? v.name + ' boarding apron' : v.name,
+        standing(project(destination, -u * (v.boarding ? 4 : v.span), ((k % 3) - 1) * v.width * 0.77), v),
       );
       const p: Person = {
         id,
@@ -139,6 +140,24 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
     regular(g[0]!, groups[(n + 1) % groups.length]![1]!);
     regular(g[2]!, templates[(n * 7) % templates.length]!);
   });
+  const office = venues.findIndex(v => v.id === 'ferry-landing');
+  if (office >= 0) {
+    const desk = venues[office]!;
+    const platforms = venues.map((v, i) => ({ v, i })).filter(({ v }) => v.style === 'platform');
+    platforms.sort((a,b) => Math.hypot(a.v.at[0]-desk.at[0],a.v.at[1]-desk.at[1])
+      - Math.hypot(b.v.at[0]-desk.at[0],b.v.at[1]-desk.at[1]));
+    const clerk = groups[office]![0]!, porter = groups[office]![1]!;
+    const conductor = groups[platforms[0]!.i]![1]!;
+    for (const [person, role, uniform] of [[clerk,'booking-clerk','clerk'],[porter,'ferry-porter','attendant'],[conductor,'tram-conductor','attendant']] as const) {
+      person.position = role;
+      person.work!.position = role;
+      const model = templates.find(t => t.position === uniform);
+      if (model) person.look = { ...model.look };
+    }
+    // The clerk and porter already share the desk's workmate tie. The porter's visit to
+    // the conductor adds a second introduction, grounded at the actual tram platform.
+    regular(porter, conductor);
+  }
   const names = base.w.ctx(base.source.cast).names;
   if (!names) throw Error('The city needs the promoted name lists');
   const pool = {

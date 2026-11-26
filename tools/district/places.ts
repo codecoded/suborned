@@ -15,6 +15,7 @@ export type Venue = {
   span: number;
   width: number;
   fixtures: Fixture[];
+  boarding?: { at: Point; along: Point };
 };
 type Strip = { id: string; line: readonly (readonly number[])[]; width: number };
 export function project(v: Pick<Venue, 'at' | 'along'>, along: number, across: number): Point {
@@ -153,11 +154,17 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
     }
   }
   const landing = world.ground.quays.find(q => q.id === 'quay/3');
-  if (landing) {
+  const skyport = world.ground.quays.find(q => q.id === 'quay/1');
+  if (landing && skyport) {
     const east = Math.max(...landing.ring.map(p => p[0]));
     const edge = landing.ring.filter(p => p[0] === east).map(p => p[1]);
-    add('ferry-landing', 'Harbour Ferries', { at: [east - 4, (Math.min(...edge) + Math.max(...edge)) / 2], along: [0,1] },
+    add('ferry-landing', 'Harbour Travel', { at: [east - 4, (Math.min(...edge) + Math.max(...edge)) / 2], along: [0,1] },
       'waterfront', 12, 13, 1.4);
+    const ferry = venues.find(v => v.id === 'ferry-landing');
+    if (ferry) ferry.boarding = {
+      at: [Math.max(...skyport.ring.map(p => p[0])) - 7, Math.min(...skyport.ring.map(p => p[1])) + 4],
+      along: [1, 0],
+    };
   }
   return venues;
 }

@@ -35,7 +35,7 @@ export function waterfront(world: World, block: (p: Point) => Point) {
 }
 
 // These rectangles are the exact roof-garden programmes emitted by the plan. The
-// Unity build replaces their old tubs, cylindrical trunks and spherical crowns together.
+// Unity build clears their old tubs, cylindrical trunks and spherical crowns together.
 export function roofTerraces(world: World, block: (p: Point) => Point) {
   return world.roofs.filter(r => r.form === 'terrace' && r.id.startsWith('mega/')).map(r => {
     const [cx, cy] = r.c, [width, depth] = r.size;

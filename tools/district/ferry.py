@@ -1,4 +1,4 @@
-"""Blender source for Harbour Ferries and the hanging terrace planters. Export paths are directory, source.blend."""
+"""Blender source for the Harbour Ferries pavilion. Export paths are directory and working .blend."""
 from math import atan2, ceil, cos, pi, sin
 from pathlib import Path
 import random
@@ -140,12 +140,14 @@ class Model:
                             self.face(blade,leaf if j%3 else tips);self.face(blade[::-1],shade)
                 prev=new
 
-    def plate(self,x,y,z,width,height,heading,slot,round_face=False):
+    def plate(self,x,y,z,width,height,heading,slot,round_face=False,section=(0,0,1,1)):
         n=Vector((cos(heading),sin(heading),0)); h=Vector((-sin(heading),cos(heading),0)); v=Vector((0,0,1)); c=Vector((x,y,z))
         if round_face:
             rim=[(.5+.50*cos(TAU*i/32),.5+.50*sin(TAU*i/32)) for i in range(32)]
         else: rim=[(0,0),(1,0),(1,1),(0,1)]
-        self.face([c+h*(u-.5)*width+v*(t-.5)*height for u,t in rim],slot,rim)
+        u0,v0,u1,v1=section
+        self.face([c+h*(u-.5)*width+v*(t-.5)*height for u,t in rim],slot,
+                  [(u0+u*(u1-u0),v0+t*(v1-v0)) for u,t in rim])
 
     def mesh(self):
         mesh=bpy.data.meshes.new(self.name);mesh.from_pydata(self.verts,[],self.faces);mesh.update()
@@ -182,8 +184,12 @@ def ferry(s):
     s.shape(6.8,5.84,1.54,.25,.09,12.4,18.28,teal)
     for side in (-1,1):
         s.plate(6.8,7.7+side*1.80,16.35,2.40,2.40,side*pi/2,dial,True)
-    s.plate(-10.61,0,2.91,8.48,1.32,pi,letters)
-    s.plate(.30,-20.51,2.95,7.95,1.24,-pi/2,letters)
+    s.plate(-10.61,0,2.91,8.48,1.32,pi,letters,section=(0,.51,1,1))
+    s.plate(.30,-20.51,2.95,7.95,1.24,-pi/2,letters,section=(0,.51,1,1))
+    # The rail and ferry booking window opens onto the Skyport apron, beneath the west canopy.
+    s.shape(-10.64,-7.65,.37,5.9,.15,1.02,2.96,teal)
+    s.shape(-10.90,-7.65,.67,6.06,.25,1.04,1.24,brass)
+    s.plate(-10.84,-7.65,2.04,5.48,1.39,pi,letters,section=(0,0,1,.49))
     # A shaded waiting walk follows the public edge; all supports stand seaward of the walk mesh.
     for n in (-11.6,-5.8,5.8,11.6):
         s.beam((-11.88,n,.61),(-12.20,n,4.42),.20,stone,(9,6,4)[s.rank],.14)
@@ -198,35 +204,6 @@ def ferry(s):
     for i,(e,n,h,size,rot) in enumerate([(-8.4,-12.8,4.90,5.8,.4),(7.75,-13.6,4.90,6.5,1.5),
                                           (-9.1,10.8,4.90,6.2,2.1),(6.4,-7.9,9.2,5.0,.3),(-3.8,-9.1,9.2,4.7,1.7)]):
         s.palm(e,n,h,size,rot)
-
-def garden(s, tall=True):
-    # A bed over a residential balcony. The scalloped foliage drapes towards the street (local -Y).
-    s.tiers(0,0,[(0,7.15,1.52,.62,soffit),(.17,7.48,1.73,.76,stone),(.66,7.64,1.79,.82,stone),(.76,7.7,1.82,.85,brass)])
-    for i,(e,r) in enumerate([(-2.75,.90),(-1.4,.99),(0,1.05),(1.46,.97),(2.80,.89)]):
-        s.bush(e,-.12,.64,r,.88,1.18+.28*sin(i*2),i*.7)
-        if s.rank<2:
-            s.bush(e+.18,-.68,.24,.54,.39,.85,i+1.2)
-    if tall:
-        s.palm(.76,.08,.68,3.35,.27)
-    else:
-        for i in range(7 if s.rank==0 else 4):
-            x=-2.64+i*.76 if s.rank==0 else -2.52+i*1.49
-            z=1.36+.30*cos(i*3.7)
-            for k in range(3 if s.rank==0 else 1):
-                n=k*2.4+i
-                s.beam((x,-.46,z-.22),(x+.21*cos(n),-.46+.19*sin(n),z+.08),.13,oxide,5,.09)
-
-
-def terrace_bay(s):
-    # Three rooms behind a continuous eye-level ribbon. The pivot sits on the roof edge.
-    s.tiers(0,-.13,[(-3.36,7.98,.72,.28,stone),(-2.81,7.98,.72,.28,stone),
-                     (-2.68,8.0,.90,.35,brass),(-2.52,7.96,.79,.28,patina)])
-    s.windows(0,-.15,7.91,.63,.26,-2.51,-.64)
-    s.tiers(0,-.21,[(-.65,7.98,.82,.36,teal),(-.49,8.0,1.17,.44,soffit),
-                     (-.30,8.0,1.28,.48,stone),(-.19,8.0,1.30,.49,brass),(.025,7.97,1.26,.46,stone)])
-    if s.rank<2:
-        for x in (-3.50,0,3.50):
-            s.beam((x,-.505,-2.55),(x,-.505,-.64),.055,brass,4)
 
 def build(name, func, budgets):
     objects=[]
@@ -247,7 +224,4 @@ def build(name, func, budgets):
         bpy.context.collection.objects.unlink(obj);group.objects.link(obj)
         if obj.type=='EMPTY':obj.name=name+' '+obj.name
 build('FerryPavilion',ferry,(16000,8000,4400))
-build('TerracePlanter',garden,(2400,1250,625))
-build('TerraceBorder',lambda s:garden(s,False),(1450,850,400))
-build('TerraceBay',terrace_bay,(2800,1700,1100))
 bpy.ops.wm.save_as_mainfile(filepath=str(master))

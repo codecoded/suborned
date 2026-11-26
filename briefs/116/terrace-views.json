@@ -1,9 +1,10 @@
 {
   "schema": "suborned.shots/1",
-  "defaults": { "hud": false, "night": false, "settle": 1, "mark": false },
+  "defaults": { "hud": false, "night": false, "settle": 1, "perf": 4, "mark": false },
   "shots": [
     { "name": "lantern-roof-gardens", "pose": { "pos": [-162,28,-306], "look": [-123,32,-254], "fov": 56 }, "tick": 160 },
     { "name": "west-roof-gardens", "pose": { "pos": [-177,25,68], "look": [-211,29,115], "fov": 56 }, "tick": 160 },
+    { "name": "boarding-deck", "view": "follow", "select": "scout", "face": [-17500, 25000], "script": "briefs/116/landing-walk.json", "tick": 2700 },
     { "name": "ferry-arrival", "pose": { "pos": [144,5.4,105], "look": [119,6.0,138], "fov": 60 }, "tick": 160 }
   ]
 }
