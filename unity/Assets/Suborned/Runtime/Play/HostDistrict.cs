@@ -12,6 +12,7 @@ namespace Suborned.Play
         [HideInInspector] public DistrictCrowdFigure[] districtCrowd = System.Array.Empty<DistrictCrowdFigure>();
         // Historical mission fixtures have a closed ending. Normal play starts in the district.
         [System.NonSerialized] public bool missionScenario;
+        internal float StreetFrameAlpha => Paused ? 1f : Mathf.Clamp01(acc * Suborned.Sim.Game.Hz);
         public DistrictJournal DistrictBook { get; private set; }
 
         void InstallDistrict()

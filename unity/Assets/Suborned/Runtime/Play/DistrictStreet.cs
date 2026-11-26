@@ -27,6 +27,14 @@ namespace Suborned.Play
         const int Tram = 1 << 20, Sedan = 2 << 20, Robot = 3 << 20;
         const int RigBudget = 28;
         public const float FarMetres = 155f;
+        struct LastPose
+        {
+            public int tick;
+            public Vector3 from, to;
+            public Quaternion rotation;
+            public bool moving;
+        }
+        readonly Dictionary<int, LastPose> poses = new();
         readonly HashSet<int> rigged = new();
         readonly List<(int id, float rank)> candidates = new();
         string[] skins;
@@ -63,7 +71,7 @@ namespace Suborned.Play
             if (g != current)
             {
                 foreach (var item in activeViews.Values) Put(item);
-                activeViews.Clear(); visible.Clear(); rigged.Clear();
+                activeViews.Clear(); visible.Clear(); rigged.Clear(); poses.Clear();
                 current = g;
                 rescan = 0;
                 host.frame.streetGround = g?.District?.Map.Ground;
@@ -115,24 +123,20 @@ namespace Suborned.Play
             VisiblePeople = VisibleVehicles = VisibleRobots = InstancedPeople = 0;
             foreach (int id in visible)
             {
-                bool fallen = false;
-                Pt at, facing;
-                bool moving;
-                if (id < Tram)
+                if (!poses.TryGetValue(id, out var sample) || sample.tick != g.Tick)
                 {
-                    fallen = d.Network.FellAt[id].HasValue;
-                    if (fallen) { at = d.Network.FellAt[id].Value; facing = new Pt(0, 100); moving = false; }
-                    else (at, facing, moving) = d.Pose(id, g.Tick);
+                    bool consecutive = poses.ContainsKey(id) && sample.tick == g.Tick - 1;
+                    var next = Pose(d, id, g.Tick);
+                    Vector3 point = host.frame.World(next.at);
+                    Vector3 dir = host.frame.Dir(next.facing);
+                    Quaternion turn = dir.sqrMagnitude > .01f ? Quaternion.LookRotation(dir) : Quaternion.identity;
+                    if (id < Tram && d.Network.FellAt[id].HasValue) turn *= Quaternion.Euler(0, 0, 85);
+                    sample = new LastPose { tick = g.Tick, from = consecutive ? sample.to : point, to = point, moving = next.moving, rotation = turn };
+                    poses[id] = sample;
                 }
-                else
-                {
-                    var p = id >= Robot ? d.Traffic.Robot(id - Robot, g.Tick)
-                        : id >= Sedan ? d.Traffic.Car(id - Sedan, g.Tick) : d.Traffic.Tram(id - Tram, g.Tick);
-                    at = p.At; facing = p.Facing; moving = p.Moving;
-                }
-                Vector3 pos = host.frame.World(at), dir = host.frame.Dir(facing);
-                Quaternion rotation = dir.sqrMagnitude > .01f ? Quaternion.LookRotation(dir) : Quaternion.identity;
-                if (fallen) rotation *= Quaternion.Euler(0, 0, 85);
+                var pos = Vector3.LerpUnclamped(sample.from, sample.to, host.StreetFrameAlpha);
+                var rotation = sample.rotation;
+                bool moving = sample.moving;
                 if (id < Tram && !rigged.Contains(id))
                 {
                     if (!crowd.Has(skins[id])) continue;
@@ -157,6 +161,18 @@ namespace Suborned.Play
                 else VisibleVehicles++;
             }
             crowd.Draw();
+        }
+
+        static (Pt at, Pt facing, bool moving) Pose(DistrictRun d, int id, int tick)
+        {
+            if (id < Tram)
+            {
+                if (d.Network.FellAt[id] is Pt fallen) return (fallen, new Pt(0, 100), false);
+                return d.Pose(id, tick);
+            }
+            var p = id >= Robot ? d.Traffic.Robot(id - Robot, tick)
+                : id >= Sedan ? d.Traffic.Car(id - Sedan, tick) : d.Traffic.Tram(id - Tram, tick);
+            return (p.At, p.Facing, p.Moving);
         }
 
         // Diagnostic only. Count the selected mesh LOD once, independent of shadows and other render passes.

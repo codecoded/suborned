@@ -20,6 +20,7 @@ namespace Suborned.Sim
     {
         public string Id = "";
         public Path Path = null!;
+        public int LaneCm;
     }
 
     public sealed class DistrictMap
@@ -110,7 +111,7 @@ namespace Suborned.Sim
             }
         }
 
-        static DistrictLine[] Lines(JNode n) => n.Items.Select(x => new DistrictLine { Id = x["id"].Str(), Path = new Path(x["points"].Items.Select(Pt.Of).ToArray()) }).ToArray();
+        static DistrictLine[] Lines(JNode n) => n.Items.Select(x => new DistrictLine { Id = x["id"].Str(), LaneCm = x.Opt("laneCm")?.Int() ?? 0, Path = new Path(x["points"].Items.Select(Pt.Of).ToArray()) }).ToArray();
         public static string StreetName(string id)
         {
             string s = id.Substring(id.IndexOf('/') + 1).Replace('-', ' ');

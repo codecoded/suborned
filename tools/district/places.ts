@@ -183,9 +183,49 @@ const dress: Record<Style, readonly [string, number, number, number, number][]> 
     ['DrinkingFountain', 4, 2.2, 0, 0.6],
   ],
 };
+// The Sunset stop stands in parkland. Lay the café and its seating out on a public apron
+// from the kerb to the palms. Neighbouring buildings already supply paving at other stops.
+export function cafeCourt(v: Venue): Point[] {
+  if (v.id !== 'sunset-coffee') return [];
+  return [
+    [-22, -1.2],
+    [22, -1.2],
+    [22, 5.5],
+    [18, 9.5],
+    [-18, 9.5],
+    [-22, 5.5],
+  ].map(([a, b]) => project(v, a!, b!));
+}
+const courtFurniture: typeof dress.coffee = [
+  ['CurvedKiosk_Play', -7, 5.1, 0, 2.3],
+  ['CafeSet_Tulip', 5, 4.2, 20, 1.35],
+  ['CafeSet_Tulip', 12, 5.8, -15, 1.35],
+  ['Parasol_Stripe', 8.4, 6.1, 0, 0.55],
+  ['FanPalm_Play', -16.5, 6.5, 0, 0.7],
+  ['FanPalm_Play', 16.8, 6.5, 45, 0.7],
+  ['GlobeLamp_TB', -18, 0.7, 0, 0.35],
+  ['GlobeLamp_TB', 18, 0.7, 0, 0.35],
+  ['PlanterRun_4_A', 1, 8.3, 90, 1.9],
+  ['Bench_Play', -1, 4.4, 0, 1.0],
+  ['VendingMachine_Cola', -12, 3.8, 15, 0.7],
+];
+const pierFurniture: typeof dress.waterfront = [
+  ['CoinTelescope', -12, 3, 180, 0.5],
+  ['Bench_Play', 3, 1.6, 0, 1],
+  ['LifebuoyStand', 13, 3.2, 0, 0.5],
+  ['GlobeLamp_TB', -20, 3, 0, 0.4],
+  ['GlobeLamp_TB', 21, 3, 0, 0.4],
+  ['Bollard_Play', -17, -8.2, 0, 0.4],
+  ['Bollard_Play', 18, -8.2, 0, 0.4],
+  ['Planter_Urn_Play', -2.2, 2.5, 0, 0.65],
+];
 export function furnish(venue: Venue, fits: (point: Point, radius: number) => boolean) {
   const yaw = (Math.atan2(venue.along[1], -venue.along[0]) * 180) / Math.PI;
-  for (const [kit, along, across, turn, radius] of dress[venue.style]) {
+  for (const [kit, along, across, turn, radius] of venue.id === 'sunset-coffee'
+    ? courtFurniture
+    : venue.id === 'pier'
+      ? pierFurniture
+      : dress[venue.style]) {
     for (const shift of [0, 2, -2, 4, -4]) {
       const at = project(venue, along + shift, across);
       if (

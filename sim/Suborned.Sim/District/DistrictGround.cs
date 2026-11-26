@@ -34,10 +34,12 @@ namespace Suborned.Sim
         {
             public readonly string Id, Name;
             public readonly Pt At;
+            public readonly Pt[] Court;
             public readonly Fixture[] Fixtures;
-            public Venue(JNode n) { Id = n["id"].Str(); Name = n["name"].Str(); At = Pt.Of(n["at"]); Fixtures = n["fixtures"].Items.Select(f => new Fixture(f)).ToArray(); }
+            public Venue(JNode n) { Id = n["id"].Str(); Name = n["name"].Str(); At = Pt.Of(n["at"]); Court = n["court"].Items.Select(Pt.Of).ToArray(); Fixtures = n["fixtures"].Items.Select(f => new Fixture(f)).ToArray(); }
         }
 
+        readonly Venue[] pavedCourts;
         readonly Grid grid;
         readonly bool[] water;
         public readonly Strip[] Waterfront, Platforms;
@@ -56,12 +58,14 @@ namespace Suborned.Sim
             Waterfront = data["waterfront"].Items.Select(s => new Strip(s, false)).ToArray();
             Platforms = data["platforms"].Items.Select(s => new Strip(s, true)).ToArray();
             Venues = data["venues"].Items.Select(v => new Venue(v)).ToArray();
+            pavedCourts = Venues.Where(v => v.Court.Length >= 3).ToArray();
         }
         public bool IsWater(Pt p) => grid.InGrid(p) && water[grid.CI(p.X) * grid.Ny + grid.CJ(p.Y)];
         public int ElevationCm(Pt p)
         {
             foreach (var s in Waterfront) if (s.Contains(p)) return s.Elevation(p);
             foreach (var s in Platforms) if (s.Contains(p)) return s.WestCm;
+            foreach (var v in pavedCourts) if (G.InPoly(p, v.Court)) return 18;
             return 0;
         }
     }

@@ -61,6 +61,16 @@ public sealed class HarbourStreetTests
         foreach (var stop in district.Map.Ground.Platforms)
             Assert.Contains(Enumerable.Range(0, 1500).Select(i => traffic.Tram(0, i * 10)),
                 pose => !pose.Moving && G.Within(stop.Centre, pose.At, 650));
+        var stopCentre = Plan(-340, 131);
+        Assert.False(district.Map.Roads.Free(stopCentre));
+        var carsAtStop = Enumerable.Range(0, traffic.CarCount).SelectMany(i =>
+            Enumerable.Range(0, 20).Select(t => traffic.Car(i, t * 29))).Where(car =>
+            Math.Abs(car.At.X - stopCentre.X) < 1500 && Math.Abs(car.At.Y - stopCentre.Y) < 1500).ToArray();
+        Assert.NotEmpty(carsAtStop);
+        Assert.All(carsAtStop, car => Assert.InRange(Math.Abs(car.At.Y - stopCentre.Y), 700, 1199));
+        var court = district.Map.Ground.Venues.Single(v => v.Id == "sunset-coffee");
+        Assert.True(court.Court.Length > 3);
+        Assert.Equal(18, district.Map.Ground.ElevationCm(court.At));
         var a = traffic.Robot(1, 0);
         Assert.Contains(Enumerable.Range(1, 90).Select(t => traffic.Robot(1, t * 10)), p => p.Moving && p.At != a.At);
     }

@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import { prepare } from '../people-graph/source';
 import { loadGraph } from '../people-graph/load';
 import { sql } from '../rag/database';
-import { streetPlaces, furnish, project, type Venue } from './places';
+import { streetPlaces, furnish, project, cafeCourt, type Venue } from './places';
 import { districtPopulation, LOCAL } from './population';
 import { waterfront } from './waterfront';
 import type { StreetSurvey } from './survey';
@@ -126,7 +126,20 @@ for (const p of [...ground.medians, ...(ground.islands ?? [])])
   polygon(p.ring, (i) => {
     drive[i] = 0;
   });
-for(const platform of world.transit.stops) polygon(platform.ring,i=>{walk[i]=1;});
+// Cars use the flanking carriageways. Keep the rail reservation open at road junctions.
+const junctions = Object.values(plan.nodes).map(block);
+for (const tram of world.transit.tram) {
+  const rail = line(tram).points;
+  for (let k=1; k<rail.length; k++) {
+    const [ax,ay]=rail[k-1]!, [bx,by]=rail[k]!, dx=bx-ax,dy=by-ay;
+    visit(Math.min(ax,bx)-300, Math.min(ay,by)-300, Math.max(ax,bx)+300, Math.max(ay,by)+300, (idx,x,y)=>{
+      if (!drive[idx]) return;
+      const t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy||1)));
+      if (Math.hypot(x-ax-t*dx,y-ay-t*dy) < 285 && !junctions.some(p=>Math.hypot(x-p[0],y-p[1])<1050)) drive[idx]=0;
+    });
+  }
+}
+for (const platform of world.transit.stops) polygon(platform.ring, i=>{walk[i]=1; drive[i]=0;});
 for(const face of ground.footways??[]) polygon(face.table.ring,i=>{walk[i]=1;});
 for(const p of ground.water) polygon(p.ring,i=>{water[i]=1;});
 for (const p of [...ground.water, ...world.buildings.filter((b) => b.base < 2 && b.base + b.height > 1)])
@@ -148,7 +161,9 @@ for(let i=0;i<walk.length;i++)if(solid[i] || water[i]) walk[i]=drive[i]=0;
 const open=(p: Point)=>walk[cellOf(p)]===1;
 const venues=streetPlaces(world,open);
 const furniture: {at:Point; radius:number}[]=[];
-for(const v of venues){
+for (const v of venues) {
+  const court = cafeCourt(v);
+  if (court.length) polygon(court, i=>{if (!solid[i] && !drive[i] && !water[i]) walk[i]=1;});
   furnish(v,(p,r)=>{
     if(furniture.some(f=>Math.hypot(f.at[0]-p[0],f.at[1]-p[1])<f.radius+r+1))return false;
     const samples: Point[]=[p,[p[0]-r,p[1]],[p[0]+r,p[1]],[p[0],p[1]-r],[p[0],p[1]+r]];
@@ -232,7 +247,7 @@ const data = {
     return runs;
   }),
   waterfront:surface,
-  venues:venues.map(v=>({id:v.id, name:v.name, at:block(v.at), style:v.style, fixtures:v.fixtures.map(f=>({kit:f.kit,at:block(f.at),yaw:f.yaw}))})),
+  venues:venues.map(v=>({id:v.id, name:v.name, at:block(v.at), style:v.style, court:cafeCourt(v).map(block), fixtures:v.fixtures.map(f=>({kit:f.kit,at:block(f.at),yaw:f.yaw}))})),
   platforms:world.transit.stops.map(s=>{
     const xs=s.ring.map(p=>p[0]),ys=s.ring.map(p=>p[1]);
     return {id:s.id,a:block([Math.min(...xs),Math.min(...ys)]),b:block([Math.max(...xs),Math.max(...ys)]),topCm:Math.round((s.base+s.height)*100)};
@@ -240,7 +255,7 @@ const data = {
   residents,
   ties: ties.filter((t) => ids.has(t.a) && ids.has(t.b)),
   tram: world.transit.tram.map(line),
-  streets: ground.roads.map(line),
+  streets: ground.roads.map(s => ({ ...line(s), laneCm: Math.round(s.width >= 18 ? s.width * 50 - 180 : s.width * 25) })),
 };
 const digest = createHash('sha256').update(JSON.stringify(data)).digest('hex');
 writeFileSync(

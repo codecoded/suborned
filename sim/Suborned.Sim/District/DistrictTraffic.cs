@@ -77,7 +77,7 @@ namespace Suborned.Sim
         {
             int lane = streets[i];
             var s = DistrictMap.Shuttle(map.Streets[lane].Path, tick - held[i], phases[i], CarPace(lane), 55);
-            var right = CarGeo.Ahead(s.at, new Pt(s.facing.Y, -s.facing.X), 215);
+            var right = CarGeo.Ahead(s.at, new Pt(s.facing.Y, -s.facing.X), map.Streets[lane].LaneCm);
             if (!map.Roads.Free(right) && map.Roads.NearestFree(right) is Pt near && G.Within(near, right, 380)) right = near;
             return new Pose(right, s.facing, s.moving);
         }

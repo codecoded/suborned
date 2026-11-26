@@ -5,7 +5,7 @@ using Suborned.Sim;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
-using UnityEngine.Rendering;
+
 using UnityEngine.SceneManagement;
 
 namespace Suborned.World.Play
@@ -32,6 +32,13 @@ namespace Suborned.World.Play
                     uv.Add(top ? new Vector2(v.x, v.z) : new Vector2(v.x + v.z, v.y));
                 }
                 triangles.AddRange(new[] { first, first + 1, first + 2, first, first + 2, first + 3 });
+            }
+
+            public void Fan(Vector3[] loop)
+            {
+                int first = points.Count;
+                foreach (var p in loop) { points.Add(p); uv.Add(new Vector2(p.x, p.z)); }
+                for (int i = 1; i < loop.Length - 1; i++) triangles.AddRange(new[] { first, first + i, first + i + 1 });
             }
 
             public void Emit(Transform root, string name, Material mat)
@@ -128,13 +135,29 @@ namespace Suborned.World.Play
                 surface.Emit(root.transform, "Distant promenade " + near, paving);
             }
 
+            foreach (var venue in ground.Venues.Where(v => v.Court.Length >= 3))
+            {
+                var outer = venue.Court.Select(p => { var at = frame.World(p); at.y = .18f; return at; }).ToArray();
+                if (Vector3.Cross(outer[1] - outer[0], outer[2] - outer[0]).y < 0) System.Array.Reverse(outer);
+                var centre = outer.Aggregate(Vector3.zero, (sum, p) => sum + p) / outer.Length;
+                var inner = outer.Select(p => Vector3.Lerp(p, centre, .065f)).ToArray();
+                var band = new Quads(); var slab = new Quads();
+                for (int i = 0; i < outer.Length; i++)
+                {
+                    int n = (i + 1) % outer.Length;
+                    band.Add(outer[i], outer[n], inner[n], inner[i], true);
+                }
+                slab.Fan(inner);
+                slab.Emit(root.transform, venue.Name + " terrace", MaterialAt(Deco + "Materials/DK_Terrazzo_Ivory.mat"));
+                band.Emit(root.transform, venue.Name + " seafoam border", MaterialAt(Deco + "Materials/DK_Terrazzo_Seafoam.mat"));
+            }
             var prefabs = new Dictionary<string, GameObject>();
             foreach (var venue in ground.Venues)
             foreach (var fixture in venue.Fixtures)
             {
                 if (!prefabs.TryGetValue(fixture.Kit, out var prefab))
                 {
-                    foreach (var dir in new[] { "Generated", "Furnish", "Built" })
+                    foreach (var dir in new[] { "Generated", "Furnish", "Street", "Plants", "Built" })
                     {
                         prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Kit + dir + "/DK_" + fixture.Kit + ".prefab");
                         if (prefab) break;
