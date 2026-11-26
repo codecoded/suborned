@@ -53,7 +53,8 @@ namespace Suborned.World.Play
                     r.reflectionProbeUsage=ReflectionProbeUsage.Simple;
                 }
                 tiers[2].shadowCastingMode=ShadowCastingMode.Off;
-                var group=model.GetComponent<LODGroup>() ?? holder.gameObject.AddComponent<LODGroup>();
+                var group=model.GetComponent<LODGroup>();
+                if(!group) group=holder.gameObject.AddComponent<LODGroup>();
                 group.SetLODs(tiers.Select((r,i)=>new LOD(thresholds[i],new Renderer[]{r})).ToArray());
                 group.RecalculateBounds();
                 Object.DestroyImmediate(east.gameObject);
