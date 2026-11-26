@@ -103,7 +103,7 @@ namespace Suborned.Play
             g.RunTo(scout.BusyEnd);
             Need(G.Within(point, g.GetawayCarPos(), 600), "Car missed the requested road");
             g.RunTo(Game.T(g.S.Over + 120));
-            Need(!g.Over && !g.HandoverOpen, "The missed Handover stopped play");
+            Need(!g.Over && !g.HandoverOpen, $"Handover at tick {g.Tick}: {g.Result} {g.FailCode} {g.FailText}; {d.Handover}");
             var j = d.Jobs[0];
             Need(j.A != j.B && j.B != j.C, "Invalid contact chain");
             journal.Open(j.A);

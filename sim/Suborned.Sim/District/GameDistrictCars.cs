@@ -50,7 +50,7 @@ namespace Suborned.Sim
                 Exit = new[]
                 {
                     at,
-                    CarGeo.Ahead(at, facing, 700)
+                    CarGeo.Ahead(at, facing, Math.Max(700, Cr.BlockCm + 200))
                 },
                 ExitHalfCm = template.ExitHalfCm,
                 Ambush = template.Ambush,

@@ -173,8 +173,11 @@ namespace Suborned.Sim
         // ---------------------------------------------------------------- where the three post
 
         /// <summary>The stand the cell's car is at, or driving to (the stand that decides where the three post and where the car blocks).</summary>
-        Stand StandForCrew() => GetawayDest ?? CurStand;
-        Stand CrewStand => S.StandById(CrewStandId) ?? CurStand;
+        // Outside the civic block a car has left the rivals' sight. They keep watch on its last known bay.
+        Stand LastKnownStand(Stand st) => District != null && st.Id.StartsWith("street/") && !S.Drive.InGrid(st.CarAt)
+            ? S.Stands.Find(bay => bay.Car == st.Car) ?? S.Stands[0] : st;
+        Stand StandForCrew() => LastKnownStand(GetawayDest ?? CurStand);
+        Stand CrewStand => S.StandById(CrewStandId) ?? LastKnownStand(CurStand);
         /// <summary>The spot assignment (Pulse §3): in id order each takes, of the stand's first rivals.posted spots not yet taken by a lower id, the
         /// one with the shortest grid walk from where he stands; ties the lower spot.</summary>
         void AssignSpot(CrewMember m, Stand st, Pt from)

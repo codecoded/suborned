@@ -41,6 +41,11 @@ namespace Suborned.Sim
         /// walk along each segment). Null when the lane never gets that far (the load rejects such a site: CheckBlockPoints).</summary>
         Pt? BlockPoint(Stand st)
         {
+            if (District != null && st.Id.StartsWith("street/"))
+            {
+                var ahead = CarGeo.Ahead(st.CarAt, st.Facing, Cr.BlockCm);
+                return DistrictRoadPoint(ahead) ?? st.CarCell;
+            }
             if (DriveMouthBlock(st) is var dm && dm.HasValue) return dm.Value.at; // engine 0.42.0 (Motive L10): across the drive's mouth
             var lane = st.Exit; long need = (long)Cr.BlockCm * Cr.BlockCm;
             for (int i = 0; i < lane.Length; i++)

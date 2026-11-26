@@ -159,6 +159,22 @@ public sealed class DistrictTests
     }
 
     [Fact]
+    public void TheRivalsArriveWhileTheCarIsParkedAcrossTown()
+    {
+        var g = Engine.New(Repo.Inputs, new Start { District = true });
+        Order(g, "move", g.Walk.NearestFree(g.GetawaySeat));
+        Arrive(g);
+        Order(g, "board", who: "car");
+        Arrive(g);
+        Order(g, "drive-car", new Pt(18000,-9667));
+        Arrive(g);
+        g.RunTo(Game.T(g.S.Over + 120));
+        Assert.False(g.Over,g.FailText);
+        Assert.False(g.HandoverOpen);
+        Assert.True(g.Ops[0].InCar);
+    }
+
+    [Fact]
     public void OnlyTheLastIncapacitatedOperativeEndsTheDistrict()
     {
         var g = Open();
