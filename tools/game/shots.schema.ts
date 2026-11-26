@@ -39,7 +39,9 @@ export const Shot = z.object({
   preset: z.enum(['today', 'lab']).optional(),
   tick: z.number().int().min(0).max(36000).optional(),
   view: z.enum(['overhead', 'follow']).optional(),
-  agent: z.enum(OPS).optional(), face: z.string().optional(),
+  agent: z.enum(OPS).optional(),
+  face: z.union([z.string(), z.tuple([z.number().int(), z.number().int()])]).optional()
+    .describe('Follow-camera heading, given as a view key or a fixed point in district centimetres'),
   focus: z.string().optional(), at: z.tuple([num, num]).optional(),
   yaw: z.number().int().min(0).max(3).optional(), zoom: z.number().min(3).max(60).optional(),
   pose: z.object({

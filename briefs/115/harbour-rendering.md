@@ -1,0 +1,45 @@
+# Rendering Harbour at walking distance
+
+The reference board gives every neighbourhood a silhouette you can recognise from the tram. That quality drops off beyond the parade in our player. On Lantern Lane, the old asphalt ran up to the shop doors. At the pier, the people and water are legible, but the distant towers fade into the same pale shape. Two different distances need two different levels of work.
+
+## What changed in the player
+
+Build 0.2.373 gives Lantern Lane a wall-to-wall glass arcade. The scout can walk or drive underneath the enamel ribs and an opal pendant. Thin brass and a sea-green fan pattern mark the stone footways at 22 gallery bays. The roof cuts away in the tactical view. The decorative glass uses one mipmapped texture. The pendant has three mesh levels. Daylight now reaches the city sky shader, and the shop windows sample a baked reflection and the existing sun shadow. These changes add no real-time shop lights.
+
+## What the Studio measured
+
+Release player, Apple M5 Max, Metal, 1920 × 1080, vSync off. The scout walked to Lantern and the pier on seed 9. The office was the overhead control. At each stop the camera recorded five seconds with the simulation running. Triangle counts include shadow passes. GPU time is the span of a frame's Metal command buffers. Compare the elapsed frame time to the 16.67 ms budget for 60 fps.
+
+| Lantern Lane test | Submitted triangles per frame, median | Elapsed frame, mean | GPU span, mean |
+| --- | ---: | ---: | ---: |
+| 0.2.372, GPU occlusion off | 4.73 M | 7.72 ms | 6.30 ms |
+| 0.2.372, GPU occlusion on | 1.66 M | 12.22 ms | 5.09 ms |
+| 0.2.373, pavement casts sun shadows, two runs | 4.76 M both | 8.30 / 7.62 ms | 3.82 / 6.24 ms |
+| 0.2.373, pavement receives shadows only, two runs | 4.22 / 4.29 M | 9.18 / 7.40 ms | 3.99 / 6.11 ms |
+
+GPU occlusion also raised elapsed time at the pier, from 6.49 to 8.22 ms, and slightly lowered it at the office, from 5.85 to 5.60 ms. It stays off. In 0.2.373, 110 flat outer paving and rail chunks can receive the silhouettes of people, cars and buildings without drawing their own bevels into the sun map. This saved 0.47–0.54 M triangles at Lantern across both pairs. The frame-time change reversed direction between pairs. Earlier testing on the M4 Air found a repeatable 1.8–2.0 ms benefit from Unity Mesh LOD in two third-person views. The new build has only been measured on the Studio. [Studio timings for each walk](studio-timings.tsv) · [Previous Air measurements](../106/latch/results.md) · [Unity GPU occlusion](https://docs.unity3d.com/6000.6/Documentation/Manual/urp/gpu-culling.html)
+
+An independent Xcode Metal System Trace of the 0.2.373 Lantern player puts those figures in context. Between seconds 10 and 18, Unity’s regular batched draws occupied 2.87 seconds on the vertex channel and 2.16 on the fragment channel. The shadow draws occupied 0.53 and 0.23 seconds respectively. These channels overlap. The ordinary city draw offers a larger target than the shadow pass in this view. Those labels alone cannot identify the most expensive material. Use Frame Debugger to find the pass that draws a window or palm, then inspect its Metal cost. For a proposed full-screen effect, Render Graph Viewer also shows which textures each pass reads and writes. [Apple GPU timelines](https://developer.apple.com/documentation/xcode/optimizing-gpu-performance) · [Unity Frame Debugger](https://docs.unity3d.com/6000.6/Documentation/Manual/FrameDebugger.html) · [Unity Render Graph Viewer](https://docs.unity3d.com/6000.6/Documentation/Manual/urp/render-graph-viewer-reference.html)
+
+I also tried a coarser global Mesh LOD threshold of 32. Lantern dropped from 4.29 M to 4.01 M triangles, yet all four frame means at thresholds 16 and 32 were between 7.39 and 7.44 ms. The build keeps 16. That result favours changing how distant blocks are drawn as a group.
+
+## Where to spend detail outside the parade
+
+1. **Give distant blocks their own geometry and materials.** Our 837 distant shop bays already use one material each. The next useful boundary is the whole block. Insomniac baked groups of Manhattan tiles into textured geometry that retained relief, reflections and night emission. Try one static Harbour block with a solid silhouette, a material atlas and a night mask. Switch by projected size. Keep the tram, citizens, interactive doors and tactical cutaway independent. Walk towards it, turn back sharply and cross the transition at night. Count texture memory and slow frames as well as draws. [Insomniac’s GDC slides, pp. 38–59](https://media.gdcvault.com/gdc2019/presentations/halperin_xray_marvels_spider-man_procedural.pdf)
+
+2. **Light the people who use the street.** The main renderer already uses Forward+, GPU Resident Drawer and reflection-probe blending. The project also has a separate Adaptive Probe Volume bake for time of day. Bring that bake to one played block. Install the generated arcade *before* baking, put warm bounce under its roof and cool skylight on the pavement, then follow a citizen across the boundary. Check that the crowd and custom glass shaders actually sample the intended lighting. Compare day and evening from the same spot and measure both scenarios’ resident memory. For lower-income terraces, patched glazed tile, laundry in the sun and shaded repair stalls can give a block character with the same trim and stone materials. [Unity lighting scenarios](https://docs.unity.com/en-us/engine/6000.6/manual/lighting-overview/lighting/probevolumes/probe-volumes-change-lighting-at-runtime) · [Unity probe streaming](https://docs.unity.com/en-us/engine/6000.6/manual/lighting-overview/lighting/probevolumes/streaming)
+
+3. **Spend shader detail where the eye can resolve it.** Guerrilla used separate visible and shadow meshes for vegetation, with cheaper distant shaders and billboards. For our palms, shape and light the near fronds, group the middle-distance crowns, and fit the far cards tightly around the leaves. Check leaf overdraw against the water and the shadow silhouette on pale stone. The road texture already has mipmaps and 8× anisotropic filtering. For its speckle, test softer aggregate contrast and normal strength in motion. Keep the window shader’s continuous texture gradients across atlas tiles. On Apple GPUs, opaque hidden surfaces, blended fragments, geometry and memory traffic have different costs. Inspect each in a Metal capture. [Guerrilla’s GDC talk](https://www.gdcvault.com/play/1025530/) · [Apple’s tile renderer](https://developer.apple.com/videos/play/wwdc2020/10602/) · [Apple GPU counters](https://developer.apple.com/documentation/xcode/analyzing-apple-gpu-performance-using-counter-statistics)
+
+4. **Let a shopfront tell you who works there.** Our window shader already traces a shallow recess into an atlas. Give a Lantern repairer a rack of half-assembled radios and a ferry office a wall of numbered pigeonholes. Both can share an opaque window material, with the view angle revealing the jamb, a broad reflection on the glass and a small mask controlling evening light. Reserve modelled objects for silhouettes that extend into the street. Check the effect walking past at a grazing angle, where a flat picture gives itself away. [Joost van Dongen’s interior mapping paper](https://www.proun-game.com/Oogst3D/CODING/InteriorMapping/InteriorMapping.pdf)
+
+## Which plugins earn a trial
+
+| Tool | Decision for this project |
+| --- | --- |
+| Unity Profile Analyzer | First choice for comparing CPU frame distributions and expensive markers across repeated walks. Pair it with Metal for GPU costs. [Unity manual](https://docs.unity3d.com/Packages/com.unity.performance.profile-analyzer@1.2/manual/index.html) |
+| Amplify Impostors | Best paid candidate for far palms and skyline ornaments. The publisher supports Apple-silicon baking and Unity 6.6 URP. Our forward-only materials may need a custom bake. Compare a palm against a native mesh proxy, including texture memory, shadow, night and the overhead view. [Publisher’s compatibility notes](https://marketplace.unity.com/packages/tools/utilities/amplify-impostors-119877) |
+| GPU Instancer Pro | Consider for repeated foliage if CPU render-thread submission dominates. Unity already batches eligible renderers. The vendor lists lighting and reflective-material limits that matter for this city. [GurBu FAQ](https://wiki.gurbu.com/index.php?title=GPU_Instancer_Pro%3AFAQ) |
+| Bakery | Its bake machine requires Windows and NVIDIA hardware. Unity’s existing probe baker fits the Mac production setup. [Publisher’s requirements](https://geom.io/bakery/wiki/index.php?title=Manual#System_requirements) |
+
+Repeat the three-camera walk from the repository root with `bun run batch --only shots --shots briefs/115/harbour-shots.json --shots-out out/scratch/aster/harbour-recheck`. The player also accepts `-fullPavementShadows` and `-gpuOcclusion on` for matched comparisons. Use separate launches and reverse the order on repeat. Keep a cold turn into a new block and a warmed walk as separate measurements.

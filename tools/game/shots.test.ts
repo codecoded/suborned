@@ -46,6 +46,9 @@ describe('what a row may say', () => {
     expect(problems({ name: 'a', script: 'route-a-board', tick: 9000 })).toContain('past the end of its script (5100)');
   });
   test('the camera: follow, focus, pose and their conflicts', () => {
+    const head = (face: string | number[]) => resolveShots(file({ name: 'street', view: 'follow', face }), '/o', R).shots[0];
+    expect(head([19900, -4800])).toMatchObject({ face: '', facePoint: true, faceX: 19900, faceY: -4800 });
+    expect(head('waitress')).toMatchObject({ face: 'waitress', facePoint: false });
     expect(problems({ name: 'a', view: 'follow', focus: 'waitress' })).toContain('use face, not focus or at');
     expect(problems({ name: 'a', face: 'waitress' })).toContain('face goes with the follow view');
     expect(problems({ name: 'a', focus: 'x', at: [0, 0] })).toContain('focus and at both say');

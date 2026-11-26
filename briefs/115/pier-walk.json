@@ -1,0 +1,7 @@
+{
+  "schema": "suborned.sim.script/1",
+  "mission": "handover",
+  "start": { "seed": 9 },
+  "orders": [{ "tick": 0, "op": "scout", "do": "move", "to": [-9200, 30400] }],
+  "until": 2281
+}
