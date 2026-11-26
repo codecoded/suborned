@@ -46,6 +46,31 @@ public sealed class DistrictTests
     }
 
     [Fact]
+    public void LanternTradersWorkBesideTheirStockAndCanIntroduceARegular()
+    {
+        var district = Open().District!;
+        var map = district.Map;
+        var market = map.Ground.Venues.Single(v => v.Id == "lantern-market");
+        var court = map.Ground.Venues.Single(v => v.Id == "meridian-court");
+        var newsreader = map.Index["p-z-harbour-lantern-papers-04"];
+        var florist = map.Index["p-z-harbour-meridian-court-02"];
+        var fruiterer = map.Index["p-z-harbour-lantern-market-02"];
+        foreach (var (worker, role, counter) in new[] {
+            (florist, "flower-seller", court.Fixtures.Single(f => f.Kit == "FlowerBarrow")),
+            (fruiterer, "fruiterer", market.Fixtures.Single(f => f.Kit == "ProduceStall")) })
+        {
+            var seller = map.People[worker];
+            Assert.Equal(role, seller.Job);
+            Assert.True(map.Walk.Free(seller.Walk.End));
+            Assert.True(G.Within(seller.Walk.End, counter.At, 460));
+            Assert.False(map.Roads.Free(counter.At));
+        }
+        Assert.Equal("Angela Hardin", map.People[florist].Name);
+        Assert.Contains(district.Network.Routes(newsreader, _ => true),
+            route => route.SequenceEqual(new[] { newsreader, florist, fruiterer }));
+    }
+
+    [Fact]
     public void FerryForecourtConnectsToThePromenadeWithResidentsAndASeawardBoundary()
     {
         var g = Open();

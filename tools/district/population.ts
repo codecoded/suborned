@@ -4,10 +4,16 @@ import type { Person, Place } from '../../contracts/people/people.schema';
 import { assignNames } from '../people/names';
 import { buildModel } from '../people-graph/model';
 import { hashOf, peopleDb, SCHEMA_FILE, type Prepared } from '../people-graph/source';
-import { project, type Point, type Venue } from './places';
+import { project, type Fixture, type Point, type Venue } from './places';
 
 export const LOCAL = 'p-z-harbour-';
 type WalkSpot = (p: Point, v: Venue) => Point;
+
+function tradePost(f: Fixture): Point {
+  // Stand at the service side of the counter, outside the customer-facing stock and its walk-grid footprint.
+  const a = f.yaw * Math.PI / 180;
+  return [f.at[0] + Math.sin(a) * (f.radius + 1.15), f.at[1] + Math.cos(a) * (f.radius + 1.15)];
+}
 
 export async function districtPopulation(base: Prepared, venues: Venue[], standing: WalkSpot) {
   const people = structuredClone(base.people),
@@ -21,6 +27,7 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
       ['nothing', 'home', 'work'].includes(base.w.rules.needs.list[p.need]!.requires),
   );
   const groups: Person[][] = [];
+  const trades: { worker: Person; role: string }[] = [];
   const residentGeneration = new Map<string, number>();
   for (const [n, v] of venues.entries()) {
     const key = 'street-' + v.id,
@@ -63,18 +70,22 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
       // A pair or a queue has distinct standing marks, staggered along the public edge.
       const u = ((k * 0.61803398875 + n * 0.137) % 1) * 2 - 1,
         w = ((k * 0.41421356 + 0.27 * n) % 1) * 2 - 1;
+      const counter = v.fixtures.filter(f => f.kit === 'FlowerBarrow' || f.kit === 'ProduceStall')[k-1];
+      const occupation = counter ? (counter.kit === 'FlowerBarrow' ? 'flower-seller' : 'fruiterer') : t.position;
+      const destination = v.roundEnd ?? v.boarding ?? v;
+      const streetStop = project(destination, -u * (v.roundEnd?.span ?? (v.boarding ? 4 : v.span)), ((k % 3) - 1) * v.width * 0.77);
       const home = atPlace(
         id + '-home',
         'home',
         v.name + ' walk-ups',
-        standing(project(v, u * v.span, w * v.width), v),
+        standing(counter && v.roundEnd ? streetStop : project(v, u * v.span, w * v.width), v),
       );
-      const destination = v.roundEnd ?? v.boarding ?? v;
       const post = atPlace(
         id + '-post',
         'stand',
-        v.roundEnd?.name ?? (v.boarding ? v.name + ' boarding apron' : v.name),
-        standing(project(destination, -u * (v.roundEnd?.span ?? (v.boarding ? 4 : v.span)), ((k % 3) - 1) * v.width * 0.77), v),
+        counter ? v.name + (counter.kit === 'FlowerBarrow' ? ' flower barrow' : ' fruit stall')
+          : v.roundEnd?.name ?? (v.boarding ? v.name + ' boarding apron' : v.name),
+        standing(counter ? tradePost(counter) : streetStop, v),
       );
       const p: Person = {
         id,
@@ -112,6 +123,7 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
       };
       group.push(p);
       locals.push(p);
+      if (counter) trades.push({ worker: p, role: occupation });
     }
     for (let k = 0; k < group.length; k++) {
       const a = group[k]!,
@@ -183,6 +195,14 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
     const gaps = assignNames(pool, base.w.rules, neighbours, new Map(), new Map(), 0);
     if (gaps.length) throw Error(gaps.join('\n'));
     for (const person of neighbours) pool.excluded.full.add(person.name);
+  }
+  // A local taking up a stall keeps their established name, appearance and address-book ID.
+  for (const { worker, role } of trades) worker.work!.position = worker.position = role;
+  const market = venues.findIndex(v => v.id === 'lantern-market');
+  if (court >= 0 && market >= 0) {
+    const florist = groups[court]!.find(p => p.position === 'flower-seller');
+    const fruiterer = groups[market]!.find(p => p.position === 'fruiterer');
+    if (florist && fruiterer) regular(florist, fruiterer);
   }
   people.persons.push(...locals);
   const model = buildModel(people, base.w.rules, base.extras);

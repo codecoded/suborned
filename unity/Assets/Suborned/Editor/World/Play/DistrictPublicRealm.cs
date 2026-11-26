@@ -177,6 +177,7 @@ namespace Suborned.World.Play
             DistrictDaylight.Apply(scene);
             templates.DressTown(scene, frame, ground, root.transform);
             var prefabs = new Dictionary<string, GameObject>();
+            var trades = new DistrictTradeProps();
             foreach (var building in ground.Buildings) templates.Frontage(root.transform, frame.World(building.At), building);
             foreach (var gallery in ground.Galleries) templates.Gallery(root.transform, frame.World(gallery.At), gallery);
             templates.LanternArcade(root.transform, frame, DistrictMap.Harbour);
@@ -184,6 +185,7 @@ namespace Suborned.World.Play
             {
                 var pos = frame.World(fixture.At);
                 pos.y = ground.ElevationCm(fixture.At) * .01f;
+                if (trades.Place(fixture.Kit, root.transform, pos, fixture.Yaw)) return;
                 if (fixture.Kit == "GardenBed") { templates.PlantedBed(root.transform, pos, fixture.Yaw); return; }
                 if (!prefabs.TryGetValue(fixture.Kit, out var prefab))
                 {
@@ -212,7 +214,11 @@ namespace Suborned.World.Play
             templates.LandingsAndStops(root.transform,frame,ground);
             DistrictFerryGardens.Install(scene,root.transform,frame,ground);
             var lantern = ground.Venues.FirstOrDefault(v => v.Id == "meridian-court");
-            if (lantern != null) DistrictCourtModel.ShadePalms(scene, frame.World(lantern.At));
+            if (lantern != null)
+            {
+                DistrictCourtModel.PlantBalconies(root.transform, ground.ElevationCm(lantern.At) * .01f);
+                DistrictCourtModel.ShadePalms(scene, frame.World(lantern.At));
+            }
         }
 
         static Material MaterialAt(string path) => AssetDatabase.LoadAssetAtPath<Material>(path)

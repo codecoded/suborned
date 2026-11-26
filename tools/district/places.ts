@@ -199,16 +199,17 @@ const dress: Record<Style, readonly [string, number, number, number, number][]> 
     ['Newsstand', -4, 2.8, 0, 1.45],
     ['Bench_Play', 4, 2.1, 0, 0.9],
     ['StreetClock', 9, 1.9, 0, 0.5],
+    ['PneumaticPost', 1, 2.9, 90, 0.53],
   ],
   market: [
-    ['CurvedKiosk_Play', -7, 3.2, 0, 1.7],
-    ['CoffeeCart_Play', 6, 2.4, 90, 1.2],
-    ['Parasol_Stripe', 10, 3.4, 0, 0.45],
+    ['ProduceStall', -7, 3.2, 180, 1.65],
+    ['FlowerBarrow', 6, 2.75, 160, 1.18],
   ],
   waterfront: [
     ['CoinTelescope', -8, 1.5, 180, 0.5],
     ['Bench_Play', 3, 1.4, 0, 0.9],
     ['LifebuoyStand', 9, 1.7, 0, 0.5],
+    ['LuggageTrolley', -2, 2.5, 25, 1.12],
   ],
   garden: [
     ['RoundBench', -6, 3, 0, 1.45],
@@ -250,13 +251,23 @@ const pierFurniture: typeof dress.waterfront = [
   ['Bollard_Play', -17, -8.2, 0, 0.4],
   ['Bollard_Play', 18, -8.2, 0, 0.4],
   ['Planter_Urn_Play', -2.2, 2.5, 0, 0.65],
+  ['LuggageTrolley', 7.2, 3.1, -15, 1.12],
+  ['PneumaticPost', -6.7, 3.2, 90, .53],
 ];
 const layouts: Record<string, typeof dress.walk> = {
   'sunset-coffee': courtFurniture,
   pier: pierFurniture,
-  // The night market trades from its cart. The public entrance stays open to the globe and tram.
-  'lantern-market': dress.market.filter(([kit]) => kit !== 'CurvedKiosk_Play'),
-  'meridian-court': [['Bench_Play', -3.4, 14.7, 90, 1], ['Bench_Play', 3.6, 14.7, 90, 1]],
+  // Trade occupies the sides. The walkway between Lantern Lane, the globe and the tram stays open.
+  'lantern-market': [['ProduceStall', 12, 3, 180, 1.65], ['FlowerBarrow', 4, 2.9, 198, 1.18]],
+  'meridian-court': [
+    ['Bench_Play', -3.4, 14.7, 90, 1], ['Bench_Play', 3.6, 14.7, 90, 1],
+    ['FlowerBarrow', -5.5, 4.3, 12, 1.18], ['PneumaticPost', 6.3, 1.8, 40, .53],
+  ],
+  'ferry-landing': [...dress.waterfront, ['PneumaticPost', 6.4, 2.85, 0, .53]],
+  gardens: [...dress.garden, ['FlowerBarrow', 9.6, 2.4, 8, 1.18]],
+  'crown-west': [...dress.garden, ['FlowerBarrow', 1, 3.2, 14, 1.18]],
+  'quay': [...dress.coffee, ['FlowerBarrow', -9.2, 2.9, 32, 1.18]],
+  'southside': [...dress.coffee, ['PneumaticPost', -9, 2, 90, .53]],
 };
 export function furnish(venue: Venue, fits: (point: Point, radius: number) => boolean) {
   const yaw = (Math.atan2(venue.along[1], -venue.along[0]) * 180) / Math.PI;

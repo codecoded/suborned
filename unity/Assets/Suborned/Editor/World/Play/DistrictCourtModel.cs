@@ -28,6 +28,44 @@ namespace Suborned.World.Play
                 (rect[2] + rect[3]) * .5f + Suborned.OldTown.OldTownFrame.DZ);
         }
 
+        public static void PlantBalconies(Transform parent, float streetHeight)
+        {
+            var variants = new List<GameObject>();
+            foreach (var name in new[] { "2_A", "4_B", "2_C" })
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Kit + "DK_PlanterRun_" + name + "_TB.prefab");
+                if (!prefab) throw new BuildFailedException("Missing testbed balcony planting " + name);
+                variants.Add(prefab);
+            }
+            foreach (var wing in J.A(CourtPlan("mega/lantern-terraces"), "wings"))
+            {
+                var id = J.S(wing, "id");
+                if (id != "north" && id != "west" && id != "bow") continue;
+                var r = J.A(wing, "rect").Select(n => (float)(double)n).ToArray();
+                bool horizontal = id == "north";
+                float centre = horizontal ? (r[0] + r[1]) * .5f : (r[2] + r[3]) * .5f;
+                float face = horizontal ? r[2] : (id == "bow" ? r[0] : r[1]);
+                float outward = id == "west" ? 1 : -1;
+                // Ground-storey balconies project 1.18 m and the next storey's ledge projects .94 m.
+                // Keep the deep planting behind the outer guard rail, in the straight run clear of the corner.
+                var bays = horizontal ? new[] { -4.8f, .4f, 4.8f } : new[] { -8.6f, -3.8f, 3.6f, 8.5f };
+                for (int i = 0; i < bays.Length; i++)
+                {
+                    Plant(centre + bays[i], face + .58f * outward, 3.86f, i % 3);
+                    if ((i + (horizontal ? 1 : 0)) % 2 == 0)
+                        Plant(centre + bays[i] + .6f, face + .46f * outward, 6.93f, (i + 2) % 3);
+                }
+                void Plant(float along, float edge, float level, int variant)
+                {
+                    var box = Object.Instantiate(variants[variant], parent);
+                    box.name = "Lantern " + id + " • resident's window box";
+                    var position = new Vector3(horizontal ? along : edge, streetHeight + level,
+                        (horizontal ? edge : along) + Suborned.OldTown.OldTownFrame.DZ);
+                    box.transform.SetPositionAndRotation(position, Quaternion.Euler(0, horizontal ? 0 : 90, 0));
+                }
+            }
+        }
+
         public static void ShadePalms(UnityEngine.SceneManagement.Scene scene, Vector3 court)
         {
             var neighbourhood = new Bounds(court, new Vector3(150, 45, 145));

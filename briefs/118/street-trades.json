@@ -1,0 +1,16 @@
+{
+  "schema": "suborned.shots/1",
+  "defaults": { "hud": false, "night": false, "settle": 1, "mark": false, "perf": 3, "script": "briefs/117/court-walk.json" },
+  "shots": [
+    { "name": "walking", "view": "follow", "select": "scout", "face": [22650,-1800], "tick": 3200, "script": "briefs/117/court-walk.json" },
+    { "name": "flower-seller", "pose": { "pos": [-139.4,1.64,-261.0], "look": [-145.6,2.0,-255.0], "fov": 55 }, "tick": 3300, "script": "briefs/117/court-walk.json" },
+    { "name": "fruit-market", "pose": { "pos": [-115.4,1.61,-279.2], "look": [-110.3,1.48,-272.4], "fov": 54 }, "tick": 3360, "script": "briefs/117/court-walk.json" },
+    { "name": "market-walk", "pose": { "pos": [-123.4,1.72,-278.0], "look": [-110,2.16,-272.8], "fov": 58 }, "tick": 3400, "script": "briefs/117/court-walk.json" },
+    { "name": "clock-and-bridge", "pose": { "pos": [-133.2,1.72,-266], "look": [-144,8,-240], "fov": 61 }, "tick": 3500, "script": "briefs/117/court-walk.json" },
+    { "name": "court-post", "pose": { "pos": [-144.0,1.55,-245.0], "look": [-140.4,1.34,-248.15], "fov": 51 }, "tick": 3600, "script": "briefs/117/court-walk.json" },
+    { "name": "market-command", "view": "overhead", "at": [24900,1350], "yaw": 2, "zoom": 10, "tick": 3750, "script": "briefs/117/court-walk.json" },
+    { "name": "market-evening", "pose": { "pos": [-115.4,1.61,-279.2], "look": [-110.3,1.48,-272.4], "fov": 54 }, "night": true, "tick": 5300, "script": "briefs/117/court-walk.json" },
+    { "name": "quay-walk", "view": "follow", "select": "scout", "script": "briefs/116/quay-walk.json", "face": [-17300,25300], "tick": 2700 },
+    { "name": "porter", "pose": { "pos": [97.2,1.62,133.2], "look": [102.2,1.4,136.5], "fov": 52 }, "tick": 2700, "script": "briefs/116/quay-walk.json" }
+  ]
+}
