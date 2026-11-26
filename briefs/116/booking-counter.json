@@ -1,0 +1,10 @@
+{
+  "schema": "suborned.shots/1",
+  "defaults": { "hud": false, "night": false, "settle": 1, "mark": false },
+  "shots": [
+    { "name": "booking-counter", "view": "follow", "select": "scout", "face": [-19790, 26735], "script": "briefs/116/booking-walk.json", "tick": 3000 },
+    { "name": "quay-approach", "pose": { "pos": [98.5, 1.9, 141.0], "look": [145, 5.4, 163.35], "fov": 58 }, "tick": 160 },
+    { "name": "boarding-window", "pose": { "pos": [132.2, 2.0, 184.6], "look": [137.35, 1.35, 173.9], "fov": 60 }, "tick": 160 },
+    { "name": "lantern-estate", "pose": { "pos": [-162, 28, -306], "look": [-123, 32, -254], "fov": 56 }, "tick": 160 }
+  ]
+}

@@ -45,6 +45,8 @@ public sealed class DistrictTests
         var conductor = System.Array.FindIndex(map.People, p => p.Job == "tram-conductor");
         Assert.Contains(clerk.Ties, t => t.person == map.Index[porter.Id] && t.kind == "workmate");
         Assert.Contains(porter.Ties, t => t.person == conductor && t.kind == "regular");
+        var introductions = new[] { map.Index[clerk.Id], map.Index[porter.Id], conductor };
+        Assert.Contains(g.District.Network.Routes(introductions[0], _ => true), chain => chain.SequenceEqual(introductions));
         Order(g, "move", landing.At);
         Arrive(g);
         Assert.True(G.Within(g.Ops[0].Pos, landing.At, 210));

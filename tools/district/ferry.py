@@ -190,6 +190,7 @@ def ferry(s):
     s.shape(-10.64,-7.65,.37,5.9,.15,1.02,2.96,teal)
     s.shape(-10.90,-7.65,.67,6.06,.25,1.04,1.24,brass)
     s.plate(-10.84,-7.65,2.04,5.48,1.39,pi,letters,section=(0,0,1,.49))
+    s.plate(-10.84,-7.65,3.46,5.50,.71,pi,letters,section=(0,.51,1,1))
     # A shaded waiting walk follows the public edge; all supports stand seaward of the walk mesh.
     for n in (-11.6,-5.8,5.8,11.6):
         s.beam((-11.88,n,.61),(-12.20,n,4.42),.20,stone,(9,6,4)[s.rank],.14)

@@ -73,6 +73,21 @@ namespace Suborned.World.Play
             var edge = MaterialAt(Deco + "Materials/DK_Granite_Kerb.mat");
             var limestone = MaterialAt(Deco + "Materials/DK_Limestone_Tex.mat");
             var strips = ground.Waterfront;
+            // The swap sometimes retains the original flat Skyport apron at +18 cm in the ground
+            // batches. Its footprint is already covered by these strips at -85 cm, the actual walking floor.
+            foreach (var oldRoot in roots)
+            foreach (var f in oldRoot.GetComponentsInChildren<MeshFilter>())
+            {
+                if (!f.sharedMesh || !f.sharedMesh.name.StartsWith("ground/quay@", System.StringComparison.Ordinal) ||
+                    !f.TryGetComponent<MeshRenderer>(out var r)) continue;
+                var bounds = r.bounds;
+                bool replaced = strips.Any(strip => {
+                    var sw = frame.World(strip.A); var ne = frame.World(strip.B);
+                    return bounds.min.x >= sw.x - .05f && bounds.max.x <= ne.x + .05f &&
+                        bounds.min.z >= sw.z - .05f && bounds.max.z <= ne.z + .05f;
+                });
+                if (replaced) f.gameObject.SetActive(false);
+            }
             // Split faces at every pier corner so the granite edge opens where the apron joins the quay.
             var xs = new SortedSet<int>(strips.SelectMany(s => new[] { s.A.Y, s.B.Y }));
             var ys = new SortedSet<int>(strips.SelectMany(s => new[] { s.A.X, s.B.X }));
