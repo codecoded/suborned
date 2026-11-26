@@ -12,6 +12,7 @@ namespace Suborned.Play
         bool writingOrder;
         CitizenAct chosenAct;
         int chosenActor, chosenStreet;
+        string openList = "";
         static readonly CitizenAct[] Acts = { CitizenAct.Block, CitizenAct.Rally, CitizenAct.Guard, CitizenAct.Protect };
         static string Verb(CitizenAct act) => act switch
         {
@@ -51,6 +52,7 @@ namespace Suborned.Play
         public void OpenCitizenOrders()
         {
             writingOrder = true;
+            openList = "";
             chosenActor = person;
             chosenStreet = 0;
             chosenAct = CitizenAct.Block;
@@ -58,19 +60,27 @@ namespace Suborned.Play
             Page();
         }
 
-        void SelectField(string title, List<string> options, int selected, Action<int> select)
+        void SelectField(string title, List<string> options, int selected)
         {
             Label(pages, title, 15, Blue);
-            var field = new DropdownField(options, selected);
+            var field = Button(pages, options[selected] + "   ▾", () => { openList = title; reply = ""; Page(); });
+            field.style.borderLeftWidth = 2;
+            field.style.borderLeftColor = Gold;
             field.style.marginBottom = 10;
-            field.style.fontSize = 15;
-            pages.Add(field);
-            field.RegisterValueChangedCallback(e =>
+        }
+
+        bool ChoiceList(string title, List<string> options, int selected, Action<int> select)
+        {
+            if (openList != title) return false;
+            Label(pages, title, 19, Gold);
+            Button(pages, "‹  Order details", () => { openList = ""; Page(); });
+            for (int n = 0; n < options.Count; n++)
             {
-                select(options.IndexOf(e.newValue));
-                reply = "";
-                Page();
-            });
+                int index = n;
+                var option = Button(pages, options[n], () => { select(index); openList = ""; reply = ""; Page(); });
+                if (n == selected) option.style.color = Gold;
+            }
+            return true;
         }
 
         void CitizenOrderPage()
@@ -89,14 +99,17 @@ namespace Suborned.Play
             int choice = Math.Max(0, routes.FindIndex(p => p[p.Length - 1] == chosenActor));
             var chain = routes[choice];
             chosenActor = chain[chain.Length - 1];
-            SelectField("What do you need?", Acts.Select(DistrictNetwork.Name).ToList(), Array.IndexOf(Acts, chosenAct), i => chosenAct = Acts[i]);
-            if (chosenAct != CitizenAct.Guard)
-            {
-                var locations = d.Map.Streets.Select(s => DistrictMap.StreetName(s.Id)).ToList();
-                locations.Insert(0, "Here");
-                SelectField("Where?", locations, chosenStreet, i => chosenStreet = i);
-            }
-            SelectField("Who should carry it out?", names, choice, i => chosenActor = routes[i][routes[i].Length - 1]);
+            var actions = Acts.Select(DistrictNetwork.Name).ToList();
+            var locations = d.Map.Streets.Select(s => DistrictMap.StreetName(s.Id)).ToList();
+            locations.Insert(0, "Here");
+            const string what = "What do you need?", where = "Where?", who = "Who should carry it out?";
+            int actIndex = Array.IndexOf(Acts, chosenAct);
+            if (ChoiceList(what, actions, actIndex, i => chosenAct = Acts[i]) ||
+                ChoiceList(where, locations, chosenStreet, i => chosenStreet = i) ||
+                ChoiceList(who, names, choice, i => chosenActor = routes[i][routes[i].Length - 1])) return;
+            SelectField(what, actions, actIndex);
+            if (chosenAct != CitizenAct.Guard) SelectField(where, locations, chosenStreet);
+            SelectField(who, names, choice);
             if (chain.Length > 1) Label(pages, d.Network.Describe(chain), 16, Gold);
             bool known = chain.Length == 1 || d.Network.KnowsCell[chosenActor];
             Label(pages, chain.Length == 1 ? "They will know the request came from you." :
@@ -116,8 +129,8 @@ namespace Suborned.Play
                 Label(pages, "They won't risk that yet. Keep a promise, stand surety, or build the cell's standing.", 15, Gold);
                 return;
             }
-            var where = g.DistrictPersonAt(person);
-            int op = where.HasValue ? Speaker(where.Value, true) : -1;
+            var at = g.DistrictPersonAt(person);
+            int op = at.HasValue ? Speaker(at.Value, true) : -1;
             if (op < 0) return;
             Button(pages, chain.Length == 1 ? "Ask in person" : "Pass the word", () =>
             {
