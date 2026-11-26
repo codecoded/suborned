@@ -233,7 +233,7 @@ namespace Suborned.Play
             {
                 Bundle ??= SimBundle.Load();
                 Text ??= PlayText.Load(); if (!rangeMode) LoadSeats(); // the café seats (HostSeats), view only
-                Game = NewFightGame(); // brief 025: the playground switches (P) are the start state's; none set = the plain start; brief 027: the fight preset and checkpoint (HostFightLab)
+                Game = NewFightGame(); frame.streetGround = Game.District?.Map.Ground; // brief 025: the playground switches (P) are the start state's; none set = the plain start; brief 027: the fight preset and checkpoint (HostFightLab)
                 if (Game.S.Root.Opt("cast")?.Opt("startsAt") is JNode st && st.Kind == JKind.Str) MissionStartsAt = st.Str();
             });
             if (Fault != null) return;
@@ -588,7 +588,7 @@ namespace Suborned.Play
             cam.transform.position = focus - cam.transform.forward * dist;
             cam.farClipPlane = Mathf.Max(cam.farClipPlane, dist + 1500f);
             if (shadows) shadows.focusDepth = dist;
-            if (fade) fade.focus = focus;
+            if (fade) { fade.focus = focus; fade.districtStreet = Game?.District != null && !Following && !ConvoOn && !Game.S.Grid.InGrid(frame.Engine(focus)); }
         }
 
         /// <summary>Pan so the camera centres on a world point (zoom, pitch and yaw stay; a turn under way keeps turning about it).</summary>

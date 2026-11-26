@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Unity.Profiling;
 using UnityEngine.UIElements;
 using Order = Suborned.Sim.Order;
 using OpId = Suborned.Sim.OpId;
@@ -59,7 +60,16 @@ namespace Suborned.Play
         sealed class Result
         {
             public string Name = "", Status = "ok", Error = "", Size = ""; public int Tick, Frames; public bool Audited, AuditClean = true;
+            public long Triangles, Batches, StreetTriangles; public int Citizens, Instanced, Vehicles, Robots;
             public readonly List<string> Files = new(), Issues = new(); public float MeanMs = -1, P99Ms = -1, GpuMs = -1;
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        static void SetCaptureDirectory()
+        {
+            var args = Environment.GetCommandLineArgs();
+            int i = Array.IndexOf(args, "-shots");
+            if (i >= 0 && i + 2 < args.Length) HandoverHost.SessionDirOverride = System.IO.Path.Combine(args[i + 2], "sessions");
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -170,7 +180,17 @@ namespace Suborned.Play
                 if (s.perf > 0)
                 {
                     var ds = new List<float>(); var gpu = new float[1];
-                    h.SetPaused(false); yield return new WaitForSecondsRealtime(1f); yield return GameProof.Sample(s.perf, ds, gpu); h.SetPaused(true);
+                    h.SetPaused(false);
+                    yield return new WaitForSecondsRealtime(1f);
+                    using (var tris = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Triangles Count", 256))
+                    using (var batches = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Batches Count", 256))
+                    {
+                        yield return GameProof.Sample(s.perf, ds, gpu);
+                        res.Triangles = MedianCounter(tris); res.Batches = MedianCounter(batches);
+                    }
+                    h.SetPaused(true);
+                    var street = h.GetComponent<DistrictStreet>();
+                    if (street) { res.Citizens = street.VisiblePeople; res.Instanced = street.InstancedPeople; res.Vehicles = street.VisibleVehicles; res.Robots = street.VisibleRobots; res.StreetTriangles = street.VisibleStreetTriangles(); }
                     res.Frames = ds.Count; res.MeanMs = ds.Average(); res.P99Ms = ds[(int)(ds.Count * 0.99f)]; res.GpuMs = gpu[0]; res.Tick = h.Game.Tick;
                 }
                 yield return new WaitForSecondsRealtime(s.settle); // the camera's ease, the HUD's fades
@@ -373,6 +393,13 @@ namespace Suborned.Play
         static string Esc(string s) => (s ?? "").Replace("\\", "\\\\").Replace("\"", "'").Replace("\n", " ");
         static string F(float v) => v.ToString("0.###", CultureInfo.InvariantCulture);
 
+        static long MedianCounter(ProfilerRecorder recorder)
+        {
+            if (!recorder.Valid || recorder.Count == 0) return -1;
+            var samples = recorder.ToArray().Select(s => s.Value).OrderBy(v => v).ToArray();
+            return samples[samples.Length / 2];
+        }
+
         void Write(string status)
         {
             var sb = new StringBuilder();
@@ -385,6 +412,9 @@ namespace Suborned.Play
                   .Append(", \"error\": \"").Append(Esc(r.Error)).Append("\", \"files\": [").Append(string.Join(", ", r.Files.Select(f => "\"" + Esc(f) + "\""))).Append(']');
                 if (r.Audited) sb.Append(", \"audit\": {\"clean\": ").Append(r.AuditClean ? "true" : "false").Append(", \"issues\": [").Append(string.Join(", ", r.Issues.Select(x => "\"" + Esc(x) + "\""))).Append("]}");
                 if (r.MeanMs >= 0) sb.Append(", \"frames\": {\"count\": ").Append(r.Frames).Append(", \"meanMs\": ").Append(F(r.MeanMs)).Append(", \"fps\": ").Append(F(1000f / r.MeanMs)).Append(", \"p99Ms\": ").Append(F(r.P99Ms)).Append(", \"gpuMs\": ").Append(F(r.GpuMs)).Append('}');
+                if (r.MeanMs >= 0) sb.Append(", \"render\": {\"medianTriangles\": ").Append(r.Triangles).Append(", \"medianBatches\": ").Append(r.Batches)
+                    .Append(", \"streetMeshTriangles\": ").Append(r.StreetTriangles).Append(", \"citizens\": ").Append(r.Citizens).Append(", \"instancedCitizens\": ").Append(r.Instanced)
+                    .Append(", \"vehicles\": ").Append(r.Vehicles).Append(", \"robots\": ").Append(r.Robots).Append('}');
                 else if (r.Frames > 0) sb.Append(", \"clipFrames\": ").Append(r.Frames);
                 sb.Append('}');
             }

@@ -205,7 +205,7 @@ namespace Suborned.Play
                 if ((!d.Roams(i) && !d.Network.Away(i)) || !(g.DistrictPersonAt(i)is Pt at))
                     continue;
                 var p = host.View.WorldToScreenPoint(host.frame.World(at) + Vector3.up);
-                if (p.z <= 0 || p.z > 100)
+                if (p.z <= 0 || p.z > (host.View.orthographic ? host.View.farClipPlane : DistrictStreet.FarMetres))
                     continue;
                 float dist = ((Vector2)p - screen).sqrMagnitude;
                 if (dist < best)

@@ -18,6 +18,8 @@ namespace Suborned.World.Play
                 var h = root.GetComponentInChildren<HandoverHost>(true);
                 if (!h || h.rangeMode)
                     continue;
+                h.districtCrowd = DistrictCrowdBake.Make(h.figures);
+                DistrictPublicRealm.Install(h, scene);
                 h.districtTram = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Prefabs/Vehicles/DK_Tram.prefab");
                 h.districtTramMid = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Vehicles/DK_Tram_L1.fbx");
                 h.districtTramFar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Vehicles/DK_Tram_L2.fbx");

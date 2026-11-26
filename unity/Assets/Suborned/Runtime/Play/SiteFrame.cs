@@ -12,6 +12,7 @@ namespace Suborned.Play
     {
         public Vector2 origin = new(-130f, -230f), axisX = new(0f, -1f), axisY = new(1f, 0f);
         public float x0 = -52f, y0 = -66f, cell = 1f; public int nx, ny;
+        [NonSerialized] public DistrictGround streetGround;
         public float[] heights = Array.Empty<float>();
         /// <summary>The walk file's kind per cell (suborned.walk/1 `kind`: 2 and 4 are solid), baked beside the heights; empty when the slab bake stands in.</summary>
         public byte[] kinds = Array.Empty<byte>();
@@ -41,7 +42,8 @@ namespace Suborned.Play
         public float Height(float bx, float by)
         {
             int i = Mathf.FloorToInt((bx - x0) / cell), j = Mathf.FloorToInt((by - y0) / cell);
-            return i < 0 || j < 0 || i >= nx || j >= ny || heights.Length != nx * ny ? 0f : heights[i * ny + j];
+            if (i >= 0 && j >= 0 && i < nx && j < ny && heights.Length == nx * ny) return heights[i * ny + j];
+            return (streetGround?.ElevationCm(new Pt(Mathf.RoundToInt(bx * 100), Mathf.RoundToInt(by * 100))) ?? 0) * .01f;
         }
 
         /// <summary>An engine point (cm) on the ground, in Unity world space.</summary>

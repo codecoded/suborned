@@ -66,6 +66,8 @@ namespace Suborned
         [Header("Brief 056 F: the capsule cut")]
         [Tooltip("Brief 056 F (Sky 2026-10-25): in the camera's passes a soft capsule per point (SetPoints) replaces the ground discs: a person's foot to head, a ground point's foot to `pointHeight`, cut only where the wall is nearer the camera than the point by `depthMargin`; no focus disc. The shadow map is not cut (Glint 2026-10-25: a tower casts its full shadow); ghostShadow is the column dither's. Off: the column dither (A), as built to 0.2.117.")]
         public bool capsules = true;
+        [System.NonSerialized] public bool districtStreet;
+        bool UseCapsules => capsules && !districtStreet;
         [Tooltip("A person's capsule radius (m) on the screen (the lab's 2 m at the person's depth).")]
         public float capsuleRadius = 2f;
         [Tooltip("A ground point's capsule radius (m): the cursor, the target, a door marker (the lab's 1.5 m).")]
@@ -153,7 +155,7 @@ namespace Suborned
         float level; // 0 = solid, 1 = faded to `ghost`
 
         /// <summary>Disc radius (m) at the camera's zoom now.</summary>
-        public float Radius => cam ? Mathf.Min(maxRadius, radiusPerZoom * cam.orthographicSize) : 0f;
+        public float Radius => cam ? Mathf.Min(districtStreet ? 65f : maxRadius, (districtStreet ? 2.6f : radiusPerZoom) * cam.orthographicSize) : 0f;
         /// <summary>Renderers drawing with the cutting variant now (0 outside Play Mode: there the whole render takes it).</summary>
         public int Reached => reach?.Reached ?? 0;
 
@@ -193,7 +195,7 @@ namespace Suborned
                 // Glint (brief 056 F §2): with capsules the camera passes cut only the capsules and the shadow map is not cut, so the reach is each
                 // capsule's own conservative disc (about 5 m), not the 11.2 m focus disc and the point discs; a count of 0 reaches nothing
                 int nc = 0;
-                if (capsules) { for (int i = 0; i < pointCount; i++) cuts[nc++] = CapsuleCut(cut, points[i]); }
+                if (UseCapsules) { for (int i = 0; i < pointCount; i++) cuts[nc++] = CapsuleCut(cut, points[i]); }
                 else { cuts[nc++] = cut; for (int i = 0; i < pointCount; i++) { var q = points[i]; var d = cut; d.Focus = q; d.FloorY = q.y + (cut.FloorY - cut.Focus.y); d.Radius = Mathf.Abs(q.w); cuts[nc++] = d; } }
                 reach.Set(cuts, nc, wholeTiles);
             }
@@ -206,10 +208,10 @@ namespace Suborned
             if (!Application.isPlaying) level = fade ? 1f : 0f; // edit-mode renders (Shots) get no Update between a change and the render
             if (!Cuts(out var cut)) { Clear(); return; }
             var fwd = transform.forward;
-            float f = Mathf.Max(feather, 0.01f);
+            float f = districtStreet ? cut.Radius * .18f : Mathf.Max(feather, .01f);
             Shader.SetGlobalVector(FocusId, new Vector4(cut.Focus.x, cut.Focus.y, cut.Focus.z, cut.Radius));
             Shader.SetGlobalVector(ViewId, new Vector4(fwd.x, fwd.y, fwd.z, cut.FloorY));
-            Shader.SetGlobalVector(ShapeId, new Vector4(f, Mathf.Lerp(1f, ghost, level), column ? 1f : 0f, shadows && !capsules ? 1f : 0f)); // Glint (brief 056 F §2): with capsules a tower casts its full shadow (the shadow pass never discards)
+            Shader.SetGlobalVector(ShapeId, new Vector4(f, Mathf.Lerp(1f, districtStreet ? 0f : ghost, level), column ? 1f : 0f, shadows && !UseCapsules ? 1f : 0f)); // Glint (brief 056 F §2): with capsules a tower casts its full shadow (the shadow pass never discards)
             Shader.SetGlobalVector(BackId, new Vector4(cut.Back, f, Mathf.Lerp(1f, ghostShadow, level), pointCount));
             Shader.SetGlobalVectorArray(PointsId, points);
             var vc = streetAlbedo.linear; Shader.SetGlobalVector(VeilId, new Vector4(vc.r, vc.g, vc.b, streetVeil * level));
@@ -224,7 +226,7 @@ namespace Suborned
         /// pointRadius; the depth is the capsule's middle.</summary>
         void Capsules()
         {
-            int n = capsules ? pointCount : 0;
+            int n = UseCapsules ? pointCount : 0;
             if (n > 0)
             {
                 var v = cam.worldToCameraMatrix;
@@ -236,9 +238,9 @@ namespace Suborned
                 }
                 Shader.SetGlobalVectorArray(CapsSegId, capsSeg); Shader.SetGlobalVectorArray(CapsInfoId, capsInfo);
             }
-            Shader.SetGlobalVector(CapsId, new Vector4(capsules ? 1f : 0f, n, edgeInner, depthMargin));
+            Shader.SetGlobalVector(CapsId, new Vector4(UseCapsules ? 1f : 0f, n, edgeInner, depthMargin));
             var (rimNow, rimCol, litNow) = SignalLight.CapsuleRim(rim, rimColor, rimLit); // Glint's signals.json `capsule` when present
-            var rc = rimCol.linear; Shader.SetGlobalVector(RimId, new Vector4(rc.r, rc.g, rc.b, capsules ? rimNow * level : 0f));
+            var rc = rimCol.linear; Shader.SetGlobalVector(RimId, new Vector4(rc.r, rc.g, rc.b, UseCapsules ? rimNow * level : 0f));
             Shader.SetGlobalFloat(RimLitId, litNow);
         }
 
@@ -267,7 +269,7 @@ namespace Suborned
             var fwd = transform.forward;
             if (level <= 0f || !cam.orthographic || fwd.y > -0.05f) return false;
             var flat = new Vector2(fwd.x, fwd.z);
-            cut = new FadeCut { Focus = focus, FloorY = focus.y + floor, Run = flat / -fwd.y, Ahead = flat / Mathf.Max(flat.magnitude, 1e-3f), Back = behind, Radius = Radius };
+            cut = new FadeCut { Focus = focus, FloorY = focus.y + floor, Run = flat / -fwd.y, Ahead = flat / Mathf.Max(flat.magnitude, 1e-3f), Back = districtStreet ? 3f : behind, Radius = Radius };
             return true;
         }
 
