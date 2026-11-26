@@ -1002,6 +1002,21 @@
    "zip": null,
    "sent": [],
    "whatsNew": "Street Talk follows the conversation setting, and accepting a Harbour request gives a separate reply. The bluff choice shows the trust it costs each contact."
+  },
+  {
+   "build": 387,
+   "version": "0.2.387",
+   "date": "2026-11-26T22:45:15.370Z",
+   "builtAt": "2026-11-26T22:44:59.9262920Z",
+   "sha": "0c0cfb804",
+   "dirty": false,
+   "engine": "0.62.0",
+   "engineSource": "commit ae54ed271f56",
+   "dllSha256": "d4a58e441cd91b4fd54cbaf866439275bff1bf36784c5f443e02a5e4191d3b26",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Talk to Harbour residents on the street. Speech bubbles are the default, with an optional close-up and live face. Find the people you have met and their New tags in Book → People."
   }
  ]
 }
