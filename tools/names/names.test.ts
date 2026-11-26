@@ -3,7 +3,7 @@
 import { describe, expect, test } from 'bun:test';
 import { type Config, loadBan, makeBan, match } from './ban.ts';
 import { type Hit, check, failures, hitsIn, judge } from './check.ts';
-import { SIM_NOT_SHOWN, csStrings, generatorBan, nameStrings, poolStrings, textStrings } from './scan.ts';
+import { SIM_NOT_SHOWN, csStrings, generatorBan, nameStrings, poolFiles, poolStrings, textStrings } from './scan.ts';
 
 const BAN = { strong: { Vale: 'D', Okafor: 'B,D', Elena: 'B' }, reported: ['Reed', 'Moss'], lookalike: ['^el[aeiy]', '^v[aeiy][a-z]{1,3}$'] };
 const cfg: Pick<Config, 'allow' | 'alsoWords'> = { allow: [], alsoWords: ['Reed', 'Moss'] };
@@ -106,6 +106,9 @@ describe('names: the repository', () => {
     const r = check();
     expect(generatorBan()).toBe(r.from);
     expect(failures({ ...r, generator: 'contracts/people/old-ban.json' })[0]).toMatch(/^the people generator reads its ban list from contracts\/people\/old-ban\.json/);
+  });
+  test('the recorded cast pool is outside the live name check when the generator uses filtered lists', () => {
+    expect(poolFiles()).not.toContain('contracts/people/harbour-district.cast.json');
   });
   test('no banned name in what the player sees, past the expected hits; no expected or ignore entry is stale', () => {
     const t0 = performance.now(), r = check();

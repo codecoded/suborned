@@ -4,8 +4,8 @@
 //   play            unity/Assets/Suborned/Runtime/Play/*.cs: the string literals (the host's fallbacks), comments left out
 //   sim             sim/Suborned.Sim/*.cs: the engine's string literals (its log, fail, refusal and debrief sentences, Keel), comments and the scenarios left out
 //   streaming-*     the same words and people as staged in unity/Assets/StreamingAssets/sim (git-ignored: checked when present)
-//   pool            the generator's name pool: `names.given` and `names.family` of contracts/people/*.cast.json, and of any contracts/people/**/*pool*.json
-//                   Pulse moves them to (read when present). The real frequency lists (contracts/people/names/<country>.json) are source data that hold
+//   pool            standalone pools under contracts/people, plus cast pools for rules without a name-list ban. The historical cast pools stay with
+//                   their recorded runs. The real frequency lists (contracts/people/names/<country>.json) are source data that hold
 //                   ordinary names on the list (Thomas, Sarah, Elena): the generator drops those at the draw by people.rules.json names.lists.banList,
 //                   so what the check holds there is that pointer (generatorBan), and the draws themselves (people)
 //   (out/people/ is left out: an intermediate, machine-local; sim/data/handover.people.json is the committed copy the game reads)
@@ -111,10 +111,17 @@ export function poolStrings(source: string, file: string, json: unknown): Str[] 
   walk(json, '');
   return out;
 }
-/** The pool files: contracts/people/*.cast.json and any *pool*.json under contracts/people. */
+/** Scan standalone pools and cast pools used by legacy rules. Current rules draw from the filtered frequency lists. */
 export function poolFiles(root = ROOT): string[] {
   const out: string[] = [], dir = join(root, 'contracts/people');
-  const walk = (d: string, rel: string) => { for (const e of readdirSync(d, { withFileTypes: true })) { const r = `${rel}/${e.name}`; if (e.isDirectory()) walk(join(d, e.name), r); else if (/\.cast\.json$|pool.*\.json$/.test(e.name)) out.push(r); } };
+  const legacy = generatorBan(root) === null;
+  const walk = (d: string, rel: string) => {
+    for (const entry of readdirSync(d, { withFileTypes: true })) {
+      const path = `${rel}/${entry.name}`;
+      if (entry.isDirectory()) walk(join(d, entry.name), path);
+      else if (entry.name.endsWith('.cast.json') ? legacy : /pool.*\.json$/.test(entry.name)) out.push(path);
+    }
+  };
   if (existsSync(dir)) walk(dir, 'contracts/people');
   return out.sort();
 }

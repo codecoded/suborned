@@ -8,7 +8,7 @@
  "expected": {
   "brief": "089",
   "until": "2026-11-16",
-  "why": "Completed 2026-11-22: replaced the remaining banned names in the legacy cast pool; current generation uses the real name lists in people.rules.json.",
+  "why": "The current name lists in people.rules.json filter banned names at generation. The legacy cast pool stays as recorded in run r016.",
   "hits": []
  }
 }
