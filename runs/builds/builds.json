@@ -807,6 +807,66 @@
    "zip": null,
    "sent": [],
    "whatsNew": ""
+  },
+  {
+   "build": 374,
+   "version": "0.2.374",
+   "date": "2026-11-26T19:03:06.769Z",
+   "builtAt": "2026-11-26T19:02:49.5178930Z",
+   "sha": "5f5b9ec6f",
+   "dirty": false,
+   "engine": "0.61.0",
+   "engineSource": "working tree on 6d84003af721 (uncommitted engine or input changes)",
+   "dllSha256": "06e933b6385e17427db824d7acda4b5b0c0fd5acaa8f9b5b3776cccf2d45d41f",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Internal build. The scenery importer stopped before finishing the waterfront."
+  },
+  {
+   "build": 375,
+   "version": "0.2.375",
+   "date": "2026-11-26T19:05:25.740Z",
+   "builtAt": "2026-11-26T19:05:09.9393490Z",
+   "sha": "78d0467de",
+   "dirty": true,
+   "engine": "0.61.0",
+   "engineSource": "working tree on 6d84003af721 (uncommitted engine or input changes)",
+   "dllSha256": "06e933b6385e17427db824d7acda4b5b0c0fd5acaa8f9b5b3776cccf2d45d41f",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Internal visual study of the ferry and repeated residential roof gardens. The estate treatment was set aside after review."
+  },
+  {
+   "build": 376,
+   "version": "0.2.376",
+   "date": "2026-11-26T19:22:22.218Z",
+   "builtAt": "2026-11-26T19:22:06.0951970Z",
+   "sha": "6e2017282",
+   "dirty": true,
+   "engine": "0.61.0",
+   "engineSource": "commit 6e20172822df",
+   "dllSha256": "a14a9efe8b457ec36d8d9d0ed4f6dc1e01c5145eb07789a76ad75e035c1bbb94",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Internal Skyport ticket-counter walkthrough. Playtesting identified an overlapping original apron."
+  },
+  {
+   "build": 377,
+   "version": "0.2.377",
+   "date": "2026-11-26T19:25:34.678Z",
+   "builtAt": "2026-11-26T19:25:17.8600010Z",
+   "sha": "e01c584fb",
+   "dirty": true,
+   "engine": "0.61.0",
+   "engineSource": "commit 6e20172822df",
+   "dllSha256": "a14a9efe8b457ec36d8d9d0ed4f6dc1e01c5145eb07789a76ad75e035c1bbb94",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Harbour Travel, a public ferry forecourt and a booking clerk, porter and tram conductor with playable introductions. Corrected the Skyport walking floor and cleared the estate roof stand-ins."
   }
  ]
 }
