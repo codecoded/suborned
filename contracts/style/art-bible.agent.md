@@ -17,6 +17,17 @@ Bright retro-future: a 1950s world that discovered atomic power centuries ago. 1
 - **Curvy and smooth, never harsh** (Sky, 2026-10-24: "modern retro future world is curvy and smooth, not harsh lines and strong angles"): pavement and kerb corners are rounded returns, building corners arc, props have radiused edges; no sharp mitres or boxy corners where a curve can go.
 - **Character over triangles:** keep silhouette and chrome on props; never slim a prop until it loses its character.
 
+### Harbour at walking height
+
+The Studio keeps the original city board at `the-suborned-store/scratch/style/board_city.jpg`. Its nine views link the harbour skyline, circus, parade and ordinary streets. The full-size paintings are in the store's `concepts` folder. The Harbour massing grammar identifies the studies behind the existing buildings. [Harbour District massing grammar](../world/harbour-district.grammar.md)
+
+For the outer neighbourhoods, compare a frame from behind the scout with these studies.
+
+- **Residential terraces.** In `Blocks/hanging_terraces.png` the gardens make the silhouette of the building. At Crown and Lantern, let one planted ledge hang into view from the pavement. Leave an opening between wings for the upper terraces and distant spire. Repaired pale tiles, faded awnings and painted railings can show a block's means while keeping its curved profile.
+- **Transit streets.** In `Horizon/street/skyrail_sweep.png` the rail leads the eye across the city. Compose a crossing with a shaded pier close by, a train passing through the middle distance and a pale tower visible beyond the curve. Check that view with a pedestrian in the foreground.
+- **Waterfront.** In `Horizon/street/harbour_edge.png` open water separates the shore from the far city. Keep a low rail or mooring bollard in the near view. Let the liner or station break the far skyline. Warm the upper stone and leave cool reflected light beneath the decks.
+- **Market and evening streets.** Use the rhythm of shade and daylight in `Props/scenes/market_street.png`. Concentrate fabric, lettering and produce at eye level. After dark, give one entrance the presence of `AtomicAge/cinema.png`, with warm light on the faces at the doorway and quieter windows farther down the block.
+
 ## People and robots
 - **The city's people** wear space-age couture as street clothing, never 1950s period dress. They're a mixed cast, with job readable at a distance by silhouette plus one colour block. No long coats or flowing hems (they're hard to animate).
 - **Security and institutions:** sleeker; ivory, ink black, gold trim, chrome couture, armour accents.
