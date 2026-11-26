@@ -1,0 +1,11 @@
+{
+  "schema": "suborned.shots/1",
+  "defaults": { "hud": false, "night": false, "mark": false, "settle": 3, "perf": 5 },
+  "shots": [
+    { "name": "scout-at-market", "view": "follow", "select": "scout", "face": [24945,1900], "tick": 4120, "script": "briefs/118/market-walk.json" },
+    { "name": "market-from-above", "view": "overhead", "at": [25020,1790], "yaw": 0, "zoom": 8, "tick": 4330, "script": "briefs/118/market-walk.json" },
+    { "name": "fruit-stand-close", "pose": { "pos": [-114.0,1.61,-277.1], "look": [-110.8,1.35,-273.1], "fov": 55 }, "tick": 4500, "script": "briefs/118/market-walk.json" },
+    { "name": "market-at-night", "view": "follow", "select": "scout", "face": [24945,1900], "night": true, "tick": 5300, "script": "briefs/118/market-walk.json" },
+    { "name": "market-night-settled", "view": "follow", "select": "scout", "face": [24945,1900], "night": true, "tick": 5720, "script": "briefs/118/market-walk.json" }
+  ]
+}

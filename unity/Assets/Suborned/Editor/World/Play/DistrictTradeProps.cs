@@ -36,7 +36,7 @@ namespace Suborned.World.Play
                 model = new DistrictFerryGardens.Kit(kit, finish, .17f, .061f, .012f);
                 kits.Add(kit, model);
             }
-            model.Place(parent, at, Quaternion.Euler(0, yaw, 0));
+            model.Place(parent, at, Quaternion.Euler(0, yaw, 0), architecture: false);
             return true;
         }
 

@@ -29,7 +29,7 @@ namespace Suborned.World.Play
                 this.finish=finish; this.thresholds=thresholds;
             }
 
-            public MeshRenderer Place(Transform parent, Vector3 at, Quaternion heading)
+            public MeshRenderer Place(Transform parent, Vector3 at, Quaternion heading, bool architecture = true)
             {
                 var holder=new GameObject(prefab.name).transform;
                 holder.SetParent(parent,false);
@@ -48,7 +48,8 @@ namespace Suborned.World.Play
                 foreach(var r in tiers)
                 {
                     r.sharedMaterial=finish;
-                    r.renderingLayerMask|=ArchitectureFade.Layer;
+                    if (architecture) r.renderingLayerMask |= ArchitectureFade.Layer;
+                    else r.renderingLayerMask &= ~ArchitectureFade.Layer;
                     r.reflectionProbeUsage=ReflectionProbeUsage.Simple;
                 }
                 tiers[2].shadowCastingMode=ShadowCastingMode.Off;

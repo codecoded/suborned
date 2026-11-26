@@ -32,7 +32,7 @@ def font(size, bold=False):
 def lettering():
     img = Image.new('RGB', (CELL,CELL), '#1b4444')
     pen = ImageDraw.Draw(img)
-    labels = [('CUT FLOWERS', '#315648'), ('CITRUS MARKET', '#9b432f'),
+    labels = [('CUT FLOWERS', '#315648'), ('CITRUS MARKET', '#355653'),
               ('HARBOUR POST', '#266361'), ('HARBOUR LINE', '#334f61')]
     for i, (label, ground) in enumerate(labels):
         y = i*80
@@ -65,7 +65,7 @@ def weave(seed):
     y,x=np.mgrid[:CELL,:CELL]
     rng=np.random.default_rng(seed)
     grit=rng.normal(0,1.0,(CELL,CELL))
-    bases=['e5debd','29625e','957356','c0a57e','aa8a60','acb9ad','753e32','ede5cf','e5a049','9d4840']
+    bases=['d6cfb5','345e59','87684f','a78c69','9b7952','9baaa4','694b40','cec7b1','ca9253','99534b']
     for i,base in enumerate(bases):
         rgb=np.array([int(base[k:k+2],16) for k in (0,2,4)])[None,None,:]
         grain=grit*(2.5 if i in (2,3,6,7,8,9) else 1)
@@ -74,9 +74,14 @@ def weave(seed):
         if i==5: grain=grain+2*np.sin(y*2.7)
         if i==6: grain=grain+2*np.cos(x*.72+y*.53)
         if i==7:
-            rgb=np.where(((x//40)%2==0)[:,:,None],rgb,np.array([177,85,65]))
-            grain=grain+1.8*np.sin(x*pi/2)+1.8*np.sin(y*pi/2)+5*np.cos(y*pi/155)
-        if i in (8,9): grain=grain+3*np.sin(x*.16)*np.sin(y*.19)
+            rgb=np.where(((x//40)%2==0)[:,:,None],rgb,np.array([94,131,121]))
+            rgb=np.where(((x%80)>75)[:,:,None],np.array([167,121,96]),rgb)
+            grain=grain+2.2*np.sin(x*pi/2)+2.2*np.sin(y*pi/2)+6*np.cos(y*pi/155)
+        if i in (8,9):
+            variants=([(198,127,53),(219,168,66),(184,112,48),(209,150,55)] if i==8
+                      else [(118,64,62),(133,79,61),(138,150,82),(113,132,70)])
+            rgb=np.array(variants)[(x//(CELL//2)+2*(y//(CELL//2))).clip(0,3)]
+            grain=grain+3*np.sin(x*.16)*np.sin(y*.19)
         yield Image.fromarray(np.clip(rgb+grain[:,:,None],0,255).astype(np.uint8))
 
 def bake():

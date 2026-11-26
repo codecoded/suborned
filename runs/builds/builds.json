@@ -927,6 +927,21 @@
    "zip": null,
    "sent": [],
    "whatsNew": "Removed the stock curved kiosk from the Lantern Lane night market and its walking grid. The open entrance, market cart and neighbourhood contacts are present in the playable district."
+  },
+  {
+   "build": 382,
+   "version": "0.2.382",
+   "date": "2026-11-26T21:18:46.992Z",
+   "builtAt": "2026-11-26T21:18:30.6941290Z",
+   "sha": "299a0641c",
+   "dirty": false,
+   "engine": "0.61.0",
+   "engineSource": "commit 299a0641c8f1",
+   "dllSha256": "e3a83f833109c0f1b378e079041a9c937f58b49243021c6614b54b4009d3edfe",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Harbour street trades, resident flower sellers and fruiterers, and planted ledges at Lantern Court."
   }
  ]
 }

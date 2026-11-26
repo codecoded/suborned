@@ -8,6 +8,7 @@ from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ferry import TAU, build, use_sheet
+from ferry_front import box
 
 IVORY, TEAL, TIMBER, CANE, BRASS, SILVER, LEATHER, CANVAS, CITRUS, PLUM, SIGNS, DIAL = range(12)
 
@@ -83,6 +84,7 @@ def flower_barrow(s):
             for x in (-.77,-.47,.26,.57):
                 s.beam((x,y,.61),(x,y,.84),.016,TIMBER,4)
     label(s,-.07,-.430,.716,.67,.18,0)
+    label(s,-.07,.430,.716,.67,.18,0,pi/2)
     for i,(x,y,h,variety) in enumerate([(-.58,.19,.63,1),(-.11,.18,.67,2),(.37,.16,.51,0),
                                           (-.55,-.18,.43,3),(-.07,-.20,.52,0),(.41,-.17,.48,3)]):
         s.beam((x,y,.82),(x,y,.99),.093,SILVER,(14,9,6)[s.rank],.126)
@@ -91,18 +93,21 @@ def flower_barrow(s):
         bouquet(s,x,y,.97,.58,h,variety,i*2.17+.2)
 
 
-def fruit(s, x,y,z, radius, slot):
+def fruit(s, x,y,z, radius, slot, tint):
     sides=(8,6,5)[s.rank]
     levels = [(-.84,.47),(-.37,.94),(.35,1),(.85,.59)] if s.rank==0 else [(-.73,.57),(.08,1),(.76,.61)]
     rings=[]
     for h,r in levels:
         rings.append([(x+radius*r*cos(TAU*i/sides),y+radius*r*sin(TAU*i/sides),z+radius*h) for i in range(sides)])
-    s.face(rings[0][::-1],slot)
+    # Each swatch contains four harvest colours. Keep contiguous patches across the individual fruit.
+    u0,v0=(tint%2)*.50+.07,(tint//2)*.50+.07
+    s.face(rings[0][::-1],slot,[(u0+.17,v0+.17)]*sides)
     for lower,upper in zip(rings,rings[1:]):
         for i in range(sides):
             j=(i+1)%sides
-            s.face([lower[i],lower[j],upper[j],upper[i]],slot,smooth=True)
-    s.face(rings[-1],slot)
+            u=u0+.32*i/sides; uu=u0+.32*(i+1)/sides
+            s.face([lower[i],lower[j],upper[j],upper[i]],slot,[(u,v0),(uu,v0),(uu,v0+.35),(u,v0+.35)],smooth=True)
+    s.face(rings[-1],slot,[(u0+.17,v0+.17)]*sides)
     if not s.rank:
         s.face([(x-.010,y,z+radius*.87),(x+.038,y-.009,z+radius*.93),(x+.034,y+.018,z+radius*.89)],TEAL)
 
@@ -121,10 +126,36 @@ def tray(s,x,y,h,slot,index):
     nx,ny=((5,3),(4,2),(3,2))[s.rank]
     for row in range(ny):
         for col in range(nx):
-            xx=x+(col/(nx-1)-.5)*.58 + .016*sin(row*4+index)
-            yy=y+(row/(ny-1)-.5)*.28
+            xx=x+(col/(nx-1)-.5)*.58 + .027*sin(row*4+index+col)
+            yy=y+(row/(ny-1)-.5)*.28 + .021*cos(index*9+col*3)
             r=(.083,.098,.116)[s.rank]*(1+.09*cos(col*7+row*4))
-            fruit(s,xx,yy,h+.15+.018*cos(col*8+row*2+index),r,slot)
+            fruit(s,xx,yy,h+.15+.022*cos(col*8+row*2+index),r,slot,(index+col%2)%4)
+    if s.rank==0:
+        for i in range(3):
+            fruit(s,x+(i-1)*.18,y+.047*sin(i+index),h+.248,.077,slot,(index+i%2)%4)
+
+
+def packing_crate(s,x,y,z,w,d,h,stock):
+    if s.rank==2:
+        s.shape(x,y,w,d,.025,z,z+h,TIMBER)
+        return
+    def slat(cx,cy,width,depth,lo,hi,finish):
+        box(s,cx-width/2,cx+width/2,cy-depth/2,cy+depth/2,lo,hi,finish)
+    s.shape(x,y,w-.03,d-.03,.022,z+.012,z+.048,TIMBER)
+    for dx in (-w/2+.028,w/2-.028):
+        for dy in (-d/2+.028,d/2-.028):
+            slat(x+dx,y+dy,.049,.049,z,z+h,CANE)
+    rows=3 if s.rank==0 else 2
+    for layer in range(rows):
+        level=z+.024+layer*(h-.032)/rows
+        for dy in (-d/2,d/2):
+            slat(x,y+dy,w,.027,level,level+(h-.052)/rows,TIMBER)
+        for dx in (-w/2,w/2):
+            slat(x+dx,y,.028,d,level,level+(h-.052)/rows,CANE)
+    if stock:
+        for row in (0,1):
+            for col in range(3):
+                fruit(s,x+(col-1)*w*.24,y+(row-.5)*d*.51,z+h-.005,.083,CITRUS,(col+row)%4)
 
 
 def shade(s):
@@ -161,10 +192,15 @@ def produce_stall(s):
     s.tiers(0,0,[(.17,2.38,.98,.17,TEAL),(.28,2.52,1.10,.19,TEAL),
                    (.73,2.54,1.13,.19,IVORY),(.78,2.62,1.18,.18,TIMBER)])
     label(s,0,-.570,.488,1.60,.32,1)
+    s.shape(0,.28,2.47,.48,.082,.77,.962,TIMBER)
     for row in (0,1):
         for col in range(3):
             x=(col-1)*.83; y=-.35+row*.56; h=.76+row*.20
             tray(s,x,y,h,(CITRUS,PLUM,CITRUS,PLUM,CITRUS,PLUM)[row*3+col],row*3+col)
+    # The lower stock belongs on the paving. Crates sit partly under the raked display, within its clearance.
+    packing_crate(s,-.98,-.81,.009,.60,.43,.26,False)
+    packing_crate(s,-.95,-.80,.272,.57,.40,.23,True)
+    packing_crate(s,1.38,.01,.009,.42,.50,.29,True)
     # Mechanical market scale at the counter end. Its ivory face sits above the stock.
     s.shape(.99,.48,.34,.29,.065,1.06,1.13,TEAL)
     s.beam((.99,.48,1.11),(.99,.48,1.44),.048,TEAL,10)
@@ -197,6 +233,14 @@ def pneumatic_post(s):
     for x in (-.185,.185):
         s.beam((x,-.22,.39),(x,-.296,.58),.049,LEATHER,10)
         s.beam((x,-.288,.559),(x,-.302,.596),.051,SILVER,10)
+    # A parcel is sent on one side and collected on the other. The street sees the service from either approach.
+    s.shape(0,.278,.43,.082,.03,.79,1.19,TEAL)
+    s.shape(0,.317,.35,.047,.021,.85,1.05,SILVER)
+    s.shape(0,.343,.27,.022,.01,.90,.961,TEAL)
+    s.beam((-.079,.364,.898),(.079,.364,.898),.021,IVORY,8)
+    label(s,0,.326,1.113,.385,.113,2,pi/2)
+    s.beam((0,.256,1.49),(0,.316,1.49),.092,SILVER,16)
+    s.plate(0,.319,1.49,.159,.159,pi/2,DIAL,True)
 
 
 def case(s,x,y,z,w,d,h,finish,rotated=False):
@@ -236,6 +280,12 @@ def porter(s):
 if __name__=='__main__':
     out,master=[Path(v).resolve() for v in sys.argv[sys.argv.index('--')+1:]]
     use_sheet(out.parent/'Materials/Play/StreetTradesColour.png')
+    mat=bpy.data.materials['Harbour architectural finishes']
+    mat.name='Harbour enamel, canvas and cut flowers'
+    node=next(n for n in mat.node_tree.nodes if n.type=='TEX_IMAGE')
+    bsdf=mat.node_tree.nodes.get('Principled BSDF')
+    mat.node_tree.links.new(node.outputs['Alpha'],bsdf.inputs['Alpha'])
+    bsdf.inputs['Roughness'].default_value=.62
     for name,fn,limits in [('FlowerBarrow',flower_barrow,(5800,3100,1500)),
                            ('ProduceStall',produce_stall,(15000,5600,2400)),
                            ('PneumaticPost',pneumatic_post,(4000,2400,1600)),
