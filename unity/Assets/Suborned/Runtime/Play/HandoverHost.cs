@@ -196,6 +196,7 @@ namespace Suborned.Play
 
         void Start()
         {
+            InstallDistrict();
             controls.Migrate(); // brief 030 §8: a saved table with agents on F1–F4 only takes the new keys
             controls.LoadSettings(); // brief 051: every setting from settings.json (migrated once from the old PlayerPrefs keys)
             Settings.Changed += PlayerSettingsChanged; Settings.Current.ApplyDisplay();
@@ -402,6 +403,7 @@ namespace Suborned.Play
 
         void Controls()
         {
+            if (DistrictBook != null && DistrictBook.Controls()) return;
             var kb = Keyboard.current; var mouse = UnityEngine.InputSystem.Mouse.current; var c = controls;
             if (StartFrame(kb, mouse)) return; // brief 062 B: the start sequence has the keys (any lands the glide)
             if (Modal == ModalGate.Modal.Briefing) // modal until Begin: Space or the button begins; Esc closes it; the camera may look round
@@ -641,6 +643,7 @@ namespace Suborned.Play
         {
             if (!ModalGate.AllowsClicks(Modal)) return;
             var t = TargetAt(screen, true);
+            if (StreetPersonClick(screen,t)) return;
             if (t != null && t.Kind == "op") { Select(Op.Parse(t.Key), shift); return; }
             if (Driving) { if (t == null && !OverHud(screen)) TpGroundTap(screen, shift); return; }
             if (controls.DoubleClick) { if (t != null && ThingClick(t, screen, shift)) return; ClearSel(); } // brief 041: a thing selects (twice: its act); the ground walks (twice: runs)
@@ -710,6 +713,7 @@ namespace Suborned.Play
         /// <summary>The selection walks to the ground under a screen point; a group stands in a 0.9 m square.</summary>
         public void MoveSelection(Vector2 screen, bool run = false)
         {
+            if (Game?.District != null && cam && frame.Ground(cam.ScreenPointToRay(screen), out var street)) { GroupWalk(frame.Engine(street),run,screen); return; }
             for (int n = 0; n < 4; n++) if (Selected[n]) pending[n] = null; // a new walk replaces the order an agent was walking for
             if (!frame.Ground(cam.ScreenPointToRay(screen), out var w)) return;
             var at = frame.Engine(w); int k = 0; bool said = false; // said: the one "can't walk there" for the group
@@ -1320,7 +1324,7 @@ namespace Suborned.Play
         WalkGrid carWalk; Game carWalkGame; int carWalkTick = -1, carWalkOrders = -1;
         /// <summary>The walk a move order to `to` makes (engine 0.33.1): round the standing cars; a point on a car's ground ends beside the car, on
         /// the side the walker comes to (WalkGrid.RouteBeside: a move never steps in). Null where the engine finds no way.</summary>
-        public Pt[] MoveRoute(Pt from, Pt to) { var w = CarWalk; return w.CarCovers(to) ? w.RouteBeside(from, to) : w.Route(from, to); }
+        public Pt[] MoveRoute(Pt from, Pt to) { if (Game?.District != null && (!Game.S.Grid.InGrid(from) || !Game.S.Grid.InGrid(to))) return Game.StreetWalk(from,to); var w = CarWalk; return w.CarCovers(to) ? w.RouteBeside(from, to) : w.Route(from, to); }
 
         public ActWalk ActPlace(OpId by, Order o, Target t)
         {

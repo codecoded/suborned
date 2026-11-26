@@ -243,6 +243,7 @@ namespace Suborned.Sim
             else return No("no-place", $"no place '{o.To}'");
             var walk = Walk; var seat = op.InLent ? LentSeat : GetawaySeat; // engine 0.42.0: out of the car he is in
             if (walk.CarCovers(to) && walk.RouteBeside(walk.NearestFree(seat) ?? seat, to) is Pt[] rb) to = rb[rb.Length - 1]; // engine 0.33.1 (car.footprint): as Move, beside a standing car
+            if (District != null && (!S.Grid.InGrid(to) || !S.Grid.InGrid(seat))) { if (StreetWalk(seat,to) == null) return No("no-walk", "Choose an open pavement beside the car."); Engage(op,o,R.BoardS); return ""; }
             if (!walk.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
             if (walk.Route(seat, to) == null) return No("no-walk", "no walk there");
             Engage(op, o, R.BoardS);
@@ -301,6 +302,7 @@ namespace Suborned.Sim
         void Leave()
         {
             RecordsAtEnd(); SeenLeaving(); ShoveOffGetaway(); // brief 096: a camera record still to land is charged at the end; brief 098 step 1b: a wreck on the way out is pushed aside as it goes
+            if (District != null) { DistrictDeparture(Vale == ValeAt.Car); return; }
             var lb = LeftBehind(); LeftBehindAtGo.AddRange(lb);
             foreach (var (name, fate, why) in lb)
             {

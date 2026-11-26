@@ -40,13 +40,13 @@ namespace Suborned.Sim
         bool LentTarget(string t) => t == lentId || (lentId == "car:official" && t == "official");
         /// <summary>Where an operative sits in the lent car, and where he steps out (the road side, off its ground).</summary>
         Pt LentSeat => Walk.NearestFree(LentPos()) ?? LentPos();
-        Pt LentSideOut => lentId == "car:official" ? BesideCar(CarPos(), -1) : Beside(takenAt, takenHead, -1);
+        Pt LentSideOut => secondStreet != null ? DistrictDoor(LentPos(),SecondCarHeading ?? takenHead) : lentId == "car:official" ? BesideCar(CarPos(), -1) : Beside(takenAt, takenHead, -1);
         bool FightAtLent => Lent && !lentLeft && FightBranch == "loud" && Vale == ValeAt.Lent;
         /// <summary>The stand whose police stands the fight uses: the lent car's while the loud fight is at it, else the cell's car's.</summary>
         Stand FightStandNow => FightAtLent && lentStand != null ? lentStand : CurStand;
         bool LentHasDriver => Array.Exists(Ops, o => o.InLent && !o.LeftMap && !o.Down);
         Op? LentStanding() { foreach (var o in Ops) if (o.InLent && !o.LeftMap && !o.Down) return o; return null; }
-        bool AtLent(Pt p) { if (!Lent || lentLeft) return false; int d = CarBodyCm(lentId, p); return d >= 0 && d <= R.CarReachCm; }
+        bool AtLent(Pt p) { if (!Lent || lentLeft || DistrictSecondDriving) return false; if (secondStreet != null) return G.Within(p,LentPos(),R.CarReachCm+230); int d = CarBodyCm(lentId, p); return d >= 0 && d <= R.CarReachCm; }
 
         // ---------------------------------------------------------------- the lend (L1)
 
@@ -172,6 +172,7 @@ namespace Suborned.Sim
             if (GoWaitFor(go) is string w) return w; // engine 0.43.0 (G1)
             ShoveOffWay(LentWay(), lentId); var by = CarWatcherAt(LentPos()); lentLeft = true; TakenLeaves(); // brief 098 step 1b: a wreck on its way out is pushed aside as it goes; engine 0.53.0: a taken car leaves the street
             if (by.Length > 0) { LentSeenBy = by; if (incidents.Add("lent-seen")) AddTrail(R.WitnessTrail, "lent-seen:" + by); Note("lent.seen", $"The {by} sees {LentName} leave: a lead, not our car."); }
+            if (District != null && Vale == ValeAt.Lent) { ValeOutTick = Tick; foreach (var o in Ops) if (o.InLent) { o.Pos = LentSeat; o.InCar = o.InLent = false; } DistrictDeparture(true); return ""; }
             var names = new List<string>(); foreach (var o in Ops) if (o.InLent) { o.LeftMap = true; names.Add(Sim.Op.Name(o.Id)); }
             if (Vale == ValeAt.Lent)
             {
@@ -199,7 +200,7 @@ namespace Suborned.Sim
         /// <summary>The cell's car leaves while the target is lent (LEND-17: the mission goes on) or after vale.out (it ends: no car is left).</summary>
         void GetawayLeavesSplit()
         {
-            SeenLeaving(); CarLeftTick = Tick; ShoveOffGetaway(); // brief 098 step 1b: a wreck on the way out is pushed aside as it goes
+            SeenLeaving(); if (District != null && (Vale == ValeAt.Car || ValeOutTick != INF || !Lent)) { DistrictDeparture(Vale == ValeAt.Car || ValeOutTick != INF); return; } CarLeftTick = Tick; ShoveOffGetaway(); // brief 098 step 1b: a wreck on the way out is pushed aside as it goes
             var names = new List<string>(); foreach (var o in Ops) if (o.InCar && !o.InLent) { o.LeftMap = true; names.Add(Sim.Op.Name(o.Id)); }
             Chain.Add("getaway-car-leaves"); Note("car.leaves-split", $"The getaway car leaves with the {string.Join(", the ", names)}.");
             if (ValeOutTick != INF || NobodyLeft()) SplitEnd("car-left");
@@ -235,6 +236,7 @@ namespace Suborned.Sim
         void SplitEnd(string why)
         {
             if (Over) return;
+            if (District != null) { DistrictDeparture(ValeOutTick != INF); return; }
             RecordsAtEnd();
             foreach (var o in Ops)
             {

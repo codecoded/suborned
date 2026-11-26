@@ -232,6 +232,7 @@ namespace Suborned.Play
         {
             agents ??= SelectedList(); agents = agents.FindAll(k => !Game.Ops[k].Inside && !Game.Ops[k].Down && !Game.Ops[k].LeftMap && (includeDriven || !Driving || k != dAgent));
             lastGroupWalk.Clear();
+            StreetDrivers(centre,screen,agents);
             if (agents.Count == 0) return;
             int n = agents.Count; long cx = 0, cy = 0; foreach (var k in agents) { cx += Game.Ops[k].Pos.X; cy += Game.Ops[k].Pos.Y; }
             var mid = new Pt((int)(cx / n), (int)(cy / n)); var offs = new List<Pt>();
@@ -244,7 +245,7 @@ namespace Suborned.Play
             {
                 int k = agents[i]; var off = n == 1 ? new Pt(0, 0) : spaced ? offs[i] : new Pt((int)(Math.Cos(i * 6.2832 / n + 0.8) * 120), (int)(Math.Sin(i * 6.2832 / n + 0.8) * 120));
                 var want = new Pt(centre.X + off.X, centre.Y + off.Y);
-                var wg = CarWalk; Pt? to = wg.Free(want) ? want : wg.NearestFree(want); // engine 0.33.1: never a spot on a standing car's ground (Game.Walk)
+                var wg = CarWalk; Pt? to = Game.District != null ? Game.DistrictWalkPoint(want) : wg.Free(want) ? want : wg.NearestFree(want); // engine 0.33.1: never a spot on a standing car's ground (Game.Walk)
                 if (!to.HasValue || G.Dist(to.Value, want) > 300) { if (!said) PopKey("no-way", screen, null, Feedback.Refused, "Can't walk there."); said = true; continue; }
                 lastGroupWalk.Add((k, to.Value));
                 var dest = to.Value; int kk = k;
@@ -436,6 +437,7 @@ namespace Suborned.Play
         void HoldClick(Vector2 p, bool shift)
         {
             float now = Time.unscaledTime; var t = AgentNear(p) ?? TargetAt(p); // your own agent first: a click on it always selects it (even out of the squad, even busy)
+            if (StreetPersonClick(p,t)) return;
             bool dbl = now - lastClickAt < controls.doubleSeconds && (t != null ? SameTarget(t, lastClickT) : lastClickT == null && (p - lastClickP).magnitude < 24f * KitScale);
             if (dbl) { lastClickAt = -9f; lastClickT = null; } else { lastClickAt = now; lastClickP = p; lastClickT = t; }
             if (t != null && t.Kind == "op" && DownedOp(t)) { ClickRing(t, p); SideLog("click", "ring", t); return; } // items 31 + 33: a click on a downed agent opens its ring (Carry is a way you take, never the click); beside it the ground walks

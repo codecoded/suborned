@@ -61,6 +61,8 @@ namespace Suborned.Sim
         {
             if (o.Do == "spawn") return Range ? Spawn(o) : No("unknown-verb", "spawn is the fight range's (brief 029): unknown = reject"); // GameRange.cs
             if (Range && Array.IndexOf(RangeVerbs, o.Do) < 0) return No("unknown-verb", $"verb '{o.Do}' is not the fight range's (brief 029: {string.Join(", ", RangeVerbs)})");
+            if (District != null && (o.Do == "withdraw" || (o.Do == "end" && ValeOutTick != INF))) { if (!HandoverOpen) return No("mission-over", "The Handover has closed. The district is open."); CloseHandover(ValeOutTick != INF ? Outcome.Success : Outcome.Withdrawn, ValeOutTick != INF ? "The councillor made it out." : "The cell withdrew from the Handover."); return ""; }
+            if (!HandoverOpen && (o.Do == "go" || o.Do == "enter" || o.Do == "take")) return No("mission-over", "The councillor has left. Check the district book for another lead.");
             if (o.Do == "end" || (o.Do == "withdraw" && ValeOutTick != INF)) return EndOrder(); if (o.Do == "withdraw") { RecordsAtEnd(); Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
             if (OneInputOn && (o.Do == "panic" || o.Do == "free" || o.Do == "cease" || o.Do == "stance")) return No("unknown-verb", $"'{o.Do}' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses"); // unknown = reject
             if (o.Do == "panic") return Panic(o);
@@ -82,6 +84,7 @@ namespace Suborned.Sim
             }
             switch (o.Do)
             {
+                case "district-back": case "district-refer": case "district-visit": case "district-help": case "district-bluff": if (District != null) return DistrictOrder(op,o); return No("unknown-verb", "No district is open.");
                 case "move": return Move(op, o);
                 case "watch": case "listen": return Scout(op, o);
                 case "turn": return Turn(op, o);
@@ -127,14 +130,15 @@ namespace Suborned.Sim
             if (o.Point.HasValue) to = o.Point.Value;
             else if (S.HasPlace(o.To)) to = S.Stand(o.To);
             else return No("no-place", $"no place '{o.To}'");
-            var walk = Walk; bool onCar = walk.CarCovers(to);
+            bool street = District != null && (!S.Grid.InGrid(to) || !S.Grid.InGrid(op.Pos));
+            var walk = Walk; bool onCar = !street && walk.CarCovers(to);
             if (onCar && walk.RouteBeside(op.Pos, to) is Pt[] rb) to = rb[rb.Length - 1]; // engine 0.33.1 (car.footprint): a move onto a standing car's ground ends beside it, on the side he comes to
-            if (!walk.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
-            if (R.BodyCellEnds && !Range) to = ClearStop(Sim.Op.Name(op.Id), to); // brief 081 (engine 0.37.0; fight.spacing.cell): an agent sent where someone stands stops beside them, not in them
+            if (!(street && !S.Grid.InGrid(to) ? District!.Map.Walk.Free(to) : walk.Free(to))) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
+            if (!street && R.BodyCellEnds && !Range) to = ClearStop(Sim.Op.Name(op.Id), to); // brief 081 (engine 0.37.0; fight.spacing.cell): an agent sent where someone stands stops beside them, not in them
             if (o.Run) { var no = RunRefusal(op); if (no.Length > 0) return no; }
-            var route = Walk.Route(op.Pos, to); if (route == null) return No("no-walk", "no walk there");
+            var route = street ? StreetWalk(op.Pos, to) : walk.Route(op.Pos, to); if (route == null) return No("no-walk", "no walk there");
             if (op.Driven) EndDrive(op, false); // brief 025: a click move takes control back
-            var snap = o.Point.HasValue && !onCar ? SnapPoint(op, to) : null; // brief 027 B5 (EXPERIMENTAL fight.lab.coverSnap): a click on the ground (never a named place: a mission point or a person's) ending by a free cover point ends on it; null with the lab off; engine 0.33.1: a click on a car goes to the car, never to a cover point by it
+            var snap = !street && o.Point.HasValue && !onCar ? SnapPoint(op, to) : null; // brief 027 B5 (EXPERIMENTAL fight.lab.coverSnap): a click on the ground (never a named place: a mission point or a person's) ending by a free cover point ends on it; null with the lab off; engine 0.33.1: a click on a car goes to the car, never to a cover point by it
             if (snap != null) { var rs = Walk.Route(op.Pos, snap.At); if (rs != null) route = rs; else snap = null; }
             if (CoverSnapOn) { if (snap != null) HoldCover(op, snap); else DropCover(op); }
             op.Walk = new Path(route); op.WalkMm = 0; op.CloseWalk = false; op.PlacedAt = to; // brief 027: a click move is the player's walk, not a walk into range; engine 0.49.0: the place the player put him
@@ -310,7 +314,7 @@ namespace Suborned.Sim
                     if (PatrolUnit() is Unit pu) { pu.St = "gone"; PatrolAlarmed = false; } // false orders override the alarm too
                     AddTrail(R.RerouteTrail, "reroute"); Actions.Add("reroute"); Chain.Add("patrol-rerouted");
                     Note("patrol.rerouted", "The patrol follows false orders and leaves its sweep."); break; // engine 0.34.0: the sweep is the yard's now (brief 067 A), so the words name no place
-                case "drive-car": LandDriveCar(op); break; // brief 059 K6
+                case "drive-car": if (District != null && op.InLent) LandSecondCar(); else LandDriveCar(op); break; // brief 059 K6
                 case "ride": break; // a passenger of the Drive: nothing of his own lands
                 case "enter" when o.How == "out": ExitWithoutVale(op, false); break; // a cancelled Enter waiting inside for a free door
                 case "enter":

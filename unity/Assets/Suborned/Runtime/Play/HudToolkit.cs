@@ -23,7 +23,7 @@ namespace Suborned.Play
         /// <summary>A screen point (origin bottom left) on a piece that takes clicks.</summary>
         public static bool Blocks(Vector2 screen)
         {
-            if (CameraLab.Blocks(screen)) return true; // brief 025: the camera lab's panel takes its clicks
+            if (DistrictJournal.Blocks(screen) || CameraLab.Blocks(screen)) return true; // brief 025: the camera lab's panel takes its clicks
             if (!Active || live.root?.panel == null) return false;
             if (live.host != null && live.host.ConvoOn) { if (live.convoSkip == null) return false; var sp = RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y)); return live.convoSkip.worldBound.Contains(sp); } // brief 032
             var p = RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y));

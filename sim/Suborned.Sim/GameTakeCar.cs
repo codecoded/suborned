@@ -24,7 +24,7 @@ namespace Suborned.Sim
         string lentId = "car:official"; Pt takenAt, takenHead;
         bool RivalCarTaken => Lent && lentId == "car:rivals";
         /// <summary>Where the second cell car stands: the official car's own place, or where a taken car was taken.</summary>
-        Pt LentPos() => lentId == "car:official" ? CarPos() : takenAt;
+        Pt LentPos() => SecondCarAt ?? (lentId == "car:official" ? CarPos() : takenAt);
         Pt[] LentWay() => lentId == "car:official" ? OfficialWay() : lentLane;
         List<string> LentBoxers() => lentId == "car:official" ? OfficialBoxers() : Range || lentLeft ? new List<string>() : CarsOn(lentLane, lentId);
         string LentName => lentId == "car:official" ? $"{ValeName}'s car" : "the " + CarName(lentId);

@@ -31,7 +31,7 @@ namespace Suborned.Sim
             return getawayPath.Heading(getawayProf[k]);
         }
         /// <summary>Where an operative stands by the car to board or step out: its stand's car place, on the walk grid.</summary>
-        public Pt GetawaySeat => S.Stand(CurStand.Car);
+        public Pt GetawaySeat => District != null && CurStand.Id.StartsWith("street/") ? DistrictDoor(CurStand.CarAt,CurStand.Facing) : S.Stand(CurStand.Car);
         bool InLane(Pt p) => S.InExitLane(p, CurStand);
         Pt LaneAt(int cm) => S.LanePointAt(cm, CurStand);
 
@@ -42,27 +42,39 @@ namespace Suborned.Sim
         {
             if (!R.DriveCarOn || Range) return No("unknown-verb", "drive-car is the getaway car's Drive (rulebook cell.driveCar): unknown = reject");
             var id = o.Target.Length > 0 ? o.Target : o.To;
-            var st = S.StandById(id); if (st == null) return No("unknown-stand", $"'{id}' is no stand for the getaway car (site getaway.stands)");
+            bool pointDrive = District != null && o.Point.HasValue;
+            if (pointDrive && op.InLent) return DriveSecondCar(op,o);
+            var st = pointDrive ? StreetStand(o.Point!.Value) : S.StandById(id);
+            if (pointDrive && st == null) return No("no-walk", "Choose a connected street or a parking bay.");
+            if (st == null) return No("unknown-stand", $"'{id}' is no stand for the getaway car (site getaway.stands)");
             if (op.InLent) return No("drive-lent", $"{Cap(ValeName)}'s car is never driven round: Go takes it out"); // engine 0.42.0 (car.lend, L2)
             if (!op.InCar) return No("drive-no-driver", $"the {o.Op} is not in the getaway car: board it first");
-            if (FightStart != INF) return No("drive-fight", "the final fight has started: it is fought where it started, and Go is the way out");
-            foreach (var x in Ops) if (x.InCar && x.Busy != null) return No("drive-busy", $"the {Sim.Op.Name(x.Id)} in the car is busy until {Sim.Report.Clock(x.BusyEnd)}");
+            if (FightStart != INF && !pointDrive) return No("drive-fight", "the final fight has started: it is fought where it started, and Go is the way out");
+            foreach (var x in Ops) if (x.InCar && !x.InLent && x.Busy != null && !(pointDrive && (x.Busy.Do == "drive-car" || x.Busy.Do == "ride"))) return No("drive-busy", $"the {Sim.Op.Name(x.Id)} in the car is busy until {Sim.Report.Clock(x.BusyEnd)}");
             if (st == CurStand) return No("drive-here", $"the car is at {st.Id} already");
             var hs = CarHolders(); if (hs.Count > 0) return No("drive-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs));
             var bx = GetawayBoxers(); if (bx.Count > 0) return No("drive-boxed", BoxedWords(bx), ids: string.Join(",", bx)); // brief 096 (car.box): boxed in where it stands
             var sb = StandBoxers(st.Id); if (sb.Count > 0) return No("stand-boxed", $"can't get in: {string.Join(", ", sb)} {(sb.Count == 1 ? "is" : "are")} across the way out of {st.Id}", ids: string.Join(",", sb)); // and where it would go
-            var tf = TrafficField(); var path = new Path(S.Drive.CarRoute(CurStand.CarCell, st.CarCell, S.DriveLaneCm, TrafficStillMask(), tf?.fx, tf?.fy) ?? new[] { CurStand.CarCell, st.CarCell }); // brief 098 step 1: keeping right, round passing cars standing
+            Path path;
+            if (District != null && (pointDrive || CurStand.Id.StartsWith("street/")))
+            {
+                var streetRoute = DistrictCarRoute(GetawayCarPos(), st.CarCell);
+                if (streetRoute == null) return No("no-walk", "No connected road reaches that point.");
+                path = new Path(streetRoute); if (path.Length < 50) return No("drive-here", "The car is already there.");
+                if (pointDrive) st = StreetStandAt(st.CarCell,path.Heading(path.Length));
+            }
+            else { var tf = TrafficField(); path = new Path(S.Drive.CarRoute(CurStand.CarCell, st.CarCell, S.DriveLaneCm, TrafficStillMask(), tf?.fx, tf?.fy) ?? new[] { CurStand.CarCell, st.CarCell }); }
             var prof = CarProfile(path); int ticks = Math.Max(1, prof.Length - 1);
             getawayPath = path; getawayProf = prof; getawayStart = Tick; GetawayDest = st;
             foreach (var x in Ops)
             {
-                if (!x.InCar) continue;
+                if (!x.InCar || x.InLent) continue;
                 if (x.Gun.Order.Length > 0) OrderEnd(x, false);
                 x.Busy = x == op ? o : new Order { Tick = Tick, Op = Sim.Op.Name(x.Id), Do = "ride", Target = st.Id };
                 x.BusyStart = Tick; x.BusyEnd = Tick + ticks; x.Walk = null; x.WalkMm = 0;
             }
-            Note("order.drive-car", $"The {Sim.Op.Name(op.Id)} drives the getaway car to {st.Id} ({(ticks + Hz - 1) / Hz} s).");
-            CrewCarMoves(st); // brief 059 F1: the posted three go after it
+            Note("order.drive-car", $"The {Sim.Op.Name(op.Id)} drives the getaway car to {DistrictStandName(st)} ({(ticks + Hz - 1) / Hz} s).");
+            if (HandoverOpen && !pointDrive) CrewCarMoves(st); // brief 059 F1: the posted three go after it
             return "";
         }
         /// <summary>The Drive lands: the car stands at its new stand; whoever is in it sits there.</summary>
@@ -70,8 +82,8 @@ namespace Suborned.Sim
         {
             if (GetawayDest == null) return;
             CurStand = GetawayDest; GetawayDest = null; getawayPath = null; getawayProf = null; liveCoverKey = -1;
-            foreach (var x in Ops) if (x.InCar) x.Pos = GetawaySeat;
-            Note("car.parked", $"The getaway car is at {CurStand.Id}.");
+            foreach (var x in Ops) if (x.InCar && !x.InLent) x.Pos = GetawaySeat;
+            Note("car.parked", $"The getaway car is at {DistrictStandName(CurStand)}.");
             SawGetaway(Sim.Op.Name(op.Id)); // Motive M059-2.4: a driver at the wheel of his own car nearby learns it
         }
         /// <summary>How many cover points of `of` (car/getaway, car/rivals, …) stand now (a read; never hashed).</summary>

@@ -65,6 +65,7 @@
     "style:report": "bun tools/style-agent/cli.ts report",
     "cover": "bun tools/cover/cli.ts",
     "people:view": "bun tools/people-view/cli.ts",
+    "district:bake": "bun tools/district/bake.ts",
     "people:graph": "bun tools/people-graph/cli.ts",
     "levels": "bun tools/levels/cli.ts",
     "levels:replay": "bun tools/levels/replay.ts",

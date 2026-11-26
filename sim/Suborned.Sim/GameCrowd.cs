@@ -207,7 +207,13 @@ namespace Suborned.Sim
             return RoutineAt(w, Tick, out stop, out leg, out legMm) ?? Leaving(w); // inside, or off the sheet: from where they leave the street
         }
         /// <summary>Where the routine puts a person of the crowd at this tick (no fight).</summary>
-        Pt? RoutinePos(Walker w, int tick) => w.P.Down ? null : RoutineAt(w, tick);
+        Pt? RoutinePos(Walker w, int tick)
+        {
+            if (w.P.Down) return null;
+            if (District != null && District.Map.Index.TryGetValue(w.P.Id, out int person) && District.Roams(person))
+                return District.Pose(person,tick).at;
+            return RoutineAt(w,tick);
+        }
         /// <summary>Where the routine has a person at this tick, down or not (brief 098: where an added guard's beat has him when his mark is missed).</summary>
         Pt? RoutineAt(Walker w, int tick) => RoutineAt(w, tick, out _, out _, out _);
         Pt? RoutineAt(Walker w, int tick, out string? stop, out Path? leg, out long legMm)

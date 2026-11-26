@@ -14,6 +14,7 @@ namespace Suborned.Sim
         /// the neutral start, every start draw at the middle of its band, the mission's own timetable; shots still roll, on seed 0's streams.
         /// Hashed into the start when set.</summary>
         public int Seed;
+        public bool District;
         /// <summary>Test only (brief 080, engine 0.37.0): true plays the shots before brief 080 (the counted accumulator, today's multipliers), as
         /// Pre039 plays the fight before brief 039, for scenarios whose subject is another rule and that need a shot to land on a known tick.
         /// Never in a route or a session; hashed when set.</summary>
@@ -102,8 +103,9 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("seed", "recoverCasualties", "pre080", "oldClock", "rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone", "oneCar", "counts", "weather", "light");
+            n.Only("district", "seed", "recoverCasualties", "pre080", "oldClock", "rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone", "oneCar", "counts", "weather", "light");
             if (n.Opt("seed") is JNode sd) { long sv = sd.Long(); if (sv < 0 || sv > int.MaxValue) throw new FormatException($"{sd.Path}: seed 0..2147483647"); s.Seed = (int)sv; } // brief 080
+            if (n.Opt("district") is JNode district) s.District = district.Bool();
             if (n.Opt("recoverCasualties") is JNode recovery) s.RecoverCasualties = recovery.Bool();
             if (n.Opt("pre080") is JNode p80) s.Pre080 = p80.Bool(); // brief 080, test only
             if (n.Opt("oldClock") is JNode oc) s.OldClock = oc.Bool(); // brief 080, test only
@@ -168,6 +170,7 @@ namespace Suborned.Sim
         {
             var w = new JWriter().Obj();
             if (Seed != 0) w.Prop("seed", Seed); // brief 080: only a seeded start adds bytes
+            if (District) w.Prop("district", true);
             if (!RecoverCasualties) w.Prop("recoverCasualties", false);
             if (Pre080) w.Prop("pre080", true); // brief 080, test only: likewise
             if (OldClock) w.Prop("oldClock", true); // brief 080, test only: likewise

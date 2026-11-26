@@ -97,11 +97,12 @@ namespace Suborned.Sim
         public Game(Rules rules, Site site, Start? start = null, string? startText = null, Crowd? crowd = null, PopulationRules? population = null)
         {
             R = rules; S = site; Start = start ?? new Start(); People2 = crowd; Range = site.IsRange;
+            if (Start.District && !Range) District = new DistrictRun(Start.Seed);
             StepLimit = HarnessStepLimit; // engine 0.34.0: a harness's bound (0 in the host)
             FollowLock = Start.FollowLock ?? false; // tuning.md §11.5
             WeaponsFree = (Start.OneInput ?? R.OneInput) && !Start.FightLabOn && !Start.Pre039 ? true : Start.WeaponsFree ?? R.FreeStart; // tuning.md §14 (engine 0.19.0); brief 039 (weapons.oneInput): always on, out of the lab
-            InitWalkers(crowd, population); // the people file's walkers, fresh; brief 098 step 0: with the start's counts, fewer or more (GamePopulation.cs)
-            StartHash = Hash.Of(startText ?? "") ^ Hash.Of(Start.Canonical()) ^ DialHash(); // brief 098: the dial's rules only when the start sets counts
+            InitWalkers(crowd, population); BindDistrictCast(); // the people file's walkers, fresh; brief 098 step 0: with the start's counts, fewer or more (GamePopulation.cs)
+            StartHash = Hash.Of(startText ?? "") ^ Hash.Of(Start.Canonical()) ^ DialHash() ^ (District == null ? 0UL : Hash.Of(District.Map.Digest)); // brief 098: the dial's rules only when the start sets counts
             eye = R.Eye; near = R.NearCm;
             if (R.MountOn && !Range) foreach (var c in S.Cameras) if (!R.MountCameraCm.ContainsKey(c.Kind)) throw new FormatException($"site camera {c.Id}: kind '{c.Kind}' has no lens height in perception.mount.cameras (brief 055 §7: unknown = reject)");
             ResolveStopFaces(); // brief 054 §3.3: every on-street stop's facing, or the start is rejected
@@ -197,7 +198,7 @@ namespace Suborned.Sim
         public long D2(Pt a, Pt b) => G.D2(a, b);
         public void Note(string code, string text) => Log.Add(new LogLine { Tick = Tick, Code = code, Text = text });
         /// <summary>The run fails: once, with its code, its words, and its cause (FailCause.cs: read-only, never hashed).</summary>
-        void Fail(string code, string text, Func<FailCause>? cause = null) { if (Result != Outcome.None || LendSwallows(code)) return; RecordsAtEnd(); Result = Outcome.Failure; FailCode = code; FailText = text; Cause = MakeCause(code, cause); Note("fail." + code, text); }
+        void Fail(string code, string text, Func<FailCause>? cause = null) { if (Result != Outcome.None || LendSwallows(code)) return; if (District != null && AbleCell()) { CloseHandover(Outcome.Failure, text); return; } RecordsAtEnd(); Result = Outcome.Failure; FailCode = code; FailText = text; Cause = MakeCause(code, cause); Note("fail." + code, text); }
         public bool Over => Result != Outcome.None;
 
         // ---------------------------------------------------------------- the tick
@@ -236,7 +237,7 @@ namespace Suborned.Sim
             CarStandStep(); // engine 0.36.0 (car.footprint): a car that has come to stand clears its ground
             CarAheadStep(); // engine 0.37.0 (car.footprint.ahead; brief 081): and an agent steps off the ground it is about to stop on
             CarEpochStep(); // engine 0.33.1 (car.footprint): the standing cars as this tick starts, for the crowd's legs that set out now
-            if (!Range) { GuardTimeline(); CarTimeline(); CrewStep(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule; brief 059: the crew's step (GameCrew.cs)
+            if (!Range) { GuardTimeline(); if (HandoverOpen) { CarTimeline(); CrewStep(); ValeTimeline(); } PatrolTimeline(); } // brief 029: the range has no schedule; brief 059: the crew's step (GameCrew.cs)
             foreach (var op in Ops)
             {
                 op.StepFrom = op.Pos; // tuning.md §8.3: the gait's direction is this tick's step
@@ -253,7 +254,7 @@ namespace Suborned.Sim
                 if (op.Act != null) ApproachStep(op); // engine 0.23.0 (rulebook cell.approach): a person act walking in starts once in place (GameApproach.cs)
             }
             foreach (var op in Ops) if (op.CarriedBy.HasValue) op.Pos = OpOf(op.CarriedBy.Value).Pos; // a carried operative goes where the carrier goes
-            if (getawayPath != null) foreach (var op in Ops) if (op.InCar) op.Pos = Car; if (!Over) GoWaitStep(); // brief 059 K6: everyone in the getaway car rides its Drive; engine 0.43.0 (car.go, Motive G1): a Go waiting for a Board lands the tick it lands (GameGoWaits.cs)
+            if (getawayPath != null) foreach (var op in Ops) if (op.InCar && !op.InLent) op.Pos = Car; if (!Over) GoWaitStep(); // brief 059 K6: everyone in the getaway car rides its Drive; engine 0.43.0 (car.go, Motive G1): a Go waiting for a Board lands the tick it lands (GameGoWaits.cs)
             if (Range) { RangeTick(); return; } // brief 029 (GameRange.cs): the fight range runs the fight and nothing of the mission
             if (!Over) Tether();
             if (!Over) Watchers();
@@ -268,12 +269,13 @@ namespace Suborned.Sim
             if (!Over) CrowdStep();
             if (!Over) TakedownStep();
             if (!Over) RecoveryStep(); // brief 013: bodies, reports, check-in marks, suspicion, the response's units
-            if (!Over && Tick >= Lockdown) Fail("sealed", "Security seals the district before the getaway car leaves.", Sealed); // brief 018: the car must leave, not only be reached
-            if (!Over && !Range) CloseStep(); // Motive's ruling on Redline E8 (brief 080; GameSeed.cs): Vale's absence is noticed, then the close is a verdict
+            if (!Over && HandoverOpen && Tick >= Lockdown) Fail("sealed", "Security seals the district before the getaway car leaves.", Sealed); // brief 018: the car must leave, not only be reached
+            if (!Over && !Range && HandoverOpen) CloseStep(); // Motive's ruling on Redline E8 (brief 080; GameSeed.cs): Vale's absence is noticed, then the close is a verdict
             // brief 059 K4: at the close the turned driver gives up and drives Vale on (a Take begun before it holds him until it ends); with no
             // driver, Vale leaves by other means (the rivals reach Vale only physically now: the tail, the fight)
-            if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car && Vale != ValeAt.Taking && Vale != ValeAt.Lent && Vale != ValeAt.Out) GivesUp(); // brief 096 (car.box): a boxed official car stays: closed-in (GameKerb.cs)
+            if (!Over && HandoverOpen && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car && Vale != ValeAt.Taking && Vale != ValeAt.Lent && Vale != ValeAt.Out) GivesUp(); // brief 096 (car.box): a boxed official car stays: closed-in (GameKerb.cs)
             FightEnds(); BodyStep(); // fight.public: a fight ends quiet after its last shot, the final fight at its end, any fight with the mission; brief 098 L9: every body laid (GameBodies.cs)
+            if (District != null) DistrictEndStep();
             if (Tick % 100 == 0 || Over) Checkpoints.Add((Tick, Hash.State(this)));
         }
 
@@ -365,7 +367,8 @@ namespace Suborned.Sim
             long at = 0;
             while (at < p.Length)
             {
-                int pace = S.Drive.SurfaceAt(p.At(at)) == 'r' ? R.CarRoadSpeed : R.CarYardSpeed;
+                var pos = p.At(at); var surface = S.Drive.InGrid(pos) ? S.Drive.SurfaceAt(pos) : District?.Map.Roads.SurfaceAt(pos);
+                int pace = surface == 'r'  ? R.CarRoadSpeed : R.CarYardSpeed;
                 at = Math.Min(p.Length, at + Math.Max(1, pace)); mm.Add(at);
             }
             return mm.ToArray();

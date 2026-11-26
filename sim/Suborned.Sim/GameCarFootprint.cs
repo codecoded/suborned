@@ -301,6 +301,7 @@ namespace Suborned.Sim
         {
             if (Range) return G.Within(p, Car, R.AtReachCm); // the range has no getaway car: its mark (site getaway.car) is a point, at-reach-cm of it as before
             if (getawayPath != null) return false;
+            if (District != null && CurStand.Id.StartsWith("street/")) return G.Within(p,Car,R.CarReachCm+230);
             int d = CarBodyCm("car:getaway", p); return d >= 0 && d <= R.CarReachCm;
         }
     }
