@@ -9316,8 +9316,8 @@
  "megastructures": [
   {
    "id": "lantern-terraces",
-   "name": "Lantern Terraces",
-   "kind": "terraced housing over a podium",
+   "name": "Lantern Court",
+   "kind": "residential courtyard",
    "areas": [
     "lantern"
    ],
@@ -9338,91 +9338,155 @@
     ],
     "zones": []
    },
-   "height": 49.2,
-   "storeys": [
-    5,
-    12
-   ],
-   "section": "two-storey podium full depth to the deck (9.43); the 8 m Terrace Walk along its south edge (Lantern Lane's south arm); housing steps up one storey per step from 5 storeys at the walk to 12 on Market Street",
-   "podium": {
-    "storeys": 2,
-    "top": "standards.levels deck 9.43"
-   },
-   "walk": {
-    "edge": "y0",
-    "w": 8,
-    "from": "the plot edge y -484 (Lantern Lane) to y -476"
-   },
-   "steps": {
-    "storeys": [
-     5,
-     12
-    ],
-    "from": "the walk's back (y -476)",
-    "to": "Market Street's building line (y -427)",
-    "why": "one storey per step, equal depths"
-   },
-   "breaks": [],
-   "breaksWhy": "none",
-   "cores": {
-    "size": "standards.levels.cores.stairLift",
-    "every": 60,
-    "firstAt": 30,
-    "from": "street",
-    "to": "deck",
-    "liftEvery": 2,
-    "where": "in the podium behind the walk"
-   },
-   "colonnade": [
-    {
-     "footprint": 0,
-     "edge": "y0",
-     "faces": "lantern-lane",
-     "class": "access",
-     "depth": 6.5,
-     "over": "deck",
-     "clearHeight": 8.05,
-     "columnZone": "kerb",
-     "columnEvery": 12,
-     "why": "the Terrace Walk overhangs Lantern Lane's pavement"
-    }
-   ],
-   "buildingLine": "Market Street (north, district): blank stone; Rocket Lane and Satellite Street (west, east): the podium's shops; Lantern Lane the colonnade",
+   "height": 30.8,
    "levels": [
     {
      "level": "street",
-     "what": "Terrace Row: the neighbourhood's shops; Crown Road side is a blank stone back (primary)",
-     "mix": {
-      "grocer": 20,
-      "launderette": 15,
-      "soda-fountain": 15,
-      "florist": 10,
-      "barber": 10,
-      "diner": 15,
-      "lobby": 15
-     }
-    },
-    {
-     "level": "deck",
-     "what": "the Terrace Walk: front doors of the maisonettes, a corner café, planters",
-     "mix": {
-      "lobby": 70,
-      "soda-fountain": 15,
-      "florist": 15
-     }
+     "what": "Public Meridian Walk between Lantern Lane and the Market Street tram. Front doors and shops open to the walk."
     }
    ],
-   "bridges": [],
-   "connectors": "stair-lift cores in the podium every 60 m along the walk",
+   "wings": [
+    {
+     "id": "west",
+     "rect": [
+      -176,
+      -160,
+      -478,
+      -432
+     ],
+     "floors": 4,
+     "radius": 5.2
+    },
+    {
+     "id": "south",
+     "rect": [
+      -161,
+      -142,
+      -478,
+      -465
+     ],
+     "floors": 3,
+     "radius": 4.4
+    },
+    {
+     "id": "north",
+     "rect": [
+      -159,
+      -133,
+      -452,
+      -428
+     ],
+     "floors": 5,
+     "radius": 6.0
+    },
+    {
+     "id": "bow",
+     "rect": [
+      -123,
+      -108,
+      -468,
+      -431
+     ],
+     "floors": 4,
+     "radius": 6.5
+    },
+    {
+     "id": "east",
+     "rect": [
+      -102,
+      -72,
+      -476,
+      -459
+     ],
+     "floors": 3,
+     "radius": 5.5
+    },
+    {
+     "id": "market",
+     "rect": [
+      -101,
+      -71,
+      -450,
+      -427
+     ],
+     "floors": 4,
+     "radius": 6.2
+    }
+   ],
+   "bridge": {
+    "rect": [
+     -136,
+     -119,
+     -444,
+     -439
+    ],
+    "base": 7.8,
+    "height": 3.3
+   },
+   "clock": {
+    "at": [
+     -148,
+     -458
+    ],
+    "radius": 3.0
+   },
+   "planting": [
+    {
+     "at": [
+      -156,
+      -455.8
+     ],
+     "radius": 1.15,
+     "kit": "DK_CoconutPalm_Street"
+    },
+    {
+     "at": [
+      -135.7,
+      -452.7
+     ],
+     "radius": 1.05,
+     "kit": "DK_FanPalm"
+    },
+    {
+     "at": [
+      -125.1,
+      -463.5
+     ],
+     "radius": 1.15,
+     "kit": "DK_CoconutPalm_Street"
+    },
+    {
+     "at": [
+      -113,
+      -474.5
+     ],
+     "radius": 1.15,
+     "kit": "DK_FanPalm"
+    },
+    {
+     "at": [
+      -95,
+      -455
+     ],
+     "radius": 1.2,
+     "kit": "DK_CoconutPalm_Street"
+    }
+   ],
+   "spire": {
+    "wing": "north",
+    "at": [
+     -143,
+     -437
+    ],
+    "height": 30.8
+   },
    "supports": {
     "zones": [
      "own plots"
     ]
    },
-   "why": "the second megastructure the plan keeps (MS-1, 2–4), the same terraced housing as the West Terraces, on the Lantern Quarter's court inside Lantern Lane (the old Southside SS5's place), facing south",
-   "source": "Park Hill, Sheffield (1961) and Brunswick Centre (1972): terraces over a podium with a deck street; Habitat 67 (1967); Buchanan 1963 (blank backs on primaries)",
-   "concept": "~/Projects/the-suborned-store/concepts/Blocks/hanging_terraces.png",
-   "conceptWhy": "brief 006 B: a ziggurat of planted terraces, each step a hanging garden with pergolas and pools, round-cornered towers at the ends: the 5 → 12 storey south-facing garden steps over the podium. Ours is a long wall, not a pyramid, and has no spires (the two 9 m breaks keep Crown Road's view of the Sphere); greenery spills over each parapet as Tower_Terrace's hanging() does"
+   "source": "Harbour street and residential terraces in the supplied retro-future city sheet, and Streets/hero/residential_morning.png in the project art store.",
+   "why": "Low curved apartment wings surround a public astronomical clock. A glazed footbridge frames a long view from Lantern Lane to the working Market Street tram."
   },
   {
    "id": "crown-terraces",

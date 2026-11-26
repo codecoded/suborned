@@ -5,18 +5,20 @@ import sys
 import bpy
 from mathutils import Vector
 
-out, master = map(lambda s: Path(s).resolve(), sys.argv[sys.argv.index('--')+1:])
-bpy.ops.wm.read_factory_settings(use_empty=True)
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from ferry_front import (BRONZE as brass, CLOCK as dial, SOFFIT as soffit, STONE as stone,
-                        TILE as teal, ZINC as patina, office, window_band)
+                        TILE as teal, ZINC as patina, boarding_canopy, office, window_band)
 
 TAU = 2*pi
-material = bpy.data.materials.new('Harbour trim sheet')
-material.use_nodes = True
-tex = material.node_tree.nodes.new('ShaderNodeTexImage')
-tex.image = bpy.data.images.load(str(out.parent/'Materials/Play/FerryColour.png'))
-material.node_tree.links.new(tex.outputs['Color'], material.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
+def use_sheet(path):
+    global material
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    material = bpy.data.materials.new('Harbour architectural finishes')
+    material.use_nodes = True
+    tex = material.node_tree.nodes.new('ShaderNodeTexImage')
+    tex.image = bpy.data.images.load(str(path))
+    material.node_tree.links.new(tex.outputs['Color'], material.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
+
 
 class Model:
     def __init__(self, name, rank):
@@ -129,6 +131,7 @@ def ferry(s):
     for side in (-1,1):
         s.plate(6.8,7.7+side*1.80,16.35,2.40,2.40,side*pi/2,dial,True)
     office(s)
+    boarding_canopy(s)
     # The upper lounge opens onto the seaward promenade. Thin stanchions define the roof edge.
     for side in (-1,1):
         x=side*10.43
@@ -137,7 +140,7 @@ def ferry(s):
         for height in (5.18,5.76):
             s.beam((x,-10.86,height),(x,10.86,height),.037,brass,(8,6,4)[s.rank])
 
-def build(name, func, budgets):
+def build(name, func, budgets, out):
     objects=[]
     for rank in range(3):
         s=Model(name+(' Close',' Street',' Horizon')[rank],rank);func(s);obj,count=s.mesh()
@@ -155,5 +158,8 @@ def build(name, func, budgets):
     for obj in objects:
         bpy.context.collection.objects.unlink(obj);group.objects.link(obj)
         if obj.type=='EMPTY':obj.name=name+' '+obj.name
-build('FerryPavilion',ferry,(16000,8000,4400))
-bpy.ops.wm.save_as_mainfile(filepath=str(master))
+if __name__ == '__main__':
+    out, master = [Path(v).resolve() for v in sys.argv[sys.argv.index('--')+1:]]
+    use_sheet(out.parent/'Materials/Play/FerryColour.png')
+    build('FerryPavilion',ferry,(16000,8000,4400),out)
+    bpy.ops.wm.save_as_mainfile(filepath=str(master))

@@ -29,6 +29,11 @@ namespace Suborned.World
             foreach (var m in megas)
             {
                 var el = Nodes.Element(layer, m.Id);
+                if (m.Parts.Any(p => p.Id.Contains("/court-wing/")))
+                {
+                    Play.DistrictCourtModel.Build(el,m,world.Ground.Plots.Single(p => p.Id == "plot/lantern-court"));
+                    continue;
+                }
                 var h = HostOf(m.Id);
                 if (m.Gateway != null) KitLiveries.Apply(placer.Place(el, layer.name, m.Gateway, m.Gateway.At, QuayTop(m.Gateway.At), 0f), m.Id, "gateway", m.Gateway.Id);
                 if (standIns.Covers(m)) { standIns.Mega(layer, el, m); continue; }

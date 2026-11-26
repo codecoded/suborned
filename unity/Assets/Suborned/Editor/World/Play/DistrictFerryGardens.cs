@@ -17,7 +17,7 @@ namespace Suborned.World.Play
         static Texture2D Sheet(string name) => AssetDatabase.LoadAssetAtPath<Texture2D>(Art + name + ".png")
             ?? throw new BuildFailedException("Missing Harbour Ferries sheet " + name);
 
-        sealed class Kit
+        internal sealed class Kit
         {
             readonly GameObject prefab;
             readonly Material finish;

@@ -22,6 +22,27 @@ public sealed class DistrictTests
     }
 
     [Fact]
+    public void LanternCourtIsAThroughWalkWithOccupiedWingsAndAClockPedestal()
+    {
+        var g = Open();
+        var map = g.District!.Map;
+        var court = map.Ground.Venues.Single(v => v.Id == "meridian-court");
+        var neighbours = map.People.Where(p => p.Id.Contains("meridian-court")).ToArray();
+        Assert.Equal(16, neighbours.Length);
+        Assert.Contains(neighbours[0].Ties, tie => map.People[tie.person].Id.Contains("lantern-papers"));
+        Assert.False(map.Walk.Free(new Pt(22800, -1800))); // stone seat below the globe
+        Assert.False(map.Walk.Free(new Pt(22600, -3700))); // a ground-floor apartment
+        foreach (var point in new[] { new Pt(25100, 300), court.At, new Pt(21200, 200), new Pt(19200, 200) })
+        {
+            Assert.True(map.Walk.Free(point));
+            Assert.False(map.Roads.Free(point));
+            Order(g, "move", point);
+            Arrive(g);
+            Assert.True(G.Within(g.Ops[0].Pos, point, 210));
+        }
+    }
+
+    [Fact]
     public void FerryForecourtConnectsToThePromenadeWithResidentsAndASeawardBoundary()
     {
         var g = Open();

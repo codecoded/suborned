@@ -52,14 +52,18 @@ limestone=Image.open(STONE/'limestone_polished_v1.png').convert('RGB').resize((S
 stone_normal=Image.open(STONE/'limestone_polished_v1_normal.png').convert('RGB').resize((SIZE,SIZE))
 grain=np.asarray(limestone.convert('L')).astype(float); grain-=grain.mean()
 noise=rng.normal(0,1.7,(SIZE,SIZE))
-store(0,paint((178,165,141),grain*1.15),0,99+grain*.40,bump=stone_normal)
+store(0,paint((212,204,184),grain*.95),0,99+grain*.40,bump=stone_normal)
 # Honed dark sill stone, alternating narrow glazed tile, aged bronze, an oxidised cast band.
-store(1,paint((112,103,88),grain*.78),0,134+grain*.43,bump=stone_normal)
+store(1,paint((152,144,128),grain*.62),0,134+grain*.43,bump=stone_normal)
 tile=(xx%84<3)|(yy%43<3)
 tilegrain=rng.uniform(-7,7,(13,8))[yy//43,xx//84]
 store(2,paint((66,103,97),noise+tilegrain-tile*16),0,151+tilegrain*.8-tile*48)
 store(6,paint((135,114,82),noise*.6+np.sin(yy*.8)*1.7),181,148+noise*.7)
-store(7,paint((126,85,70),grain*.5),9,102+noise)
+# The horizontal saloon glazing reads the reflected harbour sky over the shaded lounge.
+sash=Image.open(OUT/'ResidenceWindows.jpg').convert('RGB').crop((32,525,485,978)).resize((SIZE,SIZE))
+glass=np.array(sash).astype(float)*.47+np.array((56,91,103))[None,None,:]+(1-yy/SIZE)[:,:,None]*19
+store(7,Image.fromarray(np.clip(glass,0,255).astype('uint8')),81,194)
+
 store(11,paint((88,66,49),noise*.7+4*np.sin(yy/4+2*np.sin(xx/99))+3*np.sin(yy/15)),0,114+noise)
 store(12,paint((228,218,189),noise*.45),0,152,Image.new('RGB',(SIZE,SIZE),(240,213,163)))
 seam=np.minimum(xx%128,127-xx%128)

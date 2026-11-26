@@ -14,6 +14,7 @@ export type Venue = {
   count: number;
   span: number;
   width: number;
+  generation: number;
   fixtures: Fixture[];
   boarding?: { at: Point; along: Point };
 };
@@ -49,6 +50,7 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
     count: number,
     span: number,
     width: number,
+    generation = 0,
   ) {
     if (!open(p.at)) {
       let found: Point | undefined;
@@ -68,7 +70,7 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
       if (!found) return;
       p = { ...p, at: found };
     }
-    venues.push({ id, name, ...p, style, count, span, width, fixtures: [] });
+    venues.push({ id, name, ...p, style, count, span, width, generation, fixtures: [] });
   }
   for (const stop of world.transit.stops) {
     const xs = stop.ring.map((p) => p[0]),
@@ -165,6 +167,13 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
       at: [Math.max(...skyport.ring.map(p => p[0])) - 7, Math.min(...skyport.ring.map(p => p[1])) + 4],
       along: [1, 0],
     };
+  }
+  const clock = world.megastructures.flatMap(m => m.parts).find(p => p.id.endsWith('/lantern-terraces/bed/0'));
+  if (clock) {
+    const east = Math.max(...clock.ring.map(p => p[0]));
+    const ys = clock.ring.map(p => p[1]);
+    add('meridian-court', 'Lantern Court clock', { at: [east + 6, (Math.min(...ys) + Math.max(...ys)) / 2], along: [0, 1] },
+      'walk', 16, 8, 1.4, 1);
   }
   return venues;
 }

@@ -8,6 +8,7 @@ import { arcade } from './mega/arcade';
 import { harbourDeck } from './mega/harbourDeck';
 import { pier } from './mega/pier';
 import { terraces } from './mega/terraces';
+import { courtyard, type CourtPlan } from './mega/courtyard';
 
 export function generateMegas(ctx: Ctx, sites: Site[]): MegaOut[] {
   return (ctx.plan.megastructures ?? []).map(m => {
@@ -16,6 +17,7 @@ export function generateMegas(ctx: Ctx, sites: Site[]): MegaOut[] {
       case 'harbour deck': return harbourDeck(ctx, m);
       case 'pier tower': return pier(ctx, m);
       case 'terraced housing over a podium': return terraces(ctx, m);
+      case 'residential courtyard': return courtyard(ctx, m as CourtPlan);
       default: throw new Error(`megastructure ${m.id}: unknown kind "${m.kind}" (not in the rulebook)`);
     }
   });

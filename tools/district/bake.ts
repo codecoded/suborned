@@ -6,7 +6,7 @@ import { prepare } from '../people-graph/source';
 import { loadGraph } from '../people-graph/load';
 import { sql } from '../rag/database';
 import { streetPlaces, furnish, project, cafeCourt, type Venue } from './places';
-import { districtPopulation, LOCAL } from './population';
+import { districtPopulation } from './population';
 import { streetscape, straightRuns } from './streetscape';
 import { roofTerraces, waterfront } from './waterfront';
 import type { StreetSurvey } from './survey';
@@ -149,12 +149,20 @@ for (const p of [...ground.water, ...world.buildings.filter((b) => b.base < 2 &&
     walk[i] = drive[i] = 0;
   });
 for (const b of world.buildings.filter(b => b.base < 2 && b.base + b.height > 1)) polygon(b.ring,i=>{ occupied[i]=1; });
-// The two stepped housing estates are retained from the district plan in OldTown.
-// Their street-level podiums are separate from the flyby's exported building meshes.
+// Retained district structures have their own ground footprints in addition to the city survey.
 for (const m of world.megastructures)
   for (const part of m.parts)
-    if (part.base < 1.8 && part.base + part.height > 1)
+    if (part.base < 1.8 && (part.base + part.height > 1 || part.id.includes('/bed/')))
       polygon(part.ring, i => { solid[i] = 1; occupied[i] = 1; });
+// The courtyard is an exterior street surface through the block. The wings and planted beds
+// above retain their own footprints, and the enclosed upper bridge leaves the walking grid open.
+for (const court of world.megastructures.filter(m => m.parts.some(p => p.id.includes('/court-wing/')))) {
+  const spec = plan.megastructures?.find(m => 'mega/' + m.id === court.id);
+  for (const id of spec?.spans.plots ?? []) {
+    const plot = ground.plots.find(p => p.id === 'plot/' + id);
+    if (plot) polygon(plot.ring, i => { walk[i] = 1; drive[i] = 0; });
+  }
+}
 for (const c of ground.circuses) {
   const [a, b] = block(c.centre),
     r = c.radius * 100;
@@ -240,7 +248,7 @@ const residents = people
       .map((s) => ({ at: block(s.at), place: s.place, doing: s.doing, from: s.from })),
   }))
   .filter((r) => r.stops.length)
-  .sort((a,b)=>Number(a.key.startsWith(LOCAL))-Number(b.key.startsWith(LOCAL)));
+  .sort((a, b) => (p.residentGeneration.get(a.key) ?? -1) - (p.residentGeneration.get(b.key) ?? -1));
 const ids = new Set(residents.map((r) => r.key));
 function line(s: { id: string; line: readonly (readonly number[])[] }) {
   return { id: s.id, points: straightRuns(s.line.map(block)) };

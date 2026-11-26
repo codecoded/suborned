@@ -37,8 +37,10 @@ def window_band(s, x, y, width, depth, radius, sill, head, booking=False):
             divide = min(.085,span*.09)
             inset = min((.38,.25,.10)[s.rank],span*.3)
             jamb = min(.115,span*.11)
-            room = (LOUNGE,DISPATCH,MAP_ROOM,LOUNGE)[(side+bay//2)%4]
-            face(jamb,span-jamb,inset,sill+.08,head-.10,room)
+            room = LOUNGE if (side//3+bay//2)%6 == 2 else OXIDE
+            phase = (side + bay) % 2
+            s.face([pt(jamb,inset,sill+.08),pt(span-jamb,inset,sill+.08),pt(span-jamb,inset,head-.10),pt(jamb,inset,head-.10)],room,
+                   [(phase*.5,0),((phase+1)*.5,0),((phase+1)*.5,1),(phase*.5,1)])
             for u0,u1 in [(0,jamb),(span-jamb,span)]:
                 face(u0,u1,0,sill,head,BRONZE)
             for u in [jamb,span-jamb]:
@@ -94,6 +96,8 @@ def office(s):
         box(s,-12.62,-12.55,a-.06,b+.06,.99,1.025,BRONZE)
         for u in (a+.10,b-.10):
             box(s,front-.025,front+.065,u-.029,u+.029,1.055,3.34,BRONZE)
+        if width>5:
+            box(s,front-.02,front+.12,centre-.037,centre+.037,1.055,3.34,BRONZE)
         # Transom laid over a physically open handover slot.
         box(s,front-.02,front+.10,a,b,2.57,2.64,BRONZE)
         if s.rank<2:
@@ -126,7 +130,7 @@ def office(s):
     box(s,-12.18,-12.09,-10.26,-4.48,2.93,3.52,BRONZE)
     s.plate(-12.188,-7.37,3.225,5.68,.50,pi,PRINT,section=(.01,.52,.99,.98))
     for y in (-10.48,-4.28,4.18,8.9):
-        lamp(s,y,2.46)
+        if s.rank==0 or y in (-10.48,-4.28):lamp(s,y,2.46)
     if s.rank<2:
         # A timber waiting bench against a wall, away from the public path.
         box(s,-12.49,-12.06,9.08,10.32,.43,.50,WOOD)
@@ -134,3 +138,28 @@ def office(s):
         for u in (-9.37,-7.43,-5.49,5.42,7.54):
             s.beam((-11.95,u,3.82),(-11.95,u,4.24),.025,BRONZE,6)
             s.beam((-11.95,u,3.74),(-11.95,u,3.82),.145,OPAL,12)
+
+
+def boarding_canopy(s):
+    # One tapered cantilever identifies the passenger entrance, like the wing of a flying boat.
+    # The root bolts to the terminal. Its nose clears the apron by more than 3.8 m.
+    n=(20,12,6)[s.rank]; sections=[]
+    for k in range(n+1):
+        t=-1+2*k/n
+        span=1-t*t
+        y=-6.8+8.15*t
+        root=-11.72
+        reach=.52+4.30*span
+        tip=root-reach
+        sections.append([(root,y,3.94),(tip+.48*reach,y,3.78+.10*span),(tip,y,3.96+.22*span),
+                         (tip+.035,y,4.025+.22*span),(tip+.49*reach,y,4.06+.14*span),(root,y,4.13)])
+    for a,b in zip(sections,sections[1:]):
+        for i,slot in enumerate((SOFFIT,SOFFIT,BRONZE,TILE,STONE,STONE)):
+            j=(i+1)%6
+            s.face([a[i],a[j],b[j],b[i]],slot)
+    s.face(sections[0][::-1],STONE);s.face(sections[-1],STONE)
+    for t in (-.80,-.42,0,.42,.80):
+        y=-6.8+8.15*t;p=1-t*t
+        s.beam((-12.08,y,3.12),(-12.36-1.63*p,y,3.82),.077,BRONZE,8,.046)
+        if s.rank==0:
+            s.beam((-12.12,y,3.925),(-12.46-2.52*p,y,3.886),.034,OPAL,8)

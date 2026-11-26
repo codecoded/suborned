@@ -9,7 +9,7 @@ import { project, type Point, type Venue } from './places';
 export const LOCAL = 'p-z-harbour-';
 type WalkSpot = (p: Point, v: Venue) => Point;
 
-export async function districtPopulation(base: Prepared, venues: Venue[], standing: WalkSpot): Promise<Prepared> {
+export async function districtPopulation(base: Prepared, venues: Venue[], standing: WalkSpot) {
   const people = structuredClone(base.people),
     original = people.persons.slice(),
     locals: Person[] = [];
@@ -21,6 +21,7 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
       ['nothing', 'home', 'work'].includes(base.w.rules.needs.list[p.need]!.requires),
   );
   const groups: Person[][] = [];
+  const residentGeneration = new Map<string, number>();
   for (const [n, v] of venues.entries()) {
     const key = 'street-' + v.id,
       door = key + '-counter',
@@ -57,6 +58,7 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
     const group: Person[] = [];
     for (let k = 0; k < v.count; k++) {
       const id = LOCAL + v.id + '-' + String(k + 1).padStart(2, '0');
+      residentGeneration.set(id, v.generation);
       const t = templates[(n * 17 + k * 7) % templates.length]!;
       // A pair or a queue has distinct standing marks, staggered along the public edge.
       const u = ((k * 0.61803398875 + n * 0.137) % 1) * 2 - 1,
@@ -136,10 +138,21 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
     });
     a.ties.push({ kind: 'regular', with: b.id });
   }
+  const generations = [...new Set(venues.map(v => v.generation))].sort((a, b) => a - b);
+  for (const generation of generations) {
+    const indices = venues.map((v, i) => v.generation === generation ? i : -1).filter(i => i >= 0);
+    if (indices.length > 1)
+      indices.forEach((n, i) => regular(groups[n]![0]!, groups[indices[(i + 1) % indices.length]!]![1]!));
+  }
   groups.forEach((g, n) => {
-    regular(g[0]!, groups[(n + 1) % groups.length]![1]!);
     regular(g[2]!, templates[(n * 7) % templates.length]!);
   });
+  const court = venues.findIndex(v => v.id === 'meridian-court');
+  const newsstand = venues.findIndex(v => v.id === 'lantern-papers');
+  if (court >= 0 && newsstand >= 0) {
+    regular(groups[court]![0]!, groups[newsstand]![1]!);
+    regular(groups[newsstand]![3]!, groups[court]![1]!);
+  }
   const office = venues.findIndex(v => v.id === 'ferry-landing');
   if (office >= 0) {
     const desk = venues[office]!;
@@ -164,10 +177,15 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
     ...names,
     excluded: { ...names.excluded, full: new Set([...names.excluded.full, ...original.map((p) => p.name)]) },
   };
-  const gaps = assignNames(pool, base.w.rules, locals, new Map(), new Map(), 0);
-  if (gaps.length) throw Error(gaps.join('\n'));
+  // Later openings must keep every person the player already knows in the address book.
+  for (const generation of generations) {
+    const neighbours = locals.filter(person => residentGeneration.get(person.id) === generation);
+    const gaps = assignNames(pool, base.w.rules, neighbours, new Map(), new Map(), 0);
+    if (gaps.length) throw Error(gaps.join('\n'));
+    for (const person of neighbours) pool.excluded.full.add(person.name);
+  }
   people.persons.push(...locals);
   const model = buildModel(people, base.w.rules, base.extras);
   const hash = hashOf(model, await Bun.file(SCHEMA_FILE).text());
-  return { ...base, people, model, hash, db: peopleDb(hash) };
+  return { ...base, people, model, hash, db: peopleDb(hash), residentGeneration };
 }
