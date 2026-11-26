@@ -227,15 +227,12 @@ namespace Suborned.Play
                 anim.cullingMode = AnimatorCullingMode.CullCompletely;
                 v.animator = anim;
             }
-            else if (skin == "tram" && host.districtTramMid && host.districtTramFar)
-            {
-                var mid = Instantiate(host.districtTramMid, root.transform, false);
-                var far = Instantiate(host.districtTramFar, root.transform, false);
-                var group = root.AddComponent<LODGroup>();
-                group.SetLODs(new[] { new LOD(.18f, model.GetComponentsInChildren<Renderer>()), new LOD(.06f, mid.GetComponentsInChildren<Renderer>()), new LOD(.008f, far.GetComponentsInChildren<Renderer>()) });
-                group.RecalculateBounds();
-            }
-
+            else if (skin == "tram")
+                DistrictVehicleLod.AddKitLevels(root, model, host.districtTramMid, host.districtTramFar);
+            else if (id >= Robot)
+                DistrictVehicleLod.AddKitLevels(root, model, host.districtRobotMid, host.districtRobotFar);
+            else
+                DistrictVehicleLod.AddSedan(root, model);
             return v;
         }
     }

@@ -21,6 +21,10 @@ namespace Suborned.World.Play
                 h.districtTram = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Prefabs/Vehicles/DK_Tram.prefab");
                 h.districtTramMid = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Vehicles/DK_Tram_L1.fbx");
                 h.districtTramFar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Vehicles/DK_Tram_L2.fbx");
+                h.districtRobotMid = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Robots/DK_PatrolBot104_L1.fbx");
+                h.districtRobotFar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Robots/DK_PatrolBot104_L2.fbx");
+                if (!h.districtRobotMid || !h.districtRobotFar)
+                    throw new BuildFailedException("The patrol robot LODs are required.");
                 if (!h.districtTram || !h.districtTramMid || !h.districtTramFar)
                     throw new BuildFailedException("The district tram and both kit LODs are required.");
             }

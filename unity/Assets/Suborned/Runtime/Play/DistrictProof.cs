@@ -106,6 +106,21 @@ namespace Suborned.Play
             journal.Open(j.A);
             Need(journal.IsOpen, "Contact page did not open");
             journal.Close();
+            Need(h.Issue(new Order { Op = "scout", Do = "move", Point = g.DistrictExitDoor(scout) }), "Could not leave the car");
+            for (int k = 0; k < 300 && (scout.Busy != null || scout.Walk != null); k++)
+                g.Step();
+            var source = d.Map.People[j.A];
+            Need(h.Issue(new Order { Op = "scout", Do = "district-visit", Target = source.Id }), "Could not walk to the first contact");
+            for (int k = 0; k < 20000 && scout.Walk != null; k++)
+                g.Step();
+            h.LookAt(h.frame.World(scout.Pos));
+            yield return new WaitForSecondsRealtime(.5f);
+            journal.Open(j.A);
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "street-dialogue.png"));
+            Need(h.Issue(new Order { Op = "scout", Do = "district-help", Target = source.Id, To = j.Key }), "Native contact order refused");
+            Need(j.Stage == 1, "The first contact did not vouch for the cell");
+            journal.Close();
             var rail = DistrictMap.Shuttle(d.Map.Trams[0].Path, g.Tick, 1200, 730, 95);
             h.LookAt(h.frame.World(rail.at));
             yield return new WaitForSecondsRealtime(.6f);
@@ -113,7 +128,7 @@ namespace Suborned.Play
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "tram-street.png"));
             yield return new WaitForSecondsRealtime(.4f);
-            File.WriteAllText(IOPath.Combine(directory, "proof.txt"), $"OldTown opened. The district book and contact page opened. A ground click drove the boarded scout to {d.Map.StreetAt(point)}. The Handover closed and play continued at tick {g.Tick}. Residents {d.Map.People.Length}, open leads {d.Jobs.Length}, visible vehicles at the rail {street.VisibleVehicles}.");
+            File.WriteAllText(IOPath.Combine(directory, "proof.txt"), $"OldTown opened. The district book and contact page opened. A ground click drove the boarded scout to {d.Map.StreetAt(point)}. The Handover closed and play continued at tick {g.Tick}. {source.Name} vouched for the cell with {d.Map.People[j.B].Name}. Residents {d.Map.People.Length}, open leads {d.Jobs.Length}, visible vehicles at the rail {street.VisibleVehicles}.");
         }
     }
 }

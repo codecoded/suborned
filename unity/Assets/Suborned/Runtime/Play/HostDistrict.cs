@@ -8,7 +8,7 @@ namespace Suborned.Play
     {
         // Filled from the existing vehicle kit for the build and Editor play.
         [HideInInspector]
-        public GameObject districtTram, districtTramMid, districtTramFar;
+        public GameObject districtTram, districtTramMid, districtTramFar, districtRobotMid, districtRobotFar;
         // Historical mission fixtures have a closed ending. Normal play starts in the district.
         [System.NonSerialized] public bool missionScenario;
         public DistrictJournal DistrictBook { get; private set; }
