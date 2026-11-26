@@ -119,6 +119,7 @@ namespace Suborned.World.Play
                 var a = frame.World(new Pt(strip.B.X, pier ? strip.A.Y : strip.B.Y));
                 var b = frame.World(new Pt(pier ? strip.B.X : strip.A.X, strip.B.Y));
                 var inward = frame.Dir(pier ? new Pt(100,0) : new Pt(0,-100));
+                LandingPaving(root,a,b,inward,strip.EastCm*.01f,pier);
                 int count = Mathf.FloorToInt(Vector3.Distance(a,b)/11f);
                 for (int i=0;i<count;i++)
                 {

@@ -78,7 +78,7 @@ namespace Suborned.World.Play
             }
             float boxX=x+width*(variant%2 == 0 ? -.23f : .20f);
             s.Solid(0,boxX,.92f,width*.41f,.73f,6.28f,.38f,.25f);
-            s.TerracePlants(5,new Vector3(boxX,6.68f,1.0f),width*.37f,variant+11,near);
+            s.TerracePlants(10,11,6,new Vector3(boxX,6.68f,1.0f),width*.37f,variant+11,near);
             if (near && variant != 3) s.Canvas(8,9,-x,3.47f,.42f,w*.52f,1.17f,true);
         }
     }

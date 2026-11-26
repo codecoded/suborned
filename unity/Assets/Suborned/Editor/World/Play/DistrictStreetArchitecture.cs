@@ -34,47 +34,33 @@ namespace Suborned.World.Play
                 uv.AddRange(new[] { Vector2.zero,Vector2.right,Vector2.one,Vector2.up });
                 indices[mat].AddRange(new[] { first, first+1, first+2, first, first+2, first+3 });
             }
-            // Folded leaves catch both sky light and reflected light from the stone beneath.
-            // They share the balcony mesh, including the low detail silhouette.
-            void Leaf(int mat, Vector3 root, Vector3 bend, Vector3 tip, Vector3 width)
+            // The original kit's photographed fronds and blossom clusters carry their own silhouettes.
+            // Two fixed, angled cards overlap in the close mesh. The distant mesh keeps one per clump.
+            public void Sprig(int mat, Vector3 foot, Vector3 side, Vector3 lift)
             {
                 int i = vertices.Count;
-                var ridge = bend + Vector3.up * width.magnitude * .38f;
-                foreach (var p in new[] { root,bend-width,ridge,bend+width,tip }) Vertex(p,true);
-                int[] faces = { 0,1,2, 0,2,3, 1,4,2, 2,4,3 };
-                foreach (int v in faces) indices[mat].Add(i+v);
-                // The underside is visible from the pavement.
-                int back = vertices.Count;
-                foreach (var p in new[] { root,bend-width,ridge,bend+width,tip }) Vertex(p,true);
-                for (int k=0;k<faces.Length;k+=3) indices[mat].AddRange(new[] { back+faces[k+2],back+faces[k+1],back+faces[k] });
+                vertices.AddRange(new[] { foot-side*.5f,foot+side*.5f,foot+side*.5f+lift,foot-side*.5f+lift });
+                uv.AddRange(new[] { Vector2.zero,Vector2.right,Vector2.one,Vector2.up });
+                indices[mat].AddRange(new[] { i,i+1,i+2,i,i+2,i+3 });
             }
-            public void TerracePlants(int mat, Vector3 root, float span, int seed, bool near)
+            public void TerracePlants(int frond, int shrub, int bloom, Vector3 root, float span, int seed, bool near)
             {
-                int clumps = near ? 5 : 3;
+                int clumps = near ? 6 : 4;
                 for (int c=0;c<clumps;c++)
                 {
-                    float across = ((c+.5f)/clumps-.5f)*span;
-                    var baseAt = root + new Vector3(across,0,.13f*Mathf.Sin(1.8f*c+seed));
-                    int leaves = near ? 8 : 5;
-                    for (int n=0;n<leaves;n++)
+                    float phase=seed*1.13f+c*2.40f;
+                    var at=root+new Vector3(((c+.5f)/clumps-.5f)*span,-.10f,.14f*Mathf.Sin(phase));
+                    float size=.64f+.23f*Mathf.Cos(phase);
+                    Sprig(c%3==1 ? bloom : shrub,at,new Vector3(size,.02f,.17f*Mathf.Sin(phase)),new Vector3(0,size*.88f,.08f));
+                    if (near) Sprig(shrub,at+Vector3.forward*.08f,new Vector3(.34f,0,.44f),new Vector3(.09f,size*.80f,.08f));
+                    if ((c+seed)%2==0)
                     {
-                        float a=(n*137.51f+c*41+seed*29)*Mathf.Deg2Rad;
-                        var dir=new Vector3(Mathf.Sin(a),0,Mathf.Cos(a));
-                        float size=.52f+.37f*(.5f+.5f*Mathf.Sin(c*8.13f+n*3.2f+seed));
-                        var bend=baseAt+dir*(size*.54f)+Vector3.up*(size*.73f);
-                        var tip=baseAt+dir*size+Vector3.up*(.1f*size);
-                        Leaf(mat,baseAt,bend,tip,new Vector3(dir.z,0,-dir.x)*(.14f*size));
+                        float lean=c%2==0 ? 1f : -1f;
+                        Sprig(frond,at+Vector3.up*.14f,new Vector3(lean*.70f,.10f,.14f),new Vector3(lean*.17f,size*1.17f,.14f));
                     }
-                    // Longer tendrils break the horizontal edge at different heights.
-                    var lip=baseAt+Vector3.forward*.32f;
-                    int trails=near?4:2;
-                    for(int n=0;n<trails;n++)
-                    {
-                        float t=(n+.55f)/trails;
-                        var start=lip+new Vector3(.09f*Mathf.Sin(5*t+seed),-.66f*t,.20f*t);
-                        var side=new Vector3((n%2==0?.18f:-.18f),-.12f,.18f);
-                        Leaf(mat,start,start+side*.64f,start+side+Vector3.down*.20f,new Vector3(.085f,0,.02f));
-                    }
+                    // Draping growth extends in front of the lip and hangs below it.
+                    if (near || c%2==0)
+                        Sprig(shrub,at+new Vector3(.07f,-size*.53f,.36f),new Vector3(.39f,.04f,.03f),new Vector3(.05f,size*.83f,-.08f));
                 }
             }
             // The clockwise profile includes a vertex at each end of each straight.
@@ -147,13 +133,19 @@ namespace Suborned.World.Play
                 m.SetColor("_BaseColor", new Color(.34f, .50f, .22f));
                 m.SetFloat("_Smoothness", .37f);
             }
+            if (name == "Leaf_PalmFeather" || name == "Leaf_Shrub" || name == "Flower_Coral")
+            {
+                m.SetFloat("_Cull", 0f);
+                m.SetFloat("_AlphaClip", 1f);
+                m.EnableKeyword("_ALPHATEST_ON");
+            }
             palette.Add(key, m);
             return m;
         }
 
         static Mesh BuildingMesh(DistrictGround.Building b, bool near)
         {
-            var s = new Surface(5);
+            var s = new Surface(8);
             float w = b.Width, d = b.Depth, y = 3.65f;
             s.Solid(0, 0, 0, w, d, 0, .48f, 1.45f);
             s.Solid(1, 0, 0, w - .30f, d - .30f, .48f, 3.2f, 1.45f);
@@ -193,7 +185,7 @@ namespace Suborned.World.Play
                 float x = w * (-.31f + .15f * k);
                 s.Foliage(4, new Vector3(x, y + .22f, d * .32f), new Vector3(.92f, .57f, .48f), near ? 7 : 4);
             }
-            s.TerracePlants(4,new Vector3(0,y+.28f,d*.32f),w*.65f,b.Floors,near);
+            s.TerracePlants(5,6,7,new Vector3(0,y+.28f,d*.32f),w*.65f,b.Floors,near);
             return s.Finish("Rounded neighbourhood frontage " + (near ? "near" : "far"));
         }
 
@@ -203,18 +195,15 @@ namespace Suborned.World.Play
             s.Solid(0,0,0,3.75f,1.75f,0,.34f,.86f);
             s.Solid(1,0,0,3.8f,1.8f,.34f,.11f,.88f);
             s.Solid(4,0,0,3.52f,1.52f,.45f,.04f,.72f);
-            int count = near ? 18 : 8;
+            int count = near ? 15 : 7;
             for (int i = 0; i < count; i++)
             {
                 float a = i * 2.39996f, r = Mathf.Sqrt((i + .5f) / count);
-                var p = new Vector3(Mathf.Cos(a) * r * 1.53f, .52f, Mathf.Sin(a) * r * .61f);
-                float d = near ? .38f : .56f;
-                s.Foliage(2,p,new Vector3(d,.28f,d*.78f),near?7:5);
-                if (i % 3 != 0)
-                {
-                    s.Foliage(3,p + Vector3.up * .24f,new Vector3(.15f,.12f,.15f),5);
-                    if (near) s.Foliage(3,p + new Vector3(.16f,.17f,-.09f),new Vector3(.1f,.09f,.1f),4);
-                }
+                var p = new Vector3(Mathf.Cos(a) * r * 1.52f, .48f, Mathf.Sin(a) * r * .61f);
+                var across = new Vector3(Mathf.Cos(a),0,Mathf.Sin(a)) * (near ? .93f : 1.13f);
+                var up = new Vector3(.06f,.51f+.1f*Mathf.Sin(a),.03f);
+                s.Sprig(i%3==1 ? 3 : 2,p,across,up);
+                if (near) s.Sprig(i%3==1 ? 3 : 2,p,Vector3.Cross(across,Vector3.up),up);
             }
             return s.Finish("Oval planted bed " + (near ? "near" : "far"));
         }
@@ -224,7 +213,7 @@ namespace Suborned.World.Play
             // Local +Z is the pavement. The lower windows stand proud of the retained
             // podium, with a continuous transom and a curved canopy above the footway.
             float w = bay.WidthCm * .01f;
-            var s = new Surface(10);
+            var s = new Surface(12);
             s.Solid(0,0,.12f,w,.40f,0,.48f,.16f);
             s.Solid(1,0,.18f,w-.20f,.36f,.48f,3.02f,.12f);
             s.Solid(3,0,.25f,w,.47f,2.73f,.09f,.16f);
@@ -242,7 +231,7 @@ namespace Suborned.World.Play
                 float x=w*(bay.Variant==1?.24f:-.15f);
                 s.Solid(0,x,.88f,length,1.03f,3.97f,.34f,.40f);
                 s.Solid(3,x,.89f,length+.08f,1.08f,4.30f,.07f,.40f);
-                s.TerracePlants(5,new Vector3(x,4.36f,1.15f),length*.91f,bay.Variant,near);
+                s.TerracePlants(10,11,6,new Vector3(x,4.36f,1.15f),length*.91f,bay.Variant,near);
             }
             for (int k = 0; k <= 4; k++)
             {
@@ -312,7 +301,7 @@ namespace Suborned.World.Play
         {
             string key = $"front/{b.Width}/{b.Depth}/{b.Floors}";
             if (!meshes.TryGetValue(key,out var model)) meshes[key] = model = (BuildingMesh(b,true),BuildingMesh(b,false));
-            var mats = new[] { "Limestone_Tex", "Window_Teal", b.Palette % 2 == 0 ? "Enamel_Seafoam" : "Enamel_Coral", "Bronze","Leaf_CoreShrub" };
+            var mats = new[] { "Limestone_Tex", "Window_Teal", b.Palette % 2 == 0 ? "Enamel_Seafoam" : "Enamel_Coral", "Bronze","Leaf_CoreShrub","Leaf_PalmFeather","Leaf_Shrub","Flower_Coral" };
             Draw(root,"Neighbourhood corner",p,b.Yaw,model,mats.Select(m=>m == "Window_Teal" ? ShopGlass(b.Palette % 4) : Colour(m,true)).ToArray(),true);
         }
         public void Gallery(Transform root, Vector3 p, DistrictGround.Gallery bay)
@@ -320,14 +309,14 @@ namespace Suborned.World.Play
             string key = $"gallery/{bay.WidthCm}/{bay.Variant}";
             if (!meshes.TryGetValue(key, out var model)) meshes[key] = model = (GalleryMesh(bay,true), GalleryMesh(bay,false));
             var mats = new[] { "Limestone_Tex", "Window_Teal", bay.Variant==1 ? "Enamel_Coral" : "Enamel_Seafoam",
-                "Bronze", "Glow_Amber", "Leaf_CoreShrub", "Flower_Coral", "Lightbox_Travel", "Fabric_Ivory", bay.Variant % 2 == 0 ? "Enamel_Seafoam" : "Fabric_Coral" };
+                "Bronze", "Glow_Amber", "Leaf_CoreShrub", "Flower_Coral", "Lightbox_Travel", "Fabric_Ivory", bay.Variant % 2 == 0 ? "Enamel_Seafoam" : "Fabric_Coral", "Leaf_PalmFeather", "Leaf_Shrub" };
             p.y=.18f;
             Draw(root,"Housing gallery",p,bay.Yaw,model,mats.Select(m=>m == "Window_Teal" ? ShopGlass(bay.Variant) : Colour(m,true)).ToArray(),true);
         }
         public void PlantedBed(Transform root, Vector3 p, int yaw)
         {
             if (!meshes.TryGetValue("bed",out var model)) meshes["bed"] = model = (BedMesh(true),BedMesh(false));
-            var mats = new[] { "Limestone_Tex","Enamel_Seafoam","Leaf_CoreShrub","Flower_Coral","Soil" };
+            var mats = new[] { "Limestone_Tex","Enamel_Seafoam","Leaf_Shrub","Flower_Coral","Soil" };
             Draw(root,"DK_OvalGardenBed",p,yaw,model,mats.Select(m=>Colour(m,false)).ToArray(),false);
         }
     }

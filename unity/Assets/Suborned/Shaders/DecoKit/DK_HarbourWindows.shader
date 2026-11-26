@@ -55,23 +55,37 @@ Shader "Suborned/Harbour/Shop windows"
                 float2 front = float2(frac(room), height);
                 // A shallow reveal meets each jamb before a grazing ray reaches the back wall.
                 float incidence = max(0.06, dot(n, v));
-                float2 travel = -float2(dot(tangent, v) / 4.35, v.y / 2.94) * (0.90 / incidence);
+                float2 travel = -float2(dot(tangent, v) / 4.35, v.y / 2.94) * (0.62 / incidence);
                 float2 inset = front + travel;
                 float2 outside = max(-inset, inset - 1);
-                half reveal = smoothstep(0.0, 0.10, max(outside.x, outside.y));
+                float edge = max(outside.x, outside.y);
+                float aa = clamp(fwidth(edge), .001, .035);
+                half reveal = smoothstep(-aa, aa, edge);
                 float tile = upper ? 0.0 : frac((floor(room) + _Shop) * .25) * 4.0;
                 float2 tilePos = float2(fmod(tile, 2.0), floor(tile * .5));
                 float2 sampleAt = (tilePos + clamp(inset, .008, .992)) * .5;
                 float2 continuous = (float2(room, i.local.y / 2.94) + travel) * .5;
                 half3 back = SAMPLE_TEXTURE2D_GRAD(_InteriorAtlas, sampler_InteriorAtlas, sampleAt, ddx(continuous), ddy(continuous)).rgb;
                 half day = saturate(dot(unity_AmbientSky.rgb, half3(.24,.64,.12)) * 1.6);
-                half3 inside = back * lerp(half3(.85,.63,.41), half3(.94,.94,.88), day);
-                half3 jamb = lerp(half3(.10,.065,.045), half3(.40,.31,.19), saturate(inset.y));
-                inside = lerp(inside, jamb * (.68 + .32 * day), reveal * .82);
+                half3 inside = back * lerp(half3(.72,.67,.55), half3(.75,.80,.80), day);
+                // A ray hitting the side sees a linen reveal, the slab or the display floor. Sampling the
+                // edge of the picture here stretched shelving into horizontal stripes as the scout walked past.
+                float2 sideT = (step(0,travel) - front) / (sign(travel + 1e-7) * max(abs(travel),1e-5));
+                float depth = saturate(min(sideT.x,sideT.y));
+                half3 jamb = lerp(half3(.27,.25,.18), half3(.14,.125,.095), depth);
+                if (sideT.y < sideT.x) jamb = travel.y > 0 ? half3(.36,.34,.27) : half3(.18,.115,.085);
+                inside = lerp(inside, jamb * (.46 + .54 * day), reveal);
+                if (upper)
+                {
+                    float blind = .25 + .39 * frac(floor(room) * .382 + _Shop * .17);
+                    float slats = smoothstep(.32,.70,frac(i.world.y * 8.0));
+                    slats = lerp(slats,.5,saturate(fwidth(i.world.y)*18));
+                    inside = lerp(inside,half3(.45,.41,.30) * (.82 + .13 * slats), smoothstep(blind,blind+.018,height)*.84);
+                }
                 half3 mirrorRay = reflect(-v, n);
                 half3 reflection = lerp(half3(.20,.18,.13), half3(.35,.56,.63), smoothstep(-.25,.58,mirrorRay.y));
                 half fresnel = pow(1 - saturate(dot(n, v)), 3);
-                half3 glass = lerp(inside, reflection * (.12 + .88 * day), .095 + .60 * fresnel);
+                half3 glass = lerp(inside, reflection * (.12 + .88 * day), (upper ? .31 : .16) + .57 * fresnel);
                 glass = lerp(glass, _DKCutVeil.rgb, veil);
                 return half4(MixFog(glass, i.fog), 1);
             }

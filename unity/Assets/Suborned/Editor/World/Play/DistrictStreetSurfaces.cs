@@ -36,12 +36,15 @@ namespace Suborned.World.Play
             var prepared = new Dictionary<Mesh, Mesh>();
             var frontages = ground.Courts.Where(c => c.Style == "homes" || c.Style == "market")
                 .Select(c => c.Ring.Select(p => frame.World(p)).Aggregate(Vector3.zero, (sum, p) => sum + p) / c.Ring.Length).ToArray();
-            int filters = 0, shopfronts = 0;
+            int filters = 0, shopfronts = 0, distantBays = 0;
             foreach (var root in scene.GetRootGameObjects())
             foreach (var f in root.GetComponentsInChildren<MeshFilter>())
             {
                 var original = f.sharedMesh;
                 if (!original || !f.TryGetComponent<MeshRenderer>(out var renderer) || !renderer.enabled) continue;
+                if (original.lodCount > 1 && f.transform.parent && f.transform.parent.name == "Network tiles merged" &&
+                    renderer.bounds.SqrDistance(frame.World(new Pt(0,0))) > 75f*75f)
+                    renderer.meshLodSelectionBias = 1; // the fine bevels on repeated rail tiles outside the civic block
                 if (!prepared.TryGetValue(original, out var mesh))
                 {
                     string path = AssetDatabase.GetAssetPath(original);
@@ -56,22 +59,27 @@ namespace Suborned.World.Play
                     }
                     prepared.Add(original, mesh);
                 }
-                if (mesh != original && !f.GetComponentInParent<LODGroup>()) { f.sharedMesh = mesh; filters++; }
+                bool ungrouped = mesh != original && !f.GetComponentInParent<LODGroup>();
+                if (ungrouped) { f.sharedMesh = mesh; filters++; }
 
                 // The lower display backs are a separate slot in the original Streamline modules. Their upper ribbon
                 // glass, stone, ornamental corners and the flyby's parade retain their authored materials.
-                if (!original.name.StartsWith("DK_Stream") && !original.name.StartsWith("DK_BalconyBay") &&
-                    !original.name.StartsWith("DK_PortholeBay")) continue;
+                if (!DecoratedBay(original.name)) continue;
                 var b = renderer.bounds;
-                if (!frontages.Any(p => b.SqrDistance(p) < 17 * 17)) continue;
-                var slots = renderer.sharedMaterials;
-                int lobby = System.Array.FindIndex(slots, m => m && m.name == "DK_Lobby");
-                if (lobby < 0) continue;
-                slots[lobby] = ShopGlass((Mathf.FloorToInt(b.center.x + b.center.z) % 4 + 4) % 4);
-                renderer.sharedMaterials = slots;
-                shopfronts++;
+                if (frontages.Any(p => b.SqrDistance(p) < 17 * 17))
+                {
+                    var slots = renderer.sharedMaterials;
+                    int lobby = System.Array.FindIndex(slots, m => m && m.name == "DK_Lobby");
+                    if (lobby >= 0)
+                    {
+                        slots[lobby] = ShopGlass((Mathf.FloorToInt(b.center.x + b.center.z) % 4 + 4) % 4);
+                        renderer.sharedMaterials = slots;
+                        shopfronts++;
+                    }
+                }
+                if (ungrouped) { DistantFront(renderer,mesh); distantBays++; }
             }
-            Debug.Log($"Harbour streets: distance index levels on {filters} flyby renderers, occupied display backs on {shopfronts} neighbourhood modules");
+            Debug.Log($"Harbour streets: distance index levels on {filters} flyby renderers, single-material distance fronts on {distantBays} bays, occupied display backs on {shopfronts} neighbourhood modules");
         }
     }
 }
