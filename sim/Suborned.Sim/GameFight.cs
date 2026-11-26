@@ -66,7 +66,7 @@ namespace Suborned.Sim
                         var cp = StopPoint(home, Car, gun.W!.EffCm);
                         if (cp != home) { Note("ai.kite", $"{gun.Id} comes for the car: its stand is {G.Dist(cp, Car) / 100} m from it, not {G.Dist(home, Car) / 100} m."); home = cp; route = RouteRoundHold(entry, home) ?? Walk.Route(entry, home) ?? new[] { entry, home }; }
                     }
-                    Hostiles.Add(new Hostile { Id = gun.Id, At = home, Home = home, Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
+                    Hostiles.Add(new Hostile { Id = gun.Id, At = home, Home = home, Run = new Path(route), RunStart = Tick + i * R.BodyFileTicks, Speed = secSpeed, Present = true, Gun = gun }); // engine 0.36.0 (fight.spacing.file): in file from their one entry
                 }
                 int lockBefore = Lockdown;
                 Lockdown = Math.Min(Lockdown, Tick + T(SealS)); SealMoved(lockBefore);

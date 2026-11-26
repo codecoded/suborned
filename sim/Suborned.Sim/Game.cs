@@ -354,8 +354,10 @@ namespace Suborned.Sim
             if (!Range) { InitCrew(); if (Driver.Turned) driverTurnedAt = 0; } // brief 059 K7: the crew's timetable, computed back from the park; a driver turned before the mission turned at 0:00 (F4)
 
             blockPath = new Path(S.CarBlockPath); // car.drive (brief 023): the block move keeps to drivable cells, from the pickup to the block's stand
-            var sec1 = S.Grid.Route(S.Stand(S.SecEntry), S.Stand(S.SecVia)) ?? throw new FormatException("no walk for the response unit");
-            var sec2 = S.Grid.Route(S.Stand(S.SecVia), S.Stand(S.SecTo)) ?? throw new FormatException("no walk for the response unit");
+            // engine 0.36.0 (car.footprint, brief 079, Sky: "walking through the car"): the response unit's walk is made once at load, and goes round the mission's start cars as the crowd's legs do (0.33.1 left it on the bare grid)
+            var secCars = HomeCars(S, R);
+            var sec1 = S.Grid.Route(S.Stand(S.SecEntry), S.Stand(S.SecVia), secCars) ?? S.Grid.Route(S.Stand(S.SecEntry), S.Stand(S.SecVia)) ?? throw new FormatException("no walk for the response unit");
+            var sec2 = S.Grid.Route(S.Stand(S.SecVia), S.Stand(S.SecTo), secCars) ?? S.Grid.Route(S.Stand(S.SecVia), S.Stand(S.SecTo)) ?? throw new FormatException("no walk for the response unit");
             var sp = new List<Pt>(sec1); for (int i = 1; i < sec2.Length; i++) sp.Add(sec2[i]);
             securityPath = new Path(sp.ToArray());
             if (Range) InitRange(); // brief 029 (GameRange.cs): the fight range: no mission, no schedule, no cast but what is spawned
@@ -410,6 +412,7 @@ namespace Suborned.Sim
         void StepInner()
         {
             Tick++;
+            CarStandStep(); // engine 0.36.0 (car.footprint): a car that has come to stand clears its ground
             CarEpochStep(); // engine 0.33.1 (car.footprint): the standing cars as this tick starts, for the crowd's legs that set out now
             if (!Range) { GuardTimeline(); CarTimeline(); CrewStep(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule; brief 059: the crew's step (GameCrew.cs)
             UnguardedStep(); // engine 0.34.0 (Motive M067-K3 a, GameUnguarded.cs): the rivals go for a car nobody guards from outside, read after the last tick's orders

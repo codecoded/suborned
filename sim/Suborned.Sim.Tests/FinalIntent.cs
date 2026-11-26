@@ -24,7 +24,6 @@ public class FinalIntentTests
     /// <summary>Motive §15.2's measured moves: the rows whose hashes move (outcome, fail, T and Alert do not).</summary>
     static readonly HashSet<string> Moves = new HashSet<string>(StringComparer.Ordinal)
     {
-        "loud", "loud-fight", "loud-left-downed", "loud-left-standing",
         "fight-loud-enforcer-down",
         // c038 (Waymark, brief 067 §5.1): the loud-wait twins. Outcome, fail code, Trail and Alert agree both ways; under every the final
         // fight's police fire on the cell in the car who gave them no cause (square: security-1/-2 take the fixer, "final", and shoot him

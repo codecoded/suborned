@@ -161,6 +161,42 @@ namespace Suborned.Sim
             var list = new List<(Pt, Pt)>(cars.Count); foreach (var c in cars) list.Add((c.At, c.Heading));
             carEpochs.Add((Tick, carEpochs.Count, SameKey(key, HomeKey()), key, MaskOf(S.Grid, R, list)));
         }
+        // ---------------------------------------------------------------- a car comes to stand (engine 0.36.0; brief 079)
+
+        long[] carStandKey = Array.Empty<long>();
+        /// <summary>Rulebook car.footprint: when a car comes to stand, whoever stands on its ground steps to the free cell nearest, and a walk in hand
+        /// that would cross its ground is walked again round it, to the same end, from where the walker is (an operative mid-act stays: his act holds
+        /// him, and a downed or carried body lies where it lies). Read at the start of each tick; the walks it makes are hashed as any walk is.</summary>
+        void CarStandStep()
+        {
+            if (Range) return;
+            var cars = StandingCars(); var key = KeyOf(cars);
+            if (SameKey(key, carStandKey)) return;
+            bool first = carStandKey.Length == 0; carStandKey = key; if (first) return; // the mission's start: nobody walks yet
+            var w = Walk;
+            bool Crosses(Path p, long fromMm) { for (long mm = fromMm; mm <= p.Length; mm += 250) if (w.CarCovers(p.At(mm))) return !w.CarCovers(p.End) || mm < p.Length - 1000; return false; }
+            Pt[]? Round(Pt from, Pt to) { var a = w.NearestFree(from) ?? from; var r = w.Route(a, to); return r != null && r.Length >= 2 ? r : null; }
+            foreach (var op in Ops)
+            {
+                if (op.Inside || op.InCar || op.Down || op.CarriedBy.HasValue || op.Driven || op.Busy != null) continue;
+                if (op.Walk != null) { if (Crosses(op.Walk, op.WalkMm) && Round(op.Pos, op.Walk.End) is Pt[] r) { op.Walk = new Path(r); op.WalkMm = 0; } }
+                else if (w.CarCovers(op.Pos) && w.NearestFree(op.Pos) is Pt f) { op.Walk = new Path(new[] { op.Pos, f }); op.WalkMm = 0; } // the step off its ground
+            }
+            foreach (var h in Hostiles)
+            {
+                if (!h.Present || h.Down || h.Gun.St == "gone" || h.Gun.St == "break") continue;
+                var at = h.Pos(Tick);
+                if (h.Run != null && Tick >= h.RunStart && h.Moving(Tick)) { if (Crosses(h.Run, (long)(Tick - h.RunStart) * h.Speed) && Round(at, h.Run.End) is Pt[] r) { h.Run = new Path(r); h.RunStart = Tick; } }
+                else if (h.Run == null && w.CarCovers(at) && w.NearestFree(at) is Pt f) { h.Run = new Path(new[] { at, f }); h.RunStart = Tick; h.At = f; if (h.Home == at) h.Home = f; }
+            }
+            foreach (var m in Crew)
+            {
+                if (m.Fight || !Up(m) || m.Mode != CrewMode.Walking || m.Walk == null || m.Disp != null) continue;
+                long mm = (long)Math.Max(0, Tick - m.WalkStart) * m.Speed;
+                if (Crosses(m.Walk, mm) && Round(MemberPos(m, Tick), m.Walk.End) is Pt[] r) { m.Walk = new Path(r); m.WalkStart = Tick; }
+            }
+        }
+
         /// <summary>The cars' epoch in force at `tick` (the last one begun by then; before the first, or past the last read, the nearest).</summary>
         (int id, bool home, bool[]? mask) CarEpochAt(int tick)
         {
