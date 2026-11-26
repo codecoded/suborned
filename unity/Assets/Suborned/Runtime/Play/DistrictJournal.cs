@@ -259,6 +259,14 @@ namespace Suborned.Play
                 CitizenOrderPage();
                 return;
             }
+            var ties = d.Network.Neighbours(person);
+            bool firstLink = true;
+            foreach (var tie in ties)
+            {
+                if (!g.ContactKnown(tie.person)) continue;
+                if (firstLink) { Caps(pages, "Known connections", Gold); firstLink = false; }
+                LinkFace(pages, tie.person, tie.kind);
+            }
             var job = d.Available(person);
             if (job != null)
             {
@@ -350,15 +358,13 @@ namespace Suborned.Play
                     Button(pages, "Stand surety for " + r.Need + "  ·  $25", () => Speak(by, "district-bond", ""));
                 if (d.Trust[person] <= 0)
                     Button(pages, "Help with " + r.Need + "  ·  $15", () => Speak(by, "district-back", ""));
-                foreach (var tie in d.Network.Neighbours(person))
+                foreach (var tie in ties)
                 {
                     var friend = d.Map.People[tie.person];
                     if (!d.Roams(tie.person))
                         continue;
                     if (d.Trust[person] > 0 && d.Trust[tie.person] <= 0)
                         Button(pages, "Ask for an introduction to " + friend.Name, () => Speak(by, "district-refer", friend.Id));
-                    else if (g.ContactKnown(tie.person))
-                        LinkFace(pages, tie.person, tie.kind);
                 }
             }
 

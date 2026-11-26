@@ -225,6 +225,7 @@ namespace Suborned.Play
             // Sky 2026-10-20: no automatic view switch; a restart keeps the view (map or ground) the player is in
             DriveReset(); // brief 025: nobody driven
             if (Game != null && Fault == null) Save(); // a restart closes the run being left at its last tick
+            BookSections = null;
             Fault = null; Ending = ""; EndDebrief = null; endReplay = null; endFor = null; failPrep = null; lastLog = 0; acc = 0f; steps = 0; stepMs = 0; StepMsMax = 0; frames = 0; frameEngineMs = 0;
             Paused = startPaused; Speed = Settings.Current.gameplay.defaultSpeed; SelTarget = null; SelIntent = null; Picked = -1; intentKey = ""; HoverIntent = null; Hover = null; Panel = null; PanelHover = -1; Array.Clear(pending, 0, 4); Pops.Clear(); Pulses.Clear();
             if (viewRoot) Destroy(viewRoot.gameObject);
@@ -1537,10 +1538,12 @@ namespace Suborned.Play
 
         string SessionFile()
         {
-            if (!string.IsNullOrEmpty(SessionDirOverride)) { Directory.CreateDirectory(SessionDirOverride); return Path.Combine(SessionDirOverride, $"handover-{DateTime.Now:yyyyMMdd-HHmmss}.script.json"); }
-            var dir = Application.isEditor ? Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "out", "play")) : Path.Combine(Application.persistentDataPath, "play");
+            var dir = SessionDirOverride ?? (Application.isEditor ? Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "out", "play")) : Path.Combine(Application.persistentDataPath, "play"));
             Directory.CreateDirectory(dir);
-            return Path.Combine(dir, $"handover-{DateTime.Now:yyyyMMdd-HHmmss}.script.json");
+            var stem = Path.Combine(dir, $"handover-{DateTime.Now:yyyyMMdd-HHmmss}");
+            var path = stem + ".script.json";
+            for (int copy = 2; File.Exists(path); copy++) path = stem + "-" + copy + ".script.json";
+            return path;
         }
 
         /// <summary>The session as a replayable script with its run record: start state, every order (taken or refused), checkpoints, until this

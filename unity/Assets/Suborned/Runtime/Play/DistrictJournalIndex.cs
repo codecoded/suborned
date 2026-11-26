@@ -191,6 +191,23 @@ namespace Suborned.Play
                 int other = bound.People.IndexOf(p.Lover);
                 if (other >= 0) LinkFace(pages, bound.District.Map.People.Length + other, "Partner");
             }
+            if (bound.CallOffered(p.Role))
+            {
+                var answer = bound.CallQuery(p.Role);
+                if (answer.ok)
+                {
+                    Caps(pages, "Earned favour", Gold);
+                    string name = p.Name.Split(' ')[0];
+                    string action = p == bound.Driver ? "Call for pickup" : p == bound.Inez && p.KSecret && p.Lover != null ?
+                        "Ask " + name + " to call " + p.Lover.Name.Split(' ')[0] : "Call " + name;
+                    Button(pages, action + "  ·  +" + bound.R.CallTrail + " Trail", () =>
+                    {
+                        Close();
+                        host.Issue(new Order { Op = "fixer", Do = "call", Target = p.Role });
+                    });
+                }
+                else Label(pages, "Call unavailable  ·  " + answer.why, 15, Blue);
+            }
             if (!p.KNeed && !p.KRoutine && !p.Turned && !p.KSecret)
                 Label(pages, "There is more to learn from watching their round or striking up a conversation.", 17, Ivory);
             if (p.Down) Label(pages, "Incapacitated", 17, Gold);
