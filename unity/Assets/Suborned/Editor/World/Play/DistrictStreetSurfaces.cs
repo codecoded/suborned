@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
 
 namespace Suborned.World.Play
@@ -34,6 +35,8 @@ namespace Suborned.World.Play
         {
             const string models = "Assets/Suborned/OldTownArt/DecoKit/Models/";
             var prepared = new Dictionary<Mesh, Mesh>();
+            var flatPaving = new List<MeshRenderer>();
+            var civic = frame.World(new Pt(0, 0));
             var frontages = ground.Courts.Where(c => c.Style == "homes" || c.Style == "market")
                 .Select(c => c.Ring.Select(p => frame.World(p)).Aggregate(Vector3.zero, (sum, p) => sum + p) / c.Ring.Length).ToArray();
             int filters = 0, shopfronts = 0, distantBays = 0;
@@ -42,6 +45,16 @@ namespace Suborned.World.Play
             {
                 var original = f.sharedMesh;
                 if (!original || !f.TryGetComponent<MeshRenderer>(out var renderer) || !renderer.enabled) continue;
+                var bounds = renderer.bounds;
+                if (f.transform.parent && f.transform.parent.name.EndsWith("tiles merged", System.StringComparison.OrdinalIgnoreCase) &&
+                    bounds.max.y <= .30f && bounds.size.y < .65f && bounds.SqrDistance(civic) > 75f * 75f &&
+                    renderer.shadowCastingMode == ShadowCastingMode.On)
+                {
+                    // Street kerbs and flush rails receive the city's shadows. Their millimetre bevels
+                    // have no meaningful silhouette in a directional shadow map.
+                    renderer.shadowCastingMode = ShadowCastingMode.Off;
+                    flatPaving.Add(renderer);
+                }
                 if (original.lodCount > 1 && f.transform.parent && f.transform.parent.name == "Network tiles merged" &&
                     renderer.bounds.SqrDistance(frame.World(new Pt(0,0))) > 75f*75f)
                     renderer.meshLodSelectionBias = 1; // the fine bevels on repeated rail tiles outside the civic block
@@ -79,6 +92,10 @@ namespace Suborned.World.Play
                 }
                 if (ungrouped) { DistantFront(renderer,mesh); distantBays++; }
             }
+            if (flatPaving.Count > 0)
+                scene.GetRootGameObjects().First(o => o.GetComponentInChildren<HandoverHost>(true))
+                    .AddComponent<DistrictPavementShadows>().surfaces = flatPaving.ToArray();
+            Debug.Log($"Harbour daylight: {flatPaving.Count} at-grade pavement chunks receive shadows without casting into the sun map");
             Debug.Log($"Harbour streets: distance index levels on {filters} flyby renderers, single-material distance fronts on {distantBays} bays, occupied display backs on {shopfronts} neighbourhood modules");
         }
     }

@@ -41,6 +41,8 @@ Shader "Suborned/Harbour/Shop windows"
             #pragma vertex Vert
             #pragma fragment Window
             #pragma multi_compile_fog
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             half4 Window(Pixel i) : SV_Target
             {
                 float3 hiddenGround;
@@ -68,6 +70,10 @@ Shader "Suborned/Harbour/Shop windows"
                 half3 back = SAMPLE_TEXTURE2D_GRAD(_InteriorAtlas, sampler_InteriorAtlas, sampleAt, ddx(continuous), ddy(continuous)).rgb;
                 half day = saturate(dot(unity_AmbientSky.rgb, half3(.24,.64,.12)) * 1.6);
                 half3 inside = back * lerp(half3(.72,.67,.55), half3(.75,.80,.80), day);
+                Light sun = GetMainLight(TransformWorldToShadowCoord(i.world));
+                half lightOnGlass = saturate(dot(n,sun.direction)) * sun.shadowAttenuation;
+                half jambShade = smoothstep(0,.17,min(front.x,1-front.x)) * smoothstep(0,.15,1-front.y);
+                inside *= lerp(1, (.54 + .31*lightOnGlass) * (.80 + .20*jambShade), day);
                 // A ray hitting the side sees a linen reveal, the slab or the display floor. Sampling the
                 // edge of the picture here stretched shelving into horizontal stripes as the scout walked past.
                 float2 sideT = (step(0,travel) - front) / (sign(travel + 1e-7) * max(abs(travel),1e-5));
@@ -84,6 +90,8 @@ Shader "Suborned/Harbour/Shop windows"
                 }
                 half3 mirrorRay = reflect(-v, n);
                 half3 reflection = lerp(half3(.20,.18,.13), half3(.35,.56,.63), smoothstep(-.25,.58,mirrorRay.y));
+                half4 probe = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0,samplerunity_SpecCube0,mirrorRay,3);
+                reflection = lerp(reflection,DecodeHDREnvironment(probe,unity_SpecCube0_HDR),.52);
                 half fresnel = pow(1 - saturate(dot(n, v)), 3);
                 half3 glass = lerp(inside, reflection * (.12 + .88 * day), (upper ? .31 : .16) + .57 * fresnel);
                 glass = lerp(glass, _DKCutVeil.rgb, veil);

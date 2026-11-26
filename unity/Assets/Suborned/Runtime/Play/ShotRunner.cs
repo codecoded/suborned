@@ -62,6 +62,7 @@ namespace Suborned.Play
         {
             public string Name = "", Status = "ok", Error = "", Size = ""; public int Tick, Frames; public bool Audited, AuditClean = true;
             public long Triangles, Batches, StreetTriangles; public int Citizens, Instanced, Vehicles, Robots;
+            public float MainMs, RenderMs, PresentMs, SetPass, ShadowCasters;
             public readonly List<string> Files = new(), Issues = new(); public float MeanMs = -1, P99Ms = -1, GpuMs = -1;
         }
 
@@ -180,19 +181,34 @@ namespace Suborned.Play
                 // 2 · frame times with the clock running (it advances the game by that many seconds)
                 if (s.perf > 0)
                 {
-                    var ds = new List<float>(); var gpu = new float[1];
+                    var ds = new List<float>();
                     h.SetPaused(false);
                     yield return new WaitForSecondsRealtime(1f);
                     using (var tris = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Triangles Count", 256))
                     using (var batches = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Batches Count", 256))
                     {
-                        yield return GameProof.Sample(s.perf, ds, gpu);
+                        using var recorder = new Suborned.Perf.PerfRecorder(Mathf.Max(256, Mathf.CeilToInt(s.perf * 512)));
+                        recorder.Begin();
+                        double until = Time.realtimeSinceStartupAsDouble + s.perf;
+                        while (Time.realtimeSinceStartupAsDouble < until)
+                        {
+                            yield return null;
+                            ds.Add(Time.unscaledDeltaTime * 1000f);
+                            recorder.Sample();
+                        }
+                        float Mean(double[] values, int count) => (float)values.Take(count).Where(double.IsFinite).DefaultIfEmpty(-1).Average();
+                        res.GpuMs = Mean(recorder.Timing(4), recorder.Timings);
+                        res.MainMs = Mean(recorder.Timing(2), recorder.Timings);
+                        res.RenderMs = Mean(recorder.Timing(3), recorder.Timings);
+                        res.PresentMs = Mean(recorder.Timing(5), recorder.Timings);
+                        res.SetPass = Mean(recorder.Frame(2), recorder.Frames);
+                        res.ShadowCasters = Mean(recorder.Frame(5), recorder.Frames);
                         res.Triangles = MedianCounter(tris); res.Batches = MedianCounter(batches);
                     }
                     h.SetPaused(true);
                     var street = h.GetComponent<DistrictStreet>();
                     if (street) { res.Citizens = street.VisiblePeople; res.Instanced = street.InstancedPeople; res.Vehicles = street.VisibleVehicles; res.Robots = street.VisibleRobots; res.StreetTriangles = street.VisibleStreetTriangles(); }
-                    res.Frames = ds.Count; res.MeanMs = ds.Average(); res.P99Ms = ds[(int)(ds.Count * 0.99f)]; res.GpuMs = gpu[0]; res.Tick = h.Game.Tick;
+                    ds.Sort(); res.Frames = ds.Count; res.MeanMs = ds.Average(); res.P99Ms = ds[(int)(ds.Count * 0.99f)]; res.Tick = h.Game.Tick;
                 }
                 yield return new WaitForSecondsRealtime(s.settle); // the camera's ease, the HUD's fades
                 yield return new WaitForEndOfFrame(); LogBloom(h, s); // brief 085 (Glint, note 1): what bloom the frame just drawn resolved to
@@ -413,8 +429,10 @@ namespace Suborned.Play
                 sb.Append(i == 0 ? "\n" : ",\n").Append("  {\"name\": \"").Append(Esc(r.Name)).Append("\", \"status\": \"").Append(r.Status).Append("\", \"tick\": ").Append(r.Tick)
                   .Append(", \"error\": \"").Append(Esc(r.Error)).Append("\", \"files\": [").Append(string.Join(", ", r.Files.Select(f => "\"" + Esc(f) + "\""))).Append(']');
                 if (r.Audited) sb.Append(", \"audit\": {\"clean\": ").Append(r.AuditClean ? "true" : "false").Append(", \"issues\": [").Append(string.Join(", ", r.Issues.Select(x => "\"" + Esc(x) + "\""))).Append("]}");
-                if (r.MeanMs >= 0) sb.Append(", \"frames\": {\"count\": ").Append(r.Frames).Append(", \"meanMs\": ").Append(F(r.MeanMs)).Append(", \"fps\": ").Append(F(1000f / r.MeanMs)).Append(", \"p99Ms\": ").Append(F(r.P99Ms)).Append(", \"gpuMs\": ").Append(F(r.GpuMs)).Append('}');
+                if (r.MeanMs >= 0) sb.Append(", \"frames\": {\"count\": ").Append(r.Frames).Append(", \"meanMs\": ").Append(F(r.MeanMs)).Append(", \"fps\": ").Append(F(1000f / r.MeanMs)).Append(", \"p99Ms\": ").Append(F(r.P99Ms)).Append(", \"gpuMs\": ").Append(F(r.GpuMs))
+                    .Append(", \"cpuMainMs\": ").Append(F(r.MainMs)).Append(", \"cpuRenderMs\": ").Append(F(r.RenderMs)).Append(", \"presentWaitMs\": ").Append(F(r.PresentMs)).Append('}');
                 if (r.MeanMs >= 0) sb.Append(", \"render\": {\"medianTriangles\": ").Append(r.Triangles).Append(", \"medianBatches\": ").Append(r.Batches)
+                    .Append(", \"meanSetPassCalls\": ").Append(F(r.SetPass)).Append(", \"meanShadowCasters\": ").Append(F(r.ShadowCasters))
                     .Append(", \"streetMeshTriangles\": ").Append(r.StreetTriangles).Append(", \"citizens\": ").Append(r.Citizens).Append(", \"instancedCitizens\": ").Append(r.Instanced)
                     .Append(", \"vehicles\": ").Append(r.Vehicles).Append(", \"robots\": ").Append(r.Robots).Append('}');
                 else if (r.Frames > 0) sb.Append(", \"clipFrames\": ").Append(r.Frames);

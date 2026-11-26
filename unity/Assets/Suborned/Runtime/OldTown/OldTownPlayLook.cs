@@ -97,7 +97,8 @@ namespace Suborned.OldTown
             if (c != cam) { if (held && !otherHas && c.cameraType == CameraType.Game && !(c.TryGetComponent<UniversalAdditionalCameraData>(out var ud) && ud.renderType == CameraRenderType.Overlay)) { otherHas = true; SceneAmbient(); } return; }
             if (applied) return;
             applied = true;
-            fog = RenderSettings.fog; if (fogOff) RenderSettings.fog = false;
+            fog = RenderSettings.fog;
+            if (fogOff && c.orthographic) RenderSettings.fog = false;
             weights.Clear(); foreach (var v in presentationVolumes) { weights.Add(v ? v.weight : 0f); if (v) v.weight = 0f; }
             if (playVolume) { playWeight = playVolume.weight; playVolume.weight = 1f; }
             enabledWas.Clear(); foreach (var b in presentationOnly) { enabledWas.Add(b && b.enabled); if (b && !presentationLens) b.enabled = false; }
