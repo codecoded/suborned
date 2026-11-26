@@ -36,7 +36,7 @@ namespace Suborned.Play
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Screen0()
         {
-            if (ArgValue("-gameProof") is string proofDir) HandoverHost.SessionDirOverride = Path.Combine(proofDir, "sessions");
+            if ((ArgValue("-gameProof") ?? ArgValue("-districtProof")) is string proofDir) HandoverHost.SessionDirOverride = Path.Combine(proofDir, "sessions");
             if (Application.isEditor || Application.isBatchMode) return;
             var r = Screen.currentResolution;
             if (!Arg("-novsync")) QualitySettings.vSyncCount = 1; // the display's own rate, no tearing, no heat for frames nobody sees (-novsync: uncapped, for the proof's headroom)
