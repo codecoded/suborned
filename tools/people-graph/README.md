@@ -2,6 +2,13 @@
 
 The expanded people as a graph in SurrealDB, to ask who knows whom, who can introduce whom and who stands where, in one query. **Derived only**: the JSON (the cast tables, `out/people/*.people.json`) stays the source of truth. A run, a replay, the checker and Unity never read this database; delete it and the command makes it again. No model calls; no embeddings are loaded (they would add nothing to a graph of 130 people).
 
+## Playable Harbour district
+
+`bun run district:bake` queries the promoted SurrealDB graph for residents, their daily stops, and the directed ties that allow introductions. It combines those records with the Harbour street plan and the civic navigation meshes in `sim/Suborned.Sim/District/harbour.json`. The simulation embeds this versioned snapshot, so a saved game replays on either Mac offline. Orders record who offered a favour, who passed the message, and how the recipient responded.
+
+In play, **N** opens the district book. A lead can mark its contact on the street or send a selected operative to meet them. Talk pauses the clock. While aboard a car, click a road to drive or a second road to change course. The district book also has **Step out here**.
+
+
 ```
 bun run people:graph                      # the promoted cast (held to its run first, as bun run people does)
 bun run people:graph --run r015           # an accepted run's cast (the last round that ran Pulse)

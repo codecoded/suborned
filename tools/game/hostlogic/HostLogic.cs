@@ -38,7 +38,7 @@ public static class Host
     public static HandoverHost Fresh()
     {
         HostLogicShim.UnscaledTime = 100f; HostLogicShim.Frame++;
-        var h = new HandoverHost();
+        var h = new HandoverHost { missionScenario = true };
         h.Begin(); if (h.Fault != null) throw new InvalidOperationException($"Begin faulted: {h.Status}: {h.Fault}");
         var views = Get(h, "views"); // its members are silent (Patch.cs); the collections the host fills for it are real
         foreach (var f in views.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)) if (f.GetValue(views) == null && f.FieldType.IsGenericType && f.FieldType.GetConstructor(Type.EmptyTypes) != null) f.SetValue(views, Activator.CreateInstance(f.FieldType));

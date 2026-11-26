@@ -15,7 +15,7 @@ namespace Suborned.Sim
         {
             if (o.Tick != Tick) throw new InvalidOperationException($"order for tick {o.Tick} given at tick {Tick}");
             string why; refusal = default;
-            try { why = Over ? No("mission-over", "the mission is over") : Check(o); }
+            try { why = o.Do == "open-district" && o.Op == "cell" ? OpenSavedDistrict() : Over ? No("mission-over", "the mission is over") : Check(o); }
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
             bool ok = why.Length == 0;
             var a = AnswerOf(why);

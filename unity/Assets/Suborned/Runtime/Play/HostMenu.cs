@@ -63,8 +63,10 @@ namespace Suborned.Play
             var g = Suborned.Sim.Engine.New(PlayInputs, sc.Start);
             var list = new System.Collections.Generic.List<(int i, Suborned.Sim.Order o)>(); for (int i = 0; i < sc.Orders.Count; i++) list.Add((i, sc.Orders[i]));
             list.Sort((a, b) => a.o.Tick != b.o.Tick ? a.o.Tick.CompareTo(b.o.Tick) : a.i.CompareTo(b.i));
-            foreach (var (_, o) in list) { g.RunTo(o.Tick); if (g.Over) break; g.Issue(o); }
+            foreach (var (_, o) in list) { g.RunTo(o.Tick); if (g.Over && (g.Tick != o.Tick || o.Do != "open-district")) break; g.Issue(o); }
             if (!g.Over) g.RunTo(sc.Until);
+            if (g.District == null && !GameBoot.Automation)
+                g.Issue(new Suborned.Sim.Order {Tick=g.Tick,Op="cell",Do="open-district"});
             lastLog = g.Log.Count; Continued = true;
             Debug.Log($"Play: continued {System.IO.Path.GetFileName(path)} at tick {g.Tick} ({sc.Orders.Count} orders)");
             return DialStarted(g); // brief 098: the saved start's counts built the same world; its census to the log
