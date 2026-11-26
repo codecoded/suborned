@@ -211,6 +211,8 @@ namespace Suborned.World.Play
             foreach (var fixture in ground.StreetFixtures) PlaceFixture(fixture, "street");
             templates.LandingsAndStops(root.transform,frame,ground);
             DistrictFerryGardens.Install(scene,root.transform,frame,ground);
+            var lantern = ground.Venues.FirstOrDefault(v => v.Id == "meridian-court");
+            if (lantern != null) DistrictCourtModel.ShadePalms(scene, frame.World(lantern.At));
         }
 
         static Material MaterialAt(string path) => AssetDatabase.LoadAssetAtPath<Material>(path)

@@ -69,12 +69,12 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
         v.name + ' walk-ups',
         standing(project(v, u * v.span, w * v.width), v),
       );
-      const destination = v.boarding ?? v;
+      const destination = v.roundEnd ?? v.boarding ?? v;
       const post = atPlace(
         id + '-post',
         'stand',
-        v.boarding ? v.name + ' boarding apron' : v.name,
-        standing(project(destination, -u * (v.boarding ? 4 : v.span), ((k % 3) - 1) * v.width * 0.77), v),
+        v.roundEnd?.name ?? (v.boarding ? v.name + ' boarding apron' : v.name),
+        standing(project(destination, -u * (v.roundEnd?.span ?? (v.boarding ? 4 : v.span)), ((k % 3) - 1) * v.width * 0.77), v),
       );
       const p: Person = {
         id,
@@ -98,7 +98,7 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
         need: t.need,
         needWeights: { ...t.needWeights },
         institution: t.institution ? employer : null,
-        look: { ...t.look },
+        look: v.roundEnd ? { block: 'job/resident' } : { ...t.look },
         memory: [],
         ties: [],
         routine: {

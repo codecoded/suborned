@@ -17,6 +17,7 @@ export type Venue = {
   generation: number;
   fixtures: Fixture[];
   boarding?: { at: Point; along: Point };
+  roundEnd?: { at: Point; along: Point; name: string; span: number };
 };
 type Strip = { id: string; line: readonly (readonly number[])[]; width: number };
 export function project(v: Pick<Venue, 'at' | 'along'>, along: number, across: number): Point {
@@ -168,12 +169,20 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
       along: [1, 0],
     };
   }
-  const clock = world.megastructures.flatMap(m => m.parts).find(p => p.id.endsWith('/lantern-terraces/bed/0'));
-  if (clock) {
+  const court = world.megastructures.find(m => m.parts.some(p => p.id.includes('/court-wing/')));
+  const clock = court?.parts.find(p => p.id.endsWith('/bed/0'));
+  const bridge = court?.parts.find(p => p.id.endsWith('/glazed-bridge'));
+  if (clock && bridge) {
     const east = Math.max(...clock.ring.map(p => p[0]));
     const ys = clock.ring.map(p => p[1]);
     add('meridian-court', 'Lantern Court clock', { at: [east + 6, (Math.min(...ys) + Math.max(...ys)) / 2], along: [0, 1] },
-      'walk', 16, 8, 1.4, 1);
+      'walk', 16, 12, 3.1, 1);
+    const venue = venues.find(v => v.id === 'meridian-court');
+    if (venue) {
+      const xs = bridge.ring.map(p => p[0]);
+      const at: Point = [(Math.min(...xs) + Math.max(...xs)) / 2, Math.max(...bridge.ring.map(p => p[1])) + 15];
+      venue.roundEnd = { at, along: [1, 0], name: 'Market Street end of Lantern Court', span: 8 };
+    }
   }
   return venues;
 }
@@ -242,13 +251,17 @@ const pierFurniture: typeof dress.waterfront = [
   ['Bollard_Play', 18, -8.2, 0, 0.4],
   ['Planter_Urn_Play', -2.2, 2.5, 0, 0.65],
 ];
+const layouts: Record<string, typeof dress.walk> = {
+  'sunset-coffee': courtFurniture,
+  pier: pierFurniture,
+  // Put the night-market booth on the east frontage. Keep the approach from the lane
+  // to the globe and the bridge clear for residents on their way to the tram.
+  'lantern-market': [['CurvedKiosk_Play', 24, 3.2, 0, 1.7], ...dress.market.slice(1)],
+  'meridian-court': [['Bench_Play', -3.4, 14.7, 90, 1], ['Bench_Play', 3.6, 14.7, 90, 1]],
+};
 export function furnish(venue: Venue, fits: (point: Point, radius: number) => boolean) {
   const yaw = (Math.atan2(venue.along[1], -venue.along[0]) * 180) / Math.PI;
-  for (const [kit, along, across, turn, radius] of venue.id === 'sunset-coffee'
-    ? courtFurniture
-    : venue.id === 'pier'
-      ? pierFurniture
-      : dress[venue.style]) {
+  for (const [kit, along, across, turn, radius] of layouts[venue.id] ?? dress[venue.style]) {
     for (const shift of [0, 2, -2, 4, -4]) {
       const at = project(venue, along + shift, across);
       if (

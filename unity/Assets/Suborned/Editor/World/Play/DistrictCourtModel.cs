@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -25,6 +26,34 @@ namespace Suborned.World.Play
             var rect = J.A(bridge, "rect").Select(v => (float)(double)v).ToArray();
             return new Vector3((rect[0] + rect[1]) * .5f, streetHeight + J.F(bridge, "base"),
                 (rect[2] + rect[3]) * .5f + Suborned.OldTown.OldTownFrame.DZ);
+        }
+
+        public static void ShadePalms(UnityEngine.SceneManagement.Scene scene, Vector3 court)
+        {
+            var neighbourhood = new Bounds(court, new Vector3(150, 45, 145));
+            var finishes = new Dictionary<Material, Material>();
+            foreach (var root in scene.GetRootGameObjects())
+            foreach (var renderer in root.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                if (!neighbourhood.Intersects(renderer.bounds)) continue;
+                var slots = renderer.sharedMaterials;
+                bool changed = false;
+                for (int i = 0; i < slots.Length; i++)
+                {
+                    var original = slots[i];
+                    if (!original || (original.name != "DK_Leaf_PalmFan" && original.name != "DK_Leaf_PalmFeather")) continue;
+                    if (!finishes.TryGetValue(original, out var finish))
+                    {
+                        finish = new Material(original) { name = original.name + " • Lantern Court" };
+                        finish.SetColor("_BaseColor", new Color(.57f, .66f, .62f));
+                        finish.SetFloat("_Smoothness", .24f);
+                        finishes.Add(original, finish);
+                    }
+                    slots[i] = finish;
+                    changed = true;
+                }
+                if (changed) renderer.sharedMaterials = slots;
+            }
         }
 
         public static void Build(Transform root, MegaDto block, MassDto plot)
