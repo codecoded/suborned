@@ -10,10 +10,10 @@ namespace Suborned.World.Play
 {
     // Shared profiles for street-scale corners and the oval planted beds in the store studies.
     // A whole frontage at each LOD is one mesh. No object, animator or light per window or flower.
-    sealed class DistrictStreetArchitecture
+    sealed partial class DistrictStreetArchitecture
     {
         const string Mats = "Assets/Suborned/OldTownArt/DecoKit/Materials/DK_";
-        sealed class Surface
+        sealed partial class Surface
         {
             readonly List<Vector3> vertices = new();
             readonly List<Vector2> uv = new();
@@ -141,13 +141,11 @@ namespace Suborned.World.Play
             if (!source) throw new BuildFailedException("Missing streetscape surface " + name);
             m = new Material(source) { name = key, enableInstancing = true };
             if (architecture) m.shader = Shader.Find("OldTown/DecoKit/Lit Cutaway") ?? throw new BuildFailedException("Missing architectural cutaway shader");
-            if (architecture && name == "Window_Teal")
+            if (name == "Leaf_CoreShrub")
             {
-                m.SetColor("_BaseColor",new Color(.34f,.54f,.54f));
-                m.SetFloat("_Metallic",.23f);
-                m.SetFloat("_Smoothness",.9f);
-                m.EnableKeyword("_EMISSION");
-                m.SetColor("_EmissionColor",new Color(.028f,.052f,.050f));
+                // Broad waxy leaves on a sunlit balcony, also legible from their shaded underside.
+                m.SetColor("_BaseColor", new Color(.34f, .50f, .22f));
+                m.SetFloat("_Smoothness", .37f);
             }
             palette.Add(key, m);
             return m;
@@ -226,7 +224,7 @@ namespace Suborned.World.Play
             // Local +Z is the pavement. The lower windows stand proud of the retained
             // podium, with a continuous transom and a curved canopy above the footway.
             float w = bay.WidthCm * .01f;
-            var s = new Surface(8);
+            var s = new Surface(10);
             s.Solid(0,0,.12f,w,.40f,0,.48f,.16f);
             s.Solid(1,0,.18f,w-.20f,.36f,.48f,3.02f,.12f);
             s.Solid(3,0,.25f,w,.47f,2.73f,.09f,.16f);
@@ -286,6 +284,7 @@ namespace Suborned.World.Play
                     s.Solid(4,w*.40f,.90f,.12f,.08f,4.56f,1.94f,.035f);
                 }
             }
+            UpperLoggia(s, w, bay.Variant, near);
             return s.Finish("Street gallery " + (near ? "near" : "far"));
         }
 
@@ -314,16 +313,16 @@ namespace Suborned.World.Play
             string key = $"front/{b.Width}/{b.Depth}/{b.Floors}";
             if (!meshes.TryGetValue(key,out var model)) meshes[key] = model = (BuildingMesh(b,true),BuildingMesh(b,false));
             var mats = new[] { "Limestone_Tex", "Window_Teal", b.Palette % 2 == 0 ? "Enamel_Seafoam" : "Enamel_Coral", "Bronze","Leaf_CoreShrub" };
-            Draw(root,"Neighbourhood corner",p,b.Yaw,model,mats.Select(m=>Colour(m,true)).ToArray(),true);
+            Draw(root,"Neighbourhood corner",p,b.Yaw,model,mats.Select(m=>m == "Window_Teal" ? ShopGlass(b.Palette % 4) : Colour(m,true)).ToArray(),true);
         }
         public void Gallery(Transform root, Vector3 p, DistrictGround.Gallery bay)
         {
             string key = $"gallery/{bay.WidthCm}/{bay.Variant}";
             if (!meshes.TryGetValue(key, out var model)) meshes[key] = model = (GalleryMesh(bay,true), GalleryMesh(bay,false));
             var mats = new[] { "Limestone_Tex", "Window_Teal", bay.Variant==1 ? "Enamel_Coral" : "Enamel_Seafoam",
-                "Bronze", "Glow_Amber", "Leaf_CoreShrub", "Flower_Coral", "Lightbox_Travel" };
+                "Bronze", "Glow_Amber", "Leaf_CoreShrub", "Flower_Coral", "Lightbox_Travel", "Fabric_Ivory", bay.Variant % 2 == 0 ? "Enamel_Seafoam" : "Fabric_Coral" };
             p.y=.18f;
-            Draw(root,"Housing gallery",p,bay.Yaw,model,mats.Select(m=>Colour(m,true)).ToArray(),true);
+            Draw(root,"Housing gallery",p,bay.Yaw,model,mats.Select(m=>m == "Window_Teal" ? ShopGlass(bay.Variant) : Colour(m,true)).ToArray(),true);
         }
         public void PlantedBed(Transform root, Vector3 p, int yaw)
         {

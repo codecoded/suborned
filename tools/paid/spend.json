@@ -84,6 +84,10 @@
   "2026-11-23": {
    "calls": 4,
    "usd": 0.0
+  },
+  "2026-11-26": {
+   "calls": 1,
+   "usd": 0.0
   }
  },
  "by_model": {
@@ -112,7 +116,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 204,
+   "calls": 205,
    "usd": 0.0
   },
   "fishaudio:s2.1@pro": {
@@ -168,7 +172,7 @@
    "usd": 3.4
   }
  },
- "calls": 836,
+ "calls": 837,
  "failed": 28,
  "jobs": {
   "007-concepts": {
@@ -1598,6 +1602,35 @@
    "cost_per_used": null,
    "failed": 0,
    "ok": 4,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "114-harbour-shopfronts": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-26": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "1": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 1,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 1,
    "total_usd": 0.0,
    "unknown_cost_calls": 0,
    "used": 0,

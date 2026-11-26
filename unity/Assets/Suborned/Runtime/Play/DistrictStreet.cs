@@ -24,7 +24,7 @@ namespace Suborned.Play
         readonly HashSet<int> visible = new();
         HandoverHost host;
         Game current;
-        GameObject parkedTrams;
+        readonly List<GameObject> parkedTrams = new();
         float rescan;
         const int Tram = 1 << 20, Sedan = 2 << 20, Robot = 3 << 20;
         const int RigBudget = 28;
@@ -51,13 +51,17 @@ namespace Suborned.Play
         {
             host = GetComponent<HandoverHost>();
             crowd = new DistrictCrowdLod(host.districtCrowd);
-            parkedTrams = GameObject.Find("Trams (old Tram at our stops)");
+            // The flyby placed the ten permanent platform shelters in this group alongside the cars.
+            var stops = GameObject.Find("Trams (old Tram at our stops)");
+            if (stops)
+                foreach (Transform child in stops.transform)
+                    if (child.GetComponentInChildren<MeshFilter>()?.sharedMesh?.name == "DK_Tram")
+                        parkedTrams.Add(child.gameObject);
         }
 
         void OnDestroy()
         {
-            if (parkedTrams)
-                parkedTrams.SetActive(true);
+            foreach (var car in parkedTrams) if (car) car.SetActive(true);
         }
 
         static string FigureSkin(FigureLibrary lib, DistrictResident person)
@@ -79,7 +83,7 @@ namespace Suborned.Play
                 host.frame.streetGround = g?.District?.Map.Ground;
                 if (g?.District != null)
                     skins = System.Array.ConvertAll(g.District.Map.People, p => FigureSkin(host.figures, p));
-                if (parkedTrams) parkedTrams.SetActive(g?.District == null);
+                foreach (var car in parkedTrams) car.SetActive(g?.District == null);
             }
             if (g?.District == null || !host.View) return;
             var d = g.District;
