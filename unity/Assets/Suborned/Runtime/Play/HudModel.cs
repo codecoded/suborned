@@ -94,13 +94,16 @@ namespace Suborned.Play
             var g = h.Game; int key = unchecked(g.Tick * 31 + g.Orders.Count * 7919 + (h.Paused ? 1 : 0) + h.Speed * 3 + g.Log.Count * 104729 + (h.Ending.Length > 0 ? 17 : 0));
             if (key == refreshKey) return;
             refreshKey = key;
-            Clock = HandoverHost.MissionClock(g.Tick); Next = NextOnTimeline(h);
-            { var (lbl, at) = NextParts(h); NextLabel = lbl; NextTime = at; }
+            bool roaming = !g.HandoverOpen;
+            Clock = roaming ? h.CityClock()[..5] : HandoverHost.MissionClock(g.Tick);
+            Next = roaming ? "" : NextOnTimeline(h);
+            (NextLabel, NextTime) = roaming ? ("", "") : NextParts(h);
             Cash = $"${g.Cash:N0}"; Trail = $"T {g.Trail}"; Alert = g.Alert; State = h.Paused ? "<color=#ffd27a>PAUSE</color>" : $"x{h.Speed}";
             var c = h.controls;
             City = $"{h.CityClock()} · {c.Label(PlayAction.Pause)} pause · {c.Label(PlayAction.Cancel)} cancel"; // brief 096: no B, L or N (hidden keys gone)
             Tracker = h.Text == null ? "" : "▸ " + h.Text.Tracker.Replace("{close}", h.Text.Close);
             if (h.Text != null) { var tr = h.Text.Tracker.Replace("{close}", h.Text.Close); int cut = tr.LastIndexOf(" · ", System.StringComparison.Ordinal); Objective = cut > 0 ? tr[..cut] : tr; ObjectiveTail = cut > 0 ? "  ·  " + tr[(cut + 3)..] : ""; }
+            if (roaming) { Objective = "Explore Harbour"; ObjectiveTail = "  ·  N  City contacts"; Tracker = Objective + ObjectiveTail; }
             for (int i = 0; i < 4; i++) { var (a, b) = Icons(g, Roles[i]); Cast[i].A = a; Cast[i].B = b; }
             IntelKnown = 0;
             for (int i = 0; i < 4; i++)

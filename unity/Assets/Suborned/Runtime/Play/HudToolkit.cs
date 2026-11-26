@@ -186,7 +186,7 @@ namespace Suborned.Play
         /// <summary>Brief 080: Vale has been missed (Game.CloseWarnedAt): the kit's amber draining underline (the window marker's) under the clock, down to the close.</summary>
         void CloseUnderline()
         {
-            var g = host.Game; bool on = g != null && g.CloseWarnedAt >= 0 && !m.Ended && g.ClockOver * Suborned.Sim.Game.Hz > g.CloseWarnedAt; Show(closeBar, on); if (!on) return;
+            var g = host.Game; bool on = g != null && g.HandoverOpen && g.CloseWarnedAt >= 0 && !m.Ended && g.ClockOver * Suborned.Sim.Game.Hz > g.CloseWarnedAt; Show(closeBar, on); if (!on) return;
             float total = g.ClockOver * Suborned.Sim.Game.Hz - g.CloseWarnedAt, left = g.ClockOver * Suborned.Sim.Game.Hz - g.Tick;
             closeBar.style.width = Length.Percent(Mathf.Clamp01(left / total) * 100f);
         }
