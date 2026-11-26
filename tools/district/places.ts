@@ -254,9 +254,8 @@ const pierFurniture: typeof dress.waterfront = [
 const layouts: Record<string, typeof dress.walk> = {
   'sunset-coffee': courtFurniture,
   pier: pierFurniture,
-  // Put the night-market booth on the east frontage. Keep the approach from the lane
-  // to the globe and the bridge clear for residents on their way to the tram.
-  'lantern-market': [['CurvedKiosk_Play', 24, 3.2, 0, 1.7], ...dress.market.slice(1)],
+  // The night market trades from its cart. The public entrance stays open to the globe and tram.
+  'lantern-market': dress.market.filter(([kit]) => kit !== 'CurvedKiosk_Play'),
   'meridian-court': [['Bench_Play', -3.4, 14.7, 90, 1], ['Bench_Play', 3.6, 14.7, 90, 1]],
 };
 export function furnish(venue: Venue, fits: (point: Point, radius: number) => boolean) {

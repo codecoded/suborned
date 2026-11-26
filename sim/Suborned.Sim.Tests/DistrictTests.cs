@@ -27,6 +27,8 @@ public sealed class DistrictTests
         var g = Open();
         var map = g.District!.Map;
         var court = map.Ground.Venues.Single(v => v.Id == "meridian-court");
+        var market = map.Ground.Venues.Single(v => v.Id == "lantern-market");
+        Assert.DoesNotContain(market.Fixtures, f => f.Kit == "CurvedKiosk_Play");
         var neighbours = map.People.Where(p => p.Id.Contains("meridian-court")).ToArray();
         Assert.Equal(16, neighbours.Length);
         Assert.All(neighbours, p => Assert.True(p.Walk.Length > 20000));
