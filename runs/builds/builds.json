@@ -942,6 +942,21 @@
    "zip": null,
    "sent": [],
    "whatsNew": "Harbour street trades, resident flower sellers and fruiterers, and planted ledges at Lantern Court."
+  },
+  {
+   "build": 383,
+   "version": "0.2.383",
+   "date": "2026-11-26T21:25:08.048Z",
+   "builtAt": "2026-11-26T21:24:52.2189070Z",
+   "sha": "fde514946",
+   "dirty": true,
+   "engine": "0.61.0",
+   "engineSource": "commit 299a0641c8f1",
+   "dllSha256": "e3a83f833109c0f1b378e079041a9c937f58b49243021c6614b54b4009d3edfe",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Harbour trades draw in the command view. Lantern Lane has a celadon market awning and stacked fruit crates. The pneumatic post has a capsule collection drawer."
   }
  ]
 }
