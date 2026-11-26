@@ -591,7 +591,7 @@ describe('scenes', () => {
     const dead = items.filter((x) => x.kind === 'approach').filter((x) => !replyCells().has(`${x.verb}/${x.temperament}/${x.outcome}`)).map(sceneKey);
     expect(dead).toEqual([]);
   });
-  test('the call: Inez calls the guard over and he leaves his post, in all four voices; the driver has no call (brief 059, engine 0.32.0: it blinded the pickup camera, now retired)', () => {
+  test('the call: Inez calls the guard over and he leaves his post, in all four voices; the driver calls for early pickup without affecting the camera', () => {
     for (const role of ['waitress']) for (const temp of TEMPERAMENTS) {
       const sc = lookupScene(t, { kind: 'call', verb: 'call', about: role, temperament: temp });
       expect(sc?.temperament, `${role} ${temp}`).toBe(temp);
@@ -602,7 +602,7 @@ describe('scenes', () => {
     }
     expect(items.filter((x) => x.kind === 'call' && !['waitress', 'guard'].includes(x.about ?? '')).map(sceneKey)).toEqual([]); // brief 102: the guard's own call (call.test.ts)
     expect(lookupScene(t, { kind: 'call', verb: 'call', about: 'driver', temperament: 'loyal' })?.about).not.toBe('driver');
-    expect(JSON.stringify(t.actions.call)).not.toMatch(/driver|camera/);
+    expect(t.actions.call.onTarget?.driver).toMatch(/call Popovic out to his car/); expect(JSON.stringify(t.actions.call)).not.toMatch(/camera/);
     // a turned driver is told what he does now, not that the Fixer can call him to blind a camera
     for (const sc of items.filter((x) => x.kind === 'approach' && x.about === 'driver' && x.outcome === 'turned')) { expect(sc.result, sceneKey(sc)).not.toMatch(/\bCall\b|camera|blind/); expect(sc.result, sceneKey(sc)).toMatch(/round the back/); }
     // the Fixer is refused a Call on him in plain words (rulebook: nothing-to-call)
@@ -951,13 +951,13 @@ describe('the end card\'s words (debrief ids)', () => {
   const d = t.debrief;
   test('every id sim Debrief.cs can give has a sentence: route, assets, investigation causes', () => {
     if (!haveSim) return;
-    const src = simFile('Debrief.cs');
+    const src = simFile('Debrief.cs'); const chain = new Set(simAll().flatMap(s => [...s.matchAll(/Chain\.Add\("([a-z-]+)"\)/g)].map(m => m[1])));
     const states = new Set(['knocked-out']); // engine state values Debrief.cs compares against (g.RouteGuard), not debrief ids
     const ids = new Set([...src.matchAll(/"([a-z]+(?:-[a-z]+)+)"/g)].map((m) => m[1]!).filter((i) => !states.has(i)));
     const have = new Set([...Object.keys(d.route), ...Object.keys(d.assets), ...Object.keys(d.causes)]);
     expect([...ids].filter((i) => !have.has(i))).toEqual([]);
     // an id here that the engine cannot give is dead text
-    expect([...have].filter((i) => !ids.has(i) && i !== 'named-witness')).toEqual([]);
+    expect([...have].filter((i) => !ids.has(i) && !chain.has(i) && i !== 'named-witness')).toEqual([]);
     expect(simAll().join('\n')).toContain('"named-witness:"');
     expect(d.causes['named-witness']).toContain('{who}');
   });
@@ -1204,8 +1204,8 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(a.short).toBe('Go in by the [door].');
     expect(b.short).toBe('Board the [car] with Popovic.');
     expect(c.short).toBe('Take [Popovic] from the back seat.');
-    // H14's Alt line says that being seen on the way in fails (plain words, brief 019)
-    expect(a.line).toMatch(/if he is seen, it fails/);
+    // A sighting brings security under the current entry rules; it is not an instant failure.
+    expect(a.line).toMatch(/sighting brings security/); expect(a.line).not.toMatch(/it fails/);
     // the triggers say what Latch builds
     expect(a.trigger).toMatch(/guard/); expect(a.trigger).toMatch(/camera/); expect(a.trigger).toMatch(/Vale is in the Office/);
     expect(b.trigger).toMatch(/come out with Vale/);

@@ -86,6 +86,10 @@ describe('names: the expected hits cannot silently stay', () => {
     const r = judge([hit('text', 'Vale')], config, ['text'], '2026-11-02');
     expect(r.stale).toEqual([{ source: 'text', name: 'Okafor' }]);
   });
+  test('an empty completed allowance does not expire or allow new hits', () => {
+    const r = judge([hit('text', 'Vale')], { ...config, expected: { ...config.expected, hits: [] } }, ['text'], '2026-11-22');
+    expect(r.expired).toBe(false); expect(r.fresh.map(h => h.name)).toEqual(['Vale']);
+  });
   test('after `until` every hit fails as new', () => {
     const r = judge([hit('text', 'Vale')], config, ['text'], '2026-11-17');
     expect(r.expired).toBe(true); expect(r.fresh.length).toBe(1);

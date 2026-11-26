@@ -26,7 +26,7 @@ export function ignored(hits: Hit[], config: Config, sources: string[]): { hits:
 
 /** today: yyyy-mm-dd, the day the check runs (a parameter so the test can move it). */
 export function judge(hits: Hit[], config: Config, sources: string[], today: string): Pick<Report, 'fresh' | 'stale' | 'expired'> {
-  const expired = today > config.expected.until;
+  const expired = config.expected.hits.length > 0 && today > config.expected.until;
   const held = new Set(expired ? [] : config.expected.hits.map(keyOf)), found = new Set(hits.map(keyOf));
   const fresh = hits.filter(h => !held.has(keyOf(h)));
   const stale = expired ? [] : config.expected.hits.filter(e => sources.includes(e.source) && !found.has(keyOf(e)));

@@ -8,20 +8,7 @@
  "expected": {
   "brief": "089",
   "until": "2026-11-16",
-  "why": "the hits on 2026-11-02, before Fable renames Vale and Okafor (text.json, the Play fallbacks) and Pulse rebuilds the pools (the cast pool, the people files); each entry fails once its hit is gone, and all of them fail after `until`",
-  "hits": [
-   {"source":"pool","name":"Amara"},
-   {"source":"pool","name":"Astrid"},
-   {"source":"pool","name":"Elena"},
-   {"source":"pool","name":"Kenji"},
-   {"source":"pool","name":"Kovac"},
-   {"source":"pool","name":"Mateo"},
-   {"source":"pool","name":"Novak"},
-   {"source":"pool","name":"Okafor"},
-   {"source":"pool","name":"Priya"},
-   {"source":"pool","name":"Stavros"},
-   {"source":"pool","name":"Thea"},
-   {"source":"pool","name":"Tomas"}
-  ]
+  "why": "Completed 2026-11-22: replaced the remaining banned names in the legacy cast pool; current generation uses the real name lists in people.rules.json.",
+  "hits": []
  }
 }

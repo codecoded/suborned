@@ -1327,7 +1327,7 @@
   "gone": "spoken by the `ai-gone` event",
   "down": "a hostile who is down speaks nothing"
  },
- "silentLogs": {
+ "silentLogs": { "call.driver": "The completion chip says Pickup called at the official car.",
   "body.recovered": "The response removes the body on screen.",
   "rivals.evacuated": "The evacuated rival leaves the street on screen.",
   "round.earshot": "engine 0.56.0 (brief 110; Keel): log only: a server listened to skips a table that would take her out of the Scout's reach (cell.listen.earshot); the host draws her at her post, no card",
