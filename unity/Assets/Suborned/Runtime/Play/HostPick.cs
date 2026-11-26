@@ -50,12 +50,20 @@ namespace Suborned.Play
             return ci < Game.Walkers.Count && !Game.Walkers[ci].P.Civilian;
         }
 
+        public Vector3? TargetWorld(Target t)
+        {
+            if (t.Kind == "resident") return StreetPosition(t.Id);
+            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/" + t.Key, "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => t.Key == "car:rivals" ? "car/rivals" : t.Key, "stand" => "stand/" + t.Key, "security" => OfficerView(t.Key), "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, "bystander" => views.BystanderKey(Game, t.Key), _ => null };
+            if (t.Kind == "stand") return StandWorld(t.Key);
+            var tr = key != null ? views.Find(key) : null; return tr ? tr.position : (Vector3?)null;
+        }
+
         /// <summary>A target's one-word name for the hover chip.</summary>
         public string OneWord(Target t) => t.Kind switch
         {
             "crowd" when t.Security => FirstWord(t.Label.StartsWith("an ") ? t.Label[3..] : t.Label.StartsWith("a ") ? t.Label[2..] : t.Label), // Pulse 067 W2: "Guard"
             "op" => char.ToUpperInvariant(t.Key[0]) + t.Key[1..],
-            "person" => FirstWord(Name(t.Key)),
+            "person" => FirstWord(Name(t.Key)), "resident" => t.Label,
             "camera" => "Camera", "cabinet" => "Cabinet", "door" => "Door", "car" => "Car", "patrol" => "Patrol", "rivals" => "Rivals",
             "security" => "Police", "unit" => t.Label.Contains("robot") ? "Robot" : "Officer", "hostile" => t.Label.Contains("rival") ? "Rival" : "Officer",
             "body" => "Body", "stash" => "Stash", "bystander" => "Bystander", _ => "",

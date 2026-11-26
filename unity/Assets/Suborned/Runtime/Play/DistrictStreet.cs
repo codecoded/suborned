@@ -6,13 +6,14 @@ namespace Suborned.Play
 {
     // The civic host already owns the people on its roster. This draws additional residents and
     // scheduled street traffic near the camera, using the same figures, animations and vehicle kit.
-    public sealed class DistrictStreet : MonoBehaviour
+    public sealed partial class DistrictStreet : MonoBehaviour
     {
         sealed class View
         {
             public GameObject root;
             public string skin;
             public Animator animator;
+            public Transform head;
             public bool moving;
             public Renderer[] renderers;
             public bool hidden;
@@ -79,6 +80,8 @@ namespace Suborned.Play
                 foreach (var item in activeViews.Values) Put(item);
                 activeViews.Clear(); visible.Clear(); rigged.Clear(); poses.Clear();
                 current = g;
+                speaker = -1;
+                civicSpeaker = null;
                 rescan = 0;
                 host.frame.streetGround = g?.District?.Map.Ground;
                 if (g?.District != null)
@@ -87,6 +90,7 @@ namespace Suborned.Play
             }
             if (g?.District == null || !host.View) return;
             var d = g.District;
+            if (speaker >= 0 && !host.HoldingStreetSpeaker(d.Map.People[speaker].Id)) { speaker = -1; civicSpeaker = null; rescan = 0; }
             bool scan = Time.unscaledTime >= rescan;
             if (scan)
             {
@@ -117,6 +121,12 @@ namespace Suborned.Play
                     if (!g.S.Grid.InGrid(at) && d.Map.Roads.Free(at)) Consider(Sedan + i, at);
                 }
                 for (int i = 0; i < d.Traffic.RobotCount; i++) Consider(Robot + i, d.Traffic.Robot(i, g.Tick).At);
+                if (speaker >= 0 && civicSpeaker == null)
+                {
+                    visible.Add(speaker);
+                    candidates.RemoveAll(p => p.id == speaker);
+                    candidates.Add((speaker, float.MaxValue));
+                }
                 candidates.Sort((a, b) => b.rank.CompareTo(a.rank));
                 for (int i = 0; i < candidates.Count; i++)
                     if (i < RigBudget || !crowd.Has(skins[candidates[i].id])) rigged.Add(candidates[i].id);
@@ -153,6 +163,14 @@ namespace Suborned.Play
                 {
                     var body = new Bounds(pos + Vector3.up * .92f, new Vector3(.75f, 1.84f, .75f));
                     hide = body.IntersectRay(sight, out float hit) && hit < distance - .35f;
+                }
+                if (id == speaker && host.ConvoNow is HandoverHost.Convo scene)
+                {
+                    Vector3 toward = host.frame.World(g.Ops[scene.Agent].Pos) - pos;
+                    toward.y = 0;
+                    if (toward.sqrMagnitude > .01f) rotation = Quaternion.LookRotation(toward);
+                    hide = false;
+                    moving = false;
                 }
                 if (id < Tram && !rigged.Contains(id))
                 {
@@ -299,6 +317,10 @@ namespace Suborned.Play
                 anim.applyRootMotion = false;
                 anim.cullingMode = AnimatorCullingMode.CullCompletely;
                 v.animator = anim;
+                v.head = anim.isHuman ? anim.GetBoneTransform(HumanBodyBones.Head) : null;
+                if (!v.head)
+                    foreach (var bone in model.GetComponentsInChildren<Transform>(true))
+                        if (bone.name.EndsWith("Head", System.StringComparison.OrdinalIgnoreCase)) { v.head = bone; break; }
             }
             else if (skin == "tram")
                 DistrictVehicleLod.AddKitLevels(root, model, host.districtTramMid, host.districtTramFar);

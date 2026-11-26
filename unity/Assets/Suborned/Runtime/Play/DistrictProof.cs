@@ -131,26 +131,57 @@ namespace Suborned.Play
                 g.Step();
             var source = d.Map.People[j.A];
             Need(h.Issue(new Order { Op = "scout", Do = "district-visit", Target = source.Id }), "Could not walk to the first contact");
-            for (int k = 0; k < 20000 && scout.Walk != null; k++)
+            // Stop within speaking distance as the walk-to-meet control does on arrival.
+            for (int k = 0; k < 20000 && scout.Walk != null && !(g.DistrictPersonAt(j.A) is Pt visitor && G.Within(scout.Pos, visitor, 300)); k++)
                 g.Step();
-            h.LookAt(h.frame.World(scout.Pos));
+            Need(h.Issue(new Order { Op = "scout", Do = "move", Point = scout.Pos }), "Scout could not stop by the contact");
+            var residentAt = g.DistrictPersonAt(j.A).Value;
+            h.LookAt(h.frame.World(residentAt));
             yield return new WaitForSecondsRealtime(.5f);
-            journal.Open(j.A);
+            Vector2 contactClick = h.View.WorldToScreenPoint(h.frame.World(residentAt) + Vector3.up);
+            void SelectResident()
+            {
+                h.LeftClickScripted(contactClick);
+                Need(!h.BookOpen && !journal.IsOpen && h.Ring?.Plan.T.Id == source.Id,
+                    "A street click must open the resident's action ring: picked " + h.TargetAt(contactClick, true)?.Id + ", " + h.Status);
+            }
+            SelectResident();
+            HandoverHost.Intent Quote(string verb) => h.Ring?.Segs.FirstOrDefault(s => s.Row?.I?.Order?.Do == verb)?.Row.I;
+            Need(Quote("district-back")?.Usd == "-$" + Game.Usd(g.R.DistrictPrices.Help) &&
+                 Quote("district-help")?.Usd == "+$" + Game.Usd(g.R.DistrictPrices.ErrandFee(false)), "Contact prices missing from the street ring");
+            int talkTick = g.Tick;
+            Need(h.RingTakeScripted("district-meet"), "The street ring offered no Talk");
+            yield return new WaitForSecondsRealtime(.7f);
+            Need(h.ConvoNow?.Target == source.Id && !h.BookOpen && !journal.IsOpen && HudToolkit.ConvoFacePicture != null,
+                "Talk did not show the resident in the conversation camera and live inset: " + h.ConvoLast);
+            Need(h.ConvoNow.Shot == "profile" || h.ConvoNow.Shot == "high" || h.ConvoNow.Shot == "intercut", "The meeting lost its second speaker");
+            string streetShot = h.ConvoNow.Shot;
+            float end = Time.realtimeSinceStartup + HandoverHost.ReadS(d.Speaker(j));
+            while (h.ConvoOn && !HudToolkit.ConvoSaid.EndsWith(d.Speaker(j), StringComparison.Ordinal) && Time.realtimeSinceStartup < end) yield return null;
+            Need(h.ConvoOn && HudToolkit.ConvoSaid.StartsWith(source.Name, StringComparison.Ordinal) && g.Tick == talkTick, "The live subtitle or held clock was lost");
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "street-dialogue.png"));
+            yield return null;
+            h.ConvoSkip();
+            yield return new WaitForSecondsRealtime(.3f);
+            Need(!h.BookOpen && !h.ConvoOn && h.ConvoLast.Contains("bit-identical") && g.Tick == talkTick, "Leaving the dialogue did not restore the street");
+            SelectResident();
+            Need(h.RingTakeScripted("district-help") && j.Stage == 1, "The quoted errand did not reach the engine");
+            h.ConvoEndNow();
             var panel = h.transform.Find("District book").GetComponent<UIDocument>().rootVisualElement;
-            Need(panel.Query<Button>().ToList().Any(b => b.text == "Help with " + source.Need + "  ·  $" + Game.Usd(g.R.DistrictPrices.Help)), "The contact did not quote the cost of help");
-            Submit(panel, d.Choice(j) + "  ·  $" + Game.Usd(g.R.DistrictPrices.ErrandFee(false)));
-            Need(j.Stage == 1, "The first contact did not vouch for the cell");
             journal.Open();
             Submit(panel.Q<Button>("contact-" + source.Id));
             yield return new WaitForSecondsRealtime(.15f);
             Need(!journal.IsUnread(j.A), "The first read did not clear the contact");
-            Need(h.Issue(new Order { Op = "scout", Do = "district-back", Target = source.Id }), "Could not earn the first contact's trust");
+            journal.Close();
+            SelectResident();
+            long beforeHelp = g.Cash;
+            Need(h.RingTakeScripted("district-back") && g.Cash == beforeHelp - g.R.DistrictPrices.Help, "The ring did not charge the quoted price once");
+            h.ConvoEndNow();
             Need(journal.IsUnread(j.A), "New information did not mark a read contact again");
-            journal.Open(j.A);
-            Need(panel.Query<Button>().ToList().Any(b => b.text == "Stand surety for " + source.Need + "  ·  $" + Game.Usd(g.R.DistrictPrices.Surety)), "The trusted contact did not quote the guarantee");
-            Submit(panel, "Call in a favour");
+            SelectResident();
+            Need(Quote("district-bond")?.Usd == "-$" + Game.Usd(g.R.DistrictPrices.Surety), "The guarantee price was missing from the street ring");
+            Need(h.RingTakeScripted("district-request") && journal.IsOpen, "The explicit request did not open the citizen order form");
             yield return new WaitForSecondsRealtime(.2f);
             var routes = g.CitizenRoutes(j.A);
             int choice = routes.FindIndex(chain => chain.Length >= 3 && d.Roams(chain[chain.Length - 1]));
@@ -220,7 +251,7 @@ namespace Suborned.Play
             journal.Open();
             Need(journal.IsOpen && h.Game.ClosingHash() == runHash, "Continue failed to rebuild the played run");
             Need(!journal.IsUnread(j.A) && journal.IsUnread(request.Actor) && panel.Q("new-" + source.Id) == null, "Continue lost the portraits' read state");
-            File.WriteAllText(IOPath.Combine(directory, "proof.txt"), $"OldTown opened. Book → People displayed {known} discovered contacts with their painted portraits. Searching by name returned one person. Reading {source.Name} cleared only that New ribbon. Earning trust marked the portrait again. Closing the dossier returned to the grid, and a saved-game Continue preserved the read state. A ground click drove the boarded scout to {d.Map.StreetAt(point)}. The Handover closed and play continued at tick {g.Tick}. {source.Name} vouched for the cell with {d.Map.People[j.B].Name}. The district book sent a request through {d.Network.Describe(request.Chain)}. The last citizen blocked {request.Place} knowing only who called them. District residents {d.Map.People.Length}, main cast {g.People.Count}, open leads {d.Jobs.Length}, visible vehicles at the rail {vehicles}.");
+            File.WriteAllText(IOPath.Combine(directory, "proof.txt"), $"Street Talk framed {source.Name} and the Scout in the {streetShot} shot with a live inset. The clock held at tick {talkTick}. Skip restored the street. OldTown opened. Book → People displayed {known} discovered contacts with their painted portraits. Searching by name returned one person. Reading {source.Name} cleared only that New ribbon. Earning trust marked the portrait again. Closing the dossier returned to the grid, and a saved-game Continue preserved the read state. A ground click drove the boarded scout to {d.Map.StreetAt(point)}. The Handover closed and play continued at tick {g.Tick}. {source.Name} vouched for the cell with {d.Map.People[j.B].Name}. The district book sent a request through {d.Network.Describe(request.Chain)}. The last citizen blocked {request.Place} knowing only who called them. District residents {d.Map.People.Length}, main cast {g.People.Count}, open leads {d.Jobs.Length}, visible vehicles at the rail {vehicles}.");
         }
     }
 }

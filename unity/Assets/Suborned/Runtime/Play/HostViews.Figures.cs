@@ -130,7 +130,7 @@ namespace Suborned.Play
                     if (host.ConvoIsSpeaker(key))
                     {   // Glyph 067 H1: each speaker is set (no turn, no cross-fade) to idle, feet planted, facing the other; a call's three stand as they stood
                         speed = 0f; var other = key == ca ? cb : key == cb ? ca : null;
-                        if (!host.ConvoNow.Alone && other != null && other != key && things.TryGetValue(other, out var ov) && ov.shown) { var fd = ov.t.position - t.position; fd.y = 0f; if (fd.sqrMagnitude > 0.01f) f.yaw = Mathf.Atan2(fd.x, fd.z) * Mathf.Rad2Deg; }
+                        if (!host.ConvoNow.Alone && other != null && other != key && Find(other) is Transform ov && ov.gameObject.activeInHierarchy) { var fd = ov.position - t.position; fd.y = 0f; if (fd.sqrMagnitude > 0.01f) f.yaw = Mathf.Atan2(fd.x, fd.z) * Mathf.Rad2Deg; }
                         talking = true;
                     }
                     else speed = SceneWalk(f, t, d, speed);

@@ -464,7 +464,7 @@ namespace Suborned.Play
         /// <summary>Where a shooter or target stands in the world: the engine's position, else (down, gone) its view's last.</summary>
         public Vector3? WorldOf(string id)
         {
-            Pt? p = null; Guard("pos", () => p = Game.PosOf(id));
+            Pt? p = Game?.District is DistrictRun d && d.Map.Index.TryGetValue(id, out int who) ? Game.DistrictPersonAt(who) : null; if (!p.HasValue) Guard("pos", () => p = Game.PosOf(id));
             foreach (var h in Game.Hostiles) if (h.Id == id) p = h.Pos(Game.Tick);
             if (p.HasValue) return frame.World(p.Value);
             var tr = views.Find(ViewKey(id)); return tr ? tr.position : (Vector3?)null;

@@ -14,18 +14,12 @@ namespace Suborned.Play
         [System.NonSerialized] public bool missionScenario;
         internal float StreetFrameAlpha => Paused ? 1f : Mathf.Clamp01(acc * Suborned.Sim.Game.Hz);
         public DistrictJournal DistrictBook { get; private set; }
+        internal DistrictStreet HarbourStreet { get; private set; }
 
         void InstallDistrict()
         {
             DistrictBook = gameObject.AddComponent<DistrictJournal>();
-            gameObject.AddComponent<DistrictStreet>();
-        }
-
-        bool StreetPersonClick(Vector2 screen, Target target)
-        {
-            if (Game?.District == null || DistrictBook == null || (target != null && target.Kind != "crowd"))
-                return false;
-            return DistrictBook.PickResident(screen, target?.Id);
+            HarbourStreet = gameObject.AddComponent<DistrictStreet>();
         }
 
         void StreetDrivers(Pt centre, Vector2? screen, List<int> agents)

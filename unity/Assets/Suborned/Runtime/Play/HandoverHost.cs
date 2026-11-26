@@ -644,7 +644,7 @@ namespace Suborned.Play
         {
             if (!ModalGate.AllowsClicks(Modal)) return;
             var t = TargetAt(screen, true);
-            if (StreetPersonClick(screen,t)) return;
+            if (t?.Kind == "resident") { TapRing(t, screen); return; }
             if (t != null && t.Kind == "op") { Select(Op.Parse(t.Key), shift); return; }
             if (Driving) { if (t == null && !OverHud(screen)) TpGroundTap(screen, shift); return; }
             if (controls.DoubleClick) { if (t != null && ThingClick(t, screen, shift)) return; ClearSel(); } // brief 041: a thing selects (twice: its act); the ground walks (twice: runs)
@@ -762,7 +762,7 @@ namespace Suborned.Play
             if (found.Count == 0 || found.TrueForAll(x => Passer(x.t))) { var np = NearestPick(screen, agents); if (np != null) found.Insert(0, (np, -1f)); }
             found.Sort((a, b) => a.score.CompareTo(b.score));
             var list = new List<Target>(); foreach (var x in found) if (!Passer(x.t) || list.Count == 0 || found.TrueForAll(y => Passer(y.t))) list.Add(x.t); // Pulse 067 W2: a shift guard is a being, not a passer-by: it stays in the stack
-            return Stacked(screen, list, agents);
+            return StreetTargetAt(screen, Stacked(screen, list, agents));
         }
 
         Target TargetOf(Transform t)
@@ -1117,7 +1117,7 @@ namespace Suborned.Play
         ActionPanel BuildPanel(Target t, Vector2 screen, int onlyAgent = -1)
         {
             var pn = new ActionPanel { T = t, Gui = new Vector2(screen.x, (cam ? cam.pixelHeight : Screen.height) - screen.y), World = TargetWorld(t) };
-            if (t.Kind == "contacts") { EarnedCallRows(pn); return pn; }
+            if (SocialPanel(pn, onlyAgent)) return pn;
             if (Text != null && KnownPerson(t) && Text.TargetAbout.TryGetValue(TextKey(t), out var about)) pn.About = about; // a person's about only once the Scout has heard them
             if (t.Kind == "crowd")
             {
@@ -1515,13 +1515,6 @@ namespace Suborned.Play
             if (world.HasValue) Pulses.Add((world.Value, kind, now));
             while (Pops.Count > 6) Pops.RemoveAt(0);
             while (Pulses.Count > 6) Pulses.RemoveAt(0);
-        }
-
-        public Vector3? TargetWorld(Target t)
-        {
-            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/" + t.Key, "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => t.Key == "car:rivals" ? "car/rivals" : t.Key, "stand" => "stand/" + t.Key, "security" => OfficerView(t.Key), "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, "bystander" => views.BystanderKey(Game, t.Key), _ => null };
-            if (t.Kind == "stand") return StandWorld(t.Key);
-            var tr = key != null ? views.Find(key) : null; return tr ? tr.position : (Vector3?)null;
         }
 
         // ---------------------------------------------------------------- the session, the end

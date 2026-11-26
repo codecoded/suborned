@@ -98,12 +98,12 @@ namespace Suborned.Play
         {
             if (r == null) return;
             if (!r.Available) { LockPop(r, at, world); return; }
+            if (t.Kind == "resident") { StreetAction(r, t, at); return; }
             if (r.I.Order?.Do == "go") { GoGive(r.By, at, source, r.I.Order.Target); return; } // brief 018: the commit hold when anyone stays
             if (!seenChecked && SeenGate(r.I, t, at, source)) return;
             if (r.I.Order?.Do == "fire") { FireRow(r.By, r.I.Order, t, at, source); return; } // a Fire way: the fire path (the going-loud card or the wedge's hold; the engine walks it into reach)
             Give(r.By, r.I.Order, t, at);
         }
-
         void LockPop(PanelRow r, Vector2 at, Vector3? world)
         {
             if (r == null) return;
@@ -163,7 +163,7 @@ namespace Suborned.Play
             {
                 if (rs.Segs.Count >= RingMaxWays) break;
                 var r = plan.Row(w); var o = r.I.Order;
-                var s = new RingSeg { Way = w, Row = r, Word = RingWord(r.I), Icon = r.I.Lead.Length > 0 ? r.I.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""), Violent = o.Do is "takedown" or "fire" };
+                var s = new RingSeg { Way = w, Row = r, Word = plan.T.Kind == "resident" ? r.I.Label : RingWord(r.I), Icon = r.I.Lead.Length > 0 ? r.I.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""), Violent = o.Do is "takedown" or "fire" };
                 s.By.AddRange(o.Do == "fire" ? FireFaces(o, plan.Givers[w]) : plan.Givers[w]); // a Fire wedge shows who it will reach (HostSquad)
                 s.Draws = o.Do == "fire" && !drawn; // the draw is in the price (brief 030 §5): the pill's "draws 0.6 s" (DrawS)
                 s.Harmful = Harmful(o, plan.T, drawn); // brief 038 §4.3: never lit, never taken by the second click

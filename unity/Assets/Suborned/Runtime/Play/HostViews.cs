@@ -126,7 +126,7 @@ namespace Suborned.Play
             lr.positionCount = pts.Count; for (int i = 0; i < pts.Count; i++) lr.SetPosition(i, pts[i]); lr.enabled = true;
         }
 
-        public Transform Find(string key) => things.TryGetValue(key, out var x) ? x.t : null;
+        public Transform Find(string key) => things.TryGetValue(key, out var x) ? x.t : host.HarbourStreet?.SpeakerView(key);
         /// <summary>Every view by key (picking walks them: HostPick).</summary>
         public IEnumerable<(string key, Transform t)> All() { foreach (var kv in things) yield return (kv.Key, kv.Value.t); }
         LineRenderer path;

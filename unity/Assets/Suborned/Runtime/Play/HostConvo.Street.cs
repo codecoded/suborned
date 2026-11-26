@@ -54,7 +54,7 @@ namespace Suborned.Play
             {
                 var (due, sp, tx, inset) = streetDue[i]; if (due > now) continue;
                 streetDue.RemoveAt(i--); int k = Array.IndexOf(OpKeys, sp);
-                Talk.Add(new Said { Born = now, Tick = Game.Tick, Speaker = sp, Name = Text?.ConvName(sp) ?? sp, Text = tx, Agent = k, Kind = Feedback.Info });
+                Talk.Add(new Said { Born = now, Tick = Game.Tick, Speaker = sp, Name = StreetName(sp) ?? Text?.ConvName(sp) ?? sp, Text = tx, Agent = k, Kind = Feedback.Info });
                 var b = new Bubble { Speaker = sp, Text = tx, Born = now, Life = ReadS(tx), Tick = Game.Tick, Inset = inset || GuardOnACall(sp) };
                 Bubbles.Add(b); if (b.Inset) SpeechInset(b); while (Bubbles.Count > 12) Bubbles.RemoveAt(0);
             }

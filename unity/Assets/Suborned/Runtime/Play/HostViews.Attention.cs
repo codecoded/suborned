@@ -218,7 +218,7 @@ namespace Suborned.Play
                 for (int j = 0; j < k; j++) if (insets[j].View == v && v.Length > 0) { layer = -1 - j; break; }
                 if (layer < 0) { s.Cam.cullingMask = 1 << (InsetLayer0 + (-1 - layer)); continue; }
                 s.Cam.cullingMask = 1 << layer;
-                if (v.Length > 0 && things.TryGetValue(v, out var th)) { Move(s, th.t, layer); if (camHeads.TryGetValue(v, out var hh)) Move(s, hh.Head, layer); }
+                if (v.Length > 0 && Find(v) is Transform target) { Move(s, target, layer); if (camHeads.TryGetValue(v, out var hh)) Move(s, hh.Head, layer); }
             }
         }
 
@@ -227,13 +227,14 @@ namespace Suborned.Play
         public RenderTexture InsetFrame(int k, string view, float zoom = 1f)
         {
             var s = insets[k] ??= NewInset(k);
-            bool on = s.View.Length > 0 && s.View == (view ?? "") && things.TryGetValue(s.View, out var x) && x.shown && x.t.gameObject.activeInHierarchy;
+            bool on = s.View.Length > 0 && s.View == (view ?? "") && Find(s.View) is Transform target && target.gameObject.activeInHierarchy && (!things.TryGetValue(s.View, out var x) || x.shown);
             if (s.Cam.enabled != on) s.Cam.enabled = on;
             if (!on) return null;
             // frame the watcher's face: the camera head's lens, a robot's display, a person's head
             Vector3 at, fwd; float size;
             if (camHeads.TryGetValue(s.View, out var ch)) { at = ch.Head.position; fwd = ch.Head.forward; size = 0.34f; }
             else if (figs.TryGetValue(s.View, out var f) && Bone(f, HumanBodyBones.Head, "Head") is Transform hb) { at = hb.position + Vector3.up * 0.02f; fwd = Quaternion.AngleAxis(HeadYaw(s.View), Vector3.up) * f.model.forward; size = 0.3f; }
+            else if (host.HarbourStreet != null && host.HarbourStreet.SpeakerFace(s.View, out at, out fwd)) size = .3f;
             else
             {
                 var t = things[s.View].t; Renderer screen = null;

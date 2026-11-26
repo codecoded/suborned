@@ -68,18 +68,13 @@ namespace Suborned.Play
             var c = ConvoNow; if (c == null || views == null || c.OutAt >= 0f && !cvCut) return null;
             return (ConvoViewKey(c.KeyA), ConvoViewKey(c.KeyB));
         }
-        string ConvoViewKey(string k) => k switch { "scout" or "fixer" or "tech" or "enforcer" => "op/" + k, "rivals" => views.RivalAnchorKey(), _ => convoVoices.TryGetValue(k, out var vk) ? vk : k };
+        string ConvoViewKey(string k) => k switch { "scout" or "fixer" or "tech" or "enforcer" => "op/" + k, "rivals" => views.RivalAnchorKey(), _ => convoVoices.TryGetValue(k, out var vk) ? vk : HarbourStreet?.SpeakerKey(k) ?? k };
         /// <summary>Brief 085: is this view a speaker in the scene (stands idle), or anyone else in the shot (keeps walking; HostViews.Scene)?</summary>
         public bool ConvoIsSpeaker(string viewKey) => ConvoNow is Convo c && c.ViewKeys.Contains(viewKey);
         static readonly HashSet<string> NoViews = new();
         public HashSet<string> ConvoSpeakerViews() => ConvoNow?.ViewKeys ?? NoViews;
 
-        Transform ConvoView(string key) => views == null ? null : key switch
-        {
-            "scout" or "fixer" or "tech" or "enforcer" => views.Find("op/" + key),
-            "rivals" => views.Find(views.RivalAnchorKey()), // brief 059: the car, else the first member drawn
-            _ => views.Find(convoVoices.TryGetValue(key, out var vk) ? vk : key),
-        };
+        Transform ConvoView(string key) => views?.Find(ConvoViewKey(key));
 
         /// <summary>The scene chosen at the landing starts on the next frame; false when it fell back to bubbles at the last moment.</summary>
         bool ConvoStart()
@@ -240,6 +235,6 @@ namespace Suborned.Play
 
         /// <summary>The view whose live face stands beside a line (null: a voice with no figure), and the name it shows.</summary>
         public string ConvoFaceView(string speaker) => ConvoView(speaker) is Transform t && t && t.gameObject.activeInHierarchy ? ConvoViewKey(speaker) : null;
-        public string ConvoSpeakerName(Convo c, string speaker) => Text == null ? speaker : c.Id.Length == 0 ? Text.Speaker(speaker) : !convoVoices.ContainsKey(speaker) && Text.ConvVoices.TryGetValue(speaker, out var v) ? v : Text.ConvName(speaker);
+        public string ConvoSpeakerName(Convo c, string speaker) => StreetName(speaker) ?? (Text == null ? speaker : c.Id.Length == 0 ? Text.Speaker(speaker) : !convoVoices.ContainsKey(speaker) && Text.ConvVoices.TryGetValue(speaker, out var v) ? v : Text.ConvName(speaker));
     }
 }

@@ -89,7 +89,7 @@ namespace Suborned.Play
                 {
                     int met = walking;
                     walking = -1;
-                    Meet(met);
+                    Meet(met, walker);
                 }
                 else if (op.Walk == null)
                     walking = -1;
@@ -167,15 +167,16 @@ namespace Suborned.Play
             return true;
         }
 
-        void Meet(int resident)
+        void Meet(int resident, int agent)
         {
-            var g = host.Game;
-            if (!g.District.Encountered[resident] && !g.District.Network.Away(resident) && g.ContactAt(resident) is Pt at)
-            {
-                int speaker = Speaker(at, true);
-                if (speaker >= 0) host.Issue(new Order { Op = Op.Name((OpId)speaker), Do = "district-meet", Target = g.ContactId(resident) });
-            }
-            Open(resident);
+            if (host.Game.DistrictPersonAt(resident) is not Pt at) return;
+            host.StreetTalk(resident, (OpId)agent, host.View.WorldToScreenPoint(host.frame.World(at)));
+        }
+
+        internal void FollowVisit(int resident, OpId agent)
+        {
+            walking = tracking = resident;
+            walker = (int)agent;
         }
 
         void HidePage()
@@ -184,41 +185,6 @@ namespace Suborned.Play
             sheet.style.display = DisplayStyle.None;
             pages?.Clear();
             search = "";
-        }
-
-        public bool PickResident(Vector2 screen, string civic)
-        {
-            if (!Available || open || !host.View)
-                return false;
-            var g = host.Game;
-            var d = g.District;
-            if (!string.IsNullOrEmpty(civic) && d.Map.Index.TryGetValue(civic, out int known) && d.Roams(known))
-            {
-                Meet(known);
-                return true;
-            }
-
-            int closest = -1;
-            float best = Mathf.Pow(15 * Mathf.Max(1f, Screen.height / 1080f), 2);
-            for (int i = 0; i < d.Map.People.Length; i++)
-            {
-                if ((!d.Roams(i) && !d.Network.Away(i)) || !(g.DistrictPersonAt(i)is Pt at))
-                    continue;
-                var p = host.View.WorldToScreenPoint(host.frame.World(at) + Vector3.up);
-                if (p.z <= 0 || p.z > (host.View.orthographic ? host.View.farClipPlane : DistrictStreet.FarMetres))
-                    continue;
-                float dist = ((Vector2)p - screen).sqrMagnitude;
-                if (dist < best)
-                {
-                    closest = i;
-                    best = dist;
-                }
-            }
-
-            if (closest < 0)
-                return false;
-            Meet(closest);
-            return true;
         }
 
         void Marker()
@@ -243,7 +209,7 @@ namespace Suborned.Play
             marker.style.display = DisplayStyle.Flex;
         }
 
-        int Speaker(Pt pos, bool nearby)
+        internal int Speaker(Pt pos, bool nearby)
         {
             int who = -1;
             long best = long.MaxValue;
@@ -367,34 +333,14 @@ namespace Suborned.Play
             }
             else
             {
-                if (job != null)
+                Button(pages, "Speak on the street", () =>
                 {
-                    Label(pages, "“" + d.Speaker(job) + "”", 17, Ivory);
-                    Label(pages, job.Stage == 2 ? "Payment due" : "Payment on completion", 15, Gold);
-                    string fee = Game.Usd(g.R.DistrictPrices.ErrandFee(job.Stage == 2 && job.Bluff));
-                    Button(pages, d.Choice(job) + "  ·  $" + fee, () => Speak(by, "district-help", job.Key));
-                    if (job.Stage == 1)
-                    {
-                        Button(pages, d.Choice(job, true) + "  ·  $" + Game.Usd(g.R.DistrictPrices.ErrandFee(true)), () => Speak(by, "district-bluff", job.Key));
-                        Label(pages, "Bluffing costs trust with both contacts and adds 1 Trail.", 15, Ivory);
-                    }
-                }
-
+                    int resident = person;
+                    Close();
+                    Meet(resident, by);
+                });
                 if (d.Trust[person] > 0 || g.Standing >= 4)
                     Button(pages, "Call in a favour  ›", OpenCitizenOrders);
-                Label(pages, "Personal favours", 17, Gold);
-                if (d.Trust[person] == 1)
-                    Button(pages, "Stand surety for " + r.Need + "  ·  $" + Game.Usd(g.R.DistrictPrices.Surety), () => Speak(by, "district-bond", ""));
-                if (d.Trust[person] <= 0)
-                    Button(pages, "Help with " + r.Need + "  ·  $" + Game.Usd(g.R.DistrictPrices.Help), () => Speak(by, "district-back", ""));
-                foreach (var tie in ties)
-                {
-                    var friend = d.Map.People[tie.person];
-                    if (!d.Roams(tie.person))
-                        continue;
-                    if (d.Trust[person] > 0 && d.Trust[tie.person] <= 0)
-                        Button(pages, "Ask for an introduction to " + friend.Name, () => Speak(by, "district-refer", friend.Id));
-                }
             }
 
             if (reply.Length > 0 && reply != memory)
@@ -413,19 +359,5 @@ namespace Suborned.Play
             return orders.Count > 0 ? orders[orders.Count - 1].why : "";
         }
 
-        void Speak(int by, string verb, string to)
-        {
-            var d = host.Game.District;
-            string id = d.Map.People[person].Id;
-            bool ok = host.Issue(new Order { Op = Op.Name((OpId)by), Do = verb, Target = id, To = to });
-            reply = ok ? d.News : LastAnswer();
-            if (ok)
-            {
-                tracking = -1;
-                walking = -1;
-            }
-
-            Page();
-        }
     }
 }

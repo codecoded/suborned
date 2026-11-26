@@ -162,7 +162,7 @@ namespace Suborned.Play
         void HoldGive(ContextPlan plan, int way, Target t, Vector2 at, bool run, string source, bool fromSel = true, List<int> only = null)
         {
             var rep = plan?.Row(way); if (rep == null) return;
-            if (rep.I.Order?.Do == "fire") { DoWay(rep, t, at, plan.Pn.World, source); return; } // a Fire wedge: every selected agent who can, one card (HostSquad)
+            if (t.Kind == "resident" || rep.I.Order?.Do == "fire") { DoWay(rep, t, at, plan.Pn.World, source); return; } // a Fire wedge: every selected agent who can, one card (HostSquad)
             var doers = only?.FindAll(k => RowFor(plan, way, k) != null); if (doers == null || doers.Count == 0) doers = DoersOf(plan, way);
             var given = new List<int>();
             foreach (var k in doers)
@@ -437,7 +437,7 @@ namespace Suborned.Play
         void HoldClick(Vector2 p, bool shift)
         {
             float now = Time.unscaledTime; var t = AgentNear(p) ?? TargetAt(p); // your own agent first: a click on it always selects it (even out of the squad, even busy)
-            if (StreetPersonClick(p,t)) return;
+            if (t?.Kind == "resident") { ClickRing(t, p); return; }
             bool dbl = now - lastClickAt < controls.doubleSeconds && (t != null ? SameTarget(t, lastClickT) : lastClickT == null && (p - lastClickP).magnitude < 24f * KitScale);
             if (dbl) { lastClickAt = -9f; lastClickT = null; } else { lastClickAt = now; lastClickP = p; lastClickT = t; }
             if (t != null && t.Kind == "op" && DownedOp(t)) { ClickRing(t, p); SideLog("click", "ring", t); return; } // items 31 + 33: a click on a downed agent opens its ring (Carry is a way you take, never the click); beside it the ground walks

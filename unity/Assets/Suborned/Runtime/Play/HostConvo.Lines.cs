@@ -80,9 +80,7 @@ namespace Suborned.Play
                 c.Id = conv.Id; c.MetKey = conv.Id; foreach (var b in conv.Beats) { c.Lines.Add((b.Speaker, b.Line)); c.Fields.Add(b); } c.Learned.AddRange(conv.Learned); c.Opens.AddRange(conv.Opens);
             }
             else { c.MetKey = verb == "mislead" ? $"mislead/{target}" : card?.Scene != null ? PlayText.SceneKey(card.Scene) : $"{verb}/{target}"; ConvoItems(c, card, verb, agent, rival); }
-            ConvoPicks.Add(c.MetKey); string why = c.Lines.Count == 0 ? "no lines" : controls.conversations == ConversationScenes.Never ? "never" : controls.conversations == ConversationScenes.FirstEachScene && convoMet.Contains(c.MetKey) ? "met" : ConvoNow != null || convoWant != null ? "another scene" : ConvoBlock(c);
-            if (why != null) { ConvoLast = $"bubbles ({why}): {verb} {target}"; ConvoRelease(c); return; }
-            convoMet.Add(c.MetKey); convoWant = c;
+            if (!OfferConversation(c)) return;
             var said = new List<string> { agent, target }; if (rival) said.Add("rivals"); foreach (var (sp, _) in c.Lines) said.Add(sp);
             QuietNow(said.ToArray());
             if (card != null)
@@ -90,6 +88,14 @@ namespace Suborned.Play
                 if (conv != null) { card.Lines.Clear(); foreach (var b in conv.Beats) card.Lines.Add(new FeedLine { Speaker = b.Speaker, Name = Text.ConvName(b.Speaker), Text = b.Line }); if (conv.Learned.Count > 0) card.Footer = conv.Learned[0]; }
                 card.Revealed = card.Bubbled = card.Lines.Count; card.NextBeatAt = -1; // the whole scene stays in the history, and isn't bubbled again
             }
+        }
+
+        bool OfferConversation(Convo c)
+        {
+            ConvoPicks.Add(c.MetKey); string why = c.Lines.Count == 0 ? "no lines" : controls.conversations == ConversationScenes.Never ? "never" : controls.conversations == ConversationScenes.FirstEachScene && convoMet.Contains(c.MetKey) ? "met" : ConvoNow != null || convoWant != null ? "another scene" : ConvoBlock(c);
+            if (why != null) { ConvoLast = $"bubbles ({why}): {c.Verb} {c.Target}"; ConvoRelease(c); return false; }
+            convoMet.Add(c.MetKey); convoWant = c;
+            return true;
         }
 
         /// <summary>No conversation: the scene's lines, the same words as today, past the reply. Listen frames the overheard pair when they stand together (brief 102: the Scout's arrive, quiet in play, no longer opens it).</summary>
