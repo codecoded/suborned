@@ -77,7 +77,7 @@ namespace Suborned.Play
         }
         static Button Button(VisualElement parent,string words,Action action)
         {
-            var b=new Button(action){text=words};parent.Add(b);b.style.color=Ivory;b.style.backgroundColor=new Color32(47,68,65,255);b.style.whiteSpace=WhiteSpace.Normal;b.style.unityTextAlign=TextAnchor.MiddleLeft;b.style.fontSize=15;b.style.minHeight=32;b.style.marginTop=3;b.style.paddingLeft=10;return b;
+            var b=new Button(action){text=words};parent.Add(b);b.style.color=Ivory;b.style.backgroundColor=(Color)new Color32(47,68,65,255);b.style.whiteSpace=WhiteSpace.Normal;b.style.unityTextAlign=TextAnchor.MiddleLeft;b.style.fontSize=15;b.style.minHeight=32;b.style.marginTop=3;b.style.paddingLeft=10;return b;
         }
         public void Open(int resident=-1)
         {

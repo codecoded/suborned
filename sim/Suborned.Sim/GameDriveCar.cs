@@ -50,7 +50,7 @@ namespace Suborned.Sim
             if (op.InLent) return No("drive-lent", $"{Cap(ValeName)}'s car is never driven round: Go takes it out"); // engine 0.42.0 (car.lend, L2)
             if (!op.InCar) return No("drive-no-driver", $"the {o.Op} is not in the getaway car: board it first");
             if (FightStart != INF && !pointDrive) return No("drive-fight", "the final fight has started: it is fought where it started, and Go is the way out");
-            foreach (var x in Ops) if (x.InCar && !x.InLent && x.Busy != null && !(pointDrive && (x.Busy.Do == "drive-car" || x.Busy.Do == "ride"))) return No("drive-busy", $"the {Sim.Op.Name(x.Id)} in the car is busy until {Sim.Report.Clock(x.BusyEnd)}");
+            foreach (var x in Ops) if (x.InCar && (District == null || !x.InLent) && x.Busy != null && !(pointDrive && (x.Busy.Do == "drive-car" || x.Busy.Do == "ride"))) return No("drive-busy", $"the {Sim.Op.Name(x.Id)} in the car is busy until {Sim.Report.Clock(x.BusyEnd)}");
             if (st == CurStand) return No("drive-here", $"the car is at {st.Id} already");
             var hs = CarHolders(); if (hs.Count > 0) return No("drive-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs));
             var bx = GetawayBoxers(); if (bx.Count > 0) return No("drive-boxed", BoxedWords(bx), ids: string.Join(",", bx)); // brief 096 (car.box): boxed in where it stands
@@ -68,7 +68,7 @@ namespace Suborned.Sim
             getawayPath = path; getawayProf = prof; getawayStart = Tick; GetawayDest = st;
             foreach (var x in Ops)
             {
-                if (!x.InCar || x.InLent) continue;
+                if (!x.InCar || (District != null && x.InLent)) continue;
                 if (x.Gun.Order.Length > 0) OrderEnd(x, false);
                 x.Busy = x == op ? o : new Order { Tick = Tick, Op = Sim.Op.Name(x.Id), Do = "ride", Target = st.Id };
                 x.BusyStart = Tick; x.BusyEnd = Tick + ticks; x.Walk = null; x.WalkMm = 0;
@@ -82,7 +82,7 @@ namespace Suborned.Sim
         {
             if (GetawayDest == null) return;
             CurStand = GetawayDest; GetawayDest = null; getawayPath = null; getawayProf = null; liveCoverKey = -1;
-            foreach (var x in Ops) if (x.InCar && !x.InLent) x.Pos = GetawaySeat;
+            foreach (var x in Ops) if (x.InCar && (District == null || !x.InLent)) x.Pos = GetawaySeat;
             Note("car.parked", $"The getaway car is at {DistrictStandName(CurStand)}.");
             SawGetaway(Sim.Op.Name(op.Id)); // Motive M059-2.4: a driver at the wheel of his own car nearby learns it
         }

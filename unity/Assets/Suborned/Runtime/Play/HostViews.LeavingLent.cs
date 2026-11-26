@@ -31,6 +31,13 @@ namespace Suborned.Play
             var g = host.Game;
             if (g == null || g.Range || !g.Lent) { lentFor = null; lentHeading = null; takenSeen = false; return; }
             lentKey = LentKeyOf(g);
+            if (!g.LentGone && g.SecondCarAt is Pt street && g.SecondCarHeading is Pt heading) {
+                Set(lentKey,street); var streetDir=frame.Dir(heading); lentHeading=streetDir;
+                if(things.TryGetValue(lentKey,out var vehicle)) {vehicle.t.position=frame.World(street);if(streetDir.sqrMagnitude>.001f)vehicle.t.rotation=Quaternion.LookRotation(streetDir);}
+                if(trafficCars.TryGetValue(g.LentId,out var traffic))traffic.HeadFrom=traffic.HeadTo=streetDir;
+                if(g.LentId=="car:rivals")rivalHeading=streetDir;
+                takenAt=frame.World(street);takenDir=streetDir;takenSeen=true;return;
+            }
             if (!g.LentGone) { lentFor = null; lentHeading = null; TakenPose(g); return; }
             if (!things.TryGetValue(lentKey, out var th)) return;
             if (lentFor != g) { lentFor = g; lentS = lentV = lentLen = 0f; lentHeading = null; if (g.LentId == "car:official") LentWay(g); else TakenWay(g); }

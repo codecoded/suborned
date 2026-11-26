@@ -50,6 +50,25 @@ public sealed class DistrictTests
         var water=new Pt(-90000,90000);var old=g.GetawayCarPos();
         Assert.False(g.Do(new Order{Tick=g.Tick,Op="scout",Do="drive-car",Point=water})); Assert.Equal(old,g.GetawayCarPos());
     }
+    [Fact] public void ContactsCanIntroduceAnUnconnectedCellAndMeetingsResumeInPlace()
+    {
+        var g=Open();var d=g.District!;var j=d.Jobs[0];var a=d.Map.People[j.A];var b=d.Map.People[j.B];
+        Order(g,"district-visit",who:a.Id); Arrive(g); var at=d.Pose(j.A,g.Tick).at;
+        g.Advance(900);Assert.Equal(at,d.Pose(j.A,g.Tick).at);
+        Assert.False(g.Do(new Order{Tick=g.Tick,Op="scout",Do="district-refer",Target=a.Id,To=b.Id}));
+        Order(g,"district-back",who:a.Id);Assert.Equal(at,d.Pose(j.A,g.Tick).at);
+        Order(g,"district-refer",who:a.Id,to:b.Id);Assert.True(d.Trust[j.B]>0);
+        Assert.False(g.Do(new Order{Tick=g.Tick,Op="scout",Do="district-refer",Target=a.Id,To=b.Id}));
+    }
+    [Fact] public void CompletingTheOriginalPrimaryRouteKeepsTheCellPlayable()
+    {
+        var script=Script.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(Engine.FindRoot(System.AppContext.BaseDirectory),"contracts/missions/handover/routes/route-a.json")));
+        script.Start.District=true;
+        var g=Engine.Play(Repo.Inputs,script.Start,script.Orders,script.Until);
+        Assert.False(g.Over,g.FailCode+" "+g.FailText);Assert.Equal(Outcome.Success,g.District!.Handover);
+        Assert.True(g.Ops.Any(o=>!o.Down&&!o.LeftMap));Assert.Equal(3,g.District.Jobs.Length);
+        int tick=g.Tick;g.Advance(150);Assert.Equal(tick+150,g.Tick);
+    }
     [Fact] public void OnlyTheLastIncapacitatedOperativeEndsTheDistrict()
     {
         var g=Open();foreach(var o in g.Ops.Take(3))o.Gun.Down=true;

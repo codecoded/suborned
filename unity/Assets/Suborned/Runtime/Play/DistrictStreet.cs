@@ -22,17 +22,19 @@ namespace Suborned.Play
         readonly HashSet<int> visible=new();
         HandoverHost host;
         Game current;
+        GameObject parkedTrams;
         float rescan;
         const int Tram=1000, Sedan=1100, Robot=1200;
         public int VisiblePeople {get;private set;}
         public int VisibleVehicles {get;private set;}
         public int VisibleRobots {get;private set;}
         public bool TramKit => host && host.districtTram && host.districtTramMid && host.districtTramFar;
-        void Awake() {host=GetComponent<HandoverHost>();}
+        void Awake() {host=GetComponent<HandoverHost>();parkedTrams=GameObject.Find("Trams (old Tram at our stops)");}
+        void OnDestroy(){if(parkedTrams)parkedTrams.SetActive(true);}
         void LateUpdate()
         {
             var g=host.Game;
-            if(g!=current) {foreach(var item in activeViews.Values)Put(item);activeViews.Clear();current=g;rescan=0;}
+            if(g!=current) {foreach(var item in activeViews.Values)Put(item);activeViews.Clear();current=g;rescan=0;if(parkedTrams)parkedTrams.SetActive(g?.District==null);}
             if(g?.District==null || !host.View)return;
             bool scan=Time.unscaledTime>=rescan;
             if(scan){rescan=Time.unscaledTime+.2f;visible.Clear();VisiblePeople=VisibleVehicles=VisibleRobots=0;}
@@ -46,15 +48,13 @@ namespace Suborned.Play
                 Draw(i,pose.at,pose.facing,pose.moving,scan);
             }
             for(int i=0;i<d.Map.Trams.Length;i++) {
-                var pose=DistrictMap.Shuttle(d.Map.Trams[i].Path,g.Tick,i*4179+1200,730,95);
-                Draw(Tram+i,pose.at,pose.facing,pose.moving,scan);
+                var pose=d.Traffic.Tram(i,g.Tick);
+                Draw(Tram+i,pose.At,pose.Facing,pose.Moving,scan);
             }
             for(int i=0;i<d.Map.Streets.Length;i++) {
                 if(!scan&&!activeViews.ContainsKey(Sedan+i)&&!activeViews.ContainsKey(Robot+i))continue;
-                var line=d.Map.Streets[i].Path;
-                var pose=DistrictMap.Shuttle(line,g.Tick,1900+i*1379,440+i%4*35,55);
-                var right=CarGeo.Ahead(pose.at,new Pt(pose.facing.Y,-pose.facing.X),215);
-                if(!g.S.Grid.InGrid(right) && d.Map.Roads.Free(right)) Draw(Sedan+i,right,pose.facing,pose.moving,scan);
+                var pose=d.Traffic.Car(i,g.Tick);
+                if(!g.S.Grid.InGrid(pose.At) && d.Map.Roads.Free(pose.At)) Draw(Sedan+i,pose.At,pose.Facing,pose.Moving,scan);
                 if(i%2==0) {
                     var patrol=DistrictMap.Shuttle(d.Map.People[(i*7+3)%d.Map.People.Length].Walk,g.Tick,i*1091,130,170);
                     Draw(Robot+i,patrol.at,patrol.facing,patrol.moving,scan);

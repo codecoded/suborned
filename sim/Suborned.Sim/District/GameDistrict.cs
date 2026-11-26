@@ -18,6 +18,15 @@ namespace Suborned.Sim
         }
         void DistrictEndStep()
         {
+            District!.Traffic.Step(this,District);
+            if (Tick%Hz==0) foreach(var job in District.Jobs) {
+                if (ContactLost(job.Contact)) {
+                    District.Release(job.Contact,Tick);
+                    District.Replace(job,id=>!ContactLost(id));
+                    District.News="Word came back that a contact was incapacitated. A new lead is in the district book.";
+                    Note("district.new-lead",District.News);
+                }
+            }
             if (SecondCarAt is Pt car) foreach (var o in Ops) if (o.InLent && !o.LeftMap) o.Pos=car;
             if (Result==Outcome.Success || Result==Outcome.Withdrawn)
             {
@@ -59,6 +68,7 @@ namespace Suborned.Sim
             }
             return d.Pose(who,Tick).at;
         }
+        bool ContactLost(int who) => districtWalkers.TryGetValue(District!.Map.People[who].Id,out var w) && w.P.Down;
         readonly System.Collections.Generic.Dictionary<string,Walker> districtWalkers = new System.Collections.Generic.Dictionary<string,Walker>();
         void BindDistrictCast() { if (District != null) foreach(var w in Walkers) districtWalkers[w.P.Id]=w; }
         public bool HasCivicActor(string id) => districtWalkers.ContainsKey(id);
@@ -73,7 +83,7 @@ namespace Suborned.Sim
                 if(op.InCar) return No("in-car","Step out to meet someone on foot.");
                 var route=StreetWalk(op.Pos,place); if(route==null) return No("no-walk","There is no foot route to this meeting place.");
                 var travel=Move(op,new Order {Op=o.Op,Do="move",Point=place,Run=o.Run}); if(travel.Length>0)return travel;
-                d.Meetings[who]=place; return "";
+                d.Meet(who,place,Tick); return "";
             }
             if(!G.Within(op.Pos,place,650)) return No("too-far",$"Meet {person.Name} on foot within six metres.");
             if(o.Do=="district-back" || o.Do=="district-refer")
@@ -90,7 +100,7 @@ namespace Suborned.Sim
                     d.Trust[friend]++;line=$"{person.Name} vouched for the cell with {d.Map.People[friend].Name}.";
                     d.Memory[friend]=line;
                 }
-                d.News=line;d.Memory[who]=line;d.Meetings[who]=null;Note("district.introduction",line);return "";
+                d.News=line;d.Memory[who]=line;d.Release(who,Tick);Note("district.introduction",line);return "";
             }
             var job=d.Available(who);
             if(job==null || o.To!=job.Key) return No("target-unknown","That errand has moved on. Check the district book for its next contact.");
@@ -106,9 +116,9 @@ namespace Suborned.Sim
                 d.Trust[job.B]=Math.Clamp(d.Trust[job.B]+change,-3,3); d.Trust[who]=Math.Clamp(d.Trust[who]+change,-3,3);
                 news=job.Bluff?$"{person.Name} paid ${pay}, then found the discrepancy. Both contacts will check your word.":$"{person.Name} paid ${pay}. Both contacts will speak for the cell.";
                 if(job.Bluff) AddTrail(1,"district-false-assurance");
-                d.Memory[job.B]=news; d.Finish(job);
+                d.Memory[job.A]=news; d.Memory[job.B]=news; d.Finish(job);
             }
-            d.Memory[who]=news; d.News=news; d.Meetings[who]=null; Note("district.favour",news); return "";
+            d.Memory[who]=news; d.News=news; d.Release(who,Tick); Note("district.favour",news); return "";
         }
     }
 }
