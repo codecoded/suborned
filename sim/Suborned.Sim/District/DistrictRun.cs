@@ -22,6 +22,7 @@ namespace Suborned.Sim
         public readonly DistrictTraffic Traffic;
         public readonly DistrictNetwork Network;
         public readonly int[] Trust;
+        public readonly bool[] Encountered, Introduced;
         public readonly string[] Memory;
         public readonly Pt? [] Meetings;
         readonly int[] meetingSince, heldTicks;
@@ -35,6 +36,8 @@ namespace Suborned.Sim
             Traffic = new DistrictTraffic(Map);
             Network = new DistrictNetwork(this);
             Trust = new int[Map.People.Length];
+            Encountered = new bool[Map.People.Length + 4];
+            Introduced = new bool[Encountered.Length];
             Memory = new string[Trust.Length];
             Meetings = new Pt? [Trust.Length];
             meetingSince = new int[Trust.Length];

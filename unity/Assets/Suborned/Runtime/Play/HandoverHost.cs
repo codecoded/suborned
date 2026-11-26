@@ -1532,7 +1532,7 @@ namespace Suborned.Play
         public string SaveSessionTo(string to)
         {
             Save(); if (SessionPath.Length == 0 || !File.Exists(SessionPath)) throw new IOException("no session written");
-            File.Copy(SessionPath, to, true); return to;
+            File.Copy(SessionPath, to, true); DistrictBook?.CopyIndex(to); return to;
         }
 
         string SessionFile()

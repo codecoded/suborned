@@ -59,8 +59,14 @@ namespace Suborned.Play
 
         static void Submit(VisualElement panel, string words)
         {
-            var button = panel.Query<Button>().ToList().FirstOrDefault(b => b.text.StartsWith(words, StringComparison.Ordinal));
+            var button = panel.Query<Button>().ToList().FirstOrDefault(b => (b.text ?? "").StartsWith(words, StringComparison.Ordinal));
             Need(button != null, "Missing button " + words);
+            Submit(button);
+        }
+
+        static void Submit(Button button)
+        {
+            Need(button != null, "Missing contact inventory control");
             using var submit = NavigationSubmitEvent.GetPooled();
             submit.target = button;
             button.SendEvent(submit);
@@ -85,8 +91,9 @@ namespace Suborned.Play
             yield return null;
             var journal = h.DistrictBook;
             var street = h.GetComponent<DistrictStreet>();
-            Need(journal.Ready && street.TramKit, "Journal or vehicle LOD kit is missing");
-            journal.Open();
+            Need(journal.Ready && journal.PortraitsReady && street.TramKit, "Portrait inventory or vehicle LOD kit is missing");
+            Need(h.BookOpenNow("cell"), "The book did not open from play");
+            h.BookShow("people");
             Need(journal.IsOpen, "District book did not open");
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "district-book.png"));
@@ -163,6 +170,31 @@ namespace Suborned.Play
             h.LookAt(h.frame.World(request.Site));
             yield return new WaitForSecondsRealtime(.5f);
             journal.Open();
+            Need(g.ContactKnown(j.A) && journal.IsUnread(j.A), "A new street contact was missing its ribbon");
+            Need(g.ContactKnown(request.Actor), "The citizen working through a friend was missing from contacts");
+            var tiles = panel.Q("contact-grid");
+            int known = Enumerable.Range(0, g.ContactCount).Count(g.ContactKnown);
+            Need(tiles != null && tiles.childCount == known && known > 1 && known < g.ContactCount, "The roster did not match the contacts known to the cell");
+            Need(tiles.Q("portrait-" + source.Id) != null && tiles.Q("new-" + source.Id) != null, "The source's painted portrait or New ribbon was missing");
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "contact-roster.png"));
+            yield return null;
+            var search = panel.Q<TextField>("contact-search");
+            search.value = source.Name;
+            Need(panel.Q("contact-grid").childCount == 1, "Searching a contact failed");
+            search.value = "";
+            var runHash = g.ClosingHash();
+            Submit(panel.Q<Button>("contact-" + source.Id));
+            yield return new WaitForSecondsRealtime(.15f);
+            Need(!journal.IsUnread(j.A) && journal.IsUnread(request.Actor), "Reading one portrait changed another contact's ribbon");
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "contact-dossier.png"));
+            Submit(panel.Q<Button>("contacts-nav-faces"));
+            yield return new WaitForSecondsRealtime(.15f);
+            Need(panel.Q("new-" + source.Id) == null && panel.Q("new-" + g.ContactId(request.Actor)) != null, "The roster did not reflect the read state");
+            Need(g.ClosingHash() == runHash, "Reading a contact changed the simulation");
+            Submit(panel.Q<Button>("contacts-nav-requests"));
+            yield return new WaitForSecondsRealtime(.15f);
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "street-order.png"));
             journal.Close();
@@ -173,7 +205,13 @@ namespace Suborned.Play
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "tram-street.png"));
             yield return new WaitForSecondsRealtime(.4f);
-            File.WriteAllText(IOPath.Combine(directory, "proof.txt"), $"OldTown opened. The district book and contact page opened. A ground click drove the boarded scout to {d.Map.StreetAt(point)}. The Handover closed and play continued at tick {g.Tick}. {source.Name} vouched for the cell with {d.Map.People[j.B].Name}. The district book sent a request through {d.Network.Describe(request.Chain)}. The last citizen blocked {request.Place} knowing only who called them. Residents {d.Map.People.Length}, open leads {d.Jobs.Length}, visible vehicles at the rail {street.VisibleVehicles}.");
+            string save = h.SaveSessionTo(IOPath.Combine(directory, "played.script.json"));
+            h.ContinueFrom(save);
+            yield return null;
+            journal.Open();
+            Need(journal.IsOpen && h.Game.ClosingHash() == runHash, "Continue failed to rebuild the played run");
+            Need(!journal.IsUnread(j.A) && journal.IsUnread(request.Actor) && panel.Q("new-" + source.Id) == null, "Continue lost the portraits' read state");
+            File.WriteAllText(IOPath.Combine(directory, "proof.txt"), $"OldTown opened. Book → People displayed {known} discovered contacts with their painted portraits. Searching by name returned one person. Reading {source.Name} cleared only that New ribbon and carried through a saved-game Continue. A ground click drove the boarded scout to {d.Map.StreetAt(point)}. The Handover closed and play continued at tick {g.Tick}. {source.Name} vouched for the cell with {d.Map.People[j.B].Name}. The district book sent a request through {d.Network.Describe(request.Chain)}. The last citizen blocked {request.Place} knowing only who called them. District residents {d.Map.People.Length}, main cast {g.People.Count}, open leads {d.Jobs.Length}, visible vehicles at the rail {street.VisibleVehicles}.");
         }
     }
 }

@@ -84,7 +84,7 @@ namespace Suborned.Sim
             }
             switch (o.Do)
             {
-                case "district-block": case "district-rally": case "district-guard": case "district-protect": case "district-bond": case "district-back": case "district-refer": case "district-visit": case "district-help": case "district-bluff": if (District != null) return DistrictOrder(op,o); return No("unknown-verb", "No district is open.");
+                case "district-block": case "district-rally": case "district-guard": case "district-protect": case "district-bond": case "district-back": case "district-refer": case "district-visit": case "district-meet": case "district-help": case "district-bluff": if (District != null) return DistrictOrder(op,o); return No("unknown-verb", "No district is open.");
                 case "move": return Move(op, o);
                 case "watch": case "listen": return Scout(op, o);
                 case "turn": return Turn(op, o);

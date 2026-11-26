@@ -70,6 +70,7 @@ namespace Suborned.Sim
 
         void DistrictEndStep()
         {
+            if (Tick % Hz == 0) IndexStreetEncounters();
             CitizenStep();
             District!.Traffic.Step(this, District);
             if (Tick % Hz == 0)
@@ -204,10 +205,12 @@ namespace Suborned.Sim
                 return "";
             }
 
-            if (!G.Within(op.Pos, place, 650))
+            if (op.InCar || op.Inside || !G.Within(op.Pos, place, 650))
                 return No("too-far", $"Meet {person.Name} on foot within six metres.");
+            d.Encountered[who] = true;
             switch (o.Do)
             {
+                case "district-meet": return "";
                 case "district-block": return SendCitizen(op, o, who, CitizenAct.Block);
                 case "district-rally": return SendCitizen(op, o, who, CitizenAct.Rally);
                 case "district-guard": return SendCitizen(op, o, who, CitizenAct.Guard);
@@ -270,12 +273,14 @@ namespace Suborned.Sim
             if (job.Stage == 0)
             {
                 news = $"{person.Name} vouched for the cell with {d.Map.People[job.B].Name}.";
+                d.Introduced[job.B] = true;
                 job.Stage = 1;
             }
             else if (job.Stage == 1)
             {
                 job.Bluff = bluff;
                 news = bluff ? $"{person.Name} passed your false assurance to {d.Map.People[job.C].Name}." : $"{person.Name} asked {d.Map.People[job.C].Name} for a favour on your behalf.";
+                d.Introduced[job.C] = true;
                 job.Stage = 2;
             }
             else

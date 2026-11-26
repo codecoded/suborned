@@ -42,9 +42,17 @@ namespace Suborned.Play
         }
 
         /// <summary>From ConvoHud's first line, each frame: the book up has the HUD (true); shut, one compare and out.</summary>
+        bool contactsOwnHud;
         bool BookHud()
         {
+            bool people = host.BookOpen && host.BookSectionNow == "people" && host.DistrictBook != null;
+            if (people != contactsOwnHud)
+            {
+                contactsOwnHud = people;
+                root.style.display = people ? new StyleEnum<DisplayStyle>(DisplayStyle.None) : new StyleEnum<DisplayStyle>(StyleKeyword.Null);
+            }
             if (!host.BookOpen) { if (bk != null) BookTake(); return false; }
+            if (people) { if (bk != null) BookTake(); return true; }
             if (bk == null) BookBuild();
             if (bkFor != host.BookPageNow && host.BookPageNow != null) BookDraw(host.BookPageNow);
             BkBriefFrame(); // brief 108: the page's edge and the street's label (HudToolkit.BookBrief)

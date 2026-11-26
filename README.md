@@ -22,7 +22,7 @@ bun run game          # builds out/build/play/The Suborned.app if it is missing 
 bun run game -- --windowed
 ```
 
-The Handover briefing opens into the Harbour district. Click the ground to walk. Once aboard a car, click a street to drive and click again to change course. Press **N** for district leads and people at work. The clock advances routines and the Handover. If the opportunity passes, the cell can keep exploring and taking other jobs.
+The Handover briefing opens into the Harbour district. Click the ground to walk. Once aboard a car, click a street to drive and click again to change course. Press **N** or open **Book → People** for the portraits of people the cell has met or learned about. A **New** ribbon marks a fresh contact or a change in what the cell knows. Open their portrait to read it. **Leads** lists district stories, and **Requests** shows what people are doing for the cell. The clock advances routines and the Handover. If the opportunity passes, the cell can keep exploring and taking other jobs.
 
 Click a resident or walk to a contact from the district book. Earn their trust, choose **Call in a favour**, then pick the request, location and person who will carry it out. A request can pass through several acquaintances while your operatives do something else. Residents remember who called them. People who meet at a gathering can introduce one another later. The district uses a cast and relationship graph baked from SurrealDB and plays offline.
 

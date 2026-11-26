@@ -31,8 +31,8 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>Whether a book section has anything in it (a dim sign until it does: People has no page yet, the Journal waits for its first row).</summary>
-        public bool BookSectionLive(string id) => id != "journal" || Feed.Exists(Says) || FeedHistory.Exists(Says) || CrucialLog.Count > 0;
+        /// <summary>The People sign opens in the playable district. The Journal lights up with its first entry.</summary>
+        public bool BookSectionLive(string id) => id == "people" ? Game?.District != null && !BookStart && !BookEnd : id != "journal" || Feed.Exists(Says) || FeedHistory.Exists(Says) || CrucialLog.Count > 0;
 
         void JournalSeenNow() { if (BookOpen && BookSectionNow == "journal") journalSeen = feedIds; }
 

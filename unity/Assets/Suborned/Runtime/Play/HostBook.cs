@@ -34,7 +34,7 @@ namespace Suborned.Play
         public bool BookOpenNow(string section = null, int agent = -1)
         {
             if (BookOpen || !BookMayOpen) return false;
-            BookSections ??= BookWordsFile.Get().Sections();
+            BookSections ??= BookWordsFile.Get().Sections(Game.District != null);
             pausedBeforeBook = Paused; if (!Paused) { Paused = true; Save(); } // as the pause path does
             if (Ring != null) CloseRing(); if (Panel != null) ClosePanel();
             CancelHold(); lp = default; rp = default; ClearHover();
@@ -59,13 +59,13 @@ namespace Suborned.Play
         /// <summary>A section or an agent's page: the page built and the view on its subject. A sign with no page does nothing.</summary>
         public void BookShow(string section, int agent = -1)
         {
-            var s = BookSections?.Find(x => x.Id == section); if (s?.Page == null || !BookOpen) return;
+            var s = BookSections?.Find(x => x.Id == section); if (s?.Page == null || !BookOpen || section == "people" && !BookSectionLive(section)) return;
             if (BookSectionNow == "journal" && section != "journal") JournalSeenNow(); // leaving the Journal: what it showed is read
             if (section != BookSectionNow || agent >= 0 && agent != BookAgent) { BookLookView = ""; bookLookPinned = false; }
             BookSectionNow = section; if (agent >= 0) BookAgent = agent;
             var t0 = System.Diagnostics.Stopwatch.GetTimestamp(); BookPage pg = null; Guard("book", () => pg = s.Page(this)); if (pg == null) return;
             pg.Begin = BookStart; // brief 096: the start's pages carry Begin where Back is
-            BookPageNow = pg; BookBuildMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            BookPageNow = pg; if (pg.Section == "people") DistrictBook?.ShowFromBook(); BookBuildMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             var look = BookView(BookLookView);
             BookGlide(look ? look.position : pg.Subject, pg.SubjectYaw);
         }
@@ -112,9 +112,10 @@ namespace Suborned.Play
             ClearHover();
             if (BookStartKeys(kb) || BookEndKeys(kb) || BookBriefKeys(kb)) return true; // brief 108: the briefing pages' arrows (HostBook.Brief)
             TourFrame();
-            if (controls.Down(kb, PlayAction.Book) || kb != null && kb.escapeKey.wasPressedThisFrame) { BookClose(); return true; }
+            bool typingContact = BookSectionNow == "people" && DistrictBook?.Searching == true;
+            if (kb != null && kb.escapeKey.wasPressedThisFrame || !typingContact && (controls.Down(kb, PlayAction.Book) || kb != null && BookSectionNow == "people" && kb.nKey.wasPressedThisFrame)) { BookClose(); return true; }
             if (BookSectionNow == "journal" && UnityEngine.InputSystem.Mouse.current is { } wm && wm.scroll.ReadValue().y is float wy && wy != 0f) JournalScroll(wy > 0f ? -1 : 1);
-            if (controls.Down(kb, PlayAction.CycleAgent)) BookNext();
+            if (!typingContact && controls.Down(kb, PlayAction.CycleAgent)) BookNext();
             if (BookSectionNow == "cell") for (int i = 0; i < 4; i++) if (controls.Down(kb, PlayAction.Agent1 + i)) BookShow("cell", i);
             BookCamera();
             views?.Frame(1f); Guard("car fx", CarFxFrame); FollowFrame(); FadePoints();
@@ -125,7 +126,7 @@ namespace Suborned.Play
         public void BookNext()
         {
             if (BookSections == null) return; int i = BookSections.FindIndex(x => x.Id == BookSectionNow);
-            for (int k = 1; k <= BookSections.Count; k++) { var s = BookSections[(i + k) % BookSections.Count]; if (s.Page != null) { BookShow(s.Id); return; } }
+            for (int k = 1; k <= BookSections.Count; k++) { var s = BookSections[(i + k) % BookSections.Count]; if (s.Page != null && (s.Id != "people" || BookSectionLive(s.Id))) { BookShow(s.Id); return; } }
         }
 
         /// <summary>A way clicked: the book closes and the thing's ring opens for the selection as it is. No order is given.</summary>

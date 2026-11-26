@@ -53,7 +53,7 @@ namespace Suborned.Play
             if (path == SessionPath) Save();
             continueSelection = SavedSelection(path);
             continueScript = path; Begin();
-            if (Continued) { ShowBriefing = false; BriefCamLand(); Status = "Continued."; }
+            if (Continued) { DistrictBook?.ContinueIndex(path); ShowBriefing = false; BriefCamLand(); Status = "Continued."; }
         }
         Suborned.Sim.Game ContinueGame()
         {

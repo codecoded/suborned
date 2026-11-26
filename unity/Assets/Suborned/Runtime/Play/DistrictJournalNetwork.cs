@@ -78,7 +78,7 @@ namespace Suborned.Play
             {
                 int index = n;
                 var option = Button(pages, options[n], () => { select(index); openList = ""; reply = ""; Page(); });
-                if (n == selected) option.style.color = Gold;
+                if (n == selected) option.style.color = Brass;
             }
             return true;
         }

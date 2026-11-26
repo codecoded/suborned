@@ -12,18 +12,18 @@ namespace Suborned.Play
         Game bound;
         UIDocument document;
         PanelSettings settings;
-        VisualElement root, sheet, tab, marker;
+        VisualElement root, sheet, marker;
         Label markerText;
         ScrollView pages;
-        bool open, wasPaused;
+        bool open;
         int person = -1, tracking = -1, walking = -1, walker = -1;
         string reply = "";
         static DistrictJournal live;
-        static readonly Color Paper = new Color32(23, 37, 37, 250), Ivory = new Color32(244, 235, 209, 255), Gold = new Color32(223, 183, 108, 255), Blue = new Color32(154, 210, 207, 255);
-        public bool IsOpen => open;
-        public bool Ready => document != null && tab != null;
 
-        bool Available => host && host.Game?.District != null && !host.Game.Over && host.Fault == null && !host.ShowBriefing && !host.MenuOpen && !host.BookOpen && !host.ConvoOn;
+        public bool IsOpen => open;
+        public bool Ready => document != null && sheet != null;
+
+        bool Available => host && host.Game?.District != null && !host.Game.Over && host.Fault == null && !host.ShowBriefing && !host.MenuOpen && !host.ConvoOn;
 
         void Awake()
         {
@@ -41,12 +41,7 @@ namespace Suborned.Play
 
         public static bool Blocks(Vector2 screen)
         {
-            if (live == null || !live.Available || live.root?.panel == null)
-                return false;
-            if (live.open)
-                return true;
-            var p = RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y));
-            return live.tab.worldBound.Contains(p);
+            return live != null && live.IsOpen;
         }
 
         public bool Controls()
@@ -77,20 +72,11 @@ namespace Suborned.Play
 
             if (document == null)
                 Build();
-            if (bound != host.Game)
-            {
-                bound = host.Game;
-                open = false;
-                person = tracking = walking = walker = -1;
-                reply = "";
-                sheet.style.display = DisplayStyle.None;
-            }
-
+            if (bound != host.Game) Bind();
+            if (open && (!host.BookOpen || host.BookSectionNow != "people")) HidePage();
             root.style.display = Available ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!Available)
-                return;
-            settings.scale = Mathf.Max(.75f, Mathf.Round(Screen.height / 1080f)) * HudToolkit.UserScale;
-            tab.style.display = open ? DisplayStyle.None : DisplayStyle.Flex;
+            if (!Available) return;
+            if (open) SizePage();
             if (walking >= 0 && !open && walker >= 0)
             {
                 var op = bound.Ops[walker];
@@ -103,7 +89,7 @@ namespace Suborned.Play
                 {
                     int met = walking;
                     walking = -1;
-                    Open(met);
+                    Meet(met);
                 }
                 else if (op.Walk == null)
                     walking = -1;
@@ -112,116 +98,73 @@ namespace Suborned.Play
             Marker();
         }
 
-        void Build()
+        void Bind()
         {
-            var source = Resources.Load<PanelSettings>("Kit/HudPanel");
-            settings = source ? Instantiate(source) : ScriptableObject.CreateInstance<PanelSettings>();
-            settings.scaleMode = PanelScaleMode.ConstantPixelSize;
-            settings.sortingOrder = 55;
-            var go = new GameObject("District book");
-            go.SetActive(false);
-            go.transform.SetParent(transform, false);
-            document = go.AddComponent<UIDocument>();
-            document.panelSettings = settings;
-            go.SetActive(true);
-            root = document.rootVisualElement;
-            root.pickingMode = PickingMode.Ignore;
-            root.style.flexGrow = 1;
-            tab = Button(root, "Harbour district   N", () => Open());
-            tab.style.position = Position.Absolute;
-            tab.style.right = 18;
-            tab.style.top = 100;
-            sheet = new VisualElement();
-            root.Add(sheet);
-            sheet.style.position = Position.Absolute;
-            sheet.style.right = 18;
-            sheet.style.top = 58;
-            sheet.style.bottom = 70;
-            sheet.style.width = 390;
-            sheet.style.maxWidth = Length.Percent(92);
-            sheet.style.backgroundColor = Paper;
-            sheet.style.borderTopWidth = 3;
-            sheet.style.borderTopColor = Gold;
-            sheet.style.paddingLeft = 18;
-            sheet.style.paddingRight = 18;
-            sheet.style.paddingTop = 12;
-            sheet.style.paddingBottom = 12;
-            pages = new ScrollView();
-            pages.style.flexGrow = 1;
-            sheet.Add(pages);
-            Button(sheet, "Close", Close);
+            bound = host.Game;
+            open = false;
+            tracking = walking = walker = -1;
+            person = -1;
+            LoadIndex();
             sheet.style.display = DisplayStyle.None;
-            marker = new VisualElement();
-            marker.pickingMode = PickingMode.Ignore;
-            root.Add(marker);
-            marker.style.position = Position.Absolute;
-            marker.style.backgroundColor = Paper;
-            marker.style.paddingLeft = 8;
-            marker.style.paddingRight = 8;
-            markerText = Label(marker, "", 13, Gold);
-            markerText.pickingMode = PickingMode.Ignore;
-            marker.style.display = DisplayStyle.None;
         }
 
-        static Label Label(VisualElement parent, string words, int size, Color color)
+        public void ShowFromBook()
         {
-            var l = new Label(words);
-            parent.Add(l);
-            l.style.whiteSpace = WhiteSpace.Normal;
-            l.style.color = color;
-            l.style.fontSize = size;
-            l.style.marginBottom = 6;
-            return l;
-        }
-
-        static Button Button(VisualElement parent, string words, Action action)
-        {
-            var b = new Button(action)
-            {
-                text = words
-            };
-            parent.Add(b);
-            b.style.color = Ivory;
-            b.style.backgroundColor = (Color)new Color32(47, 68, 65, 255);
-            b.style.whiteSpace = WhiteSpace.Normal;
-            b.style.unityTextAlign = TextAnchor.MiddleLeft;
-            b.style.fontSize = 15;
-            b.style.minHeight = 32;
-            b.style.marginTop = 3;
-            b.style.paddingLeft = 10;
-            return b;
+            if (!Available) return;
+            if (document == null) Build();
+            if (bound != host.Game) Bind();
+            if (open) return;
+            open = true;
+            person = -1;
+            writingOrder = false;
+            section = Section.Faces;
+            reply = "";
+            sheet.style.display = DisplayStyle.Flex;
+            SizePage();
+            Page();
         }
 
         public void Open(int resident = -1)
         {
-            if (!Available)
-                return;
-            if (document == null)
-                Build();
-            if (!open)
+            if (!Available) return;
+            if (!host.BookOpen)
             {
-                wasPaused = host.Paused;
-                host.SetPaused(true);
+                if (!host.BookOpenNow("people")) return;
             }
-
-            open = true;
+            else if (host.BookSectionNow != "people") host.BookShow("people");
+            ShowFromBook();
+            if (!open) return;
             person = resident;
             writingOrder = false;
+            section = Section.Faces;
             reply = "";
-            sheet.style.display = DisplayStyle.Flex;
-            tab.style.display = DisplayStyle.None;
             Page();
         }
 
         public void Close()
         {
-            if (!open)
-                return;
+            if (!open) return;
+            host.BookClose();
+            HidePage();
+        }
+
+        void Meet(int resident)
+        {
+            var g = host.Game;
+            if (!g.District.Encountered[resident] && !g.District.Network.Away(resident) && g.ContactAt(resident) is Pt at)
+            {
+                int speaker = Speaker(at, true);
+                if (speaker >= 0) host.Issue(new Order { Op = Op.Name((OpId)speaker), Do = "district-meet", Target = g.ContactId(resident) });
+            }
+            Open(resident);
+        }
+
+        void HidePage()
+        {
             open = false;
             sheet.style.display = DisplayStyle.None;
-            tab.style.display = DisplayStyle.Flex;
-            if (host.Game != null && !host.Game.Over)
-                host.SetPaused(wasPaused);
+            pages?.Clear();
+            search = "";
         }
 
         public bool PickResident(Vector2 screen, string civic)
@@ -232,7 +175,7 @@ namespace Suborned.Play
             var d = g.District;
             if (!string.IsNullOrEmpty(civic) && d.Map.Index.TryGetValue(civic, out int known) && d.Roams(known))
             {
-                Open(known);
+                Meet(known);
                 return true;
             }
 
@@ -255,7 +198,7 @@ namespace Suborned.Play
 
             if (closest < 0)
                 return false;
-            Open(closest);
+            Meet(closest);
             return true;
         }
 
@@ -305,55 +248,12 @@ namespace Suborned.Play
         {
             var g = host.Game;
             var d = g.District;
-            pages.Clear();
-            pages.scrollOffset = Vector2.zero;
-            if (person < 0)
-            {
-                Label(pages, "Harbour district", 27, Ivory);
-                Label(pages, "The Handover", 19, Gold);
-                Label(pages, d.HandoverNews, 15, Ivory);
-                if (g.HandoverOpen)
-                    Button(pages, "Locate the Records Office", () =>
-                    {
-                        Close();
-                        host.LookAt(host.frame.World(g.S.Stand(g.S.GuardPost)));
-                    });
-                NetworkOverview();
-                Label(pages, "Word on the street", 19, Gold);
-                foreach (var j in d.Jobs)
-                {
-                    var target = j.Contact;
-                    Button(pages, d.Title(j) + "  ›", () => Open(target));
-                    Label(pages, d.Lead(j), 14, Ivory);
-                }
-
-                if (d.News.Length > 0)
-                {
-                    Label(pages, "Latest word", 17, Gold);
-                    Label(pages, d.News, 14, Ivory);
-                }
-
-                var op = g.Ops[(int)host.Agent];
-                if (op.InCar)
-                {
-                    Label(pages, "Your car", 18, Gold);
-                    Label(pages, "Click a street to drive. Click again to change course.", 14, Ivory);
-                    Button(pages, "Step out here", () =>
-                    {
-                        if (host.Issue(new Order { Op = Op.Name(op.Id), Do = "move", Point = g.DistrictExitDoor(op) }))
-                            Close();
-                    });
-                }
-                else
-                    Label(pages, "Click a resident to talk. When aboard a car, click a street to drive.", 14, Blue);
-                return;
-            }
-
+            PreparePage();
+            if (person < 0) { IndexPage(); return; }
+            if (g.IsCivicContact(person)) { CivicPage(); return; }
             var r = d.Map.People[person];
             var at = g.DistrictPersonAt(person);
-            Button(pages, "‹  District book", () => Open());
-            Label(pages, r.Name, 25, Ivory);
-            Label(pages, r.Job.Replace('-', ' ') + "  ·  " + (at.HasValue ? d.Map.StreetAt(at.Value) : "off the street"), 14, Blue);
+            PersonHeader(r.Id, r.Name, r.Job, at.HasValue ? d.Map.StreetAt(at.Value) : "Off the street");
             if (writingOrder)
             {
                 CitizenOrderPage();
@@ -457,8 +357,8 @@ namespace Suborned.Play
                         continue;
                     if (d.Trust[person] > 0 && d.Trust[tie.person] <= 0)
                         Button(pages, "Ask for an introduction to " + friend.Name, () => Speak(by, "district-refer", friend.Id));
-                    else
-                        Button(pages, friend.Name + "  ·  " + tie.kind, () => Open(tie.person));
+                    else if (g.ContactKnown(tie.person))
+                        LinkFace(pages, tie.person, tie.kind);
                 }
             }
 
