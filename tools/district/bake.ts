@@ -8,7 +8,7 @@ import { sql } from '../rag/database';
 import { streetPlaces, furnish, project, cafeCourt, type Venue } from './places';
 import { districtPopulation, LOCAL } from './population';
 import { streetscape, straightRuns } from './streetscape';
-import { waterfront } from './waterfront';
+import { roofTerraces, waterfront } from './waterfront';
 import type { StreetSurvey } from './survey';
 import { civic } from '../plan/civic';
 import { derive, type Plan } from '../plan/plan';
@@ -265,6 +265,7 @@ const data = {
   water: runs(water),
   walls: runs(solid),
   waterfront:surface,
+  roofTerraces: roofTerraces(world,block),
   courts:neighbourhood.courts.map(c=>({...c,ring:c.ring.map(block)})),
   buildings:neighbourhood.buildings.map(b=>({at:block(b.at),yaw:b.yaw,width:b.width,depth:b.depth,floors:b.floors,palette:b.palette})),
   galleries:neighbourhood.galleries.map(g=>({...g,at:block(g.at)})),

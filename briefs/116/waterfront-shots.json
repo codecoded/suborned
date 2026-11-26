@@ -1,0 +1,11 @@
+{
+  "schema": "suborned.shots/1",
+  "defaults": { "hud": false, "night": false, "perf": 5, "settle": 1.5, "mark": false },
+  "shots": [
+    { "name": "pier-city", "view": "follow", "select": "scout", "face": [-26600, 9000], "script": "briefs/115/pier-walk.json", "tick": 2281 },
+    { "name": "pier-inlet", "view": "follow", "select": "scout", "face": [-16200, 24500], "script": "briefs/115/pier-walk.json", "tick": 2281 },
+    { "name": "promenade", "view": "follow", "select": "scout", "face": [-17300, 25300], "script": "briefs/116/quay-walk.json", "tick": 2700 },
+    { "name": "pier-night", "night": true, "view": "follow", "select": "scout", "face": [-16200, 24500], "script": "briefs/115/pier-walk.json", "tick": 2281 },
+    { "name": "office", "view": "overhead", "at": [4200, -2200], "yaw": 2, "zoom": 10, "tick": 160 }
+  ]
+}

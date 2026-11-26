@@ -22,6 +22,27 @@ public sealed class DistrictTests
     }
 
     [Fact]
+    public void FerryForecourtConnectsToThePromenadeWithResidentsAndASeawardBoundary()
+    {
+        var g = Open();
+        var map = g.District!.Map;
+        var landing = map.Ground.Venues.Single(v => v.Id == "ferry-landing");
+        var outer = map.Ground.Waterfront.Where(s => s.Id == "quay/3").OrderByDescending(s => s.B.Y).First();
+        Assert.True(outer.Contains(landing.At));
+        Assert.True(map.Walk.Free(landing.At));
+        Assert.False(map.Roads.Free(landing.At));
+        Assert.False(map.Ground.IsWater(landing.At));
+        Assert.Equal(-85, map.Ground.ElevationCm(landing.At));
+        var sea = new Pt(outer.Centre.X, outer.B.Y + 300);
+        Assert.True(map.Ground.IsWater(sea));
+        Assert.False(map.Walk.Free(sea));
+        Assert.Contains(map.People, p => p.Id.Contains("ferry-landing") && p.Ties.Count > 0);
+        Order(g, "move", landing.At);
+        Arrive(g);
+        Assert.True(G.Within(g.Ops[0].Pos, landing.At, 210));
+    }
+
+    [Fact]
     public void MissedWindowStillAllowsAnHonestAndAFalseIntroductionWithReplay()
     {
         var g = Open();

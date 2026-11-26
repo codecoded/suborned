@@ -31,7 +31,7 @@ namespace Suborned.World.Play
 
         // The flyby FBXs share meshes and keep their original pivots, UVs, submeshes and painted material variants.
         // Add only index levels on a copy in the processed scene. The standalone player chooses these on the GPU.
-        public void DressTown(Scene scene, SiteFrame frame, DistrictGround ground)
+        public void DressTown(Scene scene, SiteFrame frame, DistrictGround ground, Transform district)
         {
             const string models = "Assets/Suborned/OldTownArt/DecoKit/Models/";
             var prepared = new Dictionary<Mesh, Mesh>();
@@ -92,6 +92,7 @@ namespace Suborned.World.Play
                 }
                 if (ungrouped) { DistantFront(renderer,mesh); distantBays++; }
             }
+            FinishDistantFronts(district);
             if (flatPaving.Count > 0)
                 scene.GetRootGameObjects().First(o => o.GetComponentInChildren<HandoverHost>(true))
                     .AddComponent<DistrictPavementShadows>().surfaces = flatPaving.ToArray();

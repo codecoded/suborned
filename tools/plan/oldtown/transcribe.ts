@@ -310,12 +310,15 @@ const foot = [
 manual('The Gardens Gate (old: the circus\'s west gate promenade to the pool, 12 m) is an 18 m mall from Orbit Row to the circus walk ring: S1\'s pylons stand on it where it leaves Circus Road');
 manual('Crown Parade is an 18 m walk on the circus axis to the quay (old: the wedge between the crescents, 24 m at the circus widening to 56 at the terrace): the crescents\' 14 m bands, which end ±12 m off the axis, need the plots to reach ±9');
 const qy = harbour.quay;
+// The public forecourt of the ferry pavilion in the inlet between Market and Skyport.
+const ferryLanding = [[qy,-92],[qy+6,-92],[qy+6,-86],[qy+12,-86],[qy+12,-50],[qy+6,-50],[qy+6,-44],[qy,-44]];
 const quay = [
   [[eb, sheetY[0]], [qy, sheetY[0]], [qy, sheetY[1]], [eb + 2, sheetY[1]], [eb + 2, north + 4], [eb, north + 4]],
   [[qy, -APRON.y], [APRON.x1, -APRON.y], [APRON.x1, APRON.y], [qy, APRON.y]],
   [[qy, STAGE.y[0]], [STAGE.x1, STAGE.y[0]], [STAGE.x1, piers.market[0]], [MPIER_X1, piers.market[0]], [MPIER_X1, piers.market[1]], [STAGE.x1, piers.market[1]], [STAGE.x1, STAGE.y[1]], [qy, STAGE.y[1]]],
+  ferryLanding,
 ];
-const water = [[[qy, sheetY[0]], [sheetX[1], sheetY[0]], [sheetX[1], sheetY[1]], [qy, sheetY[1]], [qy, APRON.y], [APRON.x1, APRON.y], [APRON.x1, -APRON.y], [qy, -APRON.y], [qy, STAGE.y[1]], [STAGE.x1, STAGE.y[1]], [STAGE.x1, piers.market[1]], [MPIER_X1, piers.market[1]], [MPIER_X1, piers.market[0]], [STAGE.x1, piers.market[0]], [STAGE.x1, STAGE.y[0]], [qy, STAGE.y[0]]]];
+const water = [[[qy, sheetY[0]], [sheetX[1], sheetY[0]], [sheetX[1], sheetY[1]], [qy, sheetY[1]], [qy, APRON.y], [APRON.x1, APRON.y], [APRON.x1, -APRON.y], [qy, -APRON.y], ...ferryLanding.slice().reverse(), [qy, STAGE.y[1]], [STAGE.x1, STAGE.y[1]], [STAGE.x1, piers.market[1]], [MPIER_X1, piers.market[1]], [MPIER_X1, piers.market[0]], [STAGE.x1, piers.market[0]], [STAGE.x1, STAGE.y[0]], [qy, STAGE.y[0]]]];
 manual(`The Skyport apron: the Skyport Pier's head widens to x ${qy}–${APRON.x1} by ±${APRON.y} (old: the tower on its 22 m apron at the pier head), carrying S2's Skyport station banks and running 8 m onto the tower's caisson (drum edge x ${SK - 38}), the tower's way in on foot; the Market Pier widens at its root to a landing stage (x ${qy}–${STAGE.x1}, y ${STAGE.y.join('..')}) for S2's Harbour station banks and runs on to x ${MPIER_X1}, 6 m onto the liner berth's caisson (edge x 248), its way in (RCH-1, brief 075 review)`);
 manual(`The harbour: the upper terrace (x ${harbour.terrace.join('–')}), steps and promenade (to ${qy}) are one quay strip down the whole sheet (old z -300..380, run on to both edges); the sea from x ${qy}; the Skyport Pier on the axis to its apron, the Market Pier (old z ${S['MarketPierZ.x']}–${S['MarketPierZ.y']}) to the liner berth`);
 // the beyond hatch: the sheet's slivers only (north of Crown Road at the west edge, north of the forecourt, the south edge); West Row and Western Park took the west strip

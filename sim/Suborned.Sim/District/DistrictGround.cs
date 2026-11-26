@@ -56,6 +56,13 @@ namespace Suborned.Sim
                 Depth = n["depth"].Int(); Floors = n["floors"].Int(); Palette = n["palette"].Int();
             }
         }
+        public readonly struct RoofTerrace
+        {
+            public readonly Pt A, B;
+            public readonly int HeightCm;
+            public RoofTerrace(JNode n) { A = Pt.Of(n["a"]); B = Pt.Of(n["b"]); HeightCm = n["heightCm"].Int(); }
+        }
+        public readonly RoofTerrace[] RoofTerraces;
         public readonly Court[] Courts;
         public readonly Building[] Buildings;
         public readonly struct Gallery
@@ -94,6 +101,7 @@ namespace Suborned.Sim
                 .Concat(Venues.Where(v => v.Court.Length >= 3).Select(v => new Court(v.Name, "coffee", v.Court))).ToArray();
             StreetFixtures = data["streetFixtures"].Items.Select(x => new Fixture(x)).ToArray();
             Buildings = data["buildings"].Items.Select(x => new Building(x)).ToArray();
+            RoofTerraces = data.Has("roofTerraces") ? data["roofTerraces"].Items.Select(x => new RoofTerrace(x)).ToArray() : Array.Empty<RoofTerrace>();
             Galleries = data["galleries"].Items.Select(x => new Gallery(x)).ToArray();
             foreach (var court in Courts)
             {

@@ -160,7 +160,7 @@ namespace Suborned.World.Play
             }
             var templates = new DistrictStreetArchitecture();
             DistrictDaylight.Apply(scene);
-            templates.DressTown(scene, frame, ground);
+            templates.DressTown(scene, frame, ground, root.transform);
             var prefabs = new Dictionary<string, GameObject>();
             foreach (var building in ground.Buildings) templates.Frontage(root.transform, frame.World(building.At), building);
             foreach (var gallery in ground.Galleries) templates.Gallery(root.transform, frame.World(gallery.At), gallery);
@@ -195,6 +195,7 @@ namespace Suborned.World.Play
                 foreach (var fixture in venue.Fixtures) PlaceFixture(fixture, venue.Name);
             foreach (var fixture in ground.StreetFixtures) PlaceFixture(fixture, "street");
             templates.LandingsAndStops(root.transform,frame,ground);
+            DistrictFerryGardens.Install(scene,root.transform,frame,ground);
         }
 
         static Material MaterialAt(string path) => AssetDatabase.LoadAssetAtPath<Material>(path)

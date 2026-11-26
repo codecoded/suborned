@@ -152,6 +152,13 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
       );
     }
   }
+  const landing = world.ground.quays.find(q => q.id === 'quay/3');
+  if (landing) {
+    const east = Math.max(...landing.ring.map(p => p[0]));
+    const edge = landing.ring.filter(p => p[0] === east).map(p => p[1]);
+    add('ferry-landing', 'Harbour Ferries', { at: [east - 4, (Math.min(...edge) + Math.max(...edge)) / 2], along: [0,1] },
+      'waterfront', 12, 13, 1.4);
+  }
   return venues;
 }
 

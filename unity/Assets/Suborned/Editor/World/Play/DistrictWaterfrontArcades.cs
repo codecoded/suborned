@@ -112,7 +112,7 @@ namespace Suborned.World.Play
             }
             foreach (var strip in ground.Waterfront)
             {
-                if (strip.Id=="quay/0") continue;
+                if (strip.Id!="quay/1" && strip.Id!="quay/2") continue;
                 bool pier=strip.B.Y-strip.A.Y>strip.A.X-strip.B.X;
                 // The narrow finger at Market Pier and the seaward face of the Skyport landing.
                 if (strip.Id=="quay/2" && !pier) continue;
