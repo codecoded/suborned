@@ -987,6 +987,21 @@
    "zip": null,
    "sent": [],
    "whatsNew": "Harbour residents use the street action ring and conversation settings. Their portrait dossiers open from the Book."
+  },
+  {
+   "build": 386,
+   "version": "0.2.386",
+   "date": "2026-11-26T22:42:30.299Z",
+   "builtAt": "2026-11-26T22:42:14.4370370Z",
+   "sha": "73a53cbd9",
+   "dirty": false,
+   "engine": "0.62.0",
+   "engineSource": "commit ae54ed271f56",
+   "dllSha256": "d4a58e441cd91b4fd54cbaf866439275bff1bf36784c5f443e02a5e4191d3b26",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Street Talk follows the conversation setting, and accepting a Harbour request gives a separate reply. The bluff choice shows the trust it costs each contact."
   }
  ]
 }

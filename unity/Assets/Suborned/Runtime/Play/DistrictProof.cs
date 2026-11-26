@@ -164,14 +164,17 @@ namespace Suborned.Play
             SelectResident();
             Need(h.RingTakeScripted("district-meet"), "The street ring did not reopen Talk");
             h.SetPaused(false);
-            yield return new WaitForSecondsRealtime(.7f);
+            string speech = d.Speaker(j);
+            float end = Time.realtimeSinceStartup + HandoverHost.ReadS(speech) + 2f;
+            do { yield return new WaitForEndOfFrame(); }
+            while ((h.ConvoPending || h.ConvoOn) && Time.realtimeSinceStartup < end &&
+                   (HudToolkit.ConvoFacePicture == null || !HudToolkit.ConvoSaid.EndsWith(speech, StringComparison.Ordinal)));
             Need(h.ConvoNow?.Target == source.Id && !h.BookOpen && !journal.IsOpen && HudToolkit.ConvoFacePicture != null,
-                "Talk did not show the resident in the conversation camera and live inset: " + h.ConvoLast);
+                $"Street conversation {h.ConvoLast}. Target {h.ConvoNow?.Target}, Book {h.BookOpen}, dossier {journal.IsOpen}, live face {HudToolkit.ConvoFacePicture != null}.");
             Need(h.ConvoNow.Shot == "profile" || h.ConvoNow.Shot == "high" || h.ConvoNow.Shot == "intercut", "The meeting lost its second speaker");
             string streetShot = h.ConvoNow.Shot;
-            float end = Time.realtimeSinceStartup + HandoverHost.ReadS(d.Speaker(j));
-            while (h.ConvoOn && !HudToolkit.ConvoSaid.EndsWith(d.Speaker(j), StringComparison.Ordinal) && Time.realtimeSinceStartup < end) yield return null;
-            Need(h.ConvoOn && HudToolkit.ConvoSaid.StartsWith(source.Name, StringComparison.Ordinal) && g.Tick == talkTick && g.Cash == talkCash,
+            Need(HudToolkit.ConvoSaid.StartsWith(source.Name, StringComparison.Ordinal) && HudToolkit.ConvoSaid.EndsWith(speech, StringComparison.Ordinal) &&
+                 g.Tick == talkTick && g.Cash == talkCash,
                 "Free Talk must show the live subtitle and hold the running clock without spending");
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "street-dialogue.png"));
