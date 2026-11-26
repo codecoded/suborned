@@ -140,9 +140,14 @@ namespace Suborned.Play
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "street-dialogue.png"));
             Need(h.Issue(new Order { Op = "scout", Do = "district-help", Target = source.Id, To = j.Key }), "Native contact order refused");
             Need(j.Stage == 1, "The first contact did not vouch for the cell");
-            Need(h.Issue(new Order { Op = "scout", Do = "district-back", Target = source.Id }), "Could not earn the first contact's trust");
-            journal.Open(j.A);
             var panel = h.transform.Find("District book").GetComponent<UIDocument>().rootVisualElement;
+            journal.Open();
+            Submit(panel.Q<Button>("contact-" + source.Id));
+            yield return new WaitForSecondsRealtime(.15f);
+            Need(!journal.IsUnread(j.A), "The first read did not clear the contact");
+            Need(h.Issue(new Order { Op = "scout", Do = "district-back", Target = source.Id }), "Could not earn the first contact's trust");
+            Need(journal.IsUnread(j.A), "New information did not mark a read contact again");
+            journal.Open(j.A);
             Submit(panel, "Call in a favour");
             yield return new WaitForSecondsRealtime(.2f);
             var routes = g.CitizenRoutes(j.A);
@@ -189,9 +194,10 @@ namespace Suborned.Play
             Need(!journal.IsUnread(j.A) && journal.IsUnread(request.Actor), "Reading one portrait changed another contact's ribbon");
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "contact-dossier.png"));
-            Submit(panel.Q<Button>("contacts-nav-faces"));
+            yield return null;
+            Submit(panel.Q<Button>("close-contacts"));
             yield return new WaitForSecondsRealtime(.15f);
-            Need(panel.Q("new-" + source.Id) == null && panel.Q("new-" + g.ContactId(request.Actor)) != null, "The roster did not reflect the read state");
+            Need(journal.IsOpen && panel.Q("contact-grid") != null && panel.Q("new-" + source.Id) == null && panel.Q("new-" + g.ContactId(request.Actor)) != null, "Returning from a dossier lost the roster or its read state");
             Need(g.ClosingHash() == runHash, "Reading a contact changed the simulation");
             Submit(panel.Q<Button>("contacts-nav-requests"));
             yield return new WaitForSecondsRealtime(.15f);
@@ -201,7 +207,8 @@ namespace Suborned.Play
             var rail = DistrictMap.Shuttle(d.Map.Trams[0].Path, g.Tick, 1200, 730, 95);
             h.LookAt(h.frame.World(rail.at));
             yield return new WaitForSecondsRealtime(.6f);
-            Need(street.VisibleVehicles > 0, "No transit visible at the tram position");
+            int vehicles = street.VisibleVehicles;
+            Need(vehicles > 0, "No transit visible at the tram position");
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "tram-street.png"));
             yield return new WaitForSecondsRealtime(.4f);
@@ -211,7 +218,7 @@ namespace Suborned.Play
             journal.Open();
             Need(journal.IsOpen && h.Game.ClosingHash() == runHash, "Continue failed to rebuild the played run");
             Need(!journal.IsUnread(j.A) && journal.IsUnread(request.Actor) && panel.Q("new-" + source.Id) == null, "Continue lost the portraits' read state");
-            File.WriteAllText(IOPath.Combine(directory, "proof.txt"), $"OldTown opened. Book → People displayed {known} discovered contacts with their painted portraits. Searching by name returned one person. Reading {source.Name} cleared only that New ribbon and carried through a saved-game Continue. A ground click drove the boarded scout to {d.Map.StreetAt(point)}. The Handover closed and play continued at tick {g.Tick}. {source.Name} vouched for the cell with {d.Map.People[j.B].Name}. The district book sent a request through {d.Network.Describe(request.Chain)}. The last citizen blocked {request.Place} knowing only who called them. District residents {d.Map.People.Length}, main cast {g.People.Count}, open leads {d.Jobs.Length}, visible vehicles at the rail {street.VisibleVehicles}.");
+            File.WriteAllText(IOPath.Combine(directory, "proof.txt"), $"OldTown opened. Book → People displayed {known} discovered contacts with their painted portraits. Searching by name returned one person. Reading {source.Name} cleared only that New ribbon. Earning trust marked the portrait again. Closing the dossier returned to the grid, and a saved-game Continue preserved the read state. A ground click drove the boarded scout to {d.Map.StreetAt(point)}. The Handover closed and play continued at tick {g.Tick}. {source.Name} vouched for the cell with {d.Map.People[j.B].Name}. The district book sent a request through {d.Network.Describe(request.Chain)}. The last citizen blocked {request.Place} knowing only who called them. District residents {d.Map.People.Length}, main cast {g.People.Count}, open leads {d.Jobs.Length}, visible vehicles at the rail {vehicles}.");
         }
     }
 }

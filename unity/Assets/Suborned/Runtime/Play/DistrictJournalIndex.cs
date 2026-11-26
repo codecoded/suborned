@@ -80,26 +80,31 @@ namespace Suborned.Play
             pages.Clear();
             foot.Clear();
             var roster = new List<int>();
-            int known = 0, unread = 0;
+            var freshFaces = new HashSet<int>();
+            int known = 0;
             var query = search.Trim();
             for (int i = 0; i < bound.ContactCount; i++)
             {
                 if (!bound.ContactKnown(i)) continue;
                 known++;
-                if (IsUnread(i)) unread++;
+                if (IsUnread(i)) freshFaces.Add(i);
                 if (query.Length == 0 || bound.ContactName(i).IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0
                     || bound.ContactJob(i).Replace('-', ' ').IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0) roster.Add(i);
             }
             roster.Sort((a, b) =>
             {
-                int fresh = IsUnread(b).CompareTo(IsUnread(a));
+                int fresh = freshFaces.Contains(b).CompareTo(freshFaces.Contains(a));
                 if (fresh != 0) return fresh;
                 int names = StringComparer.OrdinalIgnoreCase.Compare(bound.ContactName(a), bound.ContactName(b));
                 return names != 0 ? names : StringComparer.Ordinal.Compare(bound.ContactId(a), bound.ContactId(b));
             });
             var grid = Box(pages, "contact-grid");
             grid.style.flexDirection = FlexDirection.Row; grid.style.flexWrap = Wrap.Wrap;
-            foreach (int i in roster) FaceTile(grid, i);
+            foreach (int i in roster) FaceTile(grid, i, freshFaces.Contains(i));
+            grid.RegisterCallback<GeometryChangedEvent>(e =>
+            {
+                if (e.newRect.width > 0 && !Mathf.Approximately(e.oldRect.width, e.newRect.width)) FitFaces(grid, e.newRect.width);
+            });
             if (roster.Count == 0)
             {
                 var quiet = Box(pages);
@@ -113,12 +118,27 @@ namespace Suborned.Play
                     b.style.alignSelf = Align.FlexStart; b.style.marginTop = 18;
                 }
             }
-            Caps(foot, known + (known == 1 ? " contact" : " contacts") + (unread > 0 ? "   ·   " + unread + " new" : ""), Brass);
+            Caps(foot, known + (known == 1 ? " contact" : " contacts") + (freshFaces.Count > 0 ? "   ·   " + freshFaces.Count + " new" : ""), Brass);
             var rule = Box(foot); rule.style.height = 1; rule.style.flexGrow = 1;
             rule.style.marginLeft = rule.style.marginRight = 18; rule.style.backgroundColor = C(65, 87, 75);
         }
 
-        void FaceTile(VisualElement grid, int i)
+        static void FitFaces(VisualElement grid, float width)
+        {
+            int columns = width >= 950 ? 8 : width >= 620 ? 6 : width >= 430 ? 4 : 3;
+            const float gap = 10;
+            float tileWidth = Mathf.Floor((width - gap * (columns - 1)) / columns);
+            int n = 0;
+            foreach (var tile in grid.Children())
+            {
+                tile.style.width = tileWidth;
+                tile.style.marginRight = ++n % columns == 0 ? 0 : gap;
+                var photo = tile.Q<UnityEngine.UIElements.Image>();
+                if (photo != null) photo.style.width = photo.style.height = tileWidth - 8;
+            }
+        }
+
+        void FaceTile(VisualElement grid, int i, bool fresh)
         {
             var id = bound.ContactId(i);
             var b = new Button(() => ReadContact(i)) { name = "contact-" + id, tooltip = bound.ContactJob(i).Replace('-', ' ') };
@@ -131,13 +151,15 @@ namespace Suborned.Play
             var name = Text(b, bound.ContactName(i), 16, Cream);
             name.style.minHeight = 29; name.style.paddingLeft = 3; name.style.paddingTop = 4; name.style.paddingBottom = 3;
             name.style.unityTextAlign = TextAnchor.MiddleLeft;
-            if (IsUnread(i))
+            if (fresh)
             {
-                var ribbon = Caps(b, "New", C(54, 41, 22), 11);
-                ribbon.name = "new-" + id;
+                var ribbon = Box(b, "new-" + id);
+                ribbon.pickingMode = PickingMode.Ignore;
                 ribbon.style.position = Position.Absolute; ribbon.style.left = -2; ribbon.style.top = 8;
-                ribbon.style.paddingLeft = 7; ribbon.style.paddingRight = 8; ribbon.style.backgroundColor = Brass;
-                ribbon.style.height = 20; ribbon.style.unityTextAlign = TextAnchor.MiddleCenter;
+                ribbon.style.width = 45; ribbon.style.height = 20;
+                ribbon.generateVisualContent += PaintRibbon;
+                var word = Caps(ribbon, "New", C(54, 41, 22), 11);
+                word.style.paddingLeft = 6; word.style.height = 20; word.style.unityTextAlign = TextAnchor.MiddleLeft;
             }
             void Highlight(bool lit)
             {
@@ -146,6 +168,16 @@ namespace Suborned.Play
             }
             b.RegisterCallback<PointerEnterEvent>(_ => Highlight(true)); b.RegisterCallback<PointerLeaveEvent>(_ => Highlight(false));
             b.RegisterCallback<FocusInEvent>(_ => Highlight(true)); b.RegisterCallback<FocusOutEvent>(_ => Highlight(false));
+        }
+
+        static void PaintRibbon(MeshGenerationContext context)
+        {
+            var r = context.visualElement.contentRect;
+            var p = context.painter2D;
+            p.fillColor = Brass;
+            p.BeginPath(); p.MoveTo(Vector2.zero); p.LineTo(new Vector2(r.width, 0));
+            p.LineTo(new Vector2(r.width - 5, r.height / 2)); p.LineTo(new Vector2(r.width, r.height));
+            p.LineTo(new Vector2(0, r.height)); p.ClosePath(); p.Fill();
         }
 
         void ReadContact(int i)

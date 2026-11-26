@@ -8,7 +8,7 @@ namespace Suborned.Play
     public sealed partial class DistrictJournal
     {
         enum Section { Faces, Leads, Requests }
-        Section section;
+        Section section, returnTo;
         VisualElement frame, mast, bar, foot;
         Font bodyFont, deckFont, serifFont;
         Texture2D faces, skyline;
@@ -109,7 +109,7 @@ namespace Suborned.Play
         {
             bool profile = person >= 0;
             frame.style.maxWidth = profile ? 700 : 1220;
-            frame.style.maxHeight = profile ? 675 : 790;
+            frame.style.maxHeight = profile ? writingOrder ? 690 : 575 : 790;
             frame.style.width = Length.Percent(88);
             frame.style.height = Length.Percent(profile ? 79 : 85);
         }
@@ -143,7 +143,8 @@ namespace Suborned.Play
             inset.style.top = inset.style.bottom = inset.style.left = inset.style.right = 6;
             Border(inset, 1, new Color(.83f, .83f, .69f, .20f));
             mast.style.borderBottomColor = Brass; mast.style.borderBottomWidth = 2;
-            var close = Button(mast, "×", Close); close.name = "close-contacts"; close.tooltip = "Close contacts";
+            var close = Button(mast, "×", () => { if (!BackToIndex()) Close(); });
+            close.name = "close-contacts"; close.tooltip = profile ? "Go back" : "Close contacts";
             close.style.position = Position.Absolute; close.style.right = 15; close.style.top = 11; close.style.fontSize = 24;
             close.style.minHeight = 30; close.style.width = 36; close.style.height = 34; All(close, 0); close.style.unityTextAlign = TextAnchor.MiddleCenter;
             pages.style.backgroundColor = profile ? Paper : Deep;
@@ -179,6 +180,7 @@ namespace Suborned.Play
             var b = new Button(() => { person = -1; writingOrder = false; section = next; search = ""; reply = ""; Page(); }) { text = word.ToUpperInvariant() };
             bar.Add(b); b.name = "contacts-nav-" + next.ToString().ToLowerInvariant(); All(b, 0); Border(b,0,Trim); b.style.marginRight = 24;
             b.style.height = 44; b.style.backgroundColor = Color.clear; b.style.color = active ? Brass : C(198,209,192);
+            b.style.unityTextAlign = TextAnchor.MiddleCenter;
             b.style.unityFontDefinition = FontDefinition.FromFont(deckFont); b.style.fontSize = 14; b.style.letterSpacing = 1.2f;
             if (active) { b.style.borderBottomWidth = 3; b.style.borderBottomColor = Brass; }
         }

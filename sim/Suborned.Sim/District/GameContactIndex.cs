@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Suborned.Sim
 {
@@ -12,7 +13,20 @@ namespace Suborned.Sim
         public string ContactId(int i) => IsCivicContact(i) ? CivicContact(i).Id : District!.Map.People[i].Id;
         public string ContactName(int i) => IsCivicContact(i) ? CivicContact(i).Name : District!.Map.People[i].Name;
         public string ContactJob(int i) => IsCivicContact(i) ? CivicContact(i).Job : District!.Map.People[i].Job;
-        public Pt? ContactAt(int i) => IsCivicContact(i) ? PosOf(CivicContact(i).Role) : DistrictPersonAt(i);
+        public Pt? ContactAt(int i)
+        {
+            if (IsCivicContact(i)) return PosOf(CivicContact(i).Role);
+            var d = District!;
+            return d.Roams(i) || d.Network.Away(i) || HasCivicActor(d.Map.People[i].Id) ? DistrictPersonAt(i) : null;
+        }
+
+        public string? ContactUpdate(int i)
+        {
+            var d = District!;
+            foreach (var request in d.Network.Requests)
+                if (Array.IndexOf(request.Chain, i, 0, request.Heard + 1) >= 0 || request.Crowd.Contains(i)) return request.Update;
+            return d.Memory[i];
+        }
 
         public bool ContactKnown(int i)
         {
@@ -29,9 +43,15 @@ namespace Suborned.Sim
             if (!ContactKnown(i)) return "";
             var d = District!;
             if (!IsCivicContact(i))
-                return (d.Encountered[i] ? "met/" : "introduced/") + d.Trust[i] + "/" + d.Memory[i] + "/" + d.Network.AskedBy[i] + "/" + d.Network.Fallen[i];
+            {
+                var key = new StringBuilder(d.Encountered[i] ? "met/" : "introduced/");
+                key.Append(d.Trust[i]).Append('/').Append(ContactUpdate(i)).Append('/').Append(d.Network.AskedBy[i]).Append('/').Append(d.Network.Fallen[i]);
+                foreach (var (neighbour, kind) in d.Network.Neighbours(i))
+                    if (ContactKnown(neighbour)) key.Append('/').Append(neighbour).Append('-').Append(kind);
+                return key.ToString();
+            }
             var p = CivicContact(i);
-            return $"{d.Encountered[i]}/{p.KRoutine}/{p.KNeed}/{p.KSecret}/{p.KTemperament}/{p.KMood}/{p.Turned}/{p.Down}/{p.NeedMet}/{string.Join(",", p.KnownRefused)}";
+            return $"{d.Encountered[i]}/{p.KRoutine}/{p.KNeed}/{p.KSecret}/{p.KTemperament}/{p.KMood}/{p.Turned}/{p.Down}/{p.NeedMet}/{p.Summoned}/{(p.KSecret ? p.Lover?.Summoned : null)}/{(p == Driver && PickupCalled)}/{string.Join(",", p.KnownRefused)}";
         }
 
         void IndexStreetEncounters()
@@ -41,7 +61,6 @@ namespace Suborned.Sim
             {
                 if (d.Encountered[i]) continue;
                 if (IsCivicContact(i) && ContactKnown(i)) d.Introduced[i] = true;
-                if (!IsCivicContact(i) && !d.Roams(i) && !d.Network.Away(i) && !HasCivicActor(d.Map.People[i].Id)) continue;
                 if (IsCivicContact(i) && CivicContact(i).Down) continue;
                 var at = ContactAt(i);
                 if (!at.HasValue) continue;

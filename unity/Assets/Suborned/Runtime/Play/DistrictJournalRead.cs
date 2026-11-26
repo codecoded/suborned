@@ -48,7 +48,7 @@ namespace Suborned.Play
         void WriteRead(string session)
         {
             string path = ReadPath(session);
-            if (path == null || read.Count == 0) return;
+            if (path == null) return;
             string temp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
             {
@@ -69,6 +69,9 @@ namespace Suborned.Play
             if (previous != host.SessionPath) WriteRead(host.SessionPath);
         }
 
-        public void CopyIndex(string destination) => WriteRead(destination);
+        public void CopyIndex(string destination)
+        {
+            if (host.Game?.District != null) WriteRead(destination);
+        }
     }
 }

@@ -134,6 +134,7 @@ namespace Suborned.Play
             else if (host.BookSectionNow != "people") host.BookShow("people");
             ShowFromBook();
             if (!open) return;
+            if (resident >= 0 && person < 0) returnTo = section;
             person = resident;
             writingOrder = false;
             section = Section.Faces;
@@ -146,6 +147,24 @@ namespace Suborned.Play
             if (!open) return;
             host.BookClose();
             HidePage();
+        }
+
+        public bool BackToIndex()
+        {
+            if (!open || person < 0) return false;
+            if (writingOrder)
+            {
+                if (openList.Length > 0) openList = "";
+                else writingOrder = false;
+                Page();
+                return true;
+            }
+            string id = bound.ContactId(person);
+            person = -1;
+            section = returnTo;
+            Page();
+            pages.Q<Button>("contact-" + id)?.Focus();
+            return true;
         }
 
         void Meet(int resident)
@@ -252,7 +271,7 @@ namespace Suborned.Play
             if (person < 0) { IndexPage(); return; }
             if (g.IsCivicContact(person)) { CivicPage(); return; }
             var r = d.Map.People[person];
-            var at = g.DistrictPersonAt(person);
+            var at = g.ContactAt(person);
             PersonHeader(r.Id, r.Name, r.Job, at.HasValue ? d.Map.StreetAt(at.Value) : "Off the street");
             if (writingOrder)
             {
@@ -274,17 +293,22 @@ namespace Suborned.Play
                 Label(pages, d.Lead(job), 15, Ivory);
             }
             else
-                Label(pages, "On their round between " + r.Place + " and " + r.Errand + ".", 15, Ivory);
+                Label(pages, "On their round between " + StreetPlace(r.Place) + " and " + StreetPlace(r.Errand) + ".", 15, Ivory);
+            string memory = g.ContactUpdate(person);
+            if (!string.IsNullOrEmpty(memory))
+            {
+                Caps(pages, "Latest word", Gold);
+                Label(pages, memory, 15, Ivory);
+            }
             if (!at.HasValue)
             {
-                Label(pages, "The other district leads are still open.", 15, Ivory);
+                Label(pages, d.Network.Fallen[person] ? "This contact has died." : "Currently off the street.", 15, Blue);
                 return;
             }
 
             int by = Speaker(at.Value, true);
             if (d.Network.Away(person))
             {
-                Label(pages, d.Memory[person] ?? "Out on a request.", 15, Gold);
                 Button(pages, "Locate on the street", () => Locate(person));
                 return;
             }
@@ -368,11 +392,14 @@ namespace Suborned.Play
                 }
             }
 
-            string memory = d.Memory[person];
-            if (!string.IsNullOrEmpty(memory))
-                Label(pages, memory, 14, Blue);
             if (reply.Length > 0 && reply != memory)
                 Label(pages, reply, 15, Gold);
+        }
+
+        static string StreetPlace(string place)
+        {
+            int queue = place.LastIndexOf(" queue ", StringComparison.OrdinalIgnoreCase);
+            return queue >= 0 && int.TryParse(place.Substring(queue + 7), out _) ? place.Substring(0, queue) : place;
         }
 
         string LastAnswer()

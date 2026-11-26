@@ -113,6 +113,7 @@ namespace Suborned.Play
             if (BookStartKeys(kb) || BookEndKeys(kb) || BookBriefKeys(kb)) return true; // brief 108: the briefing pages' arrows (HostBook.Brief)
             TourFrame();
             bool typingContact = BookSectionNow == "people" && DistrictBook?.Searching == true;
+            if (kb != null && kb.escapeKey.wasPressedThisFrame && BookSectionNow == "people" && DistrictBook?.BackToIndex() == true) return true;
             if (kb != null && kb.escapeKey.wasPressedThisFrame || !typingContact && (controls.Down(kb, PlayAction.Book) || kb != null && BookSectionNow == "people" && kb.nKey.wasPressedThisFrame)) { BookClose(); return true; }
             if (BookSectionNow == "journal" && UnityEngine.InputSystem.Mouse.current is { } wm && wm.scroll.ReadValue().y is float wy && wy != 0f) JournalScroll(wy > 0f ? -1 : 1);
             if (!typingContact && controls.Down(kb, PlayAction.CycleAgent)) BookNext();
