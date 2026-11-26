@@ -5,8 +5,10 @@
     { "name": "lantern-lane", "pose": { "pos": [-139,1.8,-287], "look": [-124,8.7,-271], "fov": 58 }, "tick": 160 },
     { "name": "lantern-housing", "pose": { "pos": [-162,28,-306], "look": [-123,24,-251], "fov": 56 }, "tick": 160 },
     { "name": "meridian-walk", "pose": { "pos": [-131,1.87,-274], "look": [-146.5,4.8,-246], "fov": 62 }, "tick": 1100 },
+    { "name": "lantern-skyline", "pose": { "pos": [-131,1.87,-277], "look": [-144,11.4,-244], "fov": 61 }, "tick": 1100 },
     { "name": "public-clock", "pose": { "pos": [-138,1.85,-261], "look": [-149,4.9,-248], "fov": 64 }, "tick": 1850 },
     { "name": "tram-passage", "pose": { "pos": [-128,1.86,-252], "look": [-127,4.25,-222], "fov": 60 }, "tick": 1160 },
+    { "name": "market-tram", "pose": { "pos": [-128.6,1.83,-221.5], "look": [-124,4.2,-204], "fov": 61 }, "tick": 1568 },
     { "name": "walking", "view": "follow", "select": "scout", "face": [22650,-1800], "script": "briefs/117/court-walk.json", "tick": 3200 },
     { "name": "court-evening", "pose": { "pos": [-135.5,1.87,-271], "look": [-146.5,4.8,-245], "fov": 62 }, "tick": 5300, "night": true }
   ]

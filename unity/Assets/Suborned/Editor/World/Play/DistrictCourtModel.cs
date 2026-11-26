@@ -13,6 +13,20 @@ namespace Suborned.World.Play
         static Texture2D Load(string file) => AssetDatabase.LoadAssetAtPath<Texture2D>(Materials+file)
             ?? throw new BuildFailedException("Missing Lantern Court finish "+file);
 
+        static object CourtPlan(string id)
+        {
+            var file = Path.Combine(HarbourWorldBuilder.RepoRoot, "contracts/world/harbour-district.plan.json");
+            return J.A(Json.Parse(File.ReadAllText(file)), "megastructures").Single(m => "mega/" + J.S(m, "id") == id);
+        }
+
+        public static Vector3 BridgeSoffit(float streetHeight)
+        {
+            var bridge = J.Get(CourtPlan("mega/lantern-terraces"), "bridge");
+            var rect = J.A(bridge, "rect").Select(v => (float)(double)v).ToArray();
+            return new Vector3((rect[0] + rect[1]) * .5f, streetHeight + J.F(bridge, "base"),
+                (rect[2] + rect[3]) * .5f + Suborned.OldTown.OldTownFrame.DZ);
+        }
+
         public static void Build(Transform root, MegaDto block, MassDto plot)
         {
             var pedestal = block.Parts.Single(p => p.Id.EndsWith("/bed/0", System.StringComparison.Ordinal));
@@ -31,8 +45,7 @@ namespace Suborned.World.Play
                 Combine.Kit(root,near.bounds,(int)near.GetComponent<MeshFilter>().sharedMesh.GetIndexCount(0)/3);
             }
             Pave(root,plot,pedestal.Base);
-            var plan=Json.Parse(File.ReadAllText(Path.Combine(HarbourWorldBuilder.RepoRoot,"contracts/world/harbour-district.plan.json")));
-            var estate=J.A(plan,"megastructures").Single(obj => "mega/"+J.S(obj,"id")==block.Id);
+            var estate = CourtPlan(block.Id);
             int i=0;
             foreach(var bed in J.A(estate,"planting"))
             {

@@ -7,7 +7,7 @@ namespace Suborned.World.Play
 {
     sealed partial class DistrictStreetArchitecture
     {
-        void ArcadeLantern(Transform station)
+        void ArcadeLantern(Transform station, Vector3 hook)
         {
             var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Scenery/Lantern.fbx");
             if (!source) throw new BuildFailedException("The Lantern Terraces pendant is missing");
@@ -40,7 +40,6 @@ namespace Suborned.World.Play
             var bounds=tiers[0].bounds;
             lamp.transform.localScale*=2.35f/bounds.size.y;
             bounds=tiers[0].bounds;
-            var hook=station.TransformPoint(new Vector3(0,Spring+Rise-.16f,0));
             lamp.transform.position+=hook-new Vector3(bounds.center.x,bounds.max.y,bounds.center.z);
         }
     }

@@ -111,6 +111,14 @@ namespace Suborned.World.Play
         public void LanternArcade(Transform root, SiteFrame frame, DistrictMap map)
         {
             GalleryPaving(root,frame,map.Ground.Galleries);
+            var court = map.Ground.Venues.FirstOrDefault(v => v.Id == "meridian-court");
+            if (court != null)
+            {
+                // The bridge replaces the covered gallery at this site. Hang the original opal
+                // pendant from its soffit and keep the passage and the open court clear.
+                ArcadeLantern(root, DistrictCourtModel.BridgeSoffit(frame.World(court.At).y));
+                return;
+            }
             var street = map.Streets.Single(s=>s.Id=="road/lantern-lane").Path.Points;
             var mouth=frame.World(street[0]); var into=frame.World(street[1])-mouth;
             float length=into.magnitude; into/=length;
@@ -139,7 +147,7 @@ namespace Suborned.World.Play
                 var mats=new[]{Colour("Limestone_Tex",true),Colour("Enamel_Teal",true),Colour("Bronze",true),Colour("Enamel_Ivory",true),LeadedFrieze()};
                 Draw(station,"Vault and transoms",centre,station.eulerAngles.y,(Ironwork(radius,half,true),Ironwork(radius,half,false)),mats,true);
                 RoofGlass(station,radius,half);
-                ArcadeLantern(station);
+                ArcadeLantern(station, station.TransformPoint(new Vector3(0, Spring + Rise - .16f, 0)));
                 Debug.Log($"Lantern arcade • span {radius*2:F1} m, length {half*2:F1} m, centre {centre}, opening faces {facing}");
                 return;
             }
