@@ -95,8 +95,11 @@ namespace Suborned.Play
             h.LookAt(h.frame.World(point));
             yield return null;
             var screen = (Vector2)h.View.WorldToScreenPoint(h.frame.World(point));
-            h.MoveSelection(screen);
-            Need(g.GetawayDriving, "Ground click did not start a drive");
+            h.SetPaused(false);
+            h.LeftClickScripted(screen);
+            h.SetPaused(true);
+            var last=g.Orders[g.Orders.Count-1];
+            Need(g.GetawayDriving, $"Ground click did not start a drive. Last order {last.order.Do} {last.code} {last.why}, picked {h.TargetAt(screen,true)?.Kind}, camera {screen}.");
             g.RunTo(scout.BusyEnd);
             Need(G.Within(point, g.GetawayCarPos(), 600), "Car missed the requested road");
             g.RunTo(Game.T(g.S.Over + 120));
