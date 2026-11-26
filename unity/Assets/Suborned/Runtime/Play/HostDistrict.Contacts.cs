@@ -72,7 +72,7 @@ namespace Suborned.Play
                     if (d.Roams(tie.person) && d.Trust[tie.person] <= 0)
                     {
                         var friend = d.Map.People[tie.person];
-                        Add("district-refer", "Vouch for " + friend.Name, "ask", friend.Id);
+                        Add("district-refer", "Introduce me to " + friend.Name, "ask", friend.Id);
                     }
             return true;
         }
@@ -105,14 +105,19 @@ namespace Suborned.Play
             }
             var job = d.Available(who);
             string line = null;
-            if (order.Do == "district-help" || order.Do == "district-bluff")
-                line = job != null ? d.Speaker(job) : null;
+            if (job != null && (order.Do == "district-help" || order.Do == "district-bluff"))
+                line = job.Stage switch
+                {
+                    0 => "I'll tell " + d.Map.People[job.B].Name.Split(' ')[0] + " you're coming.",
+                    1 => "I'll speak to " + d.Map.People[job.C].Name.Split(' ')[0] + ".",
+                    _ => job.Bluff ? "Take it. I'll remember this." : "Here you go. Thank you."
+                };
             else if (order.Do == "district-refer" && d.Map.Index.TryGetValue(order.To, out int friend))
                 line = "I'll put in a word with " + d.Map.People[friend].Name.Split(' ')[0] + ".";
             else if (order.Do == "district-back") line = "Thank you. That takes a weight off.";
             else if (order.Do == "district-bond") line = "It means something to have your name beside mine.";
             string scene = job != null && (order.Do == "district-help" || order.Do == "district-bluff")
-                ? "harbour/" + job.Key + "/" + job.Stage : order.Do + "/" + target.Id;
+                ? "harbour/" + job.Key + "/" + job.Stage + "/" + order.Do : order.Do + "/" + target.Id;
             if (!Issue(order, screen, frame.World(at))) return;
             if (line != null) PresentStreetLine(who, row.By, scene, line, d.News);
             else Pop(d.News, screen, frame.World(at), Feedback.Info, ReadS(d.News));

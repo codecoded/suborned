@@ -138,6 +138,7 @@ namespace Suborned.Play
                             break;
                         }
                 }
+            if (o.Do == "district-bluff") F("trust", "", "−1 trust each");
             if (o.Do == "drive-car" && i.Parked.Length > 0) // brief 096 (attention.parked): the Drive card's parked notice, its Alert and eye (Drive's own fields are name and time)
             {
                 if (Arrow.Match(i.Alert ?? "") is var am && am.Success) F("alert", "p_alert", am.Groups[1].Value);

@@ -150,7 +150,20 @@ namespace Suborned.Play
             Need(Quote("district-back")?.Usd == "-$" + Game.Usd(g.R.DistrictPrices.Help) &&
                  Quote("district-help")?.Usd == "+$" + Game.Usd(g.R.DistrictPrices.ErrandFee(false)), "Contact prices missing from the street ring");
             int talkTick = g.Tick;
+            long talkCash = g.Cash;
+            var previousConversations = h.controls.conversations;
+            h.controls.conversations = ConversationScenes.Never;
             Need(h.RingTakeScripted("district-meet"), "The street ring offered no Talk");
+            yield return new WaitForSecondsRealtime(.35f);
+            var spoken = h.Bubbles.LastOrDefault(b => b.Speaker == source.Id && b.Text == d.Speaker(j));
+            Need(!h.BookOpen && !h.ConvoOn && spoken != null && h.BubbleWorld(spoken).HasValue, "The resident's street bubble did not appear at their position");
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "street-dialogue-bubbles.png"));
+            yield return null;
+            h.controls.conversations = ConversationScenes.Always;
+            SelectResident();
+            Need(h.RingTakeScripted("district-meet"), "The street ring did not reopen Talk");
+            h.SetPaused(false);
             yield return new WaitForSecondsRealtime(.7f);
             Need(h.ConvoNow?.Target == source.Id && !h.BookOpen && !journal.IsOpen && HudToolkit.ConvoFacePicture != null,
                 "Talk did not show the resident in the conversation camera and live inset: " + h.ConvoLast);
@@ -158,13 +171,16 @@ namespace Suborned.Play
             string streetShot = h.ConvoNow.Shot;
             float end = Time.realtimeSinceStartup + HandoverHost.ReadS(d.Speaker(j));
             while (h.ConvoOn && !HudToolkit.ConvoSaid.EndsWith(d.Speaker(j), StringComparison.Ordinal) && Time.realtimeSinceStartup < end) yield return null;
-            Need(h.ConvoOn && HudToolkit.ConvoSaid.StartsWith(source.Name, StringComparison.Ordinal) && g.Tick == talkTick, "The live subtitle or held clock was lost");
+            Need(h.ConvoOn && HudToolkit.ConvoSaid.StartsWith(source.Name, StringComparison.Ordinal) && g.Tick == talkTick && g.Cash == talkCash,
+                "Free Talk must show the live subtitle and hold the running clock without spending");
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "street-dialogue.png"));
             yield return null;
+            h.SetPaused(true);
             h.ConvoSkip();
             yield return new WaitForSecondsRealtime(.3f);
             Need(!h.BookOpen && !h.ConvoOn && h.ConvoLast.Contains("bit-identical") && g.Tick == talkTick, "Leaving the dialogue did not restore the street");
+            h.controls.conversations = previousConversations;
             SelectResident();
             Need(h.RingTakeScripted("district-help") && j.Stage == 1, "The quoted errand did not reach the engine");
             h.ConvoEndNow();
