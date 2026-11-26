@@ -71,6 +71,8 @@ namespace Suborned.World.Play
             var north=frame.Dir(new Pt(-100,0)).normalized;
             var paint=new Material(Shader.Find("DecoKit/Lit Cutaway")) { name="Harbour ferry stone and glazing", enableInstancing=true };
             paint.SetTexture("_BaseMap",Sheet("Colour"));
+            paint.SetTexture("_BumpMap",Sheet("Normal")); paint.EnableKeyword("_NORMALMAP");
+            paint.SetFloat("_BumpScale",.56f);
             paint.SetTexture("_MetallicGlossMap",Sheet("Metal")); paint.EnableKeyword("_METALLICSPECGLOSSMAP");
             paint.SetFloat("_Smoothness",.93f);
             paint.SetTexture("_EmissionMap",Sheet("Lights")); paint.SetColor("_EmissionColor",new Color(.83f,.74f,.61f));

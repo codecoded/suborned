@@ -23,6 +23,7 @@ namespace Suborned.World.Play
                 gardens.Add(box);
             }
             RemoveOldPlanting(scene,gardens);
+            DistrictEstateSurfaces.Apply(scene,gardens);
         }
 
         static void RemoveOldPlanting(Scene scene, List<Bounds> gardens)

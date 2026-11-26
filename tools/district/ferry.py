@@ -1,15 +1,17 @@
 """Blender source for the Harbour Ferries pavilion. Export paths are directory and working .blend."""
-from math import atan2, ceil, cos, pi, sin
+from math import ceil, cos, pi, sin
 from pathlib import Path
-import random
 import sys
 import bpy
 from mathutils import Vector
 
 out, master = map(lambda s: Path(s).resolve(), sys.argv[sys.argv.index('--')+1:])
 bpy.ops.wm.read_factory_settings(use_empty=True)
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from ferry_front import (BRONZE as brass, CLOCK as dial, SOFFIT as soffit, STONE as stone,
+                        TILE as teal, ZINC as patina, office, window_band)
+
 TAU = 2*pi
-stone, soffit, teal, glass, glass2, lobby, brass, oxide, shade, leaf, tips, bark, opal, patina, dial, letters = range(16)
 material = bpy.data.materials.new('Harbour trim sheet')
 material.use_nodes = True
 tex = material.node_tree.nodes.new('ShaderNodeTexImage')
@@ -21,7 +23,6 @@ class Model:
         self.name, self.rank = name, rank
         self.verts, self.indices, self.faces, self.uv, self.smooth = [], {}, [], [], []
         self.count = (12,7,3)[rank]
-        self.rng = random.Random(116)
 
     def face(self, points, slot, uv=None, smooth=False):
         if uv is None:
@@ -77,68 +78,11 @@ class Model:
             j=(k+1)%sides; self.face([ra[k],ra[j],rb[j],rb[k]],slot,smooth=sides>=8)
         self.face(rb,slot); self.face(ra[::-1],slot)
 
-    def windows(self,x,y,w,d,r,h0,h1):
-        span=(1.85,2.9,5.2)[self.rank]
-        loop=self.contour(x,y,w,d,r,(8,5,3)[self.rank],span)
-        for i,(a,b) in enumerate(zip(loop,loop[1:]+loop[:1])):
-            u,v=a; ex,ny=b
-            slot=[glass,glass2,glass,lobby,glass2,glass2,lobby][i%7]
-            self.face([(u,v,h0),(ex,ny,h0),(ex,ny,h1),(u,v,h1)],slot)
-            if self.rank==0 and i%2==0:
-                self.beam((u,v,h0),(u,v,h1),.067,brass,4)
-        self.shape(x,y,w+.14,d+.14,r+.075,h0+.34*(h1-h0),h0+.34*(h1-h0)+.085,teal)
-
     def cornice(self,x,y,w,d,r,h):
-        self.tiers(x,y,[(h-.38,w-.7,d-.7,r-.3,soffit),(h-.23,w,d,r,soffit),
-                        (h-.13,w+.10,d+.10,r+.04,brass),(h+.17,w,d,r,stone),
-                        (h+.30,w-.18,d-.18,r-.09,stone)])
-        if self.rank<2: self.shape(x,y,w+.025,d+.025,r,h+.018,h+.073,patina)
-
-    def bush(self,x,y,z,rx,ry,height,phase):
-        n=(9,7,5)[self.rank]; rings=[]
-        for level,scale in [(0,.64),(.24,1),(.66,.87),(.93,.44)]:
-            row=[]
-            for i in range(n):
-                a=TAU*i/n+phase+level*.25
-                rr=scale*(1+.12*sin(3*a+phase))
-                row.append((x+rx*rr*cos(a),y+ry*rr*sin(a),z+height*(level+.08*sin(a*4+phase)*level)))
-            if rings:
-                prev=rings[-1]
-                for i in range(n):
-                    j=(i+1)%n
-                    slot=shade if level<.3 else (leaf if (i+int(phase*3))%4!=1 else tips)
-                    self.face([prev[i],prev[j],row[j],row[i]],slot)
-            rings.append(row)
-        self.face(rings[-1],leaf)
-
-    def palm(self,x,y,z,height,heading):
-        r=self.rank
-        sway=height*.10
-        joints=[(x+sway*t*t*cos(heading),y+sway*t*t*sin(heading),z+height*t) for t in (0,.36,.70,1)]
-        for i in range(3):
-            self.beam(joints[i],joints[i+1],height*(.028-i*.004),bark,(9,6,5)[r],height*(.024-i*.004))
-        crown=Vector(joints[-1])
-        for j in range((13,10,8)[r]):
-            a=heading+2.39996*j; extent=height*(.50+.07*sin(j*1.6)); rise=height*(.28+.09*cos(j))
-            rad=Vector((cos(a),sin(a),0)); cross=Vector((-sin(a),cos(a),0))
-            prev=None
-            steps=(8,5,4)[r]
-            for k in range(steps+1):
-                t=k/steps; h=rise*sin(pi*t*.95)-height*.29*t*t
-                spine=crown+rad*(extent*t)+Vector((0,0,h))
-                width=max(.009,height*(.062 if r<2 else .085)*sin(pi*t)**.65)
-                edge=spine-Vector((0,0,width*.40))
-                new=[edge-cross*width,spine,edge+cross*width]
-                if prev:
-                    for b in range(2):
-                        strip=[prev[b],prev[b+1],new[b+1],new[b]]
-                        self.face(strip,leaf if (b+j)%3 else tips);self.face(strip[::-1],shade)
-                    if r==0 and k not in (1,steps):
-                        for sign in (-1,1):
-                            stem=spine-rad*.26
-                            blade=[stem,edge+cross*sign*width*.80,edge+rad*.38+cross*sign*width*1.75-Vector((0,0,.19))]
-                            self.face(blade,leaf if j%3 else tips);self.face(blade[::-1],shade)
-                prev=new
+        self.tiers(x,y,[(h-.28,w-.7,d-.7,r-.3,soffit),(h-.13,w,d,r,soffit),
+                        (h-.084,w+.065,d+.065,r+.025,brass),(h+.17,w,d,r,stone),
+                        (h+.22,w-.12,d-.12,r-.06,stone)])
+        if self.rank<2: self.shape(x,y,w+.025,d+.025,r,h+.042,h+.062,patina)
 
     def plate(self,x,y,z,width,height,heading,slot,round_face=False,section=(0,0,1,1)):
         n=Vector((cos(heading),sin(heading),0)); h=Vector((-sin(heading),cos(heading),0)); v=Vector((0,0,1)); c=Vector((x,y,z))
@@ -160,19 +104,19 @@ class Model:
 
 def ferry(s):
     # West is the public quay. The sea-level caisson slides beneath its walking edge.
-    s.tiers(0,0,[(-2.2,23.9,44,7,teal),(-.22,24.2,44.6,7.2,teal),(.16,25.1,45.2,7.3,soffit),
-                 (.50,25.1,45.2,7.3,stone),(.62,24.6,44.7,7.1,brass)])
-    s.shape(.30,0,21.9,41.0,6.7,.56,1.35,stone)
-    s.windows(.30,0,21.7,40.9,6.7,1.34,4.33)
-    s.cornice(0,0,25.5,45.9,7.6,4.61)
-    s.shape(.35,0,21.7,40.85,6.7,4.68,5.10,oxide)
-    s.shape(.8,2,17.8,32.2,6.1,4.92,5.67,stone)
-    s.windows(.8,2,17.65,32.1,6.1,5.65,8.60)
-    s.cornice(.8,2,20.6,35.3,7.25,8.90)
-    s.shape(.8,2,17.55,31.7,6.1,9.04,9.60,teal)
+    s.tiers(0,0,[(-2.2,23.9,44,7,patina),(-.26,24.4,44.6,7.2,soffit),(-.07,25.13,45.25,7.3,soffit),
+                 (.10,25.13,45.25,7.3,stone),(.14,25.05,45.17,7.24,stone)])
+    s.shape(.30,0,21.9,41.0,6.7,.13,.66,stone)
+    window_band(s,.30,0,21.7,40.9,6.7,.65,4.32,booking=True)
+    s.cornice(0,0,25.45,45.9,7.6,4.57)
+    s.shape(.35,0,21.7,40.85,6.7,4.74,4.98,patina)
+    s.shape(.8,2,17.8,32.2,6.1,4.84,5.65,stone)
+    window_band(s,.8,2,17.65,32.1,6.1,5.64,8.55)
+    s.cornice(.8,2,18.75,33.2,6.53,8.77)
+    s.shape(.8,2,17.55,31.7,6.1,8.95,9.38,stone)
     # The upper salon has its own belvedere and a patinated, ribbed shallow dome.
     s.shape(-.5,6.4,11.6,16.8,5.5,9.23,9.90,stone)
-    s.windows(-.5,6.4,11.45,16.6,5.45,9.87,12.38)
+    window_band(s,-.5,6.4,11.45,16.6,5.45,9.87,12.38)
     s.cornice(-.5,6.4,13.3,18.3,6.4,12.56)
     s.tiers(-.5,6.4,[(12.85,10.9,15.8,5.1,brass),(13.24,10.3,15.1,5,patina),
                        (13.90,8.6,12.6,4.1,patina),(14.48,5.6,8.0,2.7,patina),(14.69,1.3,2.5,.6,brass)])
@@ -184,27 +128,14 @@ def ferry(s):
     s.shape(6.8,5.84,1.54,.25,.09,12.4,18.28,teal)
     for side in (-1,1):
         s.plate(6.8,7.7+side*1.80,16.35,2.40,2.40,side*pi/2,dial,True)
-    s.plate(-10.61,0,2.91,8.48,1.32,pi,letters,section=(0,.51,1,1))
-    s.plate(.30,-20.51,2.95,7.95,1.24,-pi/2,letters,section=(0,.51,1,1))
-    # The rail and ferry booking window opens onto the Skyport apron, beneath the west canopy.
-    s.shape(-10.64,-7.65,.37,5.9,.15,1.02,2.96,teal)
-    s.shape(-10.90,-7.65,.67,6.06,.25,1.04,1.24,brass)
-    s.plate(-10.84,-7.65,2.04,5.48,1.39,pi,letters,section=(0,0,1,.49))
-    s.plate(-10.84,-7.65,3.46,5.50,.71,pi,letters,section=(0,.51,1,1))
-    # A shaded waiting walk follows the public edge; all supports stand seaward of the walk mesh.
-    for n in (-11.6,-5.8,5.8,11.6):
-        s.beam((-11.88,n,.61),(-12.20,n,4.42),.20,stone,(9,6,4)[s.rank],.14)
-    for xx in (-1,1):
-        for j,n in enumerate((-10.3,-4.8,.7,6.0,11.2)):
-            s.bush(xx*10.6,n,4.86,1.28,3.19,.99+.25*cos(j),j*.82+xx)
-    for j,e in enumerate((-5.8,-2.1,1.6,5.15)):
-        s.bush(e,-17.4,4.87,2.15,1.49,1.1,j)
-    for xx in (-1,1):
-        for j,n in enumerate((-6.1,-2.1,2.7,7.0)):
-            s.bush(.8+xx*7.73,n,9.2,1.72,2.47,.88,j+xx)
-    for i,(e,n,h,size,rot) in enumerate([(-8.4,-12.8,4.90,5.8,.4),(7.75,-13.6,4.90,6.5,1.5),
-                                          (-9.1,10.8,4.90,6.2,2.1),(6.4,-7.9,9.2,5.0,.3),(-3.8,-9.1,9.2,4.7,1.7)]):
-        s.palm(e,n,h,size,rot)
+    office(s)
+    # The upper lounge opens onto the seaward promenade. Thin stanchions define the roof edge.
+    for side in (-1,1):
+        x=side*10.43
+        for y in (-10.8,-7.2,-3.6,0,3.6,7.2,10.8):
+            s.beam((x,y,4.78),(x,y,5.78),.035,brass,(8,6,4)[s.rank])
+        for height in (5.18,5.76):
+            s.beam((x,-10.86,height),(x,10.86,height),.037,brass,(8,6,4)[s.rank])
 
 def build(name, func, budgets):
     objects=[]

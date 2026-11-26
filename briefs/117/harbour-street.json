@@ -1,0 +1,12 @@
+{
+  "schema": "suborned.shots/1",
+  "defaults": { "hud": false, "night": false, "settle": 1, "perf": 3, "mark": false },
+  "shots": [
+    { "name": "booking-window", "pose": { "pos": [141.3, 0.78, 181.9], "look": [137.63, 0.98, 175.14], "fov": 57 }, "tick": 160 },
+    { "name": "pier-head", "pose": { "pos": [126.5, 1.18, 186.2], "look": [146, 3.08, 168.4], "fov": 58 }, "tick": 3000 },
+    { "name": "on-foot", "view": "follow", "select": "scout", "face": [-19790,26735], "script": "briefs/116/booking-walk.json", "tick": 3000 },
+    { "name": "lantern-housing", "pose": { "pos": [-162,28,-306], "look": [-123,32,-254], "fov": 56 }, "tick": 160 },
+    { "name": "lantern-lane", "pose": { "pos": [-139,1.8,-287], "look": [-124,8.7,-271], "fov": 58 }, "tick": 160 },
+    { "name": "evening", "pose": { "pos": [140.5,0.82,181.9], "look": [137.5,1.4,174.8], "fov": 57 }, "tick": 5300, "night": true }
+  ]
+}

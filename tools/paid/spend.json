@@ -90,7 +90,7 @@
    "usd": 0.0
   },
   "2026-11-27": {
-   "calls": 2,
+   "calls": 4,
    "usd": 0.0
   }
  },
@@ -120,7 +120,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 209,
+   "calls": 211,
    "usd": 0.0
   },
   "fishaudio:s2.1@pro": {
@@ -176,7 +176,7 @@
    "usd": 3.4
   }
  },
- "calls": 841,
+ "calls": 843,
  "failed": 28,
  "jobs": {
   "007-concepts": {
@@ -1693,6 +1693,39 @@
      "usd": 0.0
     },
     "travel-agency": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 2,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 2,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "117-harbour-street-scale": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-27": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "housing-windows": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "room-walls": {
      "calls": 1,
      "usd": 0.0
     }

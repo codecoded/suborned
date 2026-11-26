@@ -4,6 +4,7 @@ Shader "Suborned/Harbour/Shop windows"
     {
         _InteriorAtlas("Four occupied rooms", 2D) = "white" {}
         _Shop("Shop variation", Float) = 0
+        [Toggle] _FittedSash("Window fitted to a single surveyed opening", Float) = 0
     }
     SubShader
     {
@@ -18,14 +19,16 @@ Shader "Suborned/Harbour/Shop windows"
         TEXTURE2D(_InteriorAtlas); SAMPLER(sampler_InteriorAtlas);
         CBUFFER_START(UnityPerMaterial)
             float _Shop;
+            float _FittedSash;
         CBUFFER_END
-        struct Vertex { float4 pos : POSITION; float3 normal : NORMAL; UNITY_VERTEX_INPUT_INSTANCE_ID };
-        struct Pixel { float4 pos : SV_POSITION; float3 world : TEXCOORD0; half3 normal : TEXCOORD1; float3 local : TEXCOORD2; half fog : TEXCOORD3; };
+        struct Vertex { float4 pos : POSITION; float3 normal : NORMAL; float2 uv : TEXCOORD0; float2 cell : TEXCOORD1; UNITY_VERTEX_INPUT_INSTANCE_ID };
+        struct Pixel { float4 pos : SV_POSITION; float3 world : TEXCOORD0; half3 normal : TEXCOORD1; float3 local : TEXCOORD2; half fog : TEXCOORD3; float4 pane : TEXCOORD4; };
         Pixel Vert(Vertex v)
         {
             UNITY_SETUP_INSTANCE_ID(v);
             Pixel o;
             o.local = v.pos.xyz;
+            o.pane = float4(v.uv,v.cell);
             o.world = TransformObjectToWorld(v.pos.xyz);
             o.normal = TransformObjectToWorldNormal(v.normal);
             o.pos = TransformWorldToHClip(o.world);
@@ -43,12 +46,39 @@ Shader "Suborned/Harbour/Shop windows"
             #pragma multi_compile_fog
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            half3 FittedSash(Pixel i, half3 n, half3 v)
+            {
+                float2 uv = i.pane.xy;
+                float aspect = clamp(i.pane.w, .3, 4);
+                float2 edge = min(uv,1-uv) * float2(aspect,1);
+                float nearest = min(edge.x,edge.y);
+                float aa = max(.001, fwidth(nearest));
+                // A slight reveal at each jamb, with the pane tucked behind a projecting sill.
+                // Keep the sash in place as the view moves. Only the room inside it shifts.
+                float3 tangent = normalize(float3(-n.z,0,n.x) + float3(.00001,0,0));
+                float2 slope = float2(dot(tangent,v)/aspect,v.y) / max(.16,dot(v,n));
+                float2 behind = uv - clamp(slope,-2.5,2.5) * .045 * smoothstep(.04,.18,nearest);
+                float2 cell = float2(fmod(i.pane.z,2.0),floor(i.pane.z*.5));
+                float2 atlas = (cell + clamp(behind,.01,.99)) * .5;
+                half3 room = SAMPLE_TEXTURE2D_GRAD(_InteriorAtlas,sampler_InteriorAtlas,atlas,ddx(uv)*.5,ddy(uv)*.5).rgb;
+                half day = saturate(dot(unity_AmbientSky.rgb,half3(.24,.64,.12))*1.8);
+                half3 reflected = reflect(-v,n);
+                half fres = .045 + .36 * pow(1-saturate(dot(n,v)),4);
+                half3 sky = lerp(half3(.14,.12,.09),half3(.42,.52,.57),smoothstep(-.1,.55,reflected.y));
+                half3 pane = lerp(room*(.42+.61*day),sky*(.16+.84*day),fres);
+                half occlusion = .73 + .27 * smoothstep(.015,.105,min(1-uv.y,edge.x));
+                half rim = 1-smoothstep(.015-aa,.015+aa,nearest);
+                half sill = 1-smoothstep(.018-aa,.018+aa,uv.y);
+                return lerp(pane*occlusion,lerp(half3(.095,.080,.056),half3(.33,.27,.20),sill)*(.34+.66*day),rim);
+            }
             half4 Window(Pixel i) : SV_Target
             {
                 float3 hiddenGround;
                 float veil = DKCutaway(i.pos, hiddenGround);
                 half3 n = normalize(i.normal);
                 half3 v = GetWorldSpaceNormalizeViewDir(i.world);
+                if (_FittedSash > .5)
+                    return half4(MixFog(lerp(FittedSash(i,n,v),_DKCutVeil.rgb,veil),i.fog),1);
                 float3 tangent = normalize(float3(n.z, 0, -n.x) + float3(0.0001, 0, 0));
                 float along = dot(i.world, tangent);
                 bool upper = i.local.y > 4.0;

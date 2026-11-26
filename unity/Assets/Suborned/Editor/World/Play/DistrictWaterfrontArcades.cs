@@ -124,7 +124,10 @@ namespace Suborned.World.Play
                 for (int i=0;i<count;i++)
                 {
                     var at=Vector3.Lerp(a,b,(i+.5f)/count)-inward*.17f; at.y=strip.EastCm*.01f;
-                    bool shade=i%3==1; int landing=pier?5:6;
+                    // The pier head's own canopy shelters the booking frontage. Keep the public
+                    // rail here, with open sightlines between the queue and the ticket windows.
+                    bool shade=i%3==1 && (pier || (at-b).sqrMagnitude>12f*12f);
+                    int landing=pier?5:6;
                     StreetPiece(root,(pier?"Market Pier":"Skyport Landing")+(shade?" arcade":" handrail"),at,
                         Mathf.Atan2(inward.x,inward.z)*Mathf.Rad2Deg,false,near=>QuayBay(shade,landing,near));
                 }
