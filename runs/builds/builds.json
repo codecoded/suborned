@@ -957,6 +957,21 @@
    "zip": null,
    "sent": [],
    "whatsNew": "Harbour trades draw in the command view. Lantern Lane has a celadon market awning and stacked fruit crates. The pneumatic post has a capsule collection drawer."
+  },
+  {
+   "build": 384,
+   "version": "0.2.384",
+   "date": "2026-11-26T22:14:47.785Z",
+   "builtAt": "2026-11-26T22:14:31.3096880Z",
+   "sha": "ae54ed271",
+   "dirty": false,
+   "engine": "0.62.0",
+   "engineSource": "commit ae54ed271f56",
+   "dllSha256": "d4a58e441cd91b4fd54cbaf866439275bff1bf36784c5f443e02a5e4191d3b26",
+   "recording": "c064",
+   "zip": null,
+   "sent": [],
+   "whatsNew": "Backing a Harbour contact costs $15,000, and a guarantee costs another $25,000. The journal quotes $35,000 for an honest errand and $70,000 for a bluff before you choose."
   }
  ]
 }
