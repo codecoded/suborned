@@ -37,6 +37,7 @@ namespace Suborned.Play
         /// lit as Inez is in the sun). `shift` moves the play camera's look point that many metres in from the door's outward side (the driver's still
         /// takes in the Office door behind his car).</summary>
         public bool bare; public float[] doorS = new float[0]; public float keyLight, shift;
+        public bool facePoint; public int faceX, faceY;
         public bool clipTrack; public float atX, atY, zoom, px, py, settle = 0.35f, perf, clipSeconds; public int clipFps = 30, w = 1920, h = 1080; public bool jpg; public ShotPose pose = new ShotPose();
     }
     [Serializable] public sealed class ShotFile { public string schema = "", outDir = ""; public ShotSpec[] shots = new ShotSpec[0]; }
@@ -245,7 +246,8 @@ namespace Suborned.Play
             {
                 h.Select(Suborned.Sim.Op.Parse(s.agent), false);
                 if (!h.Following) h.FollowToggle();
-                if (s.face.Length > 0) h.FollowFace(At(s.face));
+                if (s.facePoint) h.FollowFace(h.frame.World(new Suborned.Sim.Pt(s.faceX, s.faceY)));
+                else if (s.face.Length > 0) h.FollowFace(At(s.face));
                 return;
             }
             if (h.Following) h.FollowToggle();

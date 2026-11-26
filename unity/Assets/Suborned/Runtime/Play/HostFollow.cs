@@ -195,8 +195,12 @@ namespace Suborned.Play
         {
             if (!Cam.follow.collision) { foreach (var r in fHidden) if (r) r.enabled = true; fHidden.Clear(); return fDist; } // brief 025: collision off in the lab
             FollowIndex(); fHideNow.Clear();
-            var head = fPivot + Vector3.up * 1.6f; var cam0 = fPivot - fwd * fDist + Vector3.up * (followHeight + fDist * followRise);
+            var head = fPivot + Vector3.up * 1.6f; FollowBoom(fwd, fDist, out var cam0, out _);
             var ray = new Ray(head, (cam0 - head).normalized); float len = Vector3.Distance(head, cam0), d = fDist;
+            var districtFloor = frame.streetGround;
+            if (districtFloor != null && !Game.S.Grid.InGrid(frame.Engine(fPivot)) && !districtFloor.IsWall(frame.Engine(fPivot)))
+                for (float t = .25f; t < len; t += .22f)
+                    if (districtFloor.IsWall(frame.Engine(ray.GetPoint(t)))) { d = Mathf.Min(d, Mathf.Max(.72f, (t - .3f) / len * fDist)); break; }
             fSeen.Clear(); var seen = fSeen;
             for (float t = 0f; t < len + 4f; t += 4f)
             {
@@ -216,7 +220,7 @@ namespace Suborned.Play
             foreach (var r in fHidden) if (!fHideNow.Contains(r) && r) r.enabled = true;
             foreach (var r in fHideNow) if (r && r.enabled) r.enabled = false;
             fHidden.Clear(); fHidden.UnionWith(fHideNow);
-            return Mathf.Max(1.5f, d);
+            return Mathf.Max(districtFloor != null && !Game.S.Grid.InGrid(frame.Engine(fPivot)) ? .72f : 1.5f, d);
         }
         void FollowUnhide() { foreach (var r in fHidden) if (r) r.enabled = true; fHidden.Clear(); FollowPeopleUnhide(); }
 
@@ -319,6 +323,19 @@ namespace Suborned.Play
             FollowPlace(false);
         }
 
+        void FollowBoom(Vector3 fwd, float distance, out Vector3 pos, out Quaternion rot)
+        {
+            var right = Quaternion.Euler(0f, fYaw, 0f) * Vector3.right * Cam.follow.shoulder; // brief 025: over the shoulder
+            pos = fPivot - fwd * distance + Vector3.up * (followHeight + distance * followRise) + right;
+            var look = fPivot + fwd * followAhead + Vector3.up * followLookHeight + right;
+            rot = Quaternion.LookRotation(look - pos, Vector3.up);
+            if (Cam.follow.pitch >= 0f) // brief 025: a set pitch: the boom tilts round the agent's head, the camera looks down at that angle
+            {
+                rot = Quaternion.Euler(Cam.follow.pitch, fYaw, 0f);
+                pos = fPivot + Vector3.up * (followLookHeight + followHeight - 1.3f) - rot * Vector3.forward * distance + right;
+            }
+        }
+
         void FollowPlace(bool snap)
         {
             float dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f);
@@ -348,15 +365,7 @@ namespace Suborned.Play
             // colliders: the engine's walk grid, read only, is the test); in at once, back out eased
             float want = FollowClear(fwd);
             fDistNow = snap || want < fDistNow ? want : Mathf.MoveTowards(fDistNow, want, 4f * dt);
-            var right = Quaternion.Euler(0f, fYaw, 0f) * Vector3.right * Cam.follow.shoulder; // brief 025: over the shoulder
-            var pos = fPivot - fwd * fDistNow + Vector3.up * (followHeight + fDistNow * followRise) + right;
-            var look = fPivot + fwd * followAhead + Vector3.up * followLookHeight + right;
-            var rot = Quaternion.LookRotation(look - pos, Vector3.up);
-            if (Cam.follow.pitch >= 0f) // brief 025: a set pitch: the boom tilts round the agent's head, the camera looks down at that angle
-            {
-                rot = Quaternion.Euler(Cam.follow.pitch, fYaw, 0f);
-                pos = fPivot + Vector3.up * (followLookHeight + followHeight - 1.3f) - rot * Vector3.forward * fDistNow + right;
-            }
+            FollowBoom(fwd, fDistNow, out var pos, out var rot);
             float sw = followSwing <= 0f ? 1f : Mathf.Clamp01((Time.unscaledTime - fSwingStart) / followSwing);
             if (sw < 1f && fSwingStart == fEnterSwingStart) { float e = sw * sw * (3f - 2f * sw); GlidePlace(FollowSide(pos, rot, followFov), fEnterMap, 1f - e); FollowPeople(); return; } // brief 096: in from the map picture (HostFollow.Glide096.cs)
             if (glideMatrix) { GlideMatrixOff(); cam.fieldOfView = followFov; }

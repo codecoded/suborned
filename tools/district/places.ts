@@ -205,7 +205,7 @@ const courtFurniture: typeof dress.coffee = [
   ['FanPalm_Play', 16.8, 6.5, 45, 0.7],
   ['GlobeLamp_TB', -18, 0.7, 0, 0.35],
   ['GlobeLamp_TB', 18, 0.7, 0, 0.35],
-  ['PlanterRun_4_A', 1, 8.3, 90, 1.9],
+  ['PlanterRun_4_A_TB', 1, 8.3, 90, 1.9],
   ['Bench_Play', -1, 4.4, 0, 1.0],
   ['VendingMachine_Cola', -12, 3.8, 15, 0.7],
 ];

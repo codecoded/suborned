@@ -71,6 +71,14 @@ public sealed class HarbourStreetTests
         var court = district.Map.Ground.Venues.Single(v => v.Id == "sunset-coffee");
         Assert.True(court.Court.Length > 3);
         Assert.Equal(18, district.Map.Ground.ElevationCm(court.At));
+        foreach (string use in new[] { "homes", "market", "gardens", "quay" })
+            Assert.Contains(district.Map.Ground.Courts, c => c.Style == use);
+        Assert.NotEmpty(district.Map.Ground.Buildings);
+        foreach (var corner in district.Map.Ground.Buildings)
+        {
+            Assert.True(district.Map.Ground.IsWall(corner.At));
+            Assert.False(district.Map.Walk.Free(corner.At));
+        }
         var a = traffic.Robot(1, 0);
         Assert.Contains(Enumerable.Range(1, 90).Select(t => traffic.Robot(1, t * 10)), p => p.Moving && p.At != a.At);
     }

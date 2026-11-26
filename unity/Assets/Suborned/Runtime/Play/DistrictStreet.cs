@@ -14,6 +14,8 @@ namespace Suborned.Play
             public string skin;
             public Animator animator;
             public bool moving;
+            public Renderer[] renderers;
+            public bool hidden;
         }
 
         readonly Dictionary<int, View> activeViews = new();
@@ -121,6 +123,11 @@ namespace Suborned.Play
             }
 
             VisiblePeople = VisibleVehicles = VisibleRobots = InstancedPeople = 0;
+            bool follow = host.Following && host.FollowAgent >= 0;
+            Vector3 camera = follow ? host.View.transform.position : default;
+            Vector3 subject = follow ? host.frame.World(g.Ops[host.FollowAgent].Pos) + Vector3.up * 1.12f : default;
+            var sight = new Ray(camera, subject - camera);
+            float distance = Vector3.Distance(camera, subject);
             foreach (int id in visible)
             {
                 if (!poses.TryGetValue(id, out var sample) || sample.tick != g.Tick)
@@ -137,9 +144,15 @@ namespace Suborned.Play
                 var pos = Vector3.LerpUnclamped(sample.from, sample.to, host.StreetFrameAlpha);
                 var rotation = sample.rotation;
                 bool moving = sample.moving;
+                bool hide = false;
+                if (follow && id < Tram && (pos - camera).sqrMagnitude < (distance + 1f) * (distance + 1f))
+                {
+                    var body = new Bounds(pos + Vector3.up * .92f, new Vector3(.75f, 1.84f, .75f));
+                    hide = body.IntersectRay(sight, out float hit) && hit < distance - .35f;
+                }
                 if (id < Tram && !rigged.Contains(id))
                 {
-                    if (!crowd.Has(skins[id])) continue;
+                    if (hide || !crowd.Has(skins[id])) continue;
                     crowd.Add(skins[id], Matrix4x4.TRS(pos, rotation, Vector3.one), g.Tick, id, moving);
                     VisiblePeople++; InstancedPeople++;
                     continue;
@@ -151,6 +164,11 @@ namespace Suborned.Play
                     activeViews.Add(id, view);
                 }
                 view.root.transform.SetPositionAndRotation(pos, rotation);
+                if (view.hidden != hide)
+                {
+                    foreach (var r in view.renderers) r.forceRenderingOff = hide;
+                    view.hidden = hide;
+                }
                 if (view.animator && moving != view.moving)
                 {
                     view.moving = moving;
@@ -284,6 +302,7 @@ namespace Suborned.Play
                 DistrictVehicleLod.AddKitLevels(root, model, host.districtRobotMid, host.districtRobotFar);
             else
                 DistrictVehicleLod.AddSedan(root, model);
+            v.renderers = root.GetComponentsInChildren<Renderer>(true);
             return v;
         }
     }

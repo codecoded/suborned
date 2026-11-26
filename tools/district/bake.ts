@@ -7,6 +7,7 @@ import { loadGraph } from '../people-graph/load';
 import { sql } from '../rag/database';
 import { streetPlaces, furnish, project, cafeCourt, type Venue } from './places';
 import { districtPopulation, LOCAL } from './population';
+import { streetscape, straightRuns } from './streetscape';
 import { waterfront } from './waterfront';
 import type { StreetSurvey } from './survey';
 import { civic } from '../plan/civic';
@@ -100,7 +101,7 @@ const surface = waterfront(world, block);
 const survey: StreetSurvey = read('contracts/world/harbour-district.street-survey.json');
 const planHash = createHash('sha256').update(readFileSync(resolve(root, 'contracts/world/harbour-district.plan.json'))).digest('hex');
 if (survey.planHash !== planHash) throw Error('Refresh the exterior street survey from the matching OldTown swap');
-const solid = new Uint8Array(walk.length), water = new Uint8Array(walk.length);
+const solid = new Uint8Array(walk.length), water = new Uint8Array(walk.length), occupied = new Uint8Array(walk.length);
 function cellOf(point: Point) {
   const [a,b]=block(point);
   const i=Math.floor((a-x0)/cell), j=Math.floor((b-y0)/cell);
@@ -146,6 +147,7 @@ for (const p of [...ground.water, ...world.buildings.filter((b) => b.base < 2 &&
   polygon(p.ring, (i) => {
     walk[i] = drive[i] = 0;
   });
+for (const b of world.buildings.filter(b => b.base < 2 && b.base + b.height > 1)) polygon(b.ring,i=>{ occupied[i]=1; });
 for (const c of ground.circuses) {
   const [a, b] = block(c.centre),
     r = c.radius * 100;
@@ -175,6 +177,20 @@ for (const v of venues) {
     visit(a-r,b-r,a+r,b+r,(idx,x,y)=>{if((a-x)**2+(b-y)**2<=r*r)walk[idx]=0;});
   }
 }
+// Leave the Handover's surveyed furniture and the original entrances alone.
+const neighbourhood = streetscape(world,(p,r)=>{
+  const [x,y]=block(p);
+  if(x>=site.grid.x0 && x<site.grid.x0+site.grid.nx*site.grid.cell && y>=site.grid.y0 && y<site.grid.y0+site.grid.ny*site.grid.cell) return false;
+  const samples: Point[]=[p,[p[0]+r,p[1]],[p[0]-r,p[1]],[p[0],p[1]+r],[p[0],p[1]-r]];
+  return samples.every(q=>{const i=cellOf(q);return i>=0&&!solid[i]&&!occupied[i]&&!drive[i]&&!water[i];});
+},venues.flatMap(v=>v.fixtures));
+for (const c of neighbourhood.courts) polygon(c.ring,i=>{if(!solid[i]&&!occupied[i]&&!drive[i]&&!water[i])walk[i]=1;});
+for (const b of neighbourhood.buildings) polygon(b.ring,i=>{walk[i]=0;solid[i]=1;});
+for (const f of [...venues.flatMap(v=>v.fixtures), ...neighbourhood.fixtures]) {
+  const [a,b]=block(f.at),r=f.radius*100+32;
+  visit(a-r,b-r,a+r,b+r,(i,x,y)=>{if((a-x)**2+(b-y)**2<=r*r)walk[i]=0;});
+}
+furniture.push(...neighbourhood.fixtures);
 function standing(p:Point,v:Venue): Point {
   const usable=(q:Point)=>open(q) && (v.style==='platform'||!drive[cellOf(q)]) &&
     !furniture.some(f=>Math.hypot(f.at[0]-q[0],f.at[1]-q[1])<f.radius+.55);
@@ -220,33 +236,31 @@ const residents = people
   .sort((a,b)=>Number(a.key.startsWith(LOCAL))-Number(b.key.startsWith(LOCAL)));
 const ids = new Set(residents.map((r) => r.key));
 function line(s: { id: string; line: readonly (readonly number[])[] }) {
-  // Remove collinear samples. Retain the exact bends of the exported lanes and tracks.
-  const points: Point[] = [];
-  for (const pt of s.line.map(block)) {
-    const b = points.at(-1),
-      a = points.at(-2);
-    if (
-      b &&
-      a &&
-      (b[0] - a[0]) * (pt[1] - b[1]) === (b[1] - a[1]) * (pt[0] - b[0]) &&
-      (pt[0] - b[0]) * (b[0] - a[0]) + (pt[1] - b[1]) * (b[1] - a[1]) >= 0
-    )
-      points.pop();
-    points.push(pt);
-  }
-  return { id: s.id, points };
+  return { id: s.id, points: straightRuns(s.line.map(block)) };
+}
+function runs(bits: Uint8Array): number[][] {
+  return Array.from({length:nx},(_,i)=>{
+    const spans:number[]=[];
+    for(let j=0;j<ny;) {
+      if (!bits[i*ny+j]) { j++; continue; }
+      const start=j++;
+      while(j<ny && bits[i*ny+j]) j++;
+      spans.push(start,j);
+    }
+    return spans;
+  });
 }
 const data = {
   schema: 'suborned.district/1',
   graph: p.hash,
   grid: { x0, y0, nx, ny, cell, rows: rows(walk, site.grid, '.') },
   roads: { x0, y0, nx, ny, cell, rows: rows(drive, site.drive, 'r') },
-  water: Array.from({length:nx},(_,i)=>{
-    const runs:number[]=[];
-    for(let j=0;j<ny;){if(!water[i*ny+j]){j++;continue;} const start=j++;while(j<ny&&water[i*ny+j])j++;runs.push(start,j);}
-    return runs;
-  }),
+  water: runs(water),
+  walls: runs(solid),
   waterfront:surface,
+  courts:neighbourhood.courts.map(c=>({...c,ring:c.ring.map(block)})),
+  buildings:neighbourhood.buildings.map(b=>({at:block(b.at),yaw:b.yaw,width:b.width,depth:b.depth,floors:b.floors,palette:b.palette})),
+  streetFixtures:neighbourhood.fixtures.map(f=>({kit:f.kit, at:block(f.at),yaw:f.yaw})),
   venues:venues.map(v=>({id:v.id, name:v.name, at:block(v.at), style:v.style, court:cafeCourt(v).map(block), fixtures:v.fixtures.map(f=>({kit:f.kit,at:block(f.at),yaw:f.yaw}))})),
   platforms:world.transit.stops.map(s=>{
     const xs=s.ring.map(p=>p[0]),ys=s.ring.map(p=>p[1]);

@@ -135,12 +135,19 @@ namespace Suborned.World.Play
                 surface.Emit(root.transform, "Distant promenade " + near, paving);
             }
 
-            foreach (var venue in ground.Venues.Where(v => v.Court.Length >= 3))
+            var ivory = MaterialAt(Deco + "Materials/DK_Terrazzo_Ivory.mat");
+            var inlay = MaterialAt(Deco + "Materials/DK_Terrazzo_Seafoam.mat");
+            foreach (var court in ground.Courts)
             {
-                var outer = venue.Court.Select(p => { var at = frame.World(p); at.y = .18f; return at; }).ToArray();
+                var outer = court.Ring.Select(p =>
+                {
+                    var at = frame.World(p);
+                    at.y = (ground.TransportElevationCm(p) ?? 18) * .01f + .013f;
+                    return at;
+                }).ToArray();
                 if (Vector3.Cross(outer[1] - outer[0], outer[2] - outer[0]).y < 0) System.Array.Reverse(outer);
                 var centre = outer.Aggregate(Vector3.zero, (sum, p) => sum + p) / outer.Length;
-                var inner = outer.Select(p => Vector3.Lerp(p, centre, .065f)).ToArray();
+                var inner = outer.Select(p => Vector3.Lerp(p, centre, .045f)).ToArray();
                 var band = new Quads(); var slab = new Quads();
                 for (int i = 0; i < outer.Length; i++)
                 {
@@ -148,16 +155,21 @@ namespace Suborned.World.Play
                     band.Add(outer[i], outer[n], inner[n], inner[i], true);
                 }
                 slab.Fan(inner);
-                slab.Emit(root.transform, venue.Name + " terrace", MaterialAt(Deco + "Materials/DK_Terrazzo_Ivory.mat"));
-                band.Emit(root.transform, venue.Name + " seafoam border", MaterialAt(Deco + "Materials/DK_Terrazzo_Seafoam.mat"));
+                slab.Emit(root.transform, court.Name + " walking terrace", court.Style == "homes" ? paving : ivory);
+                band.Emit(root.transform, court.Name + " inlay", inlay);
             }
+            var templates = new DistrictStreetArchitecture();
             var prefabs = new Dictionary<string, GameObject>();
-            foreach (var venue in ground.Venues)
-            foreach (var fixture in venue.Fixtures)
+            foreach (var building in ground.Buildings) templates.Frontage(root.transform, frame.World(building.At), building);
+            void PlaceFixture(DistrictGround.Fixture fixture, string name)
             {
+                var pos = frame.World(fixture.At);
+                pos.y = ground.ElevationCm(fixture.At) * .01f;
+                if (fixture.Kit == "GardenBed") { templates.PlantedBed(root.transform, pos, fixture.Yaw); return; }
                 if (!prefabs.TryGetValue(fixture.Kit, out var prefab))
                 {
-                    foreach (var dir in new[] { "Generated", "Furnish", "Street", "Plants", "Built" })
+                    // Built prefabs bind the imported materials and all available authored mesh LODs.
+                    foreach (var dir in new[] { "Built", "Generated", "Furnish", "Street", "Plants", "Structures" })
                     {
                         prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Kit + dir + "/DK_" + fixture.Kit + ".prefab");
                         if (prefab) break;
@@ -166,17 +178,18 @@ namespace Suborned.World.Play
                     prefabs.Add(fixture.Kit, prefab);
                 }
                 var prop = Object.Instantiate(prefab, root.transform);
-                prop.name = venue.Name + " / " + fixture.Kit;
-                var p = frame.World(fixture.At);
-                p.y = ground.ElevationCm(fixture.At) * .01f;
-                prop.transform.SetPositionAndRotation(p, Quaternion.Euler(0, fixture.Yaw, 0));
-                if (prop.GetComponentInChildren<LODGroup>()) continue;
+                prop.name = "DK_" + fixture.Kit + " • " + name;
+                prop.transform.SetPositionAndRotation(pos, Quaternion.Euler(0, fixture.Yaw, 0));
+                if (prop.GetComponentInChildren<LODGroup>()) return;
                 var renderers = prop.GetComponentsInChildren<Renderer>();
-                if (renderers.Length == 0) continue;
+                if (renderers.Length == 0) return;
                 var lod = prop.AddComponent<LODGroup>();
                 lod.SetLODs(new[] { new LOD(.013f, renderers) });
                 lod.RecalculateBounds();
             }
+            foreach (var venue in ground.Venues)
+                foreach (var fixture in venue.Fixtures) PlaceFixture(fixture, venue.Name);
+            foreach (var fixture in ground.StreetFixtures) PlaceFixture(fixture, "street");
         }
 
         static Material MaterialAt(string path) => AssetDatabase.LoadAssetAtPath<Material>(path)
