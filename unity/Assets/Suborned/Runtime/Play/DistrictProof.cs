@@ -138,9 +138,10 @@ namespace Suborned.Play
             journal.Open(j.A);
             yield return new WaitForEndOfFrame();
             ScreenCapture.CaptureScreenshot(IOPath.Combine(directory, "street-dialogue.png"));
-            Need(h.Issue(new Order { Op = "scout", Do = "district-help", Target = source.Id, To = j.Key }), "Native contact order refused");
-            Need(j.Stage == 1, "The first contact did not vouch for the cell");
             var panel = h.transform.Find("District book").GetComponent<UIDocument>().rootVisualElement;
+            Need(panel.Query<Button>().ToList().Any(b => b.text == "Help with " + source.Need + "  ·  $" + Game.Usd(g.R.DistrictPrices.Help)), "The contact did not quote the cost of help");
+            Submit(panel, d.Choice(j) + "  ·  $" + Game.Usd(g.R.DistrictPrices.ErrandFee(false)));
+            Need(j.Stage == 1, "The first contact did not vouch for the cell");
             journal.Open();
             Submit(panel.Q<Button>("contact-" + source.Id));
             yield return new WaitForSecondsRealtime(.15f);
@@ -148,6 +149,7 @@ namespace Suborned.Play
             Need(h.Issue(new Order { Op = "scout", Do = "district-back", Target = source.Id }), "Could not earn the first contact's trust");
             Need(journal.IsUnread(j.A), "New information did not mark a read contact again");
             journal.Open(j.A);
+            Need(panel.Query<Button>().ToList().Any(b => b.text == "Stand surety for " + source.Need + "  ·  $" + Game.Usd(g.R.DistrictPrices.Surety)), "The trusted contact did not quote the guarantee");
             Submit(panel, "Call in a favour");
             yield return new WaitForSecondsRealtime(.2f);
             var routes = g.CitizenRoutes(j.A);

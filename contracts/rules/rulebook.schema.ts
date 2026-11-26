@@ -6,6 +6,7 @@
 // is restated here, and checkRulebook() rejects any id that file does not know (GDD §01: unknown = reject).
 import { z } from 'zod';
 import type { PeopleRules } from '../people/people.rules.schema.ts';
+import { campaignFields } from './rulebook.campaign.ts';
 import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; import { BlastStanding, RivalsBlock, RivalsLookout, RivalsTurn, Unclaimed } from './rulebook.schema096r.ts'; import { CarLend, CarTake } from './rulebook.schema096l.ts'; import { Bodies, FightCover } from './rulebook.schema098b.ts'; import { Look } from './rulebook.schema107.ts'; import { Pace } from './rulebook.schema110.ts'; import { CarGo } from './rulebook.schema096m.ts'; // brief 096 (engine 0.40.0, 0.41.0, 0.42.0, 0.43.0)
 
 const id = z.string().regex(/^[a-z][a-z0-9-]*$/);
@@ -442,18 +443,7 @@ export const Rulebook = z.strictObject({
     suspicion: z.strictObject({ s: Ref, meet: Ref, pm: z.strictObject({ fearful: Ref, loyal: Ref, idealist: Ref, mercenary: Ref }) }),
     rule: text,
   }).optional(),
-  campaign: ground({
-    missing: z.strictObject({ trail: Ref, tiesFear: Ref }),
-    areaWatch: z.strictObject({ step: Ref, missions: Ref }),
-    cases: z.strictObject({ perLevel: Ref, cap: Ref, close: Ref, trailEq: Ref }), // trailEq: the mission checker's price of an open case (MC-9); the engine reads it for the checker only
-    // brief 018 §3: what a capture at Go costs the campaign; optional only for runs pinned before it
-    custody: z.strictObject({
-      trail: Ref, fear: Ref, loyalty: Ref, abandonedResentment: Ref, abandonedLoyalty: Ref, missions: Ref,
-      cellStart: z.strictObject({ bravery: Ref, resentment: Ref, fear: Ref, loyalty: Ref }),
-      rule: text, src: text,
-    }).optional(),
-    rule: text,
-  }).optional(),
+  campaign: ground(campaignFields(Ref, text)).optional(),
   // brief 022 (Pulse): a server's round; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
   rounds: ground({ linger: Ref, close: Ref, clear: Ref, part: Ref, holds: z.array(id).nonempty(), ends: z.array(z.enum(['alert-2', 'gunfire', 'body-found', 'final-fight'])).nonempty(), rule: text }).optional(),
   // brief 023 (engine 0.8.2): where a moving car may go, the site's drive grid (car.drive), and car.pace (Motive 2026-10-19); both optional only for runs pinned before them (rulebook.test.ts holds the live one to them)
@@ -525,6 +515,12 @@ export const Rulebook = z.strictObject({
   for (const r of refs) if (r.startsWith('v:') && !rb.values[r.slice(2)]) bad(['values'], `${r} names no value`);
   const used = new Set(refs.filter((r) => r.startsWith('v:')).map((r) => r.slice(2)));
   for (const v of Object.keys(rb.values)) if (!used.has(v)) bad(['values', v], `${v} is read by no rule`);
+  for (const [key, ref] of Object.entries(rb.campaign?.districtEconomy ?? {})) {
+    const price = rb.values[ref.slice(2)];
+    if (!ref.startsWith('v:') || price?.unit !== 'usd' || price.v <= 0) {
+      bad(['campaign', 'districtEconomy', key], 'a district payment must refer to a positive USD value');
+    }
+  }
   // Events: unique ids; phases list events of that phase, each once, and every event of a listed phase is listed.
   const byId = new Map<string, Event>();
   for (const [i, e] of rb.events.entries()) { if (byId.has(e.id)) bad(['events', i, 'id'], `${e.id} repeats`); byId.set(e.id, e); }

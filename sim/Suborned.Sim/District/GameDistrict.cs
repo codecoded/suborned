@@ -215,6 +215,7 @@ namespace Suborned.Sim
             if (op.InCar || op.Inside || !G.Within(op.Pos, place, 650))
                 return No("too-far", $"Meet {person.Name} on foot within six metres.");
             d.Encountered[who] = true;
+            var prices = o.LegacyDistrictCash ? DistrictEconomy.Legacy : R.DistrictPrices;
             switch (o.Do)
             {
                 case "district-meet": return "";
@@ -224,8 +225,9 @@ namespace Suborned.Sim
                 case "district-protect": return SendCitizen(op, o, who, CitizenAct.Protect);
                 case "district-bond":
                     if (d.Trust[who] != 1) return No("no-leverage", "Only a contact who already trusts you can ask for your guarantee.");
-                    if (Cash < 25) return No("no-cash", "The guarantee costs $25.", usd: 25);
-                    Cash -= 25;
+                    long surety = prices.Surety;
+                    if (Cash < surety) return No("no-cash", $"The guarantee costs ${Usd(surety)}.", usd: surety);
+                    Cash -= surety;
                     d.Trust[who]++;
                     d.Network.KnowsCell[who] = true;
                     d.News = d.Memory[who] = $"{person.Name} trusts you to stand by them. You guaranteed {person.Need}.";
@@ -240,9 +242,10 @@ namespace Suborned.Sim
                 {
                     if (d.Trust[who] > 0)
                         return No("already-turned", "They already trust the cell.");
-                    if (Cash < 15)
-                        return No("no-cash", "You need $15 to cover the favour.", usd: 15);
-                    Cash -= 15;
+                    long help = prices.Help;
+                    if (Cash < help)
+                        return No("no-cash", $"You need ${Usd(help)} to cover the favour.", usd: help);
+                    Cash -= help;
                     d.Network.KnowsCell[who] = true;
                     d.Trust[who]++;
                     line = $"{person.Name} accepted help with {person.Need}.";
@@ -292,12 +295,12 @@ namespace Suborned.Sim
             }
             else
             {
-                int pay = job.Bluff ? 70 : 35;
+                long pay = prices.ErrandFee(job.Bluff);
                 Cash += pay;
                 int change = job.Bluff ? -1 : 1;
                 d.Trust[job.B] = Math.Clamp(d.Trust[job.B] + change, -3, 3);
                 d.Trust[who] = Math.Clamp(d.Trust[who] + change, -3, 3);
-                news = job.Bluff ? $"{person.Name} paid ${pay}, then found the discrepancy. Both contacts will check your word." : $"{person.Name} paid ${pay}. Both contacts will speak for the cell.";
+                news = job.Bluff ? $"{person.Name} paid ${Usd(pay)}, then found the discrepancy. Both contacts will check your word." : $"{person.Name} paid ${Usd(pay)}. Both contacts will speak for the cell.";
                 if (job.Bluff)
                     AddTrail(1, "district-false-assurance");
                 d.Memory[job.A] = news;

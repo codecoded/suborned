@@ -370,18 +370,23 @@ namespace Suborned.Play
                 if (job != null)
                 {
                     Label(pages, "“" + d.Speaker(job) + "”", 17, Ivory);
-                    Button(pages, d.Choice(job), () => Speak(by, "district-help", job.Key));
+                    Label(pages, job.Stage == 2 ? "Payment due" : "Payment on completion", 15, Gold);
+                    string fee = Game.Usd(g.R.DistrictPrices.ErrandFee(job.Stage == 2 && job.Bluff));
+                    Button(pages, d.Choice(job) + "  ·  $" + fee, () => Speak(by, "district-help", job.Key));
                     if (job.Stage == 1)
-                        Button(pages, d.Choice(job, true), () => Speak(by, "district-bluff", job.Key));
+                    {
+                        Button(pages, d.Choice(job, true) + "  ·  $" + Game.Usd(g.R.DistrictPrices.ErrandFee(true)), () => Speak(by, "district-bluff", job.Key));
+                        Label(pages, "Bluffing costs trust with both contacts and adds 1 Trail.", 15, Ivory);
+                    }
                 }
 
                 if (d.Trust[person] > 0 || g.Standing >= 4)
                     Button(pages, "Call in a favour  ›", OpenCitizenOrders);
                 Label(pages, "Personal favours", 17, Gold);
                 if (d.Trust[person] == 1)
-                    Button(pages, "Stand surety for " + r.Need + "  ·  $25", () => Speak(by, "district-bond", ""));
+                    Button(pages, "Stand surety for " + r.Need + "  ·  $" + Game.Usd(g.R.DistrictPrices.Surety), () => Speak(by, "district-bond", ""));
                 if (d.Trust[person] <= 0)
-                    Button(pages, "Help with " + r.Need + "  ·  $15", () => Speak(by, "district-back", ""));
+                    Button(pages, "Help with " + r.Need + "  ·  $" + Game.Usd(g.R.DistrictPrices.Help), () => Speak(by, "district-back", ""));
                 foreach (var tie in ties)
                 {
                     var friend = d.Map.People[tie.person];

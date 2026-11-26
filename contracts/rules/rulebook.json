@@ -44,6 +44,10 @@
   "pct-points": "integer points added to a shot's per cent, signed"
  },
  "values": {
+  "district-help-usd": { "v": 15000, "unit": "usd", "tag": "S", "src": "Harbour contact economy, 2026-11-27", "proposed": true, "reason": "Backing a resident takes 15 percent of the Handover purse." },
+  "district-surety-usd": { "v": 25000, "unit": "usd", "tag": "S", "src": "Harbour contact economy, 2026-11-27", "proposed": true, "reason": "Backing a resident and then guaranteeing their need commits $40,000 to the relationship." },
+  "district-honest-fee-usd": { "v": 35000, "unit": "usd", "tag": "S", "src": "Harbour contact economy, 2026-11-27", "proposed": true, "reason": "An honest introduction funds two new contacts and strengthens the two people who settled it." },
+  "district-bluff-fee-usd": { "v": 70000, "unit": "usd", "tag": "S", "src": "Harbour contact economy, 2026-11-27", "proposed": true, "reason": "A false assurance can fund a major Handover payoff. Both contacts remember the deception and the cell gains Trail." },
   "watch-s": { "v": 3, "unit": "s", "tag": "S", "src": "Gameplay pacing review, November 2026", "proposed": true, "reason": "One Watch reveals sight or a personal routine." },
   "watch-reach-scout-m": { "v": 30, "unit": "m", "tag": "S", "src": "brief 031 (Sky 2026-10-20: \"all characters should be able to watch … Scout can watch from further away, enforcer is right close to them, tech also far, fixer a little nearer … so scout can be outside camera / guard ranges\"); Motive, briefs/031-everyone-watches.md §1", "proposed": true, "reason": "beyond every cone on the block (the posted guard's is 26 m): the Scout alone can watch anything unseen." },
   "watch-reach-tech-m": { "v": 24, "unit": "m", "tag": "S", "src": "brief 031 (Sky 2026-10-20: \"all characters should be able to watch … Scout can watch from further away, enforcer is right close to them, tech also far, fixer a little nearer … so scout can be outside camera / guard ranges\"); Motive, briefs/031-everyone-watches.md §1", "proposed": true, "reason": "beyond the cameras' (18, 22 m) and a walking guard's (18 m) sight; the patrol (24 m) only off its axis; the posted guard only from well to his side." },
@@ -1066,6 +1070,7 @@
   "reason": "the GDD's §05 response is one unit from one street. Sky asked for the response's size and speed as data per district and mission; until the world places robot docks and police posts (Splice) every robot but the patrol and every officer starts at the response unit's entry, so the dial's arrival times are upper bounds."
  },
  "campaign": {
+  "districtEconomy": { "help": "v:district-help-usd", "surety": "v:district-surety-usd", "honestFee": "v:district-honest-fee-usd", "bluffFee": "v:district-bluff-fee-usd" },
   "missing": { "trail": "v:missing-trail", "tiesFear": "v:missing-ties-fear" },
   "areaWatch": { "step": "v:area-watch-step", "missions": "v:area-watch-missions" },
   "cases": { "perLevel": "v:cases-per-level", "cap": "v:case-level-cap", "close": "v:case-close-missions", "trailEq": "v:case-trail-eq" },

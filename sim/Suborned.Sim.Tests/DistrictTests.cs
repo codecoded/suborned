@@ -21,6 +21,65 @@ public sealed class DistrictTests
         Assert.Null(scout.Busy);
     }
 
+    static Game ReplayOldDistrictPrices(Game run, string version = "suborned.sim/0.61.0")
+    {
+        // Historical saves identified their engine in the record and had no per-order price marker.
+        var record = Script.Write(run, Repo.Inputs.Hash).Replace(Engine.Version, version);
+        var script = Script.Parse(record);
+        var live = Engine.New(Repo.Inputs, script.Start);
+        foreach (var order in script.Orders)
+        {
+            live.RunTo(order.Tick);
+            live.Issue(order);
+        }
+        live.RunTo(script.Until);
+        return live;
+    }
+
+    [Theory]
+    [InlineData(14999, false, false)]
+    [InlineData(15000, true, false)]
+    [InlineData(39999, true, false)]
+    [InlineData(40000, true, true)]
+    public void ContactPaymentsUseTheQuotedPurseAndCannotChargeTwice(long purse, bool help, bool surety)
+    {
+        var g = Engine.New(Repo.Inputs, new Start { District = true, Seed = 9, Cash = purse });
+        const string jamie = "p-z-harbour-lantern-papers-04";
+        Order(g, "district-visit", who: jamie);
+        Arrive(g);
+        Answer Pay(string verb) => g.Issue(new Order { Tick = g.Tick, Op = "scout", Do = verb, Target = jamie });
+        var favour = Pay("district-back");
+        Assert.Equal(help, favour.ok);
+        if (!help) { Assert.Equal("no-cash", favour.code); Assert.Equal(15000, favour.usd); }
+        Assert.False(Pay("district-back").ok);
+        var guarantee = Pay("district-bond");
+        Assert.Equal(surety, guarantee.ok);
+        if (help && !surety) { Assert.Equal("no-cash", guarantee.code); Assert.Equal(25000, guarantee.usd); }
+        Assert.False(Pay("district-bond").ok);
+        Assert.Equal(purse - (help ? 15000 : 0) - (surety ? 25000 : 0), g.Cash);
+        Assert.Equal((help ? 1 : 0) + (surety ? 1 : 0), g.District!.Trust[g.District.Map.Index[jamie]]);
+    }
+
+    [Theory]
+    [InlineData("suborned.sim/0.60.1")]
+    [InlineData("suborned.sim/0.61.0")]
+    public void ContinueKeepsOldPaymentsAndUsesCurrentTermsForTheNextDeal(string version)
+    {
+        var fresh = Open();
+        const string jamie = "p-z-harbour-lantern-papers-04";
+        Order(fresh, "district-visit", who: jamie);
+        Arrive(fresh);
+        Order(fresh, "district-back", who: jamie);
+        var continued = ReplayOldDistrictPrices(fresh, version);
+        Assert.Equal(100000 - 15, continued.Cash);
+        Order(continued, "district-bond", who: jamie);
+        Assert.Equal(100000 - 15 - 25000, continued.Cash);
+        var mixed = Script.Parse(Script.Write(continued, Repo.Inputs.Hash));
+        var reopened = Engine.Play(Repo.Inputs, mixed.Start, mixed.Orders, mixed.Until);
+        Assert.Equal(continued.Cash, reopened.Cash);
+        Assert.Equal(continued.ClosingHash(), reopened.ClosingHash());
+    }
+
     [Fact]
     public void LanternCourtIsAThroughWalkWithOccupiedWingsAndAClockPedestal()
     {
@@ -101,10 +160,14 @@ public sealed class DistrictTests
         Assert.True(G.Within(g.Ops[0].Pos, landing.At, 210));
     }
 
-    [Fact]
-    public void MissedWindowStillAllowsAnHonestAndAFalseIntroductionWithReplay()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(9)]
+    [InlineData(23)]
+    [InlineData(73)]
+    public void MissedWindowStillAllowsAnHonestAndAFalseIntroductionWithReplay(int seed)
     {
-        var g = Open();
+        var g = Engine.New(Repo.Inputs, new Start { District = true, Seed = seed });
         var d = g.District!;
         Assert.True(d.Map.People.Length > 100);
         // Leave the cell clock running past the opportunity. Nobody is automatically incapacitated.
@@ -116,6 +179,7 @@ public sealed class DistrictTests
         for (int n = 0; n < 2; n++)
         {
             var j = d.Jobs[n];
+            long before = g.Cash;
             var names = new[]
             {
                 j.A,
@@ -132,6 +196,7 @@ public sealed class DistrictTests
                 Arrive(g);
                 Assert.True(G.Within(g.Ops[0].Pos, d.Pose(who, g.Tick).at, 650));
                 Order(g, n == 1 && k == 1 ? "district-bluff" : "district-help", who: target, to: j.Key);
+                Assert.Equal(before + (k == 2 ? (n == 0 ? 35000 : 70000) : 0), g.Cash);
             }
 
             Assert.NotEqual(j, d.Jobs[n]);
@@ -139,7 +204,8 @@ public sealed class DistrictTests
         }
 
         Assert.Equal(2, d.Completed);
-        Assert.Equal(start + 105, g.Cash);
+        Assert.Equal(start + 105000, g.Cash);
+        Assert.Equal(start + 105, ReplayOldDistrictPrices(g).Cash);
         Assert.True(g.Trail > trail);
         var s = Script.Parse(Script.Write(g, Repo.Inputs.Hash));
         var replay = Engine.Play(Repo.Inputs, s.Start, s.Orders, s.Until);

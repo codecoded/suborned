@@ -34,7 +34,7 @@ namespace Suborned.Sim
         public bool CrewPaid(string id) => CrewOf(id)?.Paid ?? false;
 
         /// <summary>Money in the log's words, the same in every culture (Redline E7): 30,000.</summary>
-        static string Usd(long v) => v.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
+        public static string Usd(long v) => v.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
         /// <summary>The person a turn names: a member of the crew by id, else the cast by role.</summary>
         Person TurnSubject(string target) => IsCrewId(target) && !Range ? CrewOf(target)!.P : PersonByRole(target);
 

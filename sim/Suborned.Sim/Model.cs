@@ -198,11 +198,19 @@ namespace Suborned.Sim
         /// <summary>Tuning.md §14 (engine 0.19.0): a fire order that is a focus (the commander's click on a hostile in a fight): a lock, lasting until
         /// its target is down, its walk-in spent (it never walks). Written only when set.</summary>
         public bool Focus;
-        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run", "stance", "force", "how", "face", "release", "shots", "then", "count", "on", "with", "focus" };
+        // A pre-0.62 saved order replays at the price agreed then. New orders in a continued run use current terms.
+        internal bool LegacyDistrictCash;
+        internal bool UsesDistrictCash => Do == "district-back" || Do == "district-bond" || Do == "district-help" || Do == "district-bluff";
+        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run", "stance", "force", "how", "face", "release", "shots", "then", "count", "on", "with", "focus", "legacyDistrictCash" };
         public static Order Parse(JNode n)
         {
             n.Only(Keys);
             var o = new Order { Tick = n["tick"].Int(), Do = n["do"].Str() };
+            if (n.Opt("legacyDistrictCash") is JNode legacy)
+            {
+                if (!o.UsesDistrictCash) throw new FormatException($"{n.Path}: legacyDistrictCash is for recorded district payments");
+                o.LegacyDistrictCash = legacy.Bool();
+            }
             o.Op = n.Opt("op")?.Str() ?? "";
             o.Target = n.Opt("target")?.Str() ?? "";
             o.Approach = n.Opt("approach")?.Str() ?? "";
@@ -243,6 +251,7 @@ namespace Suborned.Sim
             if (With.Length > 0) w.Prop("with", With); // the range's car spawn: likewise
             if (Do == "trigger" || Do == "follow" || Do == "free") w.Prop("on", On); // tuning.md §11, §14: only these verbs, always (a release is on: false)
             if (Focus) w.Prop("focus", true); // tuning.md §14: written only when set
+            if (LegacyDistrictCash) w.Prop("legacyDistrictCash", true);
             w.EndObj();
         }
         public override string ToString() { var w = new JWriter(); Write(w); return w.ToString(); }

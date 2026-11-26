@@ -34,6 +34,10 @@ namespace Suborned.Sim
                 var x = new Expect { Inputs = e["inputs"].Str(), Engine = e["engine"].Str(), Mvid = e.Opt("mvid")?.Str() ?? "", Start = e["start"].Str(), Outcome = e["outcome"].Str() };
                 foreach (var c in e["checkpoints"].Items) { var pair = c.Items; if (pair.Count != 2) throw new FormatException($"{c.Path}: [tick, hash]"); x.Checkpoints.Add((pair[0].Int(), pair[1].Str())); }
                 s.Expect = x;
+                // The first district builds still carried 0.60.1. Preserve past payments and refusals when those runs continue.
+                if (x.Engine == "suborned.sim/0.60.1" || x.Engine == "suborned.sim/0.61.0")
+                    foreach (var order in s.Orders)
+                        if (order.UsesDistrictCash) order.LegacyDistrictCash = true;
             }
             return s;
         }

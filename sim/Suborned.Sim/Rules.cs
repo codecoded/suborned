@@ -336,7 +336,6 @@ namespace Suborned.Sim
         public readonly DialLevel[] Dial = new DialLevel[5];
         public readonly int RobotSpeed, RobotWireS, RobotReachCm, ReportReachCm, DockReachCm, LaunchGapTicks, CheckS, SearchS, SearchStashCm, SearchStashS, StandDownInquiryS, StandDownSearchS, AlarmSpread, CombatantCap, CheckInPeriodS, SuspicionS, MeetCm;
         public readonly Dictionary<string, int> SuspicionPm = new Dictionary<string, int>(StringComparer.Ordinal);
-        public readonly int MissingTrail, MissingTiesFear, AreaWatchStep, AreaWatchMissions, CasesPerLevel, CaseLevelCap, CaseCloseMissions, CaseTrailEq; // CaseTrailEq: the checker's price of an open case (rev 4 R4.4), never Heat
         /// <summary>Each memory act's facts as rulebook memory.acts lists them (empty for a told entry, whose facts it carries).</summary>
         public readonly Dictionary<string, List<string>> ActFacts = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         // the final fight
@@ -781,7 +780,8 @@ namespace Suborned.Sim
             AlarmSpread = RI(rs["spread"]); CombatantCap = RI(rs["cap"]); CheckInPeriodS = RI(rs["checkIn"]);
             var su2 = rs["suspicion"]; su2.Only("s", "meet", "pm"); SuspicionS = RI(su2["s"]); MeetCm = RI(su2["meet"]) * 100;
             su2["pm"].Only("fearful", "loyal", "idealist", "mercenary"); foreach (var kv in su2["pm"].Entries) SuspicionPm[kv.Key] = RI(kv.Value);
-            var cpn = b["campaign"]; cpn.Only("missing", "areaWatch", "cases", "custody", "rule", "tag", "src", "proposed", "reason");
+            var cpn = b["campaign"]; cpn.Only("missing", "areaWatch", "cases", "custody", "districtEconomy", "rule", "tag", "src", "proposed", "reason");
+            DistrictPrices = DistrictEconomy.Read(this, cpn.Opt("districtEconomy"));
             var cus = cpn["custody"]; cus.Only("trail", "fear", "loyalty", "abandonedResentment", "abandonedLoyalty", "missions", "cellStart", "rule", "src"); // brief 018 §3
             CapturedTrail = RI(cus["trail"]); CustodyFear = RI(cus["fear"]); CustodyLoyalty = RI(cus["loyalty"]); AbandonedResentment = RI(cus["abandonedResentment"]); AbandonedLoyalty = RI(cus["abandonedLoyalty"]); CustodyMissions = RI(cus["missions"]);
             if (CapturedTrail < 0 || CustodyFear < 0 || CustodyLoyalty < 0 || AbandonedResentment < 0 || AbandonedLoyalty < 0 || CustodyMissions < 1) throw new FormatException("campaign.custody: the costs are not negative and the rescue window is at least one mission");
