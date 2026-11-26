@@ -10,6 +10,9 @@ namespace Suborned.Sim
         public string Id = "", Name = "", Job = "", Look = "", Need = "", Place = "", Errand = "";
         public Path Walk = null!;
         public int Phase;
+        public bool Local;
+        public Path? Delivery;
+        public int DeliveryStart;
         public readonly List<(int person, string kind)> Ties = new List<(int, string)>();
     }
 
@@ -25,6 +28,7 @@ namespace Suborned.Sim
         public static DistrictMap Harbour => shared.Value;
 
         public readonly Grid Walk, Roads;
+        public readonly DistrictGround Ground;
         public readonly string Digest;
         public readonly DistrictResident[] People;
         public readonly DistrictLine[] Streets, Trams;
@@ -40,6 +44,7 @@ namespace Suborned.Sim
             Digest = n["digest"].Str();
             Walk = new Grid(n["grid"]);
             Roads = new Grid(n["roads"]);
+            Ground = new DistrictGround(n, Walk);
             Streets = Lines(n["streets"]);
             Trams = Lines(n["tram"]);
             var junction = Streets.First(s => s.Id == "road/rocket-lane").Path.End;
@@ -53,11 +58,12 @@ namespace Suborned.Sim
                 var stops = r["stops"].Items;
                 // Each worker has an address from their actual timetable and a second stop on their round.
                 // Some rounds take an errand out along a district street, away from the civic block.
-                var home = stops[i % stops.Count];
-                var other = stops[(i + 1) % stops.Count];
+                bool local = r["key"].Str().StartsWith("p-z-harbour-", StringComparison.Ordinal);
+                var home = stops[local ? 0 : i % stops.Count];
+                var other = local ? stops.First(s => s["doing"].Str()=="work") : stops[(i+1)%stops.Count];
                 Pt a = Pt.Of(home["at"]), b = Pt.Of(other["at"]);
                 string errand = other["place"].Str();
-                if (a == b || i % 3 == 0)
+                if (!local && (a == b || i % 3 == 0))
                 {
                     var street = Streets[i % Streets.Length];
                     b = street.Path.At(street.Path.Length * (2 + i % 7) / 10);
@@ -66,12 +72,13 @@ namespace Suborned.Sim
 
                 // Stagger neighbours at a shared doorway. Both ends must belong to the street network.
                 var offset = new Pt((i % 5 - 2) * 118, (i % 7 - 3) * 106);
+                if (local) offset = new Pt(0,0);
                 var from = MeetingSite(a + offset);
                 var to = MeetingSite(b + offset);
                 var path = Walk.Route(from, to) ?? throw new InvalidDataException("Disconnected district round for " + r["name"].Str());
                 var resident = new DistrictResident
                 {
-                    Id = r["key"].Str(),
+                    Id = r["key"].Str(), Local = local,
                     Name = r["name"].Str(),
                     Job = r["job"].Str(),
                     Need = r["need"].Str(),
@@ -81,6 +88,14 @@ namespace Suborned.Sim
                     Walk = new Path(path),
                     Phase = stops[0]["from"].Int() * 17 + i * 719
                 };
+                var delivery = local ? stops.FirstOrDefault(s => s["doing"].Str()=="meal") : null;
+                if (delivery != null)
+                {
+                    var via = MeetingSite(Pt.Of(delivery["at"]));
+                    var leg = Walk.Route(to, via);
+                    if (leg != null && leg.Length>1) resident.Delivery = new Path(leg);
+                    resident.DeliveryStart = delivery["from"].Int()*60*Game.Hz;
+                }
                 People[i] = resident;
                 Index.Add(resident.Id, i);
             }

@@ -1,0 +1,154 @@
+// Extend the promoted civic graph in its own content-addressed SurrealDB database. The Handover
+// keeps its casting; people the player meets elsewhere have ordinary names, routines and social ties.
+import type { Person, Place } from '../../contracts/people/people.schema';
+import { assignNames } from '../people/names';
+import { buildModel } from '../people-graph/model';
+import { hashOf, peopleDb, SCHEMA_FILE, type Prepared } from '../people-graph/source';
+import { project, type Point, type Venue } from './places';
+
+export const LOCAL = 'p-z-harbour-';
+type WalkSpot = (p: Point, v: Venue) => Point;
+
+export async function districtPopulation(base: Prepared, venues: Venue[], standing: WalkSpot): Promise<Prepared> {
+  const people = structuredClone(base.people),
+    original = people.persons.slice(),
+    locals: Person[] = [];
+  const templates = original.filter(
+    (p) =>
+      p.work &&
+      !p.work.role &&
+      !p.secret &&
+      ['nothing', 'home', 'work'].includes(base.w.rules.needs.list[p.need]!.requires),
+  );
+  const groups: Person[][] = [];
+  for (const [n, v] of venues.entries()) {
+    const key = 'street-' + v.id,
+      door = key + '-counter',
+      unit = key + '-staff';
+    const area =
+      base.w.plan.areas.find(
+        (a) => v.at[0] >= a.rect[0] && v.at[0] <= a.rect[1] && v.at[1] >= a.rect[2] && v.at[1] <= a.rect[3],
+      )?.id ?? 'harbour';
+    const atPlace = (id: string, kind: Place['kind'], name: string, at: Point) => {
+      people.places.push({ id, kind, name, at, area });
+      return id;
+    };
+    atPlace(door, 'stand', v.name, v.at);
+    const employer =
+      v.style === 'platform'
+        ? 'tram'
+        : v.style === 'waterfront'
+          ? 'harbour'
+          : v.style === 'garden'
+            ? 'parks'
+            : 'shops';
+    const shift = { from: 420, to: 1140 };
+    people.units.push({
+      id: unit,
+      plot: key,
+      area,
+      trade: employer,
+      employer,
+      name: v.name,
+      staffPerShift: v.count,
+      hours: [0, 1440],
+      shifts: [shift],
+    });
+    const group: Person[] = [];
+    for (let k = 0; k < v.count; k++) {
+      const id = LOCAL + v.id + '-' + String(k + 1).padStart(2, '0');
+      const t = templates[(n * 17 + k * 7) % templates.length]!;
+      // A pair or a queue has distinct standing marks, staggered along the public edge.
+      const u = ((k * 0.61803398875 + n * 0.137) % 1) * 2 - 1,
+        w = ((k * 0.41421356 + 0.27 * n) % 1) * 2 - 1;
+      const home = atPlace(
+        id + '-home',
+        'home',
+        v.name + ' walk-ups',
+        standing(project(v, u * v.span, w * v.width), v),
+      );
+      const post = atPlace(
+        id + '-post',
+        'stand',
+        v.name,
+        standing(project(v, -u * v.span, ((k % 3) - 1) * v.width * 0.77), v),
+      );
+      const p: Person = {
+        id,
+        name: 'Local resident',
+        tier: 'simulated',
+        position: t.position,
+        home: { place: home, plot: key },
+        work: {
+          unit,
+          area,
+          plot: key,
+          employer,
+          trade: employer,
+          post: 'door',
+          position: t.position,
+          place: post,
+          shift,
+        },
+        start: { ...t.start },
+        temperament: t.temperament,
+        need: t.need,
+        needWeights: { ...t.needWeights },
+        institution: t.institution ? employer : null,
+        look: { ...t.look },
+        memory: [],
+        ties: [],
+        routine: {
+          variant: 'street-round',
+          stops: [
+            { place: home, doing: 'home', from: 0, to: 420 },
+            { place: post, doing: 'work', from: 420, to: 1140 },
+            { place: door, doing: 'evening', from: 1140, to: 1440 },
+          ],
+        },
+      };
+      group.push(p);
+      locals.push(p);
+    }
+    for (let k = 0; k < group.length; k++) {
+      const a = group[k]!,
+        b = group[(k + 1) % group.length]!;
+      a.ties.push({ kind: 'workmate', with: b.id });
+      b.ties.push({ kind: 'workmate', with: a.id });
+    }
+    groups.push(group);
+  }
+  // A regular can relay a request beyond one circle. The stop is at the actual counter during
+  // its worker's shift. One resident per venue also calls at a promoted civic workplace.
+  function regular(a: Person, b: Person) {
+    if (!b.work) return;
+    const from = b.work.shift.from,
+      until = b.work.shift.to > from ? b.work.shift.to : 1440;
+    const minute = Math.max(from, Math.min(750, until - 20));
+    a.routine.stops = a.routine.stops.flatMap((s) => {
+      if (minute < s.from || minute + 15 > s.to) return [s];
+      return [
+        { ...s, to: minute },
+        { place: b.work!.place, doing: 'meal' as const, from: minute, to: minute + 15 },
+        { ...s, from: minute + 15 },
+      ].filter((x) => x.to > x.from);
+    });
+    a.ties.push({ kind: 'regular', with: b.id });
+  }
+  groups.forEach((g, n) => {
+    regular(g[0]!, groups[(n + 1) % groups.length]![1]!);
+    regular(g[2]!, templates[(n * 7) % templates.length]!);
+  });
+  const names = base.w.ctx(base.source.cast).names;
+  if (!names) throw Error('The city needs the promoted name lists');
+  const pool = {
+    ...names,
+    excluded: { ...names.excluded, full: new Set([...names.excluded.full, ...original.map((p) => p.name)]) },
+  };
+  const gaps = assignNames(pool, base.w.rules, locals, new Map(), new Map(), 0);
+  if (gaps.length) throw Error(gaps.join('\n'));
+  people.persons.push(...locals);
+  const model = buildModel(people, base.w.rules, base.extras);
+  const hash = hashOf(model, await Bun.file(SCHEMA_FILE).text());
+  return { ...base, people, model, hash, db: peopleDb(hash) };
+}

@@ -47,7 +47,7 @@ namespace Suborned.Sim
         }
 
         // The civic shift keeps its established rounds. The other residents work the wider streets.
-        public bool Roams(int person) => person % 3 != 1;
+        public bool Roams(int person) => Map.People[person].Local || person % 3 != 1;
         DistrictJob Next(int series, Func<int, bool>? available = null)
         {
             var occupied = new HashSet<int>();
@@ -138,7 +138,25 @@ namespace Suborned.Sim
             if (Network.TryPose(person, tick, out var outing)) return outing;
             if (Meetings[person] is Pt p)
                 return (p, new Pt(0, 100), false);
-            return DistrictMap.Shuttle(r.Walk, tick - heldTicks[person], r.Phase + seed % 1709, 112, 850);
+            int elapsed=tick-heldTicks[person];
+            if (!r.Local) return DistrictMap.Shuttle(r.Walk, elapsed, r.Phase + seed % 1709, 112, 850);
+            // Local workers alternate walking and dwelling at their own frontage. A regular starts
+            // the longer daily visit at the work end of the round and returns there before resuming.
+            int pace=97+person%31, dwell=48+person%109;
+            int phase = r.Phase + seed % 1709;
+            if (!(r.Delivery is Path delivery))
+                return DistrictMap.Shuttle(r.Walk, elapsed, phase, pace, dwell);
+
+            long half = Math.Max(1, (r.Walk.Length + pace - 1) / pace) + dwell;
+            long visit = 2 * (Math.Max(1, (delivery.Length + pace - 1) / pace) + dwell);
+            long rounds = Math.Max(1, (24L * 60 * 60 * Game.Hz - visit) / (2 * half));
+            long period = rounds * 2 * half + visit;
+            long start = Math.Min(rounds - 1, r.DeliveryStart / (2 * half)) * 2 * half + half;
+            long local = ((long)elapsed + phase) % period;
+            if (local >= start && local < start + visit)
+                return DistrictMap.Shuttle(delivery, (int)(local - start), 0, pace, dwell);
+            long round = local < start ? local : local - visit;
+            return DistrictMap.Shuttle(r.Walk, (int)round, 0, pace, dwell);
         }
 
         public DistrictJob? Available(int person) => Array.Find(Jobs, j => j.Contact == person);

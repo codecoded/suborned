@@ -106,7 +106,14 @@ namespace Suborned.Sim
             }
         }
 
-        public Pt? DistrictWalkPoint(Pt p) => S.Grid.InGrid(p) ? Walk.Free(p) ? p : Walk.NearestFree(p) : District?.Map.Walk.NearestFree(p);
+        public Pt? DistrictWalkPoint(Pt p)
+        {
+            if (S.Grid.InGrid(p)) return Walk.Free(p) ? p : Walk.NearestFree(p);
+            var map=District?.Map;
+            if(map==null || !map.Walk.InGrid(p) || map.Ground.IsWater(p)) return null;
+            var at=map.Walk.NearestFree(p);
+            return at.HasValue && G.Within(p,at.Value,300) ? at : null;
+        }
         public Pt[]? StreetWalk(Pt from, Pt to)
         {
             if (District == null || (S.Grid.InGrid(from) && S.Grid.InGrid(to)))

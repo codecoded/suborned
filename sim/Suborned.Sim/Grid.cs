@@ -171,7 +171,7 @@ namespace Suborned.Sim
         public bool Open(int i, int j, bool[]? m) => FreeCell(i, j) && (m == null || !m[i * Ny + j]);
         public int CI(int x) => FloorDiv(x - X0, Cell);
         public int CJ(int y) => FloorDiv(y - Y0, Cell);
-        static int FloorDiv(int a, int b) => a >= 0 ? a / b : -((-a + b - 1) / b);
+        internal static int FloorDiv(int a, int b) => a >= 0 ? a / b : -((-a + b - 1) / b);
         public bool Free(Pt p) => ffree != null ? FineFree(p) : FreeCell(CI(p.X), CJ(p.Y));
         public bool Free(Pt p, bool[]? m) => ffree != null ? FineFree(p) && (m == null || !Masked(p, m)) : Open(CI(p.X), CJ(p.Y), m);
         public Pt Centre(int i, int j) => new Pt(X0 + i * Cell + Cell / 2, Y0 + j * Cell + Cell / 2);
