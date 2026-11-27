@@ -53,7 +53,7 @@ namespace Suborned.Sim
 
         readonly DistrictMap map;
         readonly int[] held, streets, phases;
-        readonly bool[] vans;
+        readonly bool[] vans, waiting;
         readonly List<Pt> people = new();
         readonly Occupancy pavement = new(), carriageway = new();
         readonly Pose[] trams, cars;
@@ -77,7 +77,7 @@ namespace Suborned.Sim
             }
             streets = routes.ToArray(); phases = clocks.ToArray();
             held = new int[streets.Length]; cars = new Pose[streets.Length];
-            vans = new bool[cars.Length];
+            vans = new bool[cars.Length]; waiting = new bool[cars.Length];
             for (int i = 0; i < vans.Length; i++) vans[i] = (i * 3 + streets[i]) % 7 == 0;
         }
         static int CarPace(int street) => 410 + street % 5 * 37;
@@ -87,14 +87,33 @@ namespace Suborned.Sim
         public Pose Robot(int i, int tick) => map.RobotRounds[i].At(tick);
         public Pose Car(int i, int tick)
         {
+            var p = ScheduledCar(i, tick);
+            return waiting[i] ? new Pose(p.At, p.Facing, false) : p;
+        }
+        Pose ScheduledCar(int i, int tick)
+        {
             int lane = streets[i];
             var s = DistrictMap.Shuttle(map.Streets[lane].Path, tick - held[i], phases[i], CarPace(lane), 55);
-            var right = CarGeo.Ahead(s.at, new Pt(s.facing.Y, -s.facing.X), map.Streets[lane].LaneCm);
-            if (!map.Roads.Free(right) && map.Roads.NearestFree(right) is Pt near && G.Within(near, right, 380)) right = near;
+            var across = new Pt(s.facing.Y, -s.facing.X);
+            int offset = map.Streets[lane].LaneCm;
+            var right = CarGeo.Ahead(s.at, across, offset);
+            // Beside a platform find the open part of this cross-section. Snapping to the
+            // centre of a free two-metre grid cell made a moving car lurch between cells.
+            if (!map.Roads.Free(right))
+                for (int shift = 40; shift <= 380; shift += 40)
+                {
+                    var inner = CarGeo.Ahead(s.at, across, Math.Max(0, offset - shift));
+                    if (map.Roads.Free(inner)) { right = inner; break; }
+                    var outer = CarGeo.Ahead(s.at, across, offset + shift);
+                    if (map.Roads.Free(outer)) { right = outer; break; }
+                }
             return new Pose(right, s.facing, s.moving);
         }
         public void Step(Game g, DistrictRun d)
         {
+            // Sense every third tick, but hold a yielding car on each intervening tick.
+            // Subtracting three at once makes its wheels creep forward and jump backwards in a queue.
+            for (int i = 0; i < held.Length; i++) if (waiting[i]) held[i]++;
             if (g.Tick % 3 != 0) return;
             pavement.Clear(); people.Clear();
             void Pedestrian(Pt p) { pavement.Add(p, people.Count); people.Add(p); }
@@ -105,20 +124,21 @@ namespace Suborned.Sim
             carriageway.Clear();
             for (int i = 0; i < cars.Length; i++)
             {
-                cars[i] = Car(i, g.Tick);
+                cars[i] = ScheduledCar(i, g.Tick);
                 carriageway.Add(cars[i].At, i);
             }
             for (int i = 0; i < cars.Length; i++)
             {
                 var car = cars[i];
+                waiting[i] = false;
                 if (!car.Moving || g.S.Grid.InGrid(car.At)) continue;
                 var ahead = CarGeo.Ahead(car.At, car.Facing, vans[i] ? 510 : 420);
                 bool blocked = d.Network.HoldsRoad(ahead) || G.Within(ahead, g.GetawayCarPos(), 370) || pavement.Blocked(ahead, 210, people);
                 for (int k = 0; k < trams.Length && !blocked; k++) blocked = G.Within(ahead, trams[k].At, 620);
                 if (!blocked) blocked = carriageway.CarAhead(ahead, i, cars, vans);
-                if (blocked) held[i] += 3;
+                waiting[i] = blocked;
             }
         }
-        internal void Hash(Hash.H h) { foreach (int v in held) h.I(v); }
+        internal void Hash(Hash.H h) { for (int i = 0; i < held.Length; i++) h.I(held[i]).Z(waiting[i]); }
     }
 }

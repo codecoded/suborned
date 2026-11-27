@@ -79,6 +79,33 @@ public sealed class HarbourStreetTests
     }
 
     [Fact]
+    public void PassingCarWaitsAtTheCrossingAndResumesWhenThePedestrianLeaves()
+    {
+        var g = Open();
+        var traffic = g.District!.Traffic;
+        var op = g.Ops[0]; var home = op.Pos;
+        int car = Enumerable.Range(0, traffic.CarCount).First(i => {
+            var p = traffic.Car(i, 0);
+            return p.Moving && !g.S.Grid.InGrid(p.At) && g.District.Map.Roads.Free(p.At)
+                && G.D2(p.At, traffic.Car(i, 20).At) > 500L * 500L;
+        });
+        var approach = traffic.Car(car, 3);
+        op.Pos = CarGeo.Ahead(approach.At, approach.Facing, traffic.DeliveryVan(car) ? 510 : 420);
+        void TrafficTick() { g.Tick++; traffic.Step(g, g.District!); }
+        for (int i = 0; i < 3; i++) TrafficTick();
+        var stopped = traffic.Car(car, g.Tick);
+        Assert.False(stopped.Moving);
+        for (int i = 0; i < 14; i++)
+        {
+            TrafficTick();
+            Assert.Equal(stopped.At, traffic.Car(car, g.Tick).At);
+        }
+        op.Pos = home;
+        for (int i = 0; i < 30; i++) TrafficTick();
+        Assert.True(G.D2(stopped.At, traffic.Car(car, g.Tick).At) > 200L * 200L);
+    }
+
+    [Fact]
     public void ScheduledFleetServesBothPlatformSidesAndNeighbourhoodPatrols()
     {
         var district = Open().District!;
