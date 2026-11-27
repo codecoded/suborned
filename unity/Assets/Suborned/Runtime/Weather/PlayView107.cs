@@ -63,7 +63,7 @@ namespace Suborned.Play
             if (!bound) Bind();
             if (!host) host = FindAnyObjectByType<HandoverHost>();
             var g = host ? host.Game : null;
-            bool clock = g?.District != null && !nightOverride.HasValue && phase;
+            bool clock = g?.District != null && !nightOverride.HasValue && phase && look;
             int seconds = clock ? host.CitySeconds : 0;
             night = (nightOverride ?? (clock ? seconds < 5.5f * 3600 || seconds >= 18.5f * 3600 : g != null && g.Night)) && phase;
             weather = weatherOverride ?? (g != null ? g.Weather : "clear");
@@ -77,6 +77,7 @@ namespace Suborned.Play
                     float hour = seconds / 3600f;
                     float daylight = Mathf.Sin((hour - 6f) * Mathf.PI / 12f);
                     lampStrength = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.19f, -.10f, daylight));
+                    phase.CityTwilight(lampStrength);
                     var w = data.Of(weather);
                     streetSun[0] = hour; streetSun[1] = w.sun; streetSun[2] = w.ambient; streetSun[3] = w.desaturate; streetSun[4] = lampStrength;
                     if (look) look.SendMessage("StreetSun", streetSun, SendMessageOptions.DontRequireReceiver);
@@ -84,7 +85,7 @@ namespace Suborned.Play
                     lastSunSample = seconds / 5;
                 }
             }
-            else lastSunSample = -1;
+            else { if (phase) phase.CityTwilight(null); lastSunSample = -1; }
             Weather107.Frame(host);
         }
 

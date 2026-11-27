@@ -68,6 +68,14 @@ namespace Suborned.Play
         public Phase Current { get; private set; } = Phase.Day;
         /// <summary>How far into the evening the look is, 0 (day) to 1 (evening), eased toward the phase at lens.json evening.easeSeconds. Night snaps it to 0 (night is its own full State).</summary>
         public float Dusk { get; private set; }
+        bool citySky;
+        // The district sun already supplies the direct and ambient light. Give its twilight
+        // to the same sky, sea, haze and road shaders that draw the authored evening.
+        internal void CityTwilight(float? amount)
+        {
+            if (amount.HasValue) { citySky = true; Dusk = Night ? 0f : amount.Value; }
+            else if (citySky) { citySky = false; Dusk = 0f; }
+        }
         float duskApplied = -1f; bool duskGi;
         /// <summary>Where the lamp cap measures from (the play camera's focus on the ground); null: the main camera's ground point.</summary>
         public Func<Vector3?> Focus;
@@ -156,6 +164,7 @@ namespace Suborned.Play
         void Update()
         {
             if (Night && Time.unscaledTime >= nextCap) Cap(false);
+            if (citySky) return;
             var e = AtmosphereLens.EveningData; float want = Current == Phase.Evening && e != null ? 1f : 0f;
             if (!Mathf.Approximately(Dusk, want))
             {   // ease on unscaled time (the pause tool does not freeze the dusk), 95 percent in easeSeconds
