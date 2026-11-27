@@ -129,6 +129,49 @@ public sealed class DistrictTests
             route => route.SequenceEqual(new[] { newsreader, florist, fruiterer }));
     }
 
+    [Theory]
+    [InlineData(3)]
+    [InlineData(9)]
+    [InlineData(31)]
+    public void LanternLaneSellerCanIntroduceTheCellToHerSupplier(int seed)
+    {
+        var g = Engine.New(Repo.Inputs, new Start { District = true, Seed = seed });
+        var d = g.District!;
+        var map = d.Map;
+        int neighbour = map.Index["p-z-harbour-lantern-lane-round-2-03"];
+        int seller = map.Index["p-z-harbour-lantern-lane-round-2-02"];
+        int supplier = map.Index["p-z-harbour-lantern-market-02"];
+        var stall = map.Ground.Venues.Single(v => v.Id == "lantern-lane-round-2")
+            .Fixtures.Single(f => f.Kit == "ProduceStall");
+        Assert.True(map.Walk.Free(map.People[seller].Walk.End));
+        Assert.False(map.Roads.Free(stall.At));
+        Assert.True(G.Within(map.People[seller].Walk.End, stall.At, 460));
+        Assert.Contains(d.Network.Routes(neighbour, _ => true),
+            route => route.SequenceEqual(new[] { neighbour, seller, supplier }));
+
+        // Walk along the market using ordinary ground clicks. A passing Scout can meet a real
+        // contact here without first picking a name in the Journal to hold them in place.
+        Order(g, "move", new Pt(24980, 700));
+        g.RunTo(1725);
+        Order(g, "move", new Pt(24945, 3100));
+        Arrive(g);
+        int until = g.Tick + Game.T(40);
+        while (g.Tick < until && !G.Within(g.Ops[0].Pos, d.Pose(seller, g.Tick).at, 650)) g.Step();
+        Order(g, "district-meet", who: map.People[seller].Id);
+        Order(g, "district-back", who: map.People[seller].Id);
+        Assert.Equal(0, d.Trust[supplier]);
+        Order(g, "district-refer", who: map.People[seller].Id, to: map.People[supplier].Id);
+        Assert.True(d.Trust[supplier] > 0);
+        var answer = g.Issue(new Order { Tick = g.Tick, Op = "scout", Do = "district-block",
+            Target = map.People[seller].Id, To = map.People[supplier].Id, Approach = "road/market-street" });
+        Assert.True(answer.ok, answer.why);
+        var request = Assert.Single(d.Network.Requests);
+        for (int i = 0; i < 6000 && request.Stage != CitizenStage.Acting && !g.Over; i++) g.Step();
+        Assert.Equal(CitizenStage.Acting, request.Stage);
+        Assert.Equal(map.People[seller].Name, d.Network.AskedBy[supplier]);
+        Assert.False(d.Network.KnowsCell[supplier]);
+    }
+
     [Fact]
     public void FerryForecourtConnectsToThePromenadeWithResidentsAndASeawardBoundary()
     {

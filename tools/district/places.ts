@@ -17,7 +17,7 @@ export type Venue = {
   generation: number;
   fixtures: Fixture[];
   boarding?: { at: Point; along: Point };
-  roundEnd?: { at: Point; along: Point; name: string; span: number };
+  roundEnd?: { at: Point; along: Point; name: string; span: number; produceCounter?: boolean };
   callsAt?: string;
 };
 type Strip = { id: string; line: readonly (readonly number[])[]; width: number };
@@ -205,6 +205,15 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
     v.callsAt = other.id;
     v.roundEnd = { at: other.at, along: other.along, name: other.name, span: Math.min(8, other.span) };
   }
+  // The walk-ups around the Lantern Lane bend supply a second counter on the market pavement.
+  const lantern = venues.find(v => v.id === 'lantern-market');
+  const neighbours = venues.find(v => v.id === 'lantern-lane-round-2');
+  if (lantern && neighbours) {
+    neighbours.roundEnd = {
+      at: project(lantern, 29, 0), along: lantern.along, span: 4.5,
+      name: 'Lantern Market east counter', produceCounter: true,
+    };
+  }
   return venues;
 }
 
@@ -291,10 +300,16 @@ const layouts: Record<string, typeof dress.walk> = {
   'southside': [...dress.coffee, ['PneumaticPost', -9, 2, 90, .53]],
 };
 export function furnish(venue: Venue, fits: (point: Point, radius: number) => boolean) {
-  const yaw = (Math.atan2(venue.along[1], -venue.along[0]) * 180) / Math.PI;
-  for (const [kit, along, across, turn, radius] of layouts[venue.id] ?? dress[venue.style]) {
+  const counter = venue.roundEnd?.produceCounter ? venue.roundEnd : undefined;
+  const frontage = counter ?? venue;
+  const yaw = (Math.atan2(frontage.along[1], -frontage.along[0]) * 180) / Math.PI;
+  const layout: typeof dress.market = counter ? [
+    ['ProduceStall', 0, 3.2, 160, 1.65],
+    ['PneumaticPost', 8.5, 3.1, 80, .53],
+  ] : layouts[venue.id] ?? dress[venue.style];
+  for (const [kit, along, across, turn, radius] of layout) {
     for (const shift of [0, 2, -2, 4, -4]) {
-      const at = project(venue, along + shift, across);
+      const at = project(frontage, along + shift, across);
       if (
         !fits(at, radius) ||
         venue.fixtures.some((f) => Math.hypot(f.at[0] - at[0], f.at[1] - at[1]) < f.radius + radius + 1)

@@ -62,7 +62,9 @@ namespace Suborned.Play
         {
             public string Name = "", Status = "ok", Error = "", Size = ""; public int Tick, Frames; public bool Audited, AuditClean = true;
             public long Triangles, Batches, StreetTriangles; public int Citizens, Instanced, Vehicles, Robots, PassingPools;
-            public float MainMs, RenderMs, PresentMs, SetPass, ShadowCasters;
+            public long[] Draws = Array.Empty<long>();
+            public float MainMs, RenderMs, PresentMs, StepMs, AfterStepMs, ViewsMs, SetPass, ShadowCasters;
+            public float NearestResidentM = -1;
             public readonly List<string> Files = new(), Issues = new(); public float MeanMs = -1, P99Ms = -1, GpuMs = -1;
         }
 
@@ -189,14 +191,26 @@ namespace Suborned.Play
                     {
                         using var recorder = new Suborned.Perf.PerfRecorder(Mathf.Max(256, Mathf.CeilToInt(s.perf * 512)));
                         recorder.Begin();
-                        double until = Time.realtimeSinceStartupAsDouble + s.perf;
-                        while (Time.realtimeSinceStartupAsDouble < until)
+                        double last = Time.realtimeSinceStartupAsDouble, until = last + s.perf;
+                        double step = HandoverHost.PerfStepMs, after = HandoverHost.PerfAfterMs, views = HandoverHost.PerfViewsMs;
+                        bool wasTiming = HandoverHost.PerfTiming;
+                        HandoverHost.PerfTiming = true;
+                        try
                         {
-                            yield return null;
-                            ds.Add(Time.unscaledDeltaTime * 1000f);
-                            res.PassingPools = Mathf.Max(res.PassingPools, Juice109Lights.PassingPools);
-                            recorder.Sample();
+                            do
+                            {
+                                yield return null;
+                                double now = Time.realtimeSinceStartupAsDouble;
+                                ds.Add((float)((now - last) * 1000.0));
+                                last = now;
+                                res.PassingPools = Mathf.Max(res.PassingPools, Juice109Lights.PassingPools);
+                                recorder.Sample();
+                            } while (last < until);
                         }
+                        finally { HandoverHost.PerfTiming = wasTiming; }
+                        res.StepMs = (float)((HandoverHost.PerfStepMs - step) / ds.Count);
+                        res.AfterStepMs = (float)((HandoverHost.PerfAfterMs - after) / ds.Count);
+                        res.ViewsMs = (float)((HandoverHost.PerfViewsMs - views) / ds.Count);
                         float Mean(double[] values, int count) => (float)values.Take(count).Where(double.IsFinite).DefaultIfEmpty(-1).Average();
                         res.GpuMs = Mean(recorder.Timing(4), recorder.Timings);
                         res.MainMs = Mean(recorder.Timing(2), recorder.Timings);
@@ -205,10 +219,12 @@ namespace Suborned.Play
                         res.SetPass = Mean(recorder.Frame(2), recorder.Frames);
                         res.ShadowCasters = Mean(recorder.Frame(5), recorder.Frames);
                         res.Triangles = MedianCounter(tris); res.Batches = MedianCounter(batches);
+                        res.Draws = Enumerable.Range(0, Suborned.Perf.PerfRecorder.DrawPaths.Length).Select(recorder.MedianDraws).ToArray();
                     }
                     h.SetPaused(true);
                     var street = h.GetComponent<DistrictStreet>();
                     if (street) { res.Citizens = street.VisiblePeople; res.Instanced = street.InstancedPeople; res.Vehicles = street.VisibleVehicles; res.Robots = street.VisibleRobots; res.StreetTriangles = street.VisibleStreetTriangles(); }
+                    if (street && h.Following) res.NearestResidentM = street.NearestResidentInFrame();
                     ds.Sort(); res.Frames = ds.Count; res.MeanMs = ds.Average(); res.P99Ms = ds[(int)(ds.Count * 0.99f)]; res.Tick = h.Game.Tick;
                 }
                 yield return new WaitForSecondsRealtime(s.settle); // the camera's ease, the HUD's fades
@@ -431,12 +447,15 @@ namespace Suborned.Play
                   .Append(", \"error\": \"").Append(Esc(r.Error)).Append("\", \"files\": [").Append(string.Join(", ", r.Files.Select(f => "\"" + Esc(f) + "\""))).Append(']');
                 if (r.Audited) sb.Append(", \"audit\": {\"clean\": ").Append(r.AuditClean ? "true" : "false").Append(", \"issues\": [").Append(string.Join(", ", r.Issues.Select(x => "\"" + Esc(x) + "\""))).Append("]}");
                 if (r.MeanMs >= 0) sb.Append(", \"frames\": {\"count\": ").Append(r.Frames).Append(", \"meanMs\": ").Append(F(r.MeanMs)).Append(", \"fps\": ").Append(F(1000f / r.MeanMs)).Append(", \"p99Ms\": ").Append(F(r.P99Ms)).Append(", \"gpuMs\": ").Append(F(r.GpuMs))
-                    .Append(", \"cpuMainMs\": ").Append(F(r.MainMs)).Append(", \"cpuRenderMs\": ").Append(F(r.RenderMs)).Append(", \"presentWaitMs\": ").Append(F(r.PresentMs)).Append('}');
+                    .Append(", \"cpuMainMs\": ").Append(F(r.MainMs)).Append(", \"cpuRenderMs\": ").Append(F(r.RenderMs)).Append(", \"presentWaitMs\": ").Append(F(r.PresentMs))
+                    .Append(", \"simStepMs\": ").Append(F(r.StepMs)).Append(", \"afterStepMs\": ").Append(F(r.AfterStepMs)).Append(", \"hostViewsMs\": ").Append(F(r.ViewsMs)).Append('}');
                 if (r.MeanMs >= 0) sb.Append(", \"render\": {\"medianTriangles\": ").Append(r.Triangles).Append(", \"medianBatches\": ").Append(r.Batches)
+                    .Append(", \"medianDrawsByPath\": {").Append(string.Join(", ", r.Draws.Select((n,i) =>
+                        "\"" + Suborned.Perf.PerfRecorder.DrawPaths[i].column + "\": " + n))).Append('}')
                     .Append(", \"meanSetPassCalls\": ").Append(F(r.SetPass)).Append(", \"meanShadowCasters\": ").Append(F(r.ShadowCasters))
                     .Append(", \"streetMeshTriangles\": ").Append(r.StreetTriangles).Append(", \"citizens\": ").Append(r.Citizens).Append(", \"instancedCitizens\": ").Append(r.Instanced)
                     .Append(", \"vehicles\": ").Append(r.Vehicles).Append(", \"robots\": ").Append(r.Robots)
-                    .Append(", \"peakPassingHeadlights\": ").Append(r.PassingPools).Append('}');
+                    .Append(", \"endedNearestResidentInFrameM\": ").Append(F(r.NearestResidentM)).Append(", \"peakPassingHeadlights\": ").Append(r.PassingPools).Append('}');
                 else if (r.Frames > 0) sb.Append(", \"clipFrames\": ").Append(r.Frames);
                 sb.Append('}');
             }

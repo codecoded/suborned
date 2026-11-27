@@ -165,12 +165,7 @@ namespace Suborned.Play
                 var pos = Vector3.LerpUnclamped(sample.from, sample.to, host.StreetFrameAlpha);
                 var rotation = sample.rotation;
                 bool moving = sample.moving;
-                bool hide = false;
-                if (follow && id < Tram && (pos - camera).sqrMagnitude < (distance + 1f) * (distance + 1f))
-                {
-                    var body = new Bounds(pos + Vector3.up * .92f, new Vector3(.75f, 1.84f, .75f));
-                    hide = body.IntersectRay(sight, out float hit) && hit < distance - .35f;
-                }
+                bool hide = follow && id < Tram && ObscuresFollowedAgent(pos, sight, distance);
                 if (id == speaker && host.ConvoNow is HandoverHost.Convo scene)
                 {
                     Vector3 toward = host.frame.World(g.Ops[scene.Agent].Pos) - pos;
@@ -232,6 +227,37 @@ namespace Suborned.Play
             var p = id >= Robot ? d.Traffic.Robot(id - Robot, tick)
                 : id >= Sedan ? d.Traffic.Car(id - Sedan, tick) : d.Traffic.Tram(id - Tram, tick);
             return (p.At, p.Facing, p.Moving);
+        }
+
+        static bool ObscuresFollowedAgent(Vector3 position, Ray sight, float distance)
+        {
+            if ((position - sight.origin).sqrMagnitude >= (distance + 1f) * (distance + 1f)) return false;
+            var body = new Bounds(position + Vector3.up * .92f, new Vector3(.75f, 1.84f, .75f));
+            return body.IntersectRay(sight, out float hit) && hit < distance - .35f;
+        }
+
+        // End-of-walk diagnostic. Test the contact's chest inside the actual viewport, after
+        // presentation has chosen a figure. This is a screen position, not an occlusion query.
+        internal float NearestResidentInFrame()
+        {
+            if (current?.District == null || !host.Following || host.FollowAgent < 0) return -1f;
+            var subject = current.Ops[host.FollowAgent].Pos;
+            var camera = host.View.transform.position;
+            var offset = host.frame.World(subject) + Vector3.up * 1.12f - camera;
+            var sight = new Ray(camera, offset);
+            float distance = offset.magnitude;
+            long best = long.MaxValue;
+            foreach (int id in visible)
+            {
+                if (id >= Tram || current.District.Network.Fallen[id] || !poses.TryGetValue(id, out var pose)) continue;
+                var position = Vector3.LerpUnclamped(pose.from, pose.to, host.StreetFrameAlpha);
+                if (rigged.Contains(id) ? !activeViews.TryGetValue(id, out var view) || view.hidden
+                    : !crowd.Has(skins[id]) || ObscuresFollowedAgent(position, sight, distance)) continue;
+                var v = host.View.WorldToViewportPoint(position + Vector3.up);
+                if (v.z < host.View.nearClipPlane || v.z > host.View.farClipPlane || v.x < 0 || v.x > 1 || v.y < 0 || v.y > 1) continue;
+                best = System.Math.Min(best, G.D2(subject, host.frame.Engine(position)));
+            }
+            return best == long.MaxValue ? -1f : (float)(System.Math.Sqrt(best) * .01);
         }
 
         // Diagnostic only. Count the selected mesh LOD once, independent of shadows and other render passes.

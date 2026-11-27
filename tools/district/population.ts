@@ -76,6 +76,8 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
       const round = v.callsAt && k < 3 ? undefined : v.roundEnd;
       const destination = round ?? v.boarding ?? v;
       const streetStop = project(destination, -u * (round?.span ?? (v.boarding ? 4 : v.span)), ((k % 3) - 1) * v.width * 0.77);
+      const counterName = v.roundEnd?.produceCounter ? v.roundEnd.name
+        : v.name + (counter?.kit === 'FlowerBarrow' ? ' flower barrow' : ' fruit stall');
       const home = atPlace(
         id + '-home',
         'home',
@@ -85,7 +87,7 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
       const post = atPlace(
         id + '-post',
         'stand',
-        counter ? v.name + (counter.kit === 'FlowerBarrow' ? ' flower barrow' : ' fruit stall')
+        counter ? counterName
           : round?.name ?? (v.boarding ? v.name + ' boarding apron' : v.name),
         standing(counter ? tradePost(counter) : streetStop, v),
       );
@@ -111,7 +113,7 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
         need: t.need,
         needWeights: { ...t.needWeights },
         institution: t.institution ? employer : null,
-        look: v.roundEnd ? { block: 'job/resident' } : { ...t.look },
+        look: v.roundEnd && !v.roundEnd.produceCounter ? { block: 'job/resident' } : { ...t.look },
         memory: [],
         ties: [],
         routine: {
@@ -207,6 +209,12 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
     const florist = groups[court]!.find(p => p.position === 'flower-seller');
     const fruiterer = groups[market]!.find(p => p.position === 'fruiterer');
     if (florist && fruiterer) regular(florist, fruiterer);
+  }
+  const east = venues.findIndex(v => v.roundEnd?.produceCounter);
+  if (east >= 0 && market >= 0) {
+    const seller = groups[east]!.find(p => p.position === 'fruiterer');
+    const supplier = groups[market]!.find(p => p.position === 'fruiterer');
+    if (seller && supplier) regular(seller, supplier);
   }
   people.persons.push(...locals);
   const model = buildModel(people, base.w.rules, base.extras);

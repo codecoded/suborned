@@ -1,0 +1,14 @@
+{
+  "schema": "suborned.shots/1",
+  "defaults": {
+    "script": "briefs/119/lantern-market-walk.json", "select": "scout", "view": "follow",
+    "night": false, "hud": true, "mark": false, "settle": 1.5
+  },
+  "shots": [
+    { "name": "east-counter-walk", "tick": 1728, "face": [24945, 4500], "perf": 12 },
+    { "name": "east-counter-kerb", "tick": 1930, "face": [24945, 4500] },
+    { "name": "lantern-lane-looking-back", "tick": 1930, "face": [24945, 500] },
+    { "name": "market-play-zoom", "tick": 1930, "view": "overhead", "at": [24945, 3100], "zoom": 10, "yaw": 2 },
+    { "name": "market-night", "tick": 1930, "face": [24945, 4500], "night": true }
+  ]
+}

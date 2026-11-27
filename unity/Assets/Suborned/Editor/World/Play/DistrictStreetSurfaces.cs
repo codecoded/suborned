@@ -39,6 +39,8 @@ namespace Suborned.World.Play
             var civic = frame.World(new Pt(0, 0));
             var frontages = ground.Courts.Where(c => c.Style == "homes" || c.Style == "market")
                 .Select(c => c.Ring.Select(p => frame.World(p)).Aggregate(Vector3.zero, (sum, p) => sum + p) / c.Ring.Length).ToArray();
+            var lanternCounters = ground.Venues.Where(v => v.Id == "lantern-market" || v.Id == "lantern-lane-round-2")
+                .SelectMany(v => v.Fixtures).Where(f => f.Kit == "ProduceStall").Select(f => frame.World(f.At)).ToArray();
             int filters = 0, shopfronts = 0, distantBays = 0;
             foreach (var root in scene.GetRootGameObjects())
             foreach (var f in root.GetComponentsInChildren<MeshFilter>())
@@ -74,12 +76,17 @@ namespace Suborned.World.Play
                 }
                 bool ungrouped = mesh != original && !f.GetComponentInParent<LODGroup>();
                 if (ungrouped) { f.sharedMesh = mesh; filters++; }
+                // The repeated rounded corners keep their materials and silhouette. Use the next
+                // index level for their fine mouldings outside the detailed civic frontage.
+                bool districtCorner = f.sharedMesh.lodCount > 1 && original.name.StartsWith("DK_StreamCorner_", System.StringComparison.Ordinal) &&
+                    bounds.SqrDistance(civic) > 75f * 75f;
+                if (districtCorner) renderer.meshLodSelectionBias = 1;
 
                 // The lower display backs are a separate slot in the original Streamline modules. Their upper ribbon
                 // glass, stone, ornamental corners and the flyby's parade retain their authored materials.
                 if (!DecoratedBay(original.name)) continue;
                 var b = renderer.bounds;
-                if (frontages.Any(p => b.SqrDistance(p) < 17 * 17))
+                if (frontages.Any(p => b.SqrDistance(p) < 17 * 17) || lanternCounters.Any(p => b.SqrDistance(p) < 52 * 52))
                 {
                     var slots = renderer.sharedMaterials;
                     int lobby = System.Array.FindIndex(slots, m => m && m.name == "DK_Lobby");
@@ -90,9 +97,9 @@ namespace Suborned.World.Play
                         shopfronts++;
                     }
                 }
-                if (ungrouped) { DistantFront(renderer,mesh); distantBays++; }
+                if (ungrouped) { DistantFront(renderer,mesh,districtCorner); distantBays++; }
             }
-            FinishDistantFronts(district);
+            FinishDistantFronts(district,civic);
             if (flatPaving.Count > 0)
                 scene.GetRootGameObjects().First(o => o.GetComponentInChildren<HandoverHost>(true))
                     .AddComponent<DistrictPavementShadows>().surfaces = flatPaving.ToArray();

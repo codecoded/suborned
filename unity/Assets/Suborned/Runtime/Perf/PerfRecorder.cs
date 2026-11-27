@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -15,14 +16,23 @@ namespace Suborned.Perf
     public sealed class PerfRecorder : IDisposable
     {
         public const int Skip = 3;
-        public static readonly string[] FrameNames = { "tMs", "frameMs", "setPassCalls", "triangles", "vertices", "shadowCasters", "gcAllocBytes" };
+        // These are separate native counters in the Unity 6.6 Metal player. SetPass counts
+        // shader changes and the legacy aggregate batch counter is unavailable in this build.
+        public static readonly (string column, string marker)[] DrawPaths = {
+            ("standard", "Standard Draw Calls Count"), ("instanced", "Standard Instanced Draw Calls Count"),
+            ("indirect", "Standard Indirect Draw Calls Count"), ("srpBatcher", "SRP Batcher Draw Calls Count"),
+            ("brg", "BRG Draw Calls Count"), ("brgIndirect", "BRG Indirect Draw Calls Count"),
+            ("nullGeometry", "Null Geometry Draw Calls Count"), ("nullGeometryIndirect", "Null Geometry Indirect Draw Calls Count")
+        };
+        public static readonly string[] FrameNames = new[] { "tMs", "frameMs", "setPassCalls", "triangles", "vertices", "shadowCasters", "gcAllocBytes" }
+            .Concat(DrawPaths.Select(p => p.column + "Draws")).ToArray();
         public static readonly string[] TimingNames = { "startMs", "cpuFrameMs", "cpuMainMs", "cpuRenderMs", "gpuMs", "presentWaitMs" };
-        static readonly (ProfilerCategory cat, string name)[] Counters =
+        static readonly (ProfilerCategory cat, string name)[] Counters = new (ProfilerCategory, string)[]
         {
             (ProfilerCategory.Render, "SetPass Calls Count"), (ProfilerCategory.Render, "Triangles Count"),
             (ProfilerCategory.Render, "Vertices Count"), (ProfilerCategory.Render, "Shadow Casters Count"),
             (ProfilerCategory.Memory, "GC Allocated In Frame"),
-        };
+        }.Concat(DrawPaths.Select(p => (ProfilerCategory.Render, p.marker))).ToArray();
 
         readonly ProfilerRecorder[] recorders = new ProfilerRecorder[Counters.Length];
         readonly double[][] frames, timings;
@@ -35,6 +45,12 @@ namespace Suborned.Perf
         public int Frames { get; private set; }
         public int Timings { get; private set; }
         public double[] Frame(int column) => frames[column];
+        public long MedianDraws(int path)
+        {
+            var values = frames[FrameNames.Length - DrawPaths.Length + path].Take(Frames)
+                .Where(double.IsFinite).OrderBy(x => x).ToArray();
+            return values.Length == 0 ? -1 : (long)values[values.Length / 2];
+        }
         public double[] Timing(int column) => timings[column];
 
         public PerfRecorder(int capacity)
