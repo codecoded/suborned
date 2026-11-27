@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'district'))
 from ferry import Model
 
 TAU = 2 * pi
-IVORY, CORAL, MINT, CHROME, STEEL, BRASS, TYRE, INK, LEATHER, WOOD, PETAL, LEAF, CREAM, PAPER, DARK_METAL, BLACK = range(16)
+IVORY, CORAL, MINT, CHROME, STEEL, BRASS, TYRE, INK, LEATHER, WOOD, PETAL, LEAF, CREAM, PAPER, DARK_METAL, SERVICE_GREEN, BRISTLE = range(17)
 
 
 def around(n):
@@ -27,13 +27,23 @@ class Part(Model):
     def __init__(self, owner, name, pivot, parent):
         super().__init__(name, min(max(owner.detail - 1, 0), 2))
         self.owner, self.pivot, self.parent = owner, Vector(pivot), parent
+        self.screen_uv = []
 
     def n(self, source, near, middle, far):
         return (source, near, middle, far)[self.owner.detail]
 
+    def face(self, points, slot, uv=None, smooth=False):
+        if slot in (SERVICE_GREEN,BRISTLE):
+            if uv is None:
+                uv=[(0,0),(1,0),(1,1),(0,1)] if len(points)==4 else [
+                    (.5+.48*cos(a),.5+.48*sin(a)) for a in around(len(points))]
+            start=.52 if slot==BRISTLE else .01
+            uv=[(start+.47*u,v) for u,v in uv];slot=SERVICE_GREEN
+        super().face(points,slot,uv,smooth)
+
     def shell(self, levels, power=1, tilt=0, sides=None):
         """Stations specify height, half-width, half-depth, centre X/Y and finish up to that station."""
-        sides = sides or self.n(48, 32, 18, 10)
+        sides = sides or self.n(48, 32, 16, 10)
         prev = None
         for z, rx, ry, cx, cy, finish in levels:
             loop = [(x, y, z + tilt * (y - cy)) for x,y in ellipse(cx,cy,rx,ry,sides,power)]
@@ -117,13 +127,10 @@ class Part(Model):
         for poly,smooth in zip(mesh.polygons,self.smooth):
             poly.use_smooth=smooth
         uv=mesh.uv_layers.new(name='Finish')
-        for l, pair in zip(uv.data,self.uv):
-            l.uv=pair
         if self.name.endswith('_Face'):
-            # Poly coordinates on the display map the entire glass to one state in a four-state atlas.
-            for poly in mesh.polygons:
-                for index, pair in zip(poly.loop_indices,((0,0),(1,0),(1,1),(0,1))):
-                    uv.data[index].uv=pair
+            assert len(self.screen_uv)==len(mesh.loops),self.name
+        for l, pair in zip(uv.data,self.screen_uv or self.uv):
+            l.uv=pair
         mesh.update()
         obj=bpy.data.objects.new(self.name,mesh)
         bpy.context.scene.collection.objects.link(obj)
@@ -151,14 +158,39 @@ class Machine:
         return [p.object(material,display) for p in self.parts]
 
 
-def panel_screen(head, label, y, z, w, h):
-    """The inset dark glass is wider than the emissive strip. The shell masks its edges."""
-    head.plaque(0,y+.002,z,w,h,h*.4,CHROME)
-    head.plaque(0,y-.001,z,w-.018,h-.015,(h-.015)*.4,INK)
-    face = head.owner.part(label+'_Face',head.pivot,head)
-    front=y-.003
-    face.face([(-w*.40,front,z-h*.31),(w*.40,front,z-h*.31),(w*.40,front,z+h*.31),(-w*.40,front,z+h*.31)],INK)
-    return face
+def panel_screen(head, label, y, z, w, h, rake=.30):
+    """Wrap the matrix and its dark backing around the same raised, upward-facing glass."""
+    face=head.owner.part(label+'_Face',head.pivot,head)
+    count=head.n(24,16,6,4)
+    stations=[]
+    for i in range(count+1):
+        theta=pi*i/count
+        a=-cos(theta)
+        b=sin(theta)**.68 if 0<i<count else 0
+        stations.append((a,b))
+
+    def xyz(a,b,scale,depth):
+        x=a*w*.5*scale
+        v=b*h*.5*scale
+        return (x,y+.098*w*(x/(w*.5))**2+v*rake-depth,z+v)
+
+    outline=[(a,-b) for a,b in stations]+list(reversed(stations[1:-1]))
+    far=head.owner.detail==3
+    layers=[(1,-.014,CHROME),(.94,0,CHROME)] if far else [
+        (.90,-w*.105,DARK_METAL),(.985,-.012,STEEL),(1,-.005,CHROME),(.982,.001,CHROME),(.942,.003,BRASS),(.925,0,INK)]
+    prev=None
+    for width,depth,finish in layers:
+        ring=[xyz(a,b,width,depth) for a,b in outline]
+        if prev is not None:head.bridge(prev,ring,finish)
+        prev=ring
+    width,depth,_=layers[-1]
+    for (a,b),(c,d) in zip(stations,stations[1:]):
+        quad=[(a,-b),(c,-d)]
+        if d:quad.append((c,d))
+        if b:quad.append((a,b))
+        head.face([xyz(x,v,width,depth) for x,v in quad],INK,smooth=True)
+        face.face([xyz(x,v,width,depth+.003) for x,v in quad],INK,smooth=True)
+        face.screen_uv.extend([((x+1)*.5,(v+1)*.5) for x,v in quad])
 
 
 def bearing(part, x,y,z, radius, side=1):
@@ -175,7 +207,7 @@ def wheel(part, c, radius, width, side):
              (1.03,.66,INK),(1.045,.61,STEEL),(1.16,.39,STEEL),(1.19,.20,CHROME),(1.20,.12,BRASS)]
     if part.owner.detail==2:profile=[profile[i] for i in (0,2,4,7,10,12,14)]
     if part.owner.detail==3:profile=[profile[i] for i in (0,2,5,7,12)]
-    part.spindle(a,b,[(t,r*radius,mat) for t,r,mat in profile],part.n(54,32,15,10))
+    part.spindle(a,b,[(t,r*radius,mat) for t,r,mat in profile],part.n(54,32,12,10))
     if part.owner.detail<=1:
         # Three dimples on the hub make rotation legible without a painted animation.
         for k in around(3):

@@ -68,17 +68,17 @@ def porter(detail):
         for zz in (.901,.938,.976,1.013):
             p.spindle((0,.443,zz),(0,.443,zz+.010),[(0,.091,STEEL),(1,.091,DARK_METAL)],p.n(28,16,9,6))
     h=m.part('Porter_Head',(0,.443,1.104),p)
-    h.shell([(1.076,.241,.12,0,.44,DARK_METAL),(1.085,.338,.154,0,.44,CHROME),
-             (1.115,.376,.176,0,.44,IVORY),(1.202,.387,.181,0,.44,IVORY),
-             (1.25,.372,.170,0,.448,CREAM),(1.274,.311,.143,0,.45,IVORY),
-             (1.282,.238,.11,0,.45,IVORY)],.55)
-    panel_screen(h,'Porter_Head',.254,1.170,.624,.114)
+    h.shell([(1.048,.241,.12,0,.44,DARK_METAL),(1.063,.338,.154,0,.44,CHROME),
+             (1.091,.376,.176,0,.44,IVORY),(1.238,.387,.181,0,.44,IVORY),
+             (1.289,.372,.170,0,.448,CREAM),(1.316,.311,.143,0,.45,IVORY),
+             (1.325,.238,.11,0,.45,IVORY)],.55)
+    panel_screen(h,'Porter_Head',.195,1.187,.704,.270)
     if detail<=2:
         for i in range((5,4,2,0)[detail]):
             yy=.47+i*.016
             for sg in (-1,1):
                 h.rod((sg*.378,yy,1.142),(sg*.378,yy+.007,1.207),.0055,INK,5)
-        h.rod((-.21,.382,1.279),(.21,.382,1.279),.005,CHROME,6)
+        h.rod((-.21,.382,1.320),(.21,.382,1.320),.005,CHROME,6)
     # The tray and the case share a rigid pivot. The parallel links rotate separately.
     tray=m.part('Porter_Deck',(0,-.477,.306),p)
     tray.shell([(.217,.327,.501,0,-.491,INK),(.232,.372,.537,0,-.493,CHROME),

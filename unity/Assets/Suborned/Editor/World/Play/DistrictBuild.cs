@@ -36,7 +36,7 @@ namespace Suborned.World.Play
                 throw new BuildFailedException("The patrol robot LODs are required.");
             h.districtServiceRobots = new[] {
                 Service(StreetRobot.Porter), Service(StreetRobot.Shopkeeper), Service(StreetRobot.Waiter),
-                Service(StreetRobot.Nanny), Service(StreetRobot.Butler)
+                Service(StreetRobot.Nanny), Service(StreetRobot.Butler), Service(StreetRobot.Sweeper), Service(StreetRobot.CapsuleRunner)
             };
             if (!h.districtTram || !h.districtTramMid || !h.districtTramFar)
                 throw new BuildFailedException("The district tram and both kit LODs are required.");
@@ -46,7 +46,7 @@ namespace Suborned.World.Play
         {
             GameObject Load(int level)
             {
-                string name = kind switch { StreetRobot.Porter => "Porter", StreetRobot.Shopkeeper => "Clerk", _ => null };
+                string name = HandoverHost.ServiceRobotModel.HarbourMesh(kind);
                 string path = name != null
                     ? $"Assets/Suborned/Scenery/HarbourRobots/{name}-L{level}.fbx"
                     : $"Assets/Suborned/Kit/Models/Robots/DK_Robot{kind}_Play{(level == 0 ? "" : "_L" + level)}.fbx";

@@ -13,6 +13,11 @@ namespace Suborned.Play
         {
             public StreetRobot kind;
             public GameObject near, middle, far;
+
+            public static string HarbourMesh(StreetRobot kind) => kind switch {
+                StreetRobot.Porter => "Porter", StreetRobot.Shopkeeper => "Clerk",
+                StreetRobot.Sweeper => "Sweeper", StreetRobot.CapsuleRunner => "Runner", _ => null
+            };
         }
         [HideInInspector] public ServiceRobotModel[] districtServiceRobots = System.Array.Empty<ServiceRobotModel>();
         [HideInInspector] public DistrictCrowdFigure[] districtCrowd = System.Array.Empty<DistrictCrowdFigure>();

@@ -348,9 +348,14 @@ namespace Suborned.Play
                 DistrictVehicleLod.AddKitLevels(root, model, host.districtTramMid, host.districtTramFar);
             else if (id >= Robot)
             {
-                DistrictVehicleLod.AddKitLevels(root, model, robot?.middle ?? host.districtRobotMid, robot?.far ?? host.districtRobotFar);
-                if (robot != null && (robot.kind == StreetRobot.Porter || robot.kind == StreetRobot.Shopkeeper))
-                    v.service = new DistrictServiceMotion(root.transform, robot.kind, papers);
+                bool small = robot != null && (robot.kind == StreetRobot.Sweeper || robot.kind == StreetRobot.CapsuleRunner);
+                DistrictVehicleLod.AddKitLevels(root, model, robot?.middle ?? host.districtRobotMid, robot?.far ?? host.districtRobotFar, small);
+                if (robot != null && HandoverHost.ServiceRobotModel.HarbourMesh(robot.kind) != null)
+                {
+                    string faceRig = robot.kind == StreetRobot.Porter || robot.kind == StreetRobot.CapsuleRunner ? "RobotPorter" : "RobotShopkeeper";
+                    v.display = Suborned.Robots.RobotRigs.Attach(root, host.robotRigs, host.robotGlyphs, skin + "/" + id, faceRig, driveHead:false);
+                    v.service = new DistrictServiceMotion(root.transform, robot.kind, papers, v.display);
+                }
                 else
                 {
                     var kind = robot == null ? Suborned.Robots.PatrolBot.Kind : "Robot" + robot.kind;

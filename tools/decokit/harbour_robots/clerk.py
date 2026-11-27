@@ -81,7 +81,7 @@ def clerk(detail):
                 (1.418,.186,.190,0,.045,IVORY),(1.466,.140,.144,0,.067,CREAM),
                 (1.486,.086,.087,0,.071,IVORY)],.86,tilt=-.43)
     # A projecting glass brow lies just under the shell. Keep the display clear of the shell's front lip.
-    panel_screen(head,'Clerk_Head',-.172,1.357,.278,.061)
+    panel_screen(head,'Clerk_Head',-.204,1.346,.385,.166,.26)
     if detail<=2:
         for k in range(p.n(6,4,2,0)):
             for sg in (-1,1):

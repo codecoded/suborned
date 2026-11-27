@@ -6,14 +6,16 @@ namespace Suborned.Play
 {
     internal static class DistrictVehicleLod
     {
-        public static void AddKitLevels(GameObject root, GameObject model, GameObject middle, GameObject far)
+        public static void AddKitLevels(GameObject root, GameObject model, GameObject middle, GameObject far, bool small = false)
         {
             if (!middle || !far)
                 return;
             var midModel = UnityEngine.Object.Instantiate(middle, root.transform, false);
             var farModel = UnityEngine.Object.Instantiate(far, root.transform, false);
             var group = root.AddComponent<LODGroup>();
-            group.SetLODs(new[] { new LOD(.18f, model.GetComponentsInChildren<Renderer>()), new LOD(.06f, midModel.GetComponentsInChildren<Renderer>()), new LOD(.006f, farModel.GetComponentsInChildren<Renderer>()) });
+            group.SetLODs(new[] { new LOD(small ? .14f : .18f, model.GetComponentsInChildren<Renderer>()),
+                new LOD(small ? .035f : .06f, midModel.GetComponentsInChildren<Renderer>()),
+                new LOD(small ? .004f : .006f, farModel.GetComponentsInChildren<Renderer>()) });
             group.RecalculateBounds();
         }
 

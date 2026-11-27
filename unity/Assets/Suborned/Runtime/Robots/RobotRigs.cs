@@ -58,7 +58,7 @@ namespace Suborned.Robots
 
         /// <summary>Adds or configures the face and the head on `go` from its rig (kind, else go's name). Returns the face, or null when
         /// no rig matches. `seed` (a world element path, a host key) fixes the schedule.</summary>
-        public static RobotFace Attach(GameObject go, Table t, TextAsset glyphs, string seed, string kind = null)
+        public static RobotFace Attach(GameObject go, Table t, TextAsset glyphs, string seed, string kind = null, bool driveHead = true)
         {
             if (t == null || glyphs == null) return null;
             var r = t.Find(kind ?? KindOf(go.name));
@@ -73,6 +73,7 @@ namespace Suborned.Robots
             for (int i = 0; i < st.Length; i++) st[i] = new RobotFace.Expression(r.attention[i].left ?? "", r.attention[i].right ?? "", r.attention[i].mouth ?? "");
             face.SetStages(st); // brief 031: the attention faces (empty: the robot shows no stage)
             face.SetFight(E(r.focused, default), E(r.hurt, default)); // brief 104: the fight faces (empty: none)
+            if (!driveHead) return face; // Harbour work cycles already own the head and sample the face on the district clock.
             if (!go.TryGetComponent<RobotIdle>(out var idle)) idle = go.AddComponent<RobotIdle>();
             idle.Configure(face, r.range, r.turn, r.hold, r.home, t.lead, t.gaze);
             return face;

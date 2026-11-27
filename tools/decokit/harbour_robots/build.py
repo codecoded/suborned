@@ -1,16 +1,20 @@
-"""Build the two commissioned robots. Run Blender -b -P build.py -- [--only Porter|Clerk] [--review directory]."""
+"""Build the Harbour service machines. Run Blender -b -P build.py -- [--only name] [--review directory]."""
 from argparse import ArgumentParser
 from math import cos, pi, radians, sin
 from pathlib import Path
 import json, sys
 
 import bpy
+from bpy_extras.anim_utils import animdata_get_channelbag_for_assigned_slot
 from mathutils import Vector, Quaternion
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(HERE))
 from porter import porter
 from clerk import clerk
 from distance import distant
+from utilities import sweeper, runner
+from led import FAMILY
+BUILDERS={'Porter':porter,'Clerk':clerk,'Sweeper':sweeper,'Runner':runner}
 ROOT=HERE.parents[2]
 ART=HERE.parent/'art/robots/harbour'
 RUNTIME=ROOT/'unity/Assets/Suborned/Scenery/HarbourRobots'
@@ -34,13 +38,16 @@ def materials(tool):
     tree.links.new(split.outputs['Red'],bs.inputs['Metallic']);tree.links.new(split.outputs['Green'],bs.inputs['Coat Weight'])
     inv=tree.nodes.new('ShaderNodeMath');inv.operation='SUBTRACT';inv.inputs[0].default_value=1
     tree.links.new(response.outputs['Alpha'],inv.inputs[1]);tree.links.new(inv.outputs[0],bs.inputs['Roughness'])
-    display=bpy.data.materials.new('Harbour'+tool+'Display');display.use_nodes=True
-    tree=display.node_tree;bs=tree.nodes.get('Principled BSDF');img=image_node(tree,tool+'Display.png')
-    uv=tree.nodes.new('ShaderNodeTexCoord');map_node=tree.nodes.new('ShaderNodeMapping');map_node.name='Destination drum'
-    map_node.inputs['Scale'].default_value=(.25,1,1)
+    family=FAMILY[tool]
+    display=bpy.data.materials.new('Harbour'+family+'Display');display.use_nodes=True
+    tree=display.node_tree;bs=tree.nodes.get('Principled BSDF');img=image_node(tree,family+'Display.png')
+    uv=tree.nodes.new('ShaderNodeTexCoord');map_node=tree.nodes.new('ShaderNodeMapping');map_node.name='LED register'
+    map_node.inputs['Scale'].default_value=(.25,.5,1)
+    map_node.inputs['Location'].default_value=(0,.5,0)
     tree.links.new(uv.outputs['UV'],map_node.inputs['Vector']);tree.links.new(map_node.outputs['Vector'],img.inputs['Vector'])
     tree.links.new(img.outputs['Color'],bs.inputs['Base Color']);tree.links.new(img.outputs['Color'],bs.inputs['Emission Color'])
-    bs.inputs['Emission Strength'].default_value=.72;bs.inputs['Roughness'].default_value=.27
+    bs.inputs['Emission Strength'].default_value=2.3;bs.inputs['Roughness'].default_value=.34
+    bs.inputs['Specular IOR Level'].default_value=.18
     return body,display
 
 
@@ -62,7 +69,7 @@ def motion(tool):
         for w in ['Porter_WheelL','Porter_WheelR','Porter_NoseWheel']:
             for f,a in [(1,0),(20,80),(103,80),(121,160)]:rotate(w,f,x=a*(3.15 if w.endswith('NoseWheel') else 1))
         for f,a in ((1,-7),(43,7),(82,3),(121,-7)):rotate('Porter_Head',f,z=a)
-    else:
+    elif tool=='Clerk':
         for f,t in [(1,0),(26,0),(54,1),(76,1),(105,0),(121,0)]:
             rotate('Clerk_PickUpper',f,x=-14*t,y=-9*t)
             rotate('Clerk_PickFore',f,x=-23*t,y=5*t)
@@ -72,9 +79,28 @@ def motion(tool):
         for i in range(3):
             for f,a in ((1,0),(26,145),(105,145),(121,240)):rotate('Clerk_Caster'+str(i),f,x=a)
         objects['Clerk_Papers'].hide_render=True;objects['Clerk_Papers'].hide_set(True)
-    for f,k in ((1,0),(30,1),(54,2),(91,3),(121,0)):
-        loc=bpy.data.materials['Harbour'+tool+'Display'].node_tree.nodes['Destination drum'].inputs['Location']
-        loc.default_value=(k*.25,0,0);loc.keyframe_insert('default_value',frame=f)
+    elif tool=='Sweeper':
+        for f in range(1,122,6):
+            for name,sign in [('L',1),('R',-1)]:
+                rotate('Sweeper_Brush'+name,f,z=sign*(f-1)*15)
+                rotate('Sweeper_Wheel'+name,f,x=(f-1)*3)
+    else:
+        for f,t in [(1,0),(22,0),(50,1),(74,1),(101,0),(121,0)]:
+            rotate('Runner_Flag',f,x=-59*(1-t))
+            rotate('Runner_Hatch',f,x=-40*t)
+            rotate('Runner_Head',f,z=-8*t)
+        for w in ['Runner_WheelL','Runner_WheelR','Runner_Caster']:
+            for f,a in [(1,0),(22,160),(101,160),(121,360)]:rotate(w,f,x=a*(.15/.067 if w.endswith('Caster') else 1))
+    tree=bpy.data.materials['Harbour'+FAMILY[tool]+'Display'].node_tree
+    loc=tree.nodes['LED register'].inputs['Location']
+    for f,k in ((1,0),(24,1),(25,2),(27,1),(28,0),(48,3),(73,0),(94,1),(95,2),(97,0),(121,0)):
+        loc.default_value=(k%4*.25,(1-k//4)*.5,0);loc.keyframe_insert('default_value',frame=f)
+    for curve in animdata_get_channelbag_for_assigned_slot(tree.animation_data).fcurves:
+        for key in curve.keyframe_points:key.interpolation='CONSTANT'
+    for frame in range(1,122):
+        scene.frame_set(frame)
+        x,y,_=loc.default_value
+        assert abs(x*4-round(x*4))<.0001 and abs(y*2-round(y*2))<.0001
     scene.frame_set(1)
 
 
@@ -92,7 +118,7 @@ def studio(tool):
         light=wn.nodes.new('ShaderNodeTexEnvironment');light.image=bpy.data.images.load(str(hdr));wn.links.new(light.outputs['Color'],bg.inputs[0])
     else:bg.inputs[0].default_value=(.72,.75,.72,1)
     def aim(obj,at):obj.rotation_euler=(Vector(at)-obj.location).to_track_quat('-Z','Y').to_euler()
-    target=(0,-.05,.69 if tool=='Porter' else .81)
+    target=(0,-.04,{'Porter':.70,'Clerk':.81,'Sweeper':.24,'Runner':.40}[tool])
     def lamp(name,pos,size,power,colour,sy):
         light=bpy.data.lights.new(name,'AREA');light.energy=power;light.shape='RECTANGLE';light.size=size;light.size_y=sy;light.color=colour
         o=bpy.data.objects.new(name,light);s.collection.objects.link(o);o.location=pos;aim(o,target)
@@ -102,8 +128,9 @@ def studio(tool):
     bpy.ops.mesh.primitive_plane_add(size=200);floor=bpy.context.object;floor.name='Studio floor'
     mat=bpy.data.materials.new('Studio ivory');mat.diffuse_color=(.33,.27,.19,1);floor.data.materials.append(mat)
     cam=bpy.data.objects.new('Product camera',bpy.data.cameras.new('Product camera'));s.collection.objects.link(cam);s.camera=cam
-    cam.location=(3.5,-2.4,1.83) if tool=='Porter' else (2.55,-3.5,1.77);aim(cam,target)
-    cam.data.type='ORTHO';cam.data.ortho_scale=2.70 if tool=='Porter' else 2.26
+    cam.location={'Porter':(2.7,-3.3,1.82),'Clerk':(2.55,-3.5,1.77),
+                  'Sweeper':(1.6,-2.32,.99),'Runner':(1.36,-2.60,1.02)}[tool];aim(cam,target)
+    cam.data.type='ORTHO';cam.data.ortho_scale={'Porter':2.64,'Clerk':2.26,'Sweeper':1.04,'Runner':1.05}[tool]
     s.render.resolution_x=900;s.render.resolution_y=900;s.render.resolution_percentage=100
     s.render.image_settings.file_format='PNG';s.view_settings.view_transform='AgX';s.view_settings.look='AgX - Medium High Contrast'
     for screen in bpy.data.screens:
@@ -150,11 +177,19 @@ def check_motion(tool):
             assert all(((link.matrix_world@hinge)-(pose@offset)).length<.0001 for link,hinge,offset in pins)
             stroke=max(stroke,pose.translation.z-rest.translation.z)
         assert .23<stroke<.24,stroke
-    else:
+    elif tool=='Clerk':
         hand=objects['Clerk_PickHand'];rest=hand.matrix_world.translation.copy()
         scene.frame_set(60)
         assert .17<(hand.matrix_world.translation-rest).length<.2
         assert objects['Clerk_Stem'].parent==hand and objects['Clerk_Bowl'].parent==objects['Clerk_BowlHand']
+    elif tool=='Sweeper':
+        scene.frame_set(19)
+        left=objects['Sweeper_BrushL'].rotation_euler.z;right=objects['Sweeper_BrushR'].rotation_euler.z
+        assert left>4 and abs(left+right)<.0001
+    else:
+        assert objects['Runner_Flag'].rotation_euler.x<-.9
+        scene.frame_set(60)
+        assert abs(objects['Runner_Flag'].rotation_euler.x)<.001 and objects['Runner_Hatch'].rotation_euler.x<-.65
     scene.frame_set(1)
 
 
@@ -162,7 +197,8 @@ def make(tool, builder, review):
     stats={}
     for level,label in enumerate(('source','L0','L1','L2')):
         bpy.ops.wm.read_factory_settings(use_empty=True);bpy.context.preferences.filepaths.save_version=0
-        body,display=materials(tool);model=distant(tool) if level==3 else builder(level);objects=model.build(body,display)
+        utility=tool in ('Sweeper','Runner')
+        body,display=materials(tool);model=distant(tool) if level==3 and not utility else builder(level);objects=model.build(body,display)
         stats[label]=audit_objects(objects)
         if level==0:
             motion(tool);check_motion(tool);s=studio(tool);bpy.ops.file.pack_all()
@@ -186,8 +222,9 @@ def make(tool, builder, review):
             bpy.ops.import_scene.fbx(filepath=str(RUNTIME/(name+'.fbx')),use_anim=False)
             imported=[o for o in bpy.context.scene.objects if o.type=='MESH'];a=audit_objects(imported)
             assert a['triangles']==stats[label]['triangles'] and a['parts']==len(objects),(tool,label,a,stats[label])
-            assert a['triangles'] <= (11000,4000,800)[level-1],(tool,label,a)
-            assert {m.name for o in imported for m in o.data.materials}=={'HarbourServiceFinish','Harbour'+tool+'Display'}
+            ceiling=(6500,2300,650) if utility else (11000,4000,800)
+            assert a['triangles'] <= ceiling[level-1],(tool,label,a)
+            assert {m.name for o in imported for m in o.data.materials}=={'HarbourServiceFinish','Harbour'+FAMILY[tool]+'Display'}
             # Keep the floor and silhouette at the same world scale at every transition.
             assert all(abs(v-w)<.04 for corner,base in zip(a['bounds'],stats['source']['bounds']) for v,w in zip(corner,base))
     print('HARBOUR AUDIT',tool,json.dumps(stats),flush=True)
@@ -195,8 +232,8 @@ def make(tool, builder, review):
 
 
 if __name__=='__main__':
-    parser=ArgumentParser();parser.add_argument('--only',choices=('Porter','Clerk'));parser.add_argument('--review',type=Path)
+    parser=ArgumentParser();parser.add_argument('--only',choices=BUILDERS);parser.add_argument('--review',type=Path)
     args=parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
     if args.review:args.review.mkdir(exist_ok=True,parents=True)
-    for tool,builder in [('Porter',porter),('Clerk',clerk)]:
+    for tool,builder in BUILDERS.items():
         if args.only is None or args.only==tool:make(tool,builder,args.review)
