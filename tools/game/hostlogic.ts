@@ -65,7 +65,9 @@ export function hostLogic(filter = '', o: { skipCompile?: boolean } = {}): HostL
   writeFileSync(proj, runnerCsproj({ player: join(patched, 'check.dll'), shim: s.dir, sim: join(UNITY, 'Assets/Suborned/Sim/Plugins/Suborned.Sim.dll'), sa: join(UNITY, 'Library/ScriptAssemblies'), nunit, tests, cases: caseFiles() }));
   const b = run(['dotnet', 'build', proj, '-nologo', '-v', 'q', '-clp:NoSummary']);
   if (b.code !== 0) return done(false, 'the cases do not compile', b.out.split('\n').filter(l => /: error /.test(l)).slice(0, 12).join('\n'));
-  const r = run(['dotnet', join(OUT, 'bin/hostlogic.dll'), ROOT, ...(filter ? [filter] : [])]), lines = r.out.trim().split('\n');
+  // Pass an automation flag just like the player proofs. A plain launch reads the player's
+  // traffic preferences, rolls a new seed and waits for real-time end cinematics.
+  const r = run(['dotnet', join(OUT, 'bin/hostlogic.dll'), ROOT, filter, '-hostlogic']), lines = r.out.trim().split('\n');
   return done(r.code === 0, lines.at(-1) ?? '', r.out.trim());
 }
 
