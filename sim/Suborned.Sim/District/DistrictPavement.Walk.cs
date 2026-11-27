@@ -10,8 +10,9 @@ namespace Suborned.Sim
         static readonly (int cos,int sin)[] Turns = { (100,0), (87,50), (50,87), (0,100), (-50,87), (-87,50), (-100,0) };
         static long Dot(Pt a, Pt b) => (long)a.X*b.X + (long)a.Y*b.Y;
 
-        bool Clear(Pt at, List<int>? nearby)
+        bool Clear(Pt at, List<int>? nearby, bool space=false)
         {
+            if (space && !walkers.Clear(at)) return false;
             if (nearby == null) return true;
             foreach (int r in nearby)
                 if (G.Within(machines[r].At,at,radius[r]+PersonCm)) return false;
@@ -21,16 +22,23 @@ namespace Suborned.Sim
         static Pt Rotate(Pt h, int cos, int sin) =>
             new Pt((h.X*cos-h.Y*sin)/100,(h.X*sin+h.Y*cos)/100);
 
-        Pt? StepAside(Pt from, int id, Grid floor)
+        Pt? StepAside(Pt from, int id, Grid floor, bool space)
         {
             var nearby=Near(from);
             if (nearby==null) return null;
             foreach (int r in nearby)
             {
-                if (waiting[r]<8 || !G.Within(from,proposed[r].At,radius[r]+PersonCm+12)) continue;
-                // A stalled cart asks the people in its way for room. At a packed quay the side
-                // away from this cart may lead into another, so try the open part of the paving.
-                var away=CarGeo.Ahead(default,from-proposed[r].At,100);
+                if (waiting[r]<5) continue;
+                // Make space on both sides of the approaching wheel, including the next row in
+                // a queue. Backing straight down the line would pin the person against their neighbour.
+                var forward=CarGeo.Ahead(default,proposed[r].At-machines[r].At,100);
+                var normal=new Pt(-forward.Y,forward.X);
+                var offset=from-machines[r].At;
+                int along=(int)(Dot(forward,offset)/100), across=(int)(Dot(normal,offset)/100);
+                int gap=radius[r]+PersonCm;
+                if (along < -gap/2 || along>gap+95 || Math.Abs(across)>gap+50) continue;
+                int preferred=across==0 ? (((id+r)&1)==0 ? 1 : -1) : Math.Sign(across);
+                var away=CarGeo.Ahead(default,normal,preferred*100);
                 int hand=((id+r)&1)==0 ? 1 : -1;
                 foreach (var turn in Turns)
                 for (int side=-1;side<=1;side+=2)
@@ -38,15 +46,15 @@ namespace Suborned.Sim
                     var dir=Rotate(away,turn.cos,turn.sin*hand*side);
                     var at=CarGeo.Ahead(from,dir,14);
                     if (G.D2(at,proposed[r].At)<=G.D2(from,proposed[r].At)) continue;
-                    if (floor.LineFree(from,at) && Clear(at,Near(at)) && Clear(G.Lerp(from,at,1,2),nearby)) return at;
+                    if (floor.LineFree(from,at) && Clear(at,Near(at),space) && Clear(G.Lerp(from,at,1,2),nearby,space)) return at;
                 }
             }
             return null;
         }
 
-        Pt Place(Pt origin, int id, Grid floor)
+        Pt Place(Pt origin, int id, Grid floor, bool space)
         {
-            if (Clear(origin,Near(origin))) return origin;
+            if (Clear(origin,Near(origin),space)) return origin;
             // At district opening, choose a vacant patch around a shared doorway before showing anyone.
             for (int distance = 35; distance <= 700; distance += 35)
             foreach (var turn in Turns)
@@ -54,30 +62,31 @@ namespace Suborned.Sim
             {
                 var direction = Rotate((id&1)==0 ? new Pt(100,0) : new Pt(0,100),turn.cos,side*turn.sin);
                 var candidate = CarGeo.Ahead(origin,direction,distance);
-                if (floor.LineFree(origin,candidate) && Clear(candidate,Near(candidate))) return candidate;
+                if (floor.LineFree(origin,candidate) && Clear(candidate,Near(candidate),space)) return candidate;
             }
             return origin;
         }
 
-        Pt Walk(Pt from, Pt goal, Pt facing, bool walking, int stride, int id, ref int pass, Grid floor, bool arriving = false)
+        Pt Walk(Pt from, Pt goal, Pt facing, bool walking, int stride, int id, ref int pass, Grid floor, bool arriving = false, bool space = false)
         {
             var nearby = Near(from);
             var atGoal = Near(goal);
             if (nearby == null && atGoal == null)
             {
                 pass = 0;
-                if (G.Within(from,goal,stride)) return goal;
+                if (G.Within(from,goal,stride) && (!space || from==goal || walkers.Clear(goal))) return goal;
             }
             var aim = goal;
             // On the last few steps a safe clicked spot takes precedence over the passing lane.
             bool approach = arriving && Clear(goal,atGoal) && G.Within(from,goal,180);
             if (atGoal != null && !approach) aim = PassingPoint(from,goal,facing,walking,id,ref pass,atGoal,floor);
             else pass = 0;
+            if (space && walking) aim=walkers.Pass(from,aim);
             if (from == aim) return from;
             var delta = aim-from;
             int length = G.Dist(from,aim);
             var straight = length <= stride ? aim : G.Lerp(from,aim,stride,length);
-            bool Safe(Pt p) => floor.LineFree(from,p) && Clear(p,Near(p)) && Clear(G.Lerp(from,p,1,2),nearby);
+            bool Safe(Pt p) => floor.LineFree(from,p) && Clear(p,Near(p),space) && Clear(G.Lerp(from,p,1,2),nearby,space);
             if (Safe(straight)) return straight;
 
             // A narrow pavement or a second machine can close one side. Try the other, then wait.

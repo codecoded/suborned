@@ -45,6 +45,34 @@ public sealed class DistrictPavementTests
     }
 
     [Fact]
+    public void PeopleWaitingAndPassingAtMarketKeepShoulderRoom()
+    {
+        var g=Harbour(); var d=g.District!;
+        var counters=d.Map.Ground.Venues.Where(v=>v.Style=="market").Select(v=>v.At).ToArray();
+        int neighbours=0;
+        for (int k=0;k<=600;k++)
+        {
+            if (k>0) g.Step();
+            if (k%5!=0) continue;
+            var at=new System.Collections.Generic.List<Pt>();
+            for (int i=0;i<d.Map.People.Length;i++)
+            {
+                if (!d.Roams(i) || g.HasCivicActor(d.Map.People[i].Id)) continue;
+                var pos=d.Pose(i,k).at;
+                if (!counters.Any(c=>G.Within(c,pos,1600))) continue;
+                foreach (var other in at)
+                {
+                    if (!G.Within(other,pos,130)) continue;
+                    neighbours++;
+                    Assert.False(G.Within(other,pos,55),$"Two customers at {pos} and {other} at tick {k}");
+                }
+                at.Add(pos);
+            }
+        }
+        Assert.True(neighbours>90);
+    }
+
+    [Fact]
     public void ServiceMachinesResumeTheirRoundsAfterTheOpeningQueues()
     {
         var g=Harbour(); var traffic=g.District!.Traffic;

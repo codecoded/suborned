@@ -10,6 +10,7 @@ namespace Suborned.Sim
     internal sealed partial class DistrictPavement
     {
         readonly DistrictMap map;
+        readonly DistrictPedestrians walkers;
         readonly int[] radius, delays, waiting, clock, previousClock, passing, cellPassing = new int[4];
         readonly bool[] brake;
         readonly Pose[] machines, proposed;
@@ -22,6 +23,7 @@ namespace Suborned.Sim
         public DistrictPavement(DistrictMap map)
         {
             this.map = map;
+            walkers = new DistrictPedestrians(map.Walk,map.People.Length);
             int n = map.RobotRounds.Length;
             radius = new int[n]; delays = new int[n]; waiting = new int[n]; clock = new int[n]; previousClock = new int[n];
             machines = new Pose[n]; proposed = new Pose[n]; brake = new bool[n];
@@ -63,6 +65,7 @@ namespace Suborned.Sim
             Array.Clear(waiting,0,waiting.Length);
             Array.Clear(passing,0,passing.Length);
             Array.Clear(cellPassing,0,cellPassing.Length);
+            walkers.Reset();
             sampled = tick;
             for (int i = 0; i < machines.Length; i++)
             {
@@ -73,8 +76,10 @@ namespace Suborned.Sim
             for (int i = 0; i < people.Length; i++)
             {
                 var planned = district.ScheduledPose(i,tick);
-                var clear = Place(planned.at, i, map.Walk);
+                bool onStreet=district.Roams(i) || district.Network.Away(i);
+                var clear = Place(planned.at, i, map.Walk,onStreet);
                 people[i] = lastPeople[i] = new Pose(clear, planned.facing, planned.moving);
+                if (onStreet) walkers.Add(i,clear);
             }
         }
 
@@ -142,16 +147,20 @@ namespace Suborned.Sim
             {
                 var raw = district.ScheduledPose(i,game.Tick);
                 var prior = lastPeople[i];
+                bool onStreet=district.Roams(i) || district.Network.Away(i);
+                walkers.Remove(i);
                 if (district.Meetings[i].HasValue && !district.Network.Away(i) || district.Network.Fallen[i])
                 {
                     people[i] = new Pose(raw.at,raw.facing,false);
                     passing[i] = 0;
+                    if (onStreet) walkers.Add(i,district.Network.FellAt[i] ?? raw.at);
                     continue;
                 }
                 // At most a walking stride, including while returning to a route after a sidestep.
-                Pt at = StepAside(prior.At,i,map.Walk) ?? Walk(prior.At,raw.at,raw.facing,raw.moving,16,i,ref passing[i],map.Walk);
+                Pt at = StepAside(prior.At,i,map.Walk,onStreet) ?? Walk(prior.At,raw.at,raw.facing,raw.moving,16,i,ref passing[i],map.Walk,space:onStreet);
                 bool moving = at != prior.At;
                 people[i] = new Pose(at,moving ? at-prior.At : raw.facing,moving);
+                if (onStreet) walkers.Add(i,at);
             }
             sampled = game.Tick;
         }
