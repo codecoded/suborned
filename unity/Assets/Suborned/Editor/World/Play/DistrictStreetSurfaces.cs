@@ -33,6 +33,7 @@ namespace Suborned.World.Play
         // Add only index levels on a copy in the processed scene. The standalone player chooses these on the GPU.
         public void DressTown(Scene scene, SiteFrame frame, DistrictGround ground, Transform district)
         {
+            DistrictExchangeKit.Install(scene, district);
             const string models = "Assets/Suborned/OldTownArt/DecoKit/Models/";
             var prepared = new Dictionary<Mesh, Mesh>();
             var flatPaving = new List<MeshRenderer>();

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Horror Asylum and Lantern Lane · full-frame rendering measurements</title>
+<style>
+  * { box-sizing: border-box }
+  html { color-scheme: light dark }
+  body { margin: 0; color: var(--foreground, CanvasText); font: 15px/1.48 var(--font-sans, system-ui); }
+  main { max-width: 790px; margin-inline: auto }
+  p { margin: 0 0 9px }
+  header { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap }
+  header p { margin: 0; font-size: 13px }
+  fieldset { border: 1px solid var(--border, GrayText); border-radius: var(--radius, 6px); display: flex; padding: 2px; margin: 0 }
+  .switch { cursor: pointer; position: relative }
+  .switch input { position: absolute; width: 1px; height: 1px; opacity: 0 }
+  .switch span { display: block; padding: 4px 10px; border-radius: calc(var(--radius, 6px) - 2px); font-size: 13px }
+  .switch input:checked + span { background: var(--secondary, ButtonFace); font-weight: 650 }
+  .switch input:focus-visible + span, summary:focus-visible { outline: 2px solid var(--ring, Highlight) }
+  section { margin-top: 17px; padding-top: 13px; border-top: 1px solid var(--border, GrayText) }
+  h2 { font-size: 16px; font-weight: 650; margin: 0 0 7px }
+  .row { display: grid; grid-template-columns: minmax(128px, 0.62fr) minmax(20px, 1.6fr) 81px; gap: 10px; align-items: center; min-height: 29px }
+  .name { font-size: 13px }
+  .rail { height: 7px; border-radius: 4px; background: var(--secondary, ButtonFace); overflow: hidden }
+  .fill { height: 100%; border-radius: inherit; background: var(--chart-2, Teal) }
+  .harbour .fill { background: var(--chart-1, SteelBlue) }
+  output { font: 13px var(--font-mono, monospace); text-align: right; font-variant-numeric: tabular-nums }
+  aside { margin: 11px 0 0; font-size: 12px }
+  details { font-size: 13px; margin: 13px 0 }
+  summary { cursor: pointer; font-weight: 600 }
+  details p:first-of-type { margin-top: 10px }
+  a { color: var(--info, LinkText) }
+  @media (max-width: 420px) {
+    .row { grid-template-columns: minmax(94px, 1.1fr) minmax(12px, 1fr) 67px; gap: 6px }
+    .name, output { font-size: 12px }
+  }
+</style>
+<main>
+  <header>
+    <p>Mac Studio M5 Max · 1920 × 1080 · per frame</p>
+    <fieldset aria-label="Rendering metric">
+      <label class="switch"><input type="radio" name="metric" value="draws" checked><span>Draw calls</span></label>
+      <label class="switch"><input type="radio" name="metric" value="triangles"><span>Triangles</span></label>
+    </fieldset>
+  </header>
+  <section aria-label="Horror Asylum courtyard">
+    <h2>Horror Asylum · West Ambulance Courtyard</h2>
+    <div id="asylum"></div>
+  </section>
+  <section class="harbour" aria-label="Suborned street">
+    <h2>Suborned · Lantern Lane</h2>
+    <div id="harbour"></div>
+  </section>
+  <aside>Both panels share a scale. Each experiment holds its own street view fixed. WebGL and Metal expose different draw counters.</aside>
+  <details>
+    <summary>Camera, timing and counting method</summary>
+    <p>On 28 November 2026, Horror Asylum revision <code>9a1747b</code> ran in WebGL2 on Metal at one device pixel per canvas pixel. The courtyard camera sees about 38 m. Normal visibility admits seven of the chapter’s 17 sectors. Each result is a median over 72 to 90 frames after warm-up. Resetting the Three.js counters once per frame captured all passes. The ordinary HUD showed 206 scene draws where the full frame used 221. <a href="https://threejs.org/docs/pages/WebGLRenderer.html#info">Three.js renderer counters</a>.</p>
+    <p>Each courtyard configuration stayed near the display’s 16.7 ms refresh interval. Removing the sector gate doubled submissions. Removing static mesh grouping inside sectors also raised draws. It reduced triangle submissions because individual pieces could then be culled more finely. The atrium independently went from 203–219 full-frame draws with grouping to 502 without it. The implementation is in <code>viewer/src/instancing.js</code> (visibility and material buckets) and <code>viewer/src/main.js</code> (camera depth and shadow updates).</p>
+    <p>At street level, the hospital uses real doorway recesses. Its Blender kit bakes high-detail normals, roughness and ambient occlusion into textures. Static shadows update on request and bloom uses 35% of each screen dimension. These choices help convey depth on the visible surfaces. The measured interventions above isolate the effects of sector visibility and batching.</p>
+    <p>The Unity 6000.6.2f1 Metal player used the Scout follow camera at seed 9 and tick 1930. Render scale was one. The draw total adds the median standard, instanced and null-geometry submissions over 107 warmed frames for each setting. The five remaining native draw paths were zero. At 350 m the three counts were 1,075, 302 and 23, with 567 shadow casters. At 38 m they were 284, 65 and 23, with 188 casters. Restoring 350 m produced 1,407 draws. The camera had baked occlusion disabled. <a href="https://docs.unity3d.com/6000.6/Documentation/Manual/ProfilerRendering.html">Unity rendering counters</a>.</p>
+    <p>The unpaced Studio player’s median wall time was 5.27 ms at 350 m and 4.62 ms at 38 m in its automated session. The browser ran at display cadence, so these timings establish different submission costs and leave the engines’ relative maximum frame rates open.</p>
+    <p>A separate foreground M4 Air run on the earlier Harbour build averaged 30.8 FPS on the 1080p daytime walk. It recorded 32.5 ms on Unity’s main thread and 15.3 ms on the GPU, with over 10 GiB of system swap in use. These thread timings include waiting. The comparison above used the Studio. <a href="../106/latch/results.md">Earlier M4 Air feature tests</a>.</p>
+  </details>
+  <details>
+    <summary>What the replacement façades changed</summary>
+    <p>Three legacy straight bays used 4,332 close-up triangles and 33 material slots together. Their replacement uses 2,826 triangles and one material slot after import. With three rows and both court wings replaced in the review player, the 350 m street view still submitted 1,403 draws and 1,015,329 triangles. That draw count falls inside the original 1,400–1,407 repeat range. A separate experiment grouping 716 existing middle-distance renderers into 194 batches also left the whole-view draw total essentially flat.</p>
+    <p>The visibility change worth testing in Harbour is street-scale. Retain distant landmark silhouettes, then submit detailed architecture, furniture and shadows for blocks that can actually be seen. The shorter camera ranges were used for measurement only.</p>
+  </details>
+  <noscript>The courtyard used 221 draws normally, 466 with all sectors visible and 520 with ungrouped static pieces. Lantern Lane used 1,400 draws at 350 m, 999 at 100 m, 372 at 38 m and 260 at 21 m.</noscript>
+</main>
+<script>
+  const rows = {
+    asylum: [
+      ["Normal courtyard", 221, 222767],
+      ["All sectors visible", 466, 592925],
+      ["Static pieces ungrouped", 520, 174159]
+    ],
+    harbour: [
+      ["350 m · normal camera", 1400, 1001983],
+      ["100 m camera", 999, 729676],
+      ["38 m camera", 372, 313045],
+      ["21 m camera", 260, 257896]
+    ]
+  };
+  const numbers = new Intl.NumberFormat("en");
+  function draw(metric) {
+    const index = metric === "draws" ? 1 : 2;
+    const maximum = Math.max(...Object.values(rows).flat().map(row => row[index]));
+    for (const [id, series] of Object.entries(rows)) {
+      const panel = document.getElementById(id);
+      panel.replaceChildren();
+      for (const entry of series) {
+        const row = document.createElement("div");
+        row.className = "row";
+        row.innerHTML = '<span class="name"></span><div class="rail" aria-hidden="true"><div class="fill"></div></div><output></output>';
+        row.querySelector(".name").textContent = entry[0];
+        row.querySelector(".fill").style.width = (100 * entry[index] / maximum) + "%";
+        row.querySelector("output").textContent = numbers.format(entry[index]);
+        panel.append(row);
+      }
+    }
+  }
+  document.querySelector("fieldset").addEventListener("change", event => draw(event.target.value));
+  draw("draws");
+</script>
+</html>

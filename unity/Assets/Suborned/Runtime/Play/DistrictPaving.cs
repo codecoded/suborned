@@ -32,7 +32,9 @@ namespace Suborned.Play
             foreach (var filter in root.GetComponentsInChildren<MeshFilter>())
             {
                 if (!filter.sharedMesh || !filter.transform.parent ||
-                    !filter.transform.parent.name.EndsWith("tiles merged", StringComparison.OrdinalIgnoreCase) ||
+                    !(filter.transform.parent.name.EndsWith("tiles merged", StringComparison.OrdinalIgnoreCase) ||
+                      filter.name.StartsWith("Lantern Court • honed flags@", StringComparison.Ordinal) ||
+                      filter.name.StartsWith("DK_Ground_Pavement@", StringComparison.Ordinal)) ||
                     !filter.TryGetComponent<MeshRenderer>(out var renderer) || !renderer.enabled) continue;
                 if (surfaces.Count == 0) bounds = renderer.bounds;
                 else bounds.Encapsulate(renderer.bounds);
@@ -55,7 +57,10 @@ namespace Suborned.Play
                 for (int i = 0; i < vertices.Count; i++) vertices[i] = matrix.MultiplyPoint3x4(vertices[i]);
                 for (int sub = 0; sub < mesh.subMeshCount && sub < materials.Length; sub++)
                 {
-                    if (!materials[sub] || !materials[sub].name.StartsWith("DK_Pave", StringComparison.Ordinal)) continue;
+                    if (!materials[sub]) continue;
+                    string finish = materials[sub].name;
+                    if (!(finish.StartsWith("DK_Pave", StringComparison.Ordinal) || finish == "DK_Ground_Pavement" ||
+                          finish == "Lantern Court • honed flags")) continue;
                     mesh.GetTriangles(triangles, sub);
                     for (int i = 0; i < triangles.Count; i += 3)
                         Stamp(vertices[triangles[i]], vertices[triangles[i + 1]], vertices[triangles[i + 2]]);
