@@ -13,7 +13,7 @@ public sealed class HarbourStreetTests
     {
         var traffic = Open().District!.Traffic;
         var workers = Enumerable.Range(0, traffic.RobotCount).Where(i =>
-            traffic.RobotKind(i) == StreetRobot.Porter || traffic.RobotKind(i) == StreetRobot.Shopkeeper).ToArray();
+            traffic.RobotKind(i) is StreetRobot.Porter or StreetRobot.Shopkeeper or StreetRobot.Sweeper or StreetRobot.CapsuleRunner).ToArray();
         Assert.Contains(workers, i => traffic.CarriesPapers(i));
         Assert.Contains(workers, i => traffic.RobotKind(i) == StreetRobot.Shopkeeper && !traffic.CarriesPapers(i));
         foreach (int i in workers)
@@ -33,6 +33,29 @@ public sealed class HarbourStreetTests
                 last = now;
             }
             Assert.True(worked && rolled);
+        }
+    }
+
+    [Fact]
+    public void UtilityRoundsStopAtTheCountersAndPneumaticPostsTheyServe()
+    {
+        var district = Open().District!;
+        var traffic = district.Traffic;
+        var venues = district.Map.Ground.Venues;
+        var counters = venues.Where(v => v.Style is "coffee" or "market").Select(v => v.At).ToArray();
+        var posts = venues.SelectMany(v => v.Fixtures).Where(f => f.Kit == "PneumaticPost").Select(f => f.At).ToArray();
+        foreach (var kind in new[] { StreetRobot.Sweeper, StreetRobot.CapsuleRunner })
+        {
+            var workers = Enumerable.Range(0, traffic.RobotCount).Where(i => traffic.RobotKind(i) == kind).ToArray();
+            Assert.NotEmpty(workers);
+            var sites = kind == StreetRobot.Sweeper ? counters : posts;
+            foreach (int worker in workers)
+            {
+                var stops = Enumerable.Range(0, 3000).Where(t => traffic.ServiceMechanism(worker, t).lift == 1000)
+                    .Select(t => traffic.Robot(worker, t).At).Distinct().ToArray();
+                Assert.True(stops.Length >= 2);
+                Assert.Contains(stops, point => sites.Any(site => G.Within(site, point, 250)));
+            }
         }
     }
 
