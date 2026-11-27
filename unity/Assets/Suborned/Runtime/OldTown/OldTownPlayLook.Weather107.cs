@@ -19,7 +19,7 @@ namespace Suborned.OldTown
         const int LiveCap = 48; const float LiveRadius = 70f;
         static readonly string[] LampNames = { "Streetlamp", "SphereLamp", "GlobeLamp", "BackDoorLamp", "CafeLamp" };
 
-        bool w107Bound, w107Night; TimeOfDay097.Base w107Day; float[] w107Probe; float w107AmbInt; float w107Next;
+        bool w107Bound; TimeOfDay097.Base w107Day; float[] w107Probe; float w107AmbInt; float w107Next;
         Volume w107Ev; ColorAdjustments w107Adj; readonly List<Light> w107Lamps = new();
         readonly List<float> baseLampPower = new();
         readonly List<(float d, Light l)> byDistance = new();
@@ -34,7 +34,7 @@ namespace Suborned.OldTown
                 w107Bound = true; w107Day = TimeOfDay097.BaseFrom(sunRotation, sunColour, sunIntensity, ambientSky, ambientEquator, ambientGround);
                 w107Probe = ambientProbe != null ? (float[])ambientProbe.Clone() : new float[0]; w107AmbInt = ambientIntensity; Lamps107();
             }
-            bool night = p[0] > 0.5f; float sunK = p[1], ambK = p[2], desat = p[3]; w107Night = night;
+            bool night = p[0] > 0.5f; float sunK = p[1], ambK = p[2], desat = p[3];
             lampShare = night ? 1f : 0f;
             var s = night ? TimeOfDay097.Evaluate(NightHour, w107Day, true) : default;
             Color sun = night ? s.sun : w107Day.sun, sky = night ? s.sky : w107Day.sky, eq = night ? s.eq : w107Day.eq, gr = night ? s.ground : w107Day.ground;
