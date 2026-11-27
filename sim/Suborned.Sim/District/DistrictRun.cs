@@ -20,6 +20,7 @@ namespace Suborned.Sim
         public string HandoverNews = "The Handover is open at the Records Office.";
         public readonly DistrictJob[] Jobs = new DistrictJob[3];
         public readonly DistrictTraffic Traffic;
+        public readonly DistrictShopping Shopping;
         public readonly DistrictNetwork Network;
         public readonly int[] Trust;
         public readonly bool[] Encountered, Introduced;
@@ -34,6 +35,7 @@ namespace Suborned.Sim
         {
             this.seed = seed;
             Traffic = new DistrictTraffic(Map);
+            Shopping = new DistrictShopping(Map);
             Network = new DistrictNetwork(this);
             Trust = new int[Map.People.Length];
             Encountered = new bool[Map.People.Length + 4];
@@ -44,6 +46,7 @@ namespace Suborned.Sim
             heldTicks = new int[Trust.Length];
             for (int i = 0; i < Jobs.Length; i++)
                 Jobs[i] = Next(i);
+            Traffic.Pavement.Open(this,0);
         }
 
         // The civic shift keeps its established rounds. The other residents work the wider streets.
@@ -133,6 +136,13 @@ namespace Suborned.Sim
         }
 
         public (Pt at, Pt facing, bool moving) Pose(int person, int tick)
+        {
+            if (!Network.Away(person) && Meetings[person] is Pt meeting) return (meeting,new Pt(0,100),false);
+            if (Traffic.Pavement.TryPerson(person,tick,out var p)) return (p.At,p.Facing,p.Moving);
+            return ScheduledPose(person,tick);
+        }
+
+        internal (Pt at, Pt facing, bool moving) ScheduledPose(int person, int tick)
         {
             var r = Map.People[person];
             if (Network.TryPose(person, tick, out var outing)) return outing;
@@ -252,6 +262,7 @@ namespace Suborned.Sim
         {
             h.S("harbour").S(Map.Digest).I((int)Handover).S(HandoverNews).I(Completed).S(News);
             Traffic.Hash(h);
+            Shopping.Hash(h);
             Network.Hash(h);
             foreach (bool bluff in firstBluff)
                 h.Z(bluff);

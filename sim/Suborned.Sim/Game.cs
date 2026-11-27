@@ -244,12 +244,7 @@ namespace Suborned.Sim
                 if (op.Busy is { Do: "watch" } watch && LostWatchTarget(watch.Target) is { } lost)
                     EndObservation(op, watch, lost.code, lost.why + " The Watch ends.");
                 ListenFollow(op); if (op.Busy != null && op.BusyEnd <= Tick) { var o = op.Busy; op.Busy = null; Land(op, o); if (Over) break; } // engine 0.55.0 (GameListenFollow.cs): a Listen keeps to its person, its clock only in reach
-                if (op.Walk != null)
-                {
-                    op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; op.Pos = op.Walk.At(op.WalkMm) + OpLay(op); // brief 098 L9: his walk keeps the lay the law gave it
-                    if (op.Running) RunAttention(op);
-                    if (op.WalkMm >= op.Walk.Length) { op.Walk = null; op.WalkMm = 0; op.Running = false; }
-                }
+                if (op.Walk != null) StepWalkingOperative(op);
                 else if (op.Driven) { StepDrive(op); if (Over) break; } // brief 025 (EXPERIMENTAL): the host's sample, checked (GameDrive.cs)
                 if (op.Act != null) ApproachStep(op); // engine 0.23.0 (rulebook cell.approach): a person act walking in starts once in place (GameApproach.cs)
             }

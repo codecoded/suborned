@@ -27,6 +27,7 @@ namespace Suborned.Sim
             var outcome = Result;
             var news = FailText;
             District = new DistrictRun(Start.Seed);
+            if (Tick > 0) District.Traffic.Pavement.Open(District,Tick);
             BindDistrictCast();
             Result = Outcome.None;
             if (outcome != Outcome.None)
@@ -40,6 +41,25 @@ namespace Suborned.Sim
         }
 
         public bool HandoverOpen => District == null || District.Handover == Outcome.None;
+
+        void StepWalkingOperative(Op op)
+        {
+            var path = op.Walk!;
+            int pace = op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk;
+            // Keep the next mark within reach when a worker holds the way around a corner.
+            if (District == null || G.Within(op.Pos,path.At(op.WalkMm) + OpLay(op),250))
+                op.WalkMm = Math.Min(path.Length,op.WalkMm + pace);
+            var target = path.At(op.WalkMm) + OpLay(op);
+            if (District == null) op.Pos = target;
+            else
+            {
+                var floor = S.Grid.InGrid(op.Pos) && S.Grid.InGrid(target) ? S.Grid : District.Map.Walk;
+                op.Pos = District.Traffic.Pavement.CellStep(op,target,path.Heading(op.WalkMm),(pace+9)/10+1,floor,op.WalkMm == path.Length);
+            }
+            if (op.Running) RunAttention(op);
+            if (op.WalkMm >= path.Length && (op.Pos == target || District?.Traffic.Pavement.AtOccupiedDestination(op.Pos,target) == true))
+            { op.Walk = null; op.WalkMm = 0; op.Running = false; }
+        }
 
         bool AbleCell() => Array.Exists(Ops, o => !o.Down && !o.LeftMap && !Captured.Contains(Sim.Op.Name(o.Id)));
         void CloseHandover(Outcome result, string news)
@@ -73,6 +93,7 @@ namespace Suborned.Sim
             if (Tick % Hz == 0) IndexStreetEncounters();
             CitizenStep();
             District!.Traffic.Step(this, District);
+            District.Shopping.Step(District,Tick);
             if (Tick % Hz == 0)
                 foreach (var job in District.Jobs)
                 {

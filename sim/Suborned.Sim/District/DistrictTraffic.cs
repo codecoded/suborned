@@ -52,6 +52,7 @@ namespace Suborned.Sim
         }
 
         readonly DistrictMap map;
+        internal readonly DistrictPavement Pavement;
         readonly int[] held, streets, phases;
         readonly bool[] vans, waiting;
         readonly List<Pt> people = new();
@@ -64,6 +65,7 @@ namespace Suborned.Sim
         public DistrictTraffic(DistrictMap map)
         {
             this.map = map;
+            Pavement = new DistrictPavement(map);
             rail = new TramService(map);
             trams = new Pose[rail.Count];
             var routes = new List<int>(); var clocks = new List<int>();
@@ -85,8 +87,8 @@ namespace Suborned.Sim
         public bool DeliveryVan(int i) => vans[i];
         public StreetRobot RobotKind(int i) => map.RobotRounds[i].Kind;
         public bool CarriesPapers(int i) => map.RobotRounds[i].CarriesPapers;
-        public (int lift, long wheelMm) ServiceMechanism(int i, int tick) => map.RobotRounds[i].Mechanism(tick);
-        public Pose Robot(int i, int tick) => map.RobotRounds[i].At(tick);
+        public (int lift, long wheelMm) ServiceMechanism(int i, int tick) => map.RobotRounds[i].Mechanism(Pavement.RobotClock(i,tick));
+        public Pose Robot(int i, int tick) => Pavement.Robot(i,tick);
         public Pose Car(int i, int tick)
         {
             var p = ScheduledCar(i, tick);
@@ -113,6 +115,7 @@ namespace Suborned.Sim
         }
         public void Step(Game g, DistrictRun d)
         {
+            Pavement.Step(g,d);
             // Sense every third tick, but hold a yielding car on each intervening tick.
             // Subtracting three at once makes its wheels creep forward and jump backwards in a queue.
             for (int i = 0; i < held.Length; i++) if (waiting[i]) held[i]++;
@@ -141,6 +144,10 @@ namespace Suborned.Sim
                 waiting[i] = blocked;
             }
         }
-        internal void Hash(Hash.H h) { for (int i = 0; i < held.Length; i++) h.I(held[i]).Z(waiting[i]); }
+        internal void Hash(Hash.H h)
+        {
+            for (int i = 0; i < held.Length; i++) h.I(held[i]).Z(waiting[i]);
+            Pavement.Hash(h);
+        }
     }
 }
