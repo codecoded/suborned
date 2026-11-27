@@ -21,6 +21,8 @@ namespace Suborned.World.Play
                     continue;
                 h.districtCrowd = DistrictCrowdBake.Make(h.figures);
                 DistrictPublicRealm.Install(h, scene);
+                if (!h.TryGetComponent<DistrictPaving>(out var paving)) paving = h.gameObject.AddComponent<DistrictPaving>();
+                paving.Bake(scene);
                 AssignStreetKits(h);
             }
         }
