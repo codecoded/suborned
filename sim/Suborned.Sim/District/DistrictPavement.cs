@@ -10,7 +10,7 @@ namespace Suborned.Sim
     internal sealed partial class DistrictPavement
     {
         readonly DistrictMap map;
-        readonly int[] radius, delays, clock, previousClock, passing, cellPassing = new int[4];
+        readonly int[] radius, delays, waiting, clock, previousClock, passing, cellPassing = new int[4];
         readonly bool[] brake;
         readonly Pose[] machines, proposed;
         Pose[] people, lastPeople;
@@ -23,7 +23,7 @@ namespace Suborned.Sim
         {
             this.map = map;
             int n = map.RobotRounds.Length;
-            radius = new int[n]; delays = new int[n]; clock = new int[n]; previousClock = new int[n];
+            radius = new int[n]; delays = new int[n]; waiting = new int[n]; clock = new int[n]; previousClock = new int[n];
             machines = new Pose[n]; proposed = new Pose[n]; brake = new bool[n];
             for (int i = 0; i < n; i++) radius[i] = Footprint(map.RobotRounds[i].Kind);
             people = new Pose[map.People.Length]; lastPeople = new Pose[people.Length]; passing = new int[people.Length];
@@ -60,6 +60,7 @@ namespace Suborned.Sim
         internal void Open(DistrictRun district, int tick)
         {
             Array.Clear(delays,0,delays.Length);
+            Array.Clear(waiting,0,waiting.Length);
             Array.Clear(passing,0,passing.Length);
             Array.Clear(cellPassing,0,cellPassing.Length);
             sampled = tick;
@@ -130,10 +131,10 @@ namespace Suborned.Sim
                 previousClock[i] = clock[i];
                 if (brake[i])
                 {
-                    delays[i]++;
+                    delays[i]++; waiting[i]++;
                     machines[i] = new Pose(machines[i].At, machines[i].Facing, false);
                 }
-                else { clock[i]++; machines[i] = proposed[i]; }
+                else { clock[i]++; waiting[i] = 0; machines[i] = proposed[i]; }
             }
             IndexMachines();
             (people,lastPeople) = (lastPeople,people);
@@ -148,7 +149,7 @@ namespace Suborned.Sim
                     continue;
                 }
                 // At most a walking stride, including while returning to a route after a sidestep.
-                Pt at = Walk(prior.At,raw.at,raw.facing,raw.moving,16,i,ref passing[i],map.Walk);
+                Pt at = StepAside(prior.At,i,map.Walk) ?? Walk(prior.At,raw.at,raw.facing,raw.moving,16,i,ref passing[i],map.Walk);
                 bool moving = at != prior.At;
                 people[i] = new Pose(at,moving ? at-prior.At : raw.facing,moving);
             }
@@ -173,7 +174,7 @@ namespace Suborned.Sim
 
         internal void Hash(Hash.H h)
         {
-            for (int i = 0; i < delays.Length; i++) if (delays[i] > 0) h.S("service.wait").I(i).I(delays[i]);
+            for (int i = 0; i < delays.Length; i++) if (delays[i] > 0) h.S("service.wait").I(i).I(delays[i]).I(waiting[i]);
             h.S("pavement").I(sampled);
             for (int i = 0; i < people.Length; i++) h.P(people[i].At).I(passing[i]);
             foreach (int side in cellPassing) h.I(side);

@@ -14,8 +14,33 @@ namespace Suborned.Sim
         readonly Path route;
         readonly int phase, pace, dwell;
 
-        DistrictRobotRound(StreetRobot kind, DistrictResident resident, bool papers = false)
-            : this(kind, resident.Walk, resident.Phase, papers) { }
+        static Path ServiceLane(Grid floor, Path walk, StreetRobot kind)
+        {
+            if (kind != StreetRobot.Porter && kind != StreetRobot.Shopkeeper) return walk;
+            // Put the loaded cart and the counter worker on opposite edges of the same public walk.
+            // Use the centre line at a narrow frontage where neither offset has legal paving.
+            var points=walk.Points;
+            Pt longest=default; long length=0;
+            for (int i=1;i<points.Length;i++)
+            {
+                long d=G.D2(points[i],points[i-1]);
+                if (d>length) { length=d; longest=points[i]-points[i-1]; }
+            }
+            if (length==0) return walk;
+            var side=CarGeo.Ahead(default,new Pt(-longest.Y,longest.X),100);
+            if (side.X<0 || side.X==0 && side.Y<0) side=new Pt(-side.X,-side.Y);
+            int edge=kind==StreetRobot.Porter ? 1 : -1;
+            foreach (int width in new[]{190,135,95})
+            for (int attempt=0;attempt<2;attempt++)
+            {
+                var offset=CarGeo.Ahead(default,side,width*(attempt==0 ? edge : -edge));
+                var lane=Array.ConvertAll(points,p=>p+offset);
+                bool clear=floor.Free(lane[0]);
+                for(int i=1;i<lane.Length && clear;i++) clear=floor.LineFree(lane[i-1],lane[i]);
+                if (clear) return new Path(lane);
+            }
+            return walk;
+        }
 
         DistrictRobotRound(StreetRobot kind, Path path, int offset, bool papers = false)
         {
@@ -65,10 +90,13 @@ namespace Suborned.Sim
                 var locals = map.People.Where(p => p.Id.Length == prefix.Length + 2 && p.Id.StartsWith(prefix, StringComparison.Ordinal)
                     && p.Walk.Length > 1500).OrderBy(p => Math.Abs(p.Walk.Length - 26000)).ToArray();
                 if (locals.Length == 0) continue;
-                rounds.Add(new DistrictRobotRound(kind, locals[0], venue.Style == "papers"));
+                rounds.Add(new DistrictRobotRound(kind, ServiceLane(map.Walk,locals[0].Walk,kind), locals[0].Phase, venue.Style == "papers"));
                 // The porter brings stock in while the shop machine tends its counter.
                 if (venue.Style == "market" && locals.Length > 1)
-                    rounds.Add(new DistrictRobotRound(StreetRobot.Porter, locals[locals.Length - 1]));
+                {
+                    var supplier=locals[locals.Length-1];
+                    rounds.Add(new DistrictRobotRound(StreetRobot.Porter,ServiceLane(map.Walk,supplier.Walk,StreetRobot.Porter),supplier.Phase));
+                }
                 if (sideStreet) continue;
                 var local = locals[locals.Length / 2];
                 void Utility(StreetRobot type, Pt from, Pt to)

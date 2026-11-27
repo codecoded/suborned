@@ -13,7 +13,7 @@ namespace Suborned.Play
             public GameObject root;
             public string skin;
             public Animator animator;
-            public Transform head;
+            public Transform head, rightHand;
             public bool moving;
             public Renderer[] renderers;
             public bool hidden;
@@ -46,6 +46,7 @@ namespace Suborned.Play
         readonly List<(int id, float rank)> candidates = new();
         string[] skins;
         DistrictCrowdLod crowd;
+        DistrictStreetGoods goods;
         public int InstancedPeople { get; private set; }
         public int VisiblePeople { get; private set; }
         public int VisibleVehicles { get; private set; }
@@ -56,6 +57,7 @@ namespace Suborned.Play
         {
             host = GetComponent<HandoverHost>();
             crowd = new DistrictCrowdLod(host.districtCrowd);
+            goods = new DistrictStreetGoods();
             // The flyby placed the ten permanent platform shelters in this group alongside the cars.
             var stops = GameObject.Find("Trams (old Tram at our stops)");
             if (stops)
@@ -67,6 +69,7 @@ namespace Suborned.Play
         void OnDestroy()
         {
             foreach (var car in parkedTrams) if (car) car.SetActive(true);
+            goods?.Dispose();
         }
 
         static string FigureSkin(FigureLibrary lib, DistrictResident person)
@@ -206,11 +209,17 @@ namespace Suborned.Play
                     view.moving = moving;
                     view.animator.CrossFade(moving ? "walk" : "idle", .12f);
                 }
-                if (id < Tram) VisiblePeople++;
+                if (id < Tram)
+                {
+                    VisiblePeople++;
+                    if (!hide && !d.Network.Fallen[id])
+                        goods.Carry(d.Shopping.Carried(id),view.rightHand,view.root.transform,host.View);
+                }
                 else if (id >= Robot) VisibleRobots++;
                 else VisibleVehicles++;
             }
             crowd.Draw();
+            goods.Draw(d,host.frame,host.View,g.Tick,host.StreetFrameAlpha);
         }
 
         static (Pt at, Pt facing, bool moving) Pose(DistrictRun d, int id, int tick)
@@ -340,9 +349,13 @@ namespace Suborned.Play
                 anim.cullingMode = AnimatorCullingMode.CullCompletely;
                 v.animator = anim;
                 v.head = anim.isHuman ? anim.GetBoneTransform(HumanBodyBones.Head) : null;
-                if (!v.head)
+                v.rightHand = anim.isHuman ? anim.GetBoneTransform(HumanBodyBones.RightHand) : null;
+                if (!v.head || !v.rightHand)
                     foreach (var bone in model.GetComponentsInChildren<Transform>(true))
-                        if (bone.name.EndsWith("Head", System.StringComparison.OrdinalIgnoreCase)) { v.head = bone; break; }
+                    {
+                        if (!v.head && bone.name.EndsWith("Head", System.StringComparison.OrdinalIgnoreCase)) v.head=bone;
+                        if (!v.rightHand && bone.name.EndsWith("RightHand", System.StringComparison.OrdinalIgnoreCase)) v.rightHand=bone;
+                    }
             }
             else if (skin == "tram")
                 DistrictVehicleLod.AddKitLevels(root, model, host.districtTramMid, host.districtTramFar);

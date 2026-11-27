@@ -45,6 +45,16 @@ public sealed class DistrictPavementTests
     }
 
     [Fact]
+    public void ServiceMachinesResumeTheirRoundsAfterTheOpeningQueues()
+    {
+        var g=Harbour(); var traffic=g.District!.Traffic;
+        var start=Enumerable.Range(0,traffic.RobotCount).Select(i=>traffic.ServiceMechanism(i,0).wheelMm).ToArray();
+        g.RunTo(2000);
+        for (int i=0;i<start.Length;i++)
+            Assert.True(traffic.ServiceMechanism(i,g.Tick).wheelMm-start[i]>4000,$"{traffic.RobotKind(i)} {i} stayed in its opening queue");
+    }
+
+    [Fact]
     public void ShoppingRequiresADwellAndPurchasesTravelWithTheirOwner()
     {
         var g=Harbour();var d=g.District!;
@@ -82,14 +92,35 @@ public sealed class DistrictPavementTests
     }
 
     [Fact]
-    public void ACellMemberCanFinishAClickBesideTheNewsstandWorker()
+    public void ACellMemberCanFinishTheWalkToTheLanternNewsstandContact()
     {
         var g=Harbour();var d=g.District!;
         const string person="p-z-harbour-lantern-papers-04";
         Assert.True(g.Issue(new Order { Op="scout",Do="district-visit",Target=person }).ok);
         var scout=g.Ops[0]; var goal=scout.Walk!.End;
-        int near=0;
-        while(g.Tick<2100 && scout.Walk!=null)
+        while(g.Tick<2100 && scout.Walk!=null) g.Step();
+        Assert.Null(scout.Walk);
+        Assert.True(G.Within(scout.Pos,goal,25));
+    }
+
+    [Fact]
+    public void PointAndClickPassesAnOperatingMarketSweeper()
+    {
+        var g=Harbour(); var d=g.District!;
+        var market=d.Map.Ground.Venues.Single(v=>v.Id=="lantern-market");
+        var scout=g.Ops[0]; var delta=new Pt(265,0); var goal=market.At+delta;
+        Assert.True(g.Issue(new Order { Op="scout",Do="move",Point=market.At-delta }).ok);
+        while(g.Tick<2500 && scout.Walk!=null) g.Step();
+        Assert.Null(scout.Walk);
+        int sweeper=Enumerable.Range(0,d.Traffic.RobotCount).Where(i=>d.Traffic.RobotKind(i)==StreetRobot.Sweeper)
+            .OrderBy(i=>G.D2(market.At,d.Traffic.Robot(i,g.Tick).At)).First();
+        while(g.Tick<4000 && (!G.Within(market.At,d.Traffic.Robot(sweeper,g.Tick).At,20)
+            || d.Traffic.ServiceMechanism(sweeper,g.Tick).lift<250)) g.Step();
+        Assert.True(g.Tick<4000);
+        Assert.True(d.Map.Walk.LineFree(scout.Pos,goal));
+        Assert.True(g.Issue(new Order { Tick=g.Tick,Op="scout",Do="move",Point=goal }).ok);
+        int near=0, end=g.Tick+120;
+        while(g.Tick<end && scout.Walk!=null)
         {
             g.Step();
             for(int i=0;i<d.Traffic.RobotCount;i++)

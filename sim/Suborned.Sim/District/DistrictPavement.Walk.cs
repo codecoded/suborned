@@ -21,6 +21,29 @@ namespace Suborned.Sim
         static Pt Rotate(Pt h, int cos, int sin) =>
             new Pt((h.X*cos-h.Y*sin)/100,(h.X*sin+h.Y*cos)/100);
 
+        Pt? StepAside(Pt from, int id, Grid floor)
+        {
+            var nearby=Near(from);
+            if (nearby==null) return null;
+            foreach (int r in nearby)
+            {
+                if (waiting[r]<8 || !G.Within(from,proposed[r].At,radius[r]+PersonCm+12)) continue;
+                // A stalled cart asks the people in its way for room. At a packed quay the side
+                // away from this cart may lead into another, so try the open part of the paving.
+                var away=CarGeo.Ahead(default,from-proposed[r].At,100);
+                int hand=((id+r)&1)==0 ? 1 : -1;
+                foreach (var turn in Turns)
+                for (int side=-1;side<=1;side+=2)
+                {
+                    var dir=Rotate(away,turn.cos,turn.sin*hand*side);
+                    var at=CarGeo.Ahead(from,dir,14);
+                    if (G.D2(at,proposed[r].At)<=G.D2(from,proposed[r].At)) continue;
+                    if (floor.LineFree(from,at) && Clear(at,Near(at)) && Clear(G.Lerp(from,at,1,2),nearby)) return at;
+                }
+            }
+            return null;
+        }
+
         Pt Place(Pt origin, int id, Grid floor)
         {
             if (Clear(origin,Near(origin))) return origin;
