@@ -90,7 +90,7 @@
    "usd": 0.0
   },
   "2026-11-27": {
-   "calls": 5,
+   "calls": 7,
    "usd": 0.0
   }
  },
@@ -120,7 +120,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 212,
+   "calls": 214,
    "usd": 0.0
   },
   "fishaudio:s2.1@pro": {
@@ -176,7 +176,7 @@
    "usd": 3.4
   }
  },
- "calls": 844,
+ "calls": 846,
  "failed": 28,
  "jobs": {
   "007-concepts": {
@@ -1763,6 +1763,39 @@
    "cost_per_used": null,
    "failed": 0,
    "ok": 1,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "119-harbour-service-robots": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-27": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "concept": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "construction": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 2,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 2,
    "total_usd": 0.0,
    "unknown_cost_calls": 0,
    "used": 0,
