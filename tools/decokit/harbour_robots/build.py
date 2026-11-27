@@ -110,7 +110,8 @@ def studio(tool):
         for area in screen.areas:
             if area.type=='VIEW_3D':
                 area.spaces.active.region_3d.view_perspective='CAMERA'
-                area.spaces.active.shading.color_type='MATERIAL'
+                area.spaces.active.shading.type='MATERIAL'
+                area.spaces.active.overlay.show_overlays=False
     return s
 
 
