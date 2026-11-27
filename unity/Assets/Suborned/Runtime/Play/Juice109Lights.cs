@@ -26,13 +26,13 @@ namespace Suborned.Play
         readonly List<(float distance, string key, Transform body, string model)> passing = new();
         readonly List<Transform> gone = new();
         public static int PassingPools { get; private set; }
-        Material glowSrc, beamMat, streakMat; LensFlareDataSRP headData; Mesh headMesh; float refreshT;
+        Material glowSrc, beamMat, streakMat; LensFlareDataSRP headData; Mesh headMesh; float refreshT, lastBeamStrength = -1f;
         public static int Cars { get; private set; }
 
         void Start()
         {
             glowSrc = Resources.Load<Material>("Juice109/Juice-Glow");
-            var b = Resources.Load<Material>("Juice109/Juice-Beam"); if (b) { beamMat = new Material(b) { name = "Juice109 headlight beam" }; beamMat.SetColor("_Tint", new Color(1.5f, 1.4f, 1.2f)); beamMat.SetVector("_Params", new Vector4(1.3f, 1.5f, 0.8f, 0.35f)); }
+            var b = Resources.Load<Material>("Juice109/Juice-Beam"); if (b) { beamMat = new Material(b) { name = "Juice109 headlight beam" }; beamMat.SetVector("_Params", new Vector4(1.7f, 1.5f, 0.8f, 0.25f)); }
             var s = Resources.Load<Material>("Juice109/Juice-Streak"); if (s) { streakMat = new Material(s) { name = "Juice109 tail streak" }; streakMat.SetColor("_Tint", new Color(3.2f, 0.45f, 0.35f)); }
             headData = FlareData(new Color(1f, 0.93f, 0.8f), 1f); headMesh = BeamMesh(9f, 0.09f, 1.9f, 12, 6);
         }
@@ -83,13 +83,18 @@ namespace Suborned.Play
             foreach (var car in h.Views.CarBodies()) Select(car.key, car.body, car.model);
             passing.Clear();
             var cam = h.View;
-            if (cam) foreach (var car in h.Views.PassingCarBodies())
+            if (cam)
             {
-                float distance = (car.body.position - cam.transform.position).sqrMagnitude;
-                if (distance > 55f * 55f || Lamps(car.model).f.Length == 0) continue;
-                var v = cam.WorldToViewportPoint(car.body.position);
-                if (v.z > 0 && v.x > -.12f && v.x < 1.12f && v.y > -.12f && v.y < 1.12f)
-                    passing.Add((distance, car.key, car.body, car.model));
+                // The orthographic camera stands high above an otherwise nearby street.
+                var lampOrigin = cam.orthographic ? h.Focus : cam.transform.position;
+                foreach (var car in h.Views.PassingCarBodies())
+                {
+                    float distance = (car.body.position - lampOrigin).sqrMagnitude;
+                    if (distance > 55f * 55f || Lamps(car.model).f.Length == 0) continue;
+                    var v = cam.WorldToViewportPoint(car.body.position);
+                    if (v.z > 0 && v.x > -.12f && v.x < 1.12f && v.y > -.12f && v.y < 1.12f)
+                        passing.Add((distance, car.key, car.body, car.model));
+                }
             }
             passing.Sort((a,b) => a.distance.CompareTo(b.distance));
             for (int i = 0; i < Mathf.Min(PassingLampCap, passing.Count); i++)
@@ -161,6 +166,13 @@ namespace Suborned.Play
             var h = Juice109Fx.Host; var cam = h ? h.View : null; if (!cam) return;
             bool night = PlayView107.Night || Weather107.Night, rain = Weather107.Now != null && Weather107.Now.rain > 0.01f;
             float light = rain || night ? 1f : PlayView107.StreetLampStrength;
+            // Most of the light lands on the road. Only water and dust in the air show the shaft.
+            float beamStrength = light * light * (rain ? .55f : .20f);
+            if (beamMat && Mathf.Abs(beamStrength - lastBeamStrength) > .001f)
+            {
+                beamMat.SetColor("_Tint", new Color(1f, .93f, .78f) * beamStrength);
+                lastBeamStrength = beamStrength;
+            }
             float dt = Mathf.Max(1e-4f, Time.unscaledDeltaTime), simDt = h.Paused ? 0f : dt * h.Speed;
             PassingPools = 0;
             foreach (var rig in rigs.Values)
@@ -177,7 +189,7 @@ namespace Suborned.Play
                 rig.lit = Mathf.MoveTowards(rig.lit, light, dt / 0.4f);
                 float head = rig.lit * Mathf.Lerp(0.25f, 1f, rig.moving) + (1f - rig.lit) * 0.3f * rig.moving * (rig.key == "car/getaway" ? 1f : 0f); // by day only our car's lamps, when it drives
                 foreach (var lf in rig.flares) if (lf) { float k = head * (rain ? 1.3f : 1f); bool on = k > 0.01f; if (lf.enabled != on) lf.enabled = on; lf.intensity = k; } // a dark lamp's component off: each costs CPU every frame
-                bool beams = rig.lit * rig.moving > 0.02f; foreach (var mr in rig.beams) if (mr && mr.enabled != beams) mr.enabled = beams;
+                bool beams = beamStrength > .008f && rig.lit * rig.moving > .02f; foreach (var mr in rig.beams) if (mr && mr.enabled != beams) mr.enabled = beams;
                 if (rig.spot)
                 {
                     bool on = rig.lit > 0.02f && (rig.moving > 0.02f || rig.key == "car/getaway");

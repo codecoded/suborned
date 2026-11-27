@@ -6,6 +6,6 @@
     { "name": "market-stall", "view": "follow", "select": "scout", "face": [25245,280], "tick": 2200 },
     { "name": "market-street", "view": "overhead", "at": [18250,-1620], "zoom": 13, "yaw": 2, "tick": 3500 },
     { "name": "ferry-porter", "view": "overhead", "at": [-16400,23180], "zoom": 12, "yaw": 3, "tick": 3700 },
-    { "name": "market-traffic-night", "view": "overhead", "at": [18250,-1620], "zoom": 13, "yaw": 2, "tick": 4310, "night": true }
+    { "name": "market-traffic-night", "view": "overhead", "at": [18250,-1620], "zoom": 13, "yaw": 2, "tick": 3490, "night": true }
   ]
 }
