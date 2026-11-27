@@ -18,6 +18,7 @@ export type Venue = {
   fixtures: Fixture[];
   boarding?: { at: Point; along: Point };
   roundEnd?: { at: Point; along: Point; name: string; span: number };
+  callsAt?: string;
 };
 type Strip = { id: string; line: readonly (readonly number[])[]; width: number };
 export function project(v: Pick<Venue, 'at' | 'along'>, along: number, across: number): Point {
@@ -71,7 +72,9 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
       if (!found) return;
       p = { ...p, at: found };
     }
-    venues.push({ id, name, ...p, style, count, span, width, generation, fixtures: [] });
+    const venue: Venue = { id, name, ...p, style, count, span, width, generation, fixtures: [] };
+    venues.push(venue);
+    return venue;
   }
   for (const stop of world.transit.stops) {
     const xs = stop.ring.map((p) => p[0]),
@@ -101,6 +104,7 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
     style: Style,
     count: number,
     span = 14,
+    generation = 0,
   ) {
     const s = strips.find((s) => s.id === feature);
     if (!s) throw Error('No district feature ' + feature);
@@ -109,7 +113,7 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
     p.at = project(p, 0, across);
     // Positive across always faces away from the traffic at a roadside venue.
     if (side < 0) p.along = [-p.along[0], -p.along[1]];
-    add(id, name, p, style, count, span, feature.startsWith('road/') ? 1.2 : 2.3);
+    return add(id, name, p, style, count, span, feature.startsWith('road/') ? 1.2 : 2.3, generation);
   }
   street('sunset-coffee', 'road/sunset-way', 691 / 860, -1, 'Sunset Way coffee stand', 'coffee', 17);
   street('lantern-market', 'road/lantern-lane', 0.5, 1, 'Lantern Lane night market', 'market', 20, 20);
@@ -183,6 +187,23 @@ export function streetPlaces(world: World, open: (point: Point) => boolean): Ven
       const at: Point = [(Math.min(...xs) + Math.max(...xs)) / 2, Math.max(...bridge.ring.map(p => p[1])) + 15];
       venue.roundEnd = { at, along: [1, 0], name: 'Market Street end of Lantern Court', span: 8 };
     }
+  }
+  // People coming off a shift share the pavements between front doors, shops and transport.
+  // Append the new households as a generation so earlier residents retain their names and indices.
+  const walks = [
+    ['apron-walkups', 'road/apron-road', .33, 1, 'Apron Road walk-ups', 'rocket-gate'],
+    ['orbit-walkups', 'road/orbit-walk', .38, -1, 'Orbit Walk residences', 'apron-walkups'],
+    ['lantern-commuters', 'road/market-street', .57, -1, 'Market Street boarding houses', 'meridian-court'],
+    ['lamplight-commuters', 'foot/garden-walk', .57, 1, 'Lamplight gallery stairs', 'lamplight'],
+    ['quay-commuters', 'foot/harbour-promenade', .72, -1, 'Quayside lodgings', 'ferry-landing'],
+    ['garden-commuters', 'foot/gardens-gate', .42, -1, 'Garden promenade', 'gardens'],
+  ] as const;
+  for (const [id, strip, fraction, side, name, destination] of walks) {
+    const v = street(id, strip, fraction, side, name, 'walk', 12, 10, 2);
+    const other = venues.find(place => place.id === destination);
+    if (!v || !other) throw Error('Missing public walk between ' + name + ' and ' + destination);
+    v.callsAt = other.id;
+    v.roundEnd = { at: other.at, along: other.along, name: other.name, span: Math.min(8, other.span) };
   }
   return venues;
 }

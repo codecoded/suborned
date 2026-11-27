@@ -22,6 +22,10 @@ namespace Suborned.Play
             public Vector3 last; public float speed, brake, lit, moving, tailWas = -1f; public bool seen;
         }
         readonly Dictionary<Transform, Rig> rigs = new(); readonly Dictionary<string, (Vector3[] f, Vector3[] r)> lamps = new();
+        const int PassingLampCap = 6;
+        readonly List<(float distance, string key, Transform body, string model)> passing = new();
+        readonly List<Transform> gone = new();
+        public static int PassingPools { get; private set; }
         Material glowSrc, beamMat, streakMat; LensFlareDataSRP headData; Mesh headMesh; float refreshT;
         public static int Cars { get; private set; }
 
@@ -71,14 +75,36 @@ namespace Suborned.Play
             var h = Juice109Fx.Host; if (!h || h.Views == null) return;
             if ((refreshT -= Time.unscaledDeltaTime) > 0f) return; refreshT = 0.5f;
             foreach (var r in rigs.Values) r.seen = false;
-            foreach (var (key, body, model) in h.Views.CarBodies())
+            void Select(string key, Transform body, string model)
             {
-                if (!rigs.TryGetValue(body, out var rig)) { var (f, rr) = Lamps(model); if (f.Length == 0 && rr.Length == 0) continue; rig = Build(key, body, f, rr); rigs[body] = rig; }
+                if (!rigs.TryGetValue(body, out var rig)) { var (f, rr) = Lamps(model); if (f.Length == 0 && rr.Length == 0) return; rigs[body] = rig = Build(key, body, f, rr); }
                 rig.seen = true;
             }
-            var gone = new List<Transform>(); foreach (var kv in rigs) if (!kv.Key || !kv.Value.seen) gone.Add(kv.Key);
-            foreach (var k in gone) { if (rigs[k].spot) Destroy(rigs[k].spot.gameObject); rigs.Remove(k); } // the rest are the body's children: gone with it, or hidden with it
-            Cars = rigs.Count;
+            foreach (var car in h.Views.CarBodies()) Select(car.key, car.body, car.model);
+            passing.Clear();
+            var cam = h.View;
+            if (cam) foreach (var car in h.Views.PassingCarBodies())
+            {
+                float distance = (car.body.position - cam.transform.position).sqrMagnitude;
+                if (distance > 55f * 55f || Lamps(car.model).f.Length == 0) continue;
+                var v = cam.WorldToViewportPoint(car.body.position);
+                if (v.z > 0 && v.x > -.12f && v.x < 1.12f && v.y > -.12f && v.y < 1.12f)
+                    passing.Add((distance, car.key, car.body, car.model));
+            }
+            passing.Sort((a,b) => a.distance.CompareTo(b.distance));
+            for (int i = 0; i < Mathf.Min(PassingLampCap, passing.Count); i++)
+            {
+                var car = passing[i]; Select(car.key, car.body, car.model);
+            }
+            gone.Clear(); Cars = 0;
+            foreach (var pair in rigs)
+            {
+                var rig = pair.Value;
+                if (!pair.Key) { gone.Add(pair.Key); if (rig.tailMat) Destroy(rig.tailMat); }
+                else if (rig.seen) Cars++;
+                else { Off(rig); rig.last = pair.Key.position; rig.speed = rig.brake = rig.moving = 0f; }
+            }
+            foreach (var key in gone) rigs.Remove(key);
         }
 
         Rig Build(string key, Transform body, Vector3[] f, Vector3[] r)
@@ -98,7 +124,7 @@ namespace Suborned.Play
             }
             if (f.Length > 0)
             {
-                var sg = new GameObject("Juice109 headlight pool (" + key + ")"); sg.transform.SetParent(transform, false); var sp = sg.AddComponent<Light>();
+                var sg = new GameObject("Juice109 headlight pool (" + key + ")"); sg.transform.SetParent(body, false); var sp = sg.AddComponent<Light>();
                 sp.type = LightType.Spot; sp.shadows = LightShadows.None; sp.color = new Color(1f, 0.92f, 0.78f); sp.range = 18f; sp.spotAngle = 70f; sp.innerSpotAngle = 35f; sp.intensity = 0f; sp.enabled = false; rig.spot = sp;
             }
             rig.tails = new Transform[r.Length];
@@ -127,17 +153,20 @@ namespace Suborned.Play
             foreach (var mr in rig.beams) if (mr && mr.enabled) mr.enabled = false;
             if (rig.spot && rig.spot.enabled) rig.spot.enabled = false;
             foreach (var t in rig.tails) if (t && t.gameObject.activeSelf) t.gameObject.SetActive(false);
-            foreach (var st in rig.streaks) if (st) st.emitting = false;
+            foreach (var st in rig.streaks) if (st && st.emitting) { st.emitting = false; st.Clear(); }
         }
 
         void LateUpdate()
         {
             var h = Juice109Fx.Host; var cam = h ? h.View : null; if (!cam) return;
-            bool night = PlayView107.Night || Weather107.Night, rain = Weather107.Now != null && Weather107.Now.rain > 0.01f, dark = night || rain;
+            bool night = PlayView107.Night || Weather107.Night, rain = Weather107.Now != null && Weather107.Now.rain > 0.01f;
+            float light = rain || night ? 1f : PlayView107.StreetLampStrength;
             float dt = Mathf.Max(1e-4f, Time.unscaledDeltaTime), simDt = h.Paused ? 0f : dt * h.Speed;
+            PassingPools = 0;
             foreach (var rig in rigs.Values)
             {
-                var b = rig.body; if (!b) continue;
+                var b = rig.body; if (!rig.seen || !b) continue;
+                if (!b.gameObject.activeInHierarchy) { Off(rig); continue; }
                 var vp = cam.WorldToViewportPoint(b.position); bool onScreen = vp.z > 0f && vp.x > -0.15f && vp.x < 1.15f && vp.y > -0.15f && vp.y < 1.15f;
                 if (!onScreen) { Off(rig); rig.last = b.position; continue; } // off screen: no lights work at all (its lamps come back as it comes into view)
                 var mv = b.position - rig.last; mv.y = 0f; rig.last = b.position;
@@ -145,7 +174,7 @@ namespace Suborned.Play
                 float was = rig.speed; rig.speed = Mathf.Lerp(rig.speed, now, 1f - Mathf.Exp(-dt / 0.15f));
                 if (simDt > 0f && (was - rig.speed) / simDt > 1.4f && was > 1f) rig.brake = 1f; else rig.brake = Mathf.MoveTowards(rig.brake, 0f, dt / 0.5f); // losing speed: the brake lights
                 rig.moving = Mathf.MoveTowards(rig.moving, rig.speed > 0.6f ? 1f : 0f, dt / 0.3f);
-                rig.lit = Mathf.MoveTowards(rig.lit, dark ? 1f : 0f, dt / 0.4f);
+                rig.lit = Mathf.MoveTowards(rig.lit, light, dt / 0.4f);
                 float head = rig.lit * Mathf.Lerp(0.25f, 1f, rig.moving) + (1f - rig.lit) * 0.3f * rig.moving * (rig.key == "car/getaway" ? 1f : 0f); // by day only our car's lamps, when it drives
                 foreach (var lf in rig.flares) if (lf) { float k = head * (rain ? 1.3f : 1f); bool on = k > 0.01f; if (lf.enabled != on) lf.enabled = on; lf.intensity = k; } // a dark lamp's component off: each costs CPU every frame
                 bool beams = rig.lit * rig.moving > 0.02f; foreach (var mr in rig.beams) if (mr && mr.enabled != beams) mr.enabled = beams;
@@ -155,6 +184,7 @@ namespace Suborned.Play
                     if (rig.spot.enabled != on) rig.spot.enabled = on;
                     if (on)
                     {
+                        if (!rig.key.StartsWith("car/", System.StringComparison.Ordinal)) PassingPools++;
                         float z = 0f; foreach (var p in rig.F) z = Mathf.Max(z, p.z);
                         rig.spot.transform.SetPositionAndRotation(b.TransformPoint(new Vector3(0f, 0.75f, z)), Quaternion.LookRotation(b.forward * 0.86f - Vector3.up * 0.5f, Vector3.up));
                         rig.spot.intensity = 9f * rig.lit * Mathf.Lerp(0.45f, 1f, rig.moving);

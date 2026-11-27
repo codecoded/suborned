@@ -61,7 +61,7 @@ namespace Suborned.Play
         sealed class Result
         {
             public string Name = "", Status = "ok", Error = "", Size = ""; public int Tick, Frames; public bool Audited, AuditClean = true;
-            public long Triangles, Batches, StreetTriangles; public int Citizens, Instanced, Vehicles, Robots;
+            public long Triangles, Batches, StreetTriangles; public int Citizens, Instanced, Vehicles, Robots, PassingPools;
             public float MainMs, RenderMs, PresentMs, SetPass, ShadowCasters;
             public readonly List<string> Files = new(), Issues = new(); public float MeanMs = -1, P99Ms = -1, GpuMs = -1;
         }
@@ -208,6 +208,7 @@ namespace Suborned.Play
                     h.SetPaused(true);
                     var street = h.GetComponent<DistrictStreet>();
                     if (street) { res.Citizens = street.VisiblePeople; res.Instanced = street.InstancedPeople; res.Vehicles = street.VisibleVehicles; res.Robots = street.VisibleRobots; res.StreetTriangles = street.VisibleStreetTriangles(); }
+                    res.PassingPools = Juice109Lights.PassingPools;
                     ds.Sort(); res.Frames = ds.Count; res.MeanMs = ds.Average(); res.P99Ms = ds[(int)(ds.Count * 0.99f)]; res.Tick = h.Game.Tick;
                 }
                 yield return new WaitForSecondsRealtime(s.settle); // the camera's ease, the HUD's fades
@@ -434,7 +435,8 @@ namespace Suborned.Play
                 if (r.MeanMs >= 0) sb.Append(", \"render\": {\"medianTriangles\": ").Append(r.Triangles).Append(", \"medianBatches\": ").Append(r.Batches)
                     .Append(", \"meanSetPassCalls\": ").Append(F(r.SetPass)).Append(", \"meanShadowCasters\": ").Append(F(r.ShadowCasters))
                     .Append(", \"streetMeshTriangles\": ").Append(r.StreetTriangles).Append(", \"citizens\": ").Append(r.Citizens).Append(", \"instancedCitizens\": ").Append(r.Instanced)
-                    .Append(", \"vehicles\": ").Append(r.Vehicles).Append(", \"robots\": ").Append(r.Robots).Append('}');
+                    .Append(", \"vehicles\": ").Append(r.Vehicles).Append(", \"robots\": ").Append(r.Robots)
+                    .Append(", \"passingHeadlights\": ").Append(r.PassingPools).Append('}');
                 else if (r.Frames > 0) sb.Append(", \"clipFrames\": ").Append(r.Frames);
                 sb.Append('}');
             }

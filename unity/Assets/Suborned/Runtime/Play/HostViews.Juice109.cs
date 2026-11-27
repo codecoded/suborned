@@ -15,5 +15,18 @@ namespace Suborned.Play
                 yield return (kv.Key, kv.Value, modelSource.TryGetValue(kv.Key, out var m) ? m : "");
             }
         }
+
+        internal IEnumerable<(string key, Transform body, string model)> PassingCarBodies()
+        {
+            foreach (var car in trafficCars.Values)
+            {
+                if (!car.Model || !car.T.gameObject.activeInHierarchy || car.Box) continue;
+                var model = car.Kit switch { "sedan-o" => host.sedanOfficial, "sedan-g" => host.sedanGetaway,
+                    "van" => host.trafficVan, _ => host.trafficScooter };
+                if (model) yield return (car.Kit, car.Model, model.name);
+            }
+            if (host.HarbourStreet)
+                foreach (var car in host.HarbourStreet.CarBodies()) yield return car;
+        }
     }
 }

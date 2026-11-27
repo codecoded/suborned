@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Suborned.Sim
 {
@@ -35,18 +34,33 @@ namespace Suborned.Sim
                             foreach (int i in ids) if (G.Within(people[i], p, r)) return true;
                 return false;
             }
+
+            public bool CarAhead(Pt p, int self, Pose[] cars, bool[] vans)
+            {
+                const int reach = 380;
+                for (int x = Cell(p.X - reach); x <= Cell(p.X + reach); x++)
+                    for (int y = Cell(p.Y - reach); y <= Cell(p.Y + reach); y++)
+                        if (buckets.TryGetValue((x, y), out var ids))
+                            foreach (int i in ids)
+                            {
+                                if (i == self || !G.Within(p, cars[i].At, vans[i] ? reach : 290)) continue;
+                                var a = cars[self].Facing; var b = cars[i].Facing;
+                                if ((long)a.X * b.X + (long)a.Y * b.Y > 0 || i < self) return true;
+                            }
+                return false;
+            }
         }
 
         readonly DistrictMap map;
         readonly int[] held, streets, phases;
-        readonly DistrictLine[] patrols;
+        readonly bool[] vans;
         readonly List<Pt> people = new();
-        readonly Occupancy pavement = new();
+        readonly Occupancy pavement = new(), carriageway = new();
         readonly Pose[] trams, cars;
         readonly TramService rail;
         public int TramCount => rail.Count;
         public int CarCount => cars.Length;
-        public int RobotCount => patrols.Length;
+        public int RobotCount => map.RobotRounds.Length;
         public DistrictTraffic(DistrictMap map)
         {
             this.map = map;
@@ -56,23 +70,21 @@ namespace Suborned.Sim
             for (int i = 0; i < map.Streets.Length; i++)
             {
                 var path = map.Streets[i].Path;
-                int count = Math.Max(1, (int)((path.Length + 64999) / 65000));
+                int spacing = map.Streets[i].LaneCm >= 700 ? 29000 : 42000;
+                int count = Math.Max(2, (int)((path.Length + spacing - 1) / spacing));
                 long round = 2 * ((path.Length + CarPace(i) - 1) / CarPace(i) + 55);
                 for (int k = 0; k < count; k++) { routes.Add(i); clocks.Add((int)((i * 1379L + 1900 + round * k / count) % round)); }
             }
             streets = routes.ToArray(); phases = clocks.ToArray();
             held = new int[streets.Length]; cars = new Pose[streets.Length];
-            // Patrol a public gathering from one end to the other rather than crossing house walls.
-            patrols = map.People.Where(r => r.Local && r.Id.EndsWith("-01", StringComparison.Ordinal))
-                .Where((_, i) => i % 2 == 0).Select(r => new DistrictLine { Id = r.Id, Path = r.Walk }).ToArray();
+            vans = new bool[cars.Length];
+            for (int i = 0; i < vans.Length; i++) vans[i] = (i * 3 + streets[i]) % 7 == 0;
         }
         static int CarPace(int street) => 410 + street % 5 * 37;
         public Pose Tram(int i, int tick) => rail.At(i, tick);
-        public Pose Robot(int i, int tick)
-        {
-            var s = DistrictMap.Shuttle(patrols[i].Path, tick, i * 91, 85, 190);
-            return new Pose(s.at, s.facing, s.moving);
-        }
+        public bool DeliveryVan(int i) => vans[i];
+        public StreetRobot RobotKind(int i) => map.RobotRounds[i].Kind;
+        public Pose Robot(int i, int tick) => map.RobotRounds[i].At(tick);
         public Pose Car(int i, int tick)
         {
             int lane = streets[i];
@@ -90,20 +102,20 @@ namespace Suborned.Sim
             for (int i = 0; i < map.People.Length; i++)
                 if ((d.Roams(i) || d.Network.Away(i)) && g.DistrictPersonAt(i) is Pt p && !g.S.Grid.InGrid(p)) Pedestrian(p);
             for (int i = 0; i < trams.Length; i++) trams[i] = Tram(i, g.Tick);
-            for (int i = 0; i < cars.Length; i++) cars[i] = Car(i, g.Tick);
+            carriageway.Clear();
+            for (int i = 0; i < cars.Length; i++)
+            {
+                cars[i] = Car(i, g.Tick);
+                carriageway.Add(cars[i].At, i);
+            }
             for (int i = 0; i < cars.Length; i++)
             {
                 var car = cars[i];
                 if (!car.Moving || g.S.Grid.InGrid(car.At)) continue;
-                var ahead = CarGeo.Ahead(car.At, car.Facing, 420);
+                var ahead = CarGeo.Ahead(car.At, car.Facing, vans[i] ? 510 : 420);
                 bool blocked = d.Network.HoldsRoad(ahead) || G.Within(ahead, g.GetawayCarPos(), 370) || pavement.Blocked(ahead, 210, people);
                 for (int k = 0; k < trams.Length && !blocked; k++) blocked = G.Within(ahead, trams[k].At, 620);
-                for (int k = 0; k < cars.Length && !blocked; k++)
-                    if (k != i && G.Within(ahead, cars[k].At, 290))
-                    {
-                        long heading = (long)car.Facing.X * cars[k].Facing.X + (long)car.Facing.Y * cars[k].Facing.Y;
-                        blocked = heading > 0 || k < i;
-                    }
+                if (!blocked) blocked = carriageway.CarAhead(ahead, i, cars, vans);
                 if (blocked) held[i] += 3;
             }
         }

@@ -21,6 +21,10 @@ namespace Suborned.OldTown
 
         bool w107Bound, w107Night; TimeOfDay097.Base w107Day; float[] w107Probe; float w107AmbInt; float w107Next;
         Volume w107Ev; ColorAdjustments w107Adj; readonly List<Light> w107Lamps = new();
+        readonly List<float> baseLampPower = new();
+        readonly List<(float d, Light l)> byDistance = new();
+        readonly HashSet<Light> liveLamps = new();
+        float lampShare;
 
         void PlayLight107(float[] p)
         {
@@ -31,6 +35,7 @@ namespace Suborned.OldTown
                 w107Probe = ambientProbe != null ? (float[])ambientProbe.Clone() : new float[0]; w107AmbInt = ambientIntensity; Lamps107();
             }
             bool night = p[0] > 0.5f; float sunK = p[1], ambK = p[2], desat = p[3]; w107Night = night;
+            lampShare = night ? 1f : 0f;
             var s = night ? TimeOfDay097.Evaluate(NightHour, w107Day, true) : default;
             Color sun = night ? s.sun : w107Day.sun, sky = night ? s.sky : w107Day.sky, eq = night ? s.eq : w107Day.eq, gr = night ? s.ground : w107Day.ground;
             sun = Color.Lerp(sun, new Color(sun.grayscale, sun.grayscale, sun.grayscale), desat);
@@ -49,6 +54,25 @@ namespace Suborned.OldTown
             Cap107();
         }
 
+        // In free roam the same clock as the HUD moves the sun, moon and shadow direction.
+        // The original briefing and photo overrides still apply their authored light states.
+        void StreetSun(float[] p)
+        {
+            if (!w107Bound || TimeOfDay097.Running) return;
+            var s = TimeOfDay097.Evaluate(p[0], w107Day);
+            float mix = p[4];
+            var n = Night107();
+            sunRotation = s.rot;
+            sunColour = Color.Lerp(s.sun, new Color(s.sun.grayscale, s.sun.grayscale, s.sun.grayscale), p[3]);
+            sunIntensity = s.intensity * p[1] * (s.moon ? n.moon : 1f);
+            float fill = Mathf.Lerp(p[2], n.ambient, mix);
+            var cool = Color.Lerp(Color.white, new Color(.94f,.98f,1.06f), p[3] * (1f - mix));
+            ambientSky = s.sky * cool * fill; ambientEquator = s.eq * cool * fill; ambientGround = s.ground * fill;
+            ambientProbe = TimeOfDay097.Probe(ambientSky, ambientEquator, ambientGround);
+            if (held) PlayAmbient();
+            if (!Mathf.Approximately(lampShare, mix)) { lampShare = mix; Cap107(); }
+        }
+
         void Lamps107()
         {
             var taken = new List<Vector3>(); var root = GameObject.Find(NightRoot);
@@ -63,7 +87,7 @@ namespace Suborned.OldTown
                 if (near) continue;
                 var go = new GameObject("lamp"); go.transform.SetParent(parent, false); go.transform.position = head;
                 var l = go.AddComponent<Light>(); l.type = LightType.Point; l.color = new Color(1f, 0.74f, 0.46f); l.range = table ? 3.5f : 9f; l.shadows = LightShadows.None; l.enabled = false;
-                l.intensity = table ? 1.2f : 6f; NightLamp107(l); w107Lamps.Add(l);
+                l.intensity = table ? 1.2f : 6f; NightLamp107(l); w107Lamps.Add(l); baseLampPower.Add(l.intensity);
             }
         }
 
@@ -72,14 +96,27 @@ namespace Suborned.OldTown
         {
             w107Next = Time.unscaledTime + 0.25f;
             Vector3 f = cam ? cam.transform.position : Vector3.zero;
-            if (cam) { var fw = cam.transform.forward; if (Mathf.Abs(fw.y) > 1e-3f) f = cam.transform.position + fw * (-cam.transform.position.y / fw.y); }
-            var order = new List<(float d, Light l)>();
-            foreach (var l in w107Lamps) { if (!l) continue; var d = l.transform.position - f; d.y = 0; if (w107Night && d.sqrMagnitude <= LiveRadius * LiveRadius) order.Add((d.sqrMagnitude, l)); }
-            order.Sort((a, b) => a.d.CompareTo(b.d));
-            var live = new HashSet<Light>(); for (int i = 0; i < order.Count && i < LiveCap; i++) live.Add(order[i].l);
-            foreach (var l in w107Lamps) if (l) l.enabled = live.Contains(l);
+            if (cam)
+            {
+                var fw = cam.transform.forward;
+                float reach = fw.y < -.001f ? Mathf.Max(0f, -f.y / fw.y) : 30f;
+                f += fw * (cam.orthographic ? reach : Mathf.Min(reach, 30f));
+            }
+            byDistance.Clear(); liveLamps.Clear();
+            if (lampShare > .005f)
+            {
+                foreach (var l in w107Lamps) { if (!l) continue; var d = l.transform.position - f; d.y = 0; if (d.sqrMagnitude <= LiveRadius * LiveRadius) byDistance.Add((d.sqrMagnitude, l)); }
+                byDistance.Sort((a, b) => a.d.CompareTo(b.d));
+                for (int i = 0; i < byDistance.Count && i < LiveCap; i++) liveLamps.Add(byDistance[i].l);
+            }
+            for (int i = 0; i < w107Lamps.Count; i++)
+            {
+                var lamp = w107Lamps[i]; if (!lamp) continue;
+                lamp.enabled = liveLamps.Contains(lamp);
+                if (lamp.enabled) lamp.intensity = baseLampPower[i] * lampShare;
+            }
         }
 
-        void LateUpdate() { if (w107Bound && w107Night && Time.unscaledTime >= w107Next) Cap107(); }
+        void LateUpdate() { if (w107Bound && lampShare > .005f && Time.unscaledTime >= w107Next) Cap107(); }
     }
 }

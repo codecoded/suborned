@@ -51,6 +51,34 @@ public sealed class HarbourStreetTests
     }
 
     [Fact]
+    public void CommutersReachTheirNamedDestinationAndServiceMachinesWorkThePublicFloor()
+    {
+        var d = Open().District!;
+        var map = d.Map;
+        foreach (var (origin, destination) in new[] { ("apron-walkups", "rocket-gate"),
+            ("orbit-walkups", "apron-walkups"), ("lantern-commuters", "meridian-court"),
+            ("lamplight-commuters", "lamplight"), ("quay-commuters", "ferry-landing"), ("garden-commuters", "gardens") })
+        {
+            var walker = map.People[map.Index["p-z-harbour-" + origin + "-04"]];
+            var other = map.Ground.Venues.Single(v => v.Id == destination);
+            Assert.True(walker.Walk.Length > 15000 && G.Within(walker.Walk.End, other.At, 1800), origin);
+            Assert.Contains(walker.Ties, t => t.kind == "regular" && t.person == map.Index["p-z-harbour-" + destination + "-02"]);
+        }
+        var traffic = d.Traffic;
+        var robots = Enumerable.Range(0, traffic.RobotCount).ToArray();
+        foreach (StreetRobot kind in Enum.GetValues(typeof(StreetRobot)))
+            Assert.Contains(robots, i => traffic.RobotKind(i) == kind);
+        foreach (var (id, kind) in new[] { ("ferry-landing", StreetRobot.Porter),
+            ("lantern-market", StreetRobot.Shopkeeper), ("gardens", StreetRobot.Nanny) })
+        {
+            var site = map.Ground.Venues.Single(v => v.Id == id);
+            Assert.Contains(robots, i => traffic.RobotKind(i) == kind && Enumerable.Range(0, 60)
+                .Select(t => traffic.Robot(i, t * 13)).Any(p => p.Moving && G.Within(p.At, site.At, 3000)));
+        }
+        Assert.Contains(Enumerable.Range(0, traffic.CarCount), traffic.DeliveryVan);
+    }
+
+    [Fact]
     public void ScheduledFleetServesBothPlatformSidesAndNeighbourhoodPatrols()
     {
         var district = Open().District!;

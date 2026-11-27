@@ -9,12 +9,40 @@ namespace Suborned.Play
         // Filled from the existing vehicle kit for the build and Editor play.
         [HideInInspector]
         public GameObject districtTram, districtTramMid, districtTramFar, districtRobotMid, districtRobotFar;
+        [System.Serializable] public sealed class ServiceRobotModel
+        {
+            public StreetRobot kind;
+            public GameObject near, middle, far;
+        }
+        [HideInInspector] public ServiceRobotModel[] districtServiceRobots = System.Array.Empty<ServiceRobotModel>();
         [HideInInspector] public DistrictCrowdFigure[] districtCrowd = System.Array.Empty<DistrictCrowdFigure>();
         // Historical mission fixtures have a closed ending. Normal play starts in the district.
         [System.NonSerialized] public bool missionScenario;
         internal float StreetFrameAlpha => Paused ? 1f : Mathf.Clamp01(acc * Suborned.Sim.Game.Hz);
         public DistrictJournal DistrictBook { get; private set; }
         internal DistrictStreet HarbourStreet { get; private set; }
+        string clockStart;
+        int startSeconds;
+        internal int CitySeconds
+        {
+            get
+            {
+                if (clockStart != MissionStartsAt)
+                {
+                    var parts = MissionStartsAt.Split(':');
+                    startSeconds = int.Parse(parts[0]) * 3600 + int.Parse(parts[1]) * 60 + (parts.Length > 2 ? int.Parse(parts[2]) : 0);
+                    clockStart = MissionStartsAt;
+                }
+                int nightStart = Game?.District != null && Game.Night ? 4 * 3600 : 0;
+                return (startSeconds + nightStart + (Game?.Tick ?? 0) / Suborned.Sim.Game.Hz) % 86400;
+            }
+        }
+        public string CityClock()
+        {
+            if (Game == null) return "";
+            int s = CitySeconds;
+            return $"{s / 3600:00}:{s / 60 % 60:00}:{s % 60:00}";
+        }
 
         void InstallDistrict()
         {

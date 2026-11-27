@@ -18,6 +18,7 @@ namespace Suborned.Play
         public static PlayView107 Instance { get; private set; }
         /// <summary>The night and weather drawn now.</summary>
         public static bool Night => Instance && Instance.night;
+        public static float StreetLampStrength => Instance ? Instance.lampStrength : 0f;
         public static string Weather => Instance ? Instance.weather : "clear";
         static bool? nightOverride; static string weatherOverride;
         static readonly string[] LampNames = { "Streetlamp", "SphereLamp", "GlobeLamp", "BackDoorLamp", "CafeLamp" };
@@ -25,6 +26,10 @@ namespace Suborned.Play
         HandoverHost host; Component look; LightPhase phase; bool bound;
         bool night, nightApplied; string weather = "clear", weatherApplied = "";
         Weather107.Data data;
+        float lampStrength;
+        int lastSunSample = -1;
+        readonly float[] streetSun = new float[5];
+        static readonly int Rooms = Shader.PropertyToID("_DKRoomsNight");
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
@@ -47,7 +52,7 @@ namespace Suborned.Play
             host = FindAnyObjectByType<HandoverHost>();
             phase = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>();
             look = null; foreach (var c in FindObjectsByType<Camera>(FindObjectsInactive.Include)) if (c.GetComponent("OldTownPlayLook") is Component k && k) { look = k; break; }
-            data = Weather107.Load(); nightApplied = false; weatherApplied = "\n"; bound = true;
+            data = Weather107.Load(); nightApplied = false; weatherApplied = "\n"; bound = true; lastSunSample = -1;
             Debug.Log($"PlayView107: bound; play look {(look ? look.name : "none")}, LightPhase {(phase ? phase.name : "none")}; night {(CanNight ? "possible" : "NOT possible in this scene")}");
         }
 
@@ -58,15 +63,34 @@ namespace Suborned.Play
             if (!bound) Bind();
             if (!host) host = FindAnyObjectByType<HandoverHost>();
             var g = host ? host.Game : null;
-            night = (nightOverride ?? (g != null && g.Night)) && CanNight;
+            bool clock = g?.District != null && !nightOverride.HasValue && phase;
+            int seconds = clock ? host.CitySeconds : 0;
+            night = (nightOverride ?? (clock ? seconds < 5.5f * 3600 || seconds >= 18.5f * 3600 : g != null && g.Night)) && phase;
             weather = weatherOverride ?? (g != null ? g.Weather : "clear");
-            if (force || night != nightApplied || weather != weatherApplied) Apply();
+            bool changed = force || night != nightApplied || weather != weatherApplied;
+            if (changed || (!clock && lastSunSample >= 0)) Apply();
+            if (clock)
+            {
+                // The existing city clock advances at simulation speed and stops during a conversation.
+                if (changed || seconds / 5 != lastSunSample)
+                {
+                    float hour = seconds / 3600f;
+                    float daylight = Mathf.Sin((hour - 6f) * Mathf.PI / 12f);
+                    lampStrength = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.19f, -.10f, daylight));
+                    var w = data.Of(weather);
+                    streetSun[0] = hour; streetSun[1] = w.sun; streetSun[2] = w.ambient; streetSun[3] = w.desaturate; streetSun[4] = lampStrength;
+                    if (look) look.SendMessage("StreetSun", streetSun, SendMessageOptions.DontRequireReceiver);
+                    Shader.SetGlobalVector(Rooms, new Vector4(Look097.RoomsNight.x * lampStrength, Look097.RoomsNight.y * lampStrength, 0f, 0f));
+                    lastSunSample = seconds / 5;
+                }
+            }
+            else lastSunSample = -1;
             Weather107.Frame(host);
         }
 
         void Apply()
         {
-            nightApplied = night; weatherApplied = weather;
+            nightApplied = night; weatherApplied = weather; lampStrength = night ? 1f : 0f;
             if (phase) { phase.Focus = () => host ? host.FocusPoint : (Vector3?)null; if (phase.Night != night) phase.Set(night); NightLamps107.Apply(phase, data.night, night); } // Glint's testbed port: the lamps warm and stronger
             Weather107.Apply(weather, night, data);
             Shader.SetGlobalVector("_DKRoomsNight", night ? new Vector4(Look097.RoomsNight.x, Look097.RoomsNight.y, 0, 0) : Vector4.zero); // the lit rooms behind the glass (look097.json)

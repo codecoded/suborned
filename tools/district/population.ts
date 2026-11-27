@@ -72,8 +72,10 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
         w = ((k * 0.41421356 + 0.27 * n) % 1) * 2 - 1;
       const counter = v.fixtures.filter(f => f.kit === 'FlowerBarrow' || f.kit === 'ProduceStall')[k-1];
       const occupation = counter ? (counter.kit === 'FlowerBarrow' ? 'flower-seller' : 'fruiterer') : t.position;
-      const destination = v.roundEnd ?? v.boarding ?? v;
-      const streetStop = project(destination, -u * (v.roundEnd?.span ?? (v.boarding ? 4 : v.span)), ((k % 3) - 1) * v.width * 0.77);
+      // Three neighbours work the frontage. Their neighbours walk to a real second address.
+      const round = v.callsAt && k < 3 ? undefined : v.roundEnd;
+      const destination = round ?? v.boarding ?? v;
+      const streetStop = project(destination, -u * (round?.span ?? (v.boarding ? 4 : v.span)), ((k % 3) - 1) * v.width * 0.77);
       const home = atPlace(
         id + '-home',
         'home',
@@ -84,7 +86,7 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
         id + '-post',
         'stand',
         counter ? v.name + (counter.kit === 'FlowerBarrow' ? ' flower barrow' : ' fruit stall')
-          : v.roundEnd?.name ?? (v.boarding ? v.name + ' boarding apron' : v.name),
+          : round?.name ?? (v.boarding ? v.name + ' boarding apron' : v.name),
         standing(counter ? tradePost(counter) : streetStop, v),
       );
       const p: Person = {
@@ -158,6 +160,8 @@ export async function districtPopulation(base: Prepared, venues: Venue[], standi
   }
   groups.forEach((g, n) => {
     regular(g[2]!, templates[(n * 7) % templates.length]!);
+    const destination = venues[n]!.callsAt;
+    if (destination) regular(g[3]!, groups[venues.findIndex(v => v.id === destination)]![1]!);
   });
   const court = venues.findIndex(v => v.id === 'meridian-court');
   const newsstand = venues.findIndex(v => v.id === 'lantern-papers');

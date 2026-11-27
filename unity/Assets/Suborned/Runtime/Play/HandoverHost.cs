@@ -1641,14 +1641,6 @@ namespace Suborned.Play
             }
         }
 
-        public string CityClock()
-        {
-            if (Game == null) return "";
-            var p = MissionStartsAt.Split(':'); int s0 = int.Parse(p[0]) * 3600 + int.Parse(p[1]) * 60 + (p.Length > 2 ? int.Parse(p[2]) : 0);
-            int s = s0 + Game.Tick / Game.Hz;
-            return $"{s / 3600 % 24:00}:{s / 60 % 60:00}:{s % 60:00}";
-        }
-
         public static string MissionClock(int tick) { int s = tick / Game.Hz; return $"{s / 60}:{s % 60:00}"; }
 
         public Color JobColour(string job) { int i = Array.IndexOf(jobs, job); if (i < 0) i = Array.IndexOf(jobs, "resident"); return i >= 0 && i < jobColours.Length ? jobColours[i] : securityColour; }

@@ -33,11 +33,11 @@ namespace Suborned.Sim
         }
         public sealed class Venue
         {
-            public readonly string Id, Name;
+            public readonly string Id, Name, Style;
             public readonly Pt At;
             public readonly Pt[] Court;
             public readonly Fixture[] Fixtures;
-            public Venue(JNode n) { Id = n["id"].Str(); Name = n["name"].Str(); At = Pt.Of(n["at"]); Court = n["court"].Items.Select(Pt.Of).ToArray(); Fixtures = n["fixtures"].Items.Select(f => new Fixture(f)).ToArray(); }
+            public Venue(JNode n) { Id = n["id"].Str(); Name = n["name"].Str(); Style = n["style"].Str(); At = Pt.Of(n["at"]); Court = n["court"].Items.Select(Pt.Of).ToArray(); Fixtures = n["fixtures"].Items.Select(f => new Fixture(f)).ToArray(); }
         }
 
         public sealed class Court

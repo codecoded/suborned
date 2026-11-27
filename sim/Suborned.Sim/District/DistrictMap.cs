@@ -33,6 +33,7 @@ namespace Suborned.Sim
         public readonly string Digest;
         public readonly DistrictResident[] People;
         public readonly DistrictLine[] Streets, Trams;
+        internal readonly DistrictRobotRound[] RobotRounds;
         public readonly Dictionary<string, int> Index = new Dictionary<string, int>(StringComparer.Ordinal);
         public readonly int WalkPiece, RoadPiece;
         DistrictMap()
@@ -109,6 +110,7 @@ namespace Suborned.Sim
                 if (t["mutual"].Bool())
                     People[b].Ties.Add((a, kind));
             }
+            RobotRounds = DistrictRobotRound.Make(this);
         }
 
         static DistrictLine[] Lines(JNode n) => n.Items.Select(x => new DistrictLine { Id = x["id"].Str(), LaneCm = x.Opt("laneCm")?.Int() ?? 0, Path = new Path(x["points"].Items.Select(Pt.Of).ToArray()) }).ToArray();

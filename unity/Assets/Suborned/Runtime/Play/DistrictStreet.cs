@@ -17,6 +17,9 @@ namespace Suborned.Play
             public bool moving;
             public Renderer[] renderers;
             public bool hidden;
+            public Transform carBody;
+            public string carModel;
+            public Suborned.Robots.RobotFace display;
         }
 
         readonly Dictionary<int, View> activeViews = new();
@@ -260,6 +263,9 @@ namespace Suborned.Play
             GameObject prefab;
             FigureLibrary.Figure figure = null;
             string skin;
+            HandoverHost.ServiceRobotModel robot = null;
+            string carKit = null;
+            int paint = -1;
             if (id < Tram)
             {
                 skin = skins[id];
@@ -269,14 +275,19 @@ namespace Suborned.Play
             }
             else if (id >= Robot)
             {
-                skin = "patrol-robot";
-                prefab = host.patrolRobot ? host.patrolRobot : host.robotUnit;
+                var kind = current.District.Traffic.RobotKind(id - Robot);
+                foreach (var kit in host.districtServiceRobots) if (kit.kind == kind) { robot = kit; break; }
+                skin = "robot-" + kind;
+                prefab = robot != null ? robot.near : host.patrolRobot ? host.patrolRobot : host.robotUnit;
             }
             else if (id >= Sedan)
             {
-                int choice = (id - Sedan) % 3;
-                skin = "sedan" + choice;
-                prefab = choice == 0 ? host.sedanOfficial : choice == 1 ? host.sedanRival : host.sedanGetaway;
+                int car = id - Sedan;
+                bool van = current.District.Traffic.DeliveryVan(car) && host.trafficVan;
+                carKit = van ? "van" : car % 2 == 0 ? "sedan-o" : "sedan-g";
+                prefab = van ? host.trafficVan : carKit == "sedan-o" ? host.sedanOfficial : host.sedanGetaway;
+                if (!van) paint = host.Views.PaintFor(carKit, "harbour/" + car);
+                skin = carKit + "/" + paint;
             }
             else
             {
@@ -289,6 +300,7 @@ namespace Suborned.Play
             if (spare.TryGetValue(skin, out var pool) && pool.Count > 0)
             {
                 var used = pool.Pop();
+                if (used.display) used.display.Seed = skin + "/" + id;
                 used.root.SetActive(true);
                 return used;
             }
@@ -325,11 +337,27 @@ namespace Suborned.Play
             else if (skin == "tram")
                 DistrictVehicleLod.AddKitLevels(root, model, host.districtTramMid, host.districtTramFar);
             else if (id >= Robot)
-                DistrictVehicleLod.AddKitLevels(root, model, host.districtRobotMid, host.districtRobotFar);
+            {
+                DistrictVehicleLod.AddKitLevels(root, model, robot?.middle ?? host.districtRobotMid, robot?.far ?? host.districtRobotFar);
+                var kind = robot == null ? Suborned.Robots.PatrolBot.Kind : "Robot" + robot.kind;
+                v.display = Suborned.Robots.RobotRigs.Attach(root, host.robotRigs, host.robotGlyphs, skin + "/" + id, kind);
+            }
             else
+            {
+                if (paint >= 0)
+                    foreach (var r in model.GetComponentsInChildren<MeshRenderer>()) host.Views.ApplyTrafficPaint(r, r.sharedMaterials, carKit, paint);
                 DistrictVehicleLod.AddSedan(root, model);
+                v.carBody = model.transform;
+                v.carModel = prefab.name;
+            }
             v.renderers = root.GetComponentsInChildren<Renderer>(true);
             return v;
+        }
+
+        internal IEnumerable<(string key, Transform body, string model)> CarBodies()
+        {
+            foreach (var pair in activeViews)
+                if (pair.Value.carBody) yield return (pair.Value.skin, pair.Value.carBody, pair.Value.carModel);
         }
     }
 }

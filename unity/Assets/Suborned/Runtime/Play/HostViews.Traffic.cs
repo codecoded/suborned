@@ -126,7 +126,7 @@ namespace Suborned.Play
 
         /// <summary>The paint a passing sedan wears: picked by its id among the palette's paints that may go on its body (host.trafficPaintAvoid, TrafficKit:
         /// never one that would pass for Vale's car or ours); -1 (as built) with no palette.</summary>
-        int PaintFor(string kit, string id)
+        internal int PaintFor(string kit, string id)
         {
             var pal = host.trafficPaints; var av = host.trafficPaintAvoid; int n = pal == null ? 0 : pal.Length / 2, bit = kit == "sedan-g" ? 2 : 1, ok = 0;
             for (int i = 0; i < n; i++) if (av == null || i >= av.Length || (av[i] & bit) == 0) ok++;
@@ -140,14 +140,17 @@ namespace Suborned.Play
         void TrafficPaint(TrafficCarView cv, int k)
         {
             if (cv.Paint == k) return; cv.Paint = k;
-            var pal = host.trafficPaints; var slots = host.trafficSlots; bool on = k >= 0 && pal != null && 2 * k + 1 < pal.Length && slots != null && slots.Length >= 4;
-            string body = on ? slots[cv.Kit == "sedan-g" ? 2 : 0] : "", roof = on ? slots[cv.Kit == "sedan-g" ? 3 : 1] : "";
             for (int i = 0; i < cv.Rs.Length; i++)
-            {
-                if (!cv.Rs[i]) continue; var built = cv.Built[i]; var mats = new Material[built.Length];
-                for (int j = 0; j < built.Length; j++) { var m = built[j]; mats[j] = on && m && m.name == body && pal[2 * k] ? pal[2 * k] : on && m && m.name == roof && pal[2 * k + 1] ? pal[2 * k + 1] : m; }
-                cv.Rs[i].sharedMaterials = mats;
-            }
+                if (cv.Rs[i]) ApplyTrafficPaint(cv.Rs[i], cv.Built[i], cv.Kit, k);
+        }
+
+        internal void ApplyTrafficPaint(Renderer renderer, Material[] built, string kit, int k)
+        {
+            var pal = host.trafficPaints; var slots = host.trafficSlots; bool on = k >= 0 && pal != null && 2 * k + 1 < pal.Length && slots != null && slots.Length >= 4;
+            string body = on ? slots[kit == "sedan-g" ? 2 : 0] : "", roof = on ? slots[kit == "sedan-g" ? 3 : 1] : "";
+            var mats = new Material[built.Length];
+            for (int j = 0; j < built.Length; j++) { var m = built[j]; mats[j] = on && m && m.name == body && pal[2 * k] ? pal[2 * k] : on && m && m.name == roof && pal[2 * k + 1] ? pal[2 * k + 1] : m; }
+            renderer.sharedMaterials = mats;
         }
 
         void TrafficRelease(TrafficCarView cv)
