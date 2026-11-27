@@ -170,12 +170,17 @@ namespace Suborned.Sim
         }
 
         // A round rests at both ends. Integer motion makes schedules and traffic identical on reload.
-        public static (Pt at, Pt facing, bool moving) Shuttle(Path path, int tick, int phase, int mmPerTick, int dwell)
+        internal static (long number, long leg) ShuttleLeg(Path path, int tick, int phase, int mmPerTick, int dwell)
         {
             long travel = Math.Max(1, (path.Length + mmPerTick - 1) / mmPerTick);
-            long half = travel + dwell, clock = ((long)tick + phase) % (2 * half);
-            bool back = clock >= half;
-            long leg = clock % half;
+            long half = travel + dwell, clock = (long)tick + phase;
+            return (clock / half, clock % half);
+        }
+
+        public static (Pt at, Pt facing, bool moving) Shuttle(Path path, int tick, int phase, int mmPerTick, int dwell)
+        {
+            var (number, leg) = ShuttleLeg(path, tick, phase, mmPerTick, dwell);
+            bool back = (number & 1) != 0;
             long mm = Math.Min(path.Length, Math.Max(0, leg - dwell) * mmPerTick);
             mm = back ? path.Length - mm : mm;
             var facing = path.Heading(mm);

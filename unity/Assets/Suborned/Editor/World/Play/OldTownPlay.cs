@@ -40,6 +40,7 @@ namespace Suborned.World.Play
                 var af = cam.gameObject.AddComponent<ArchitectureFade>(); af.ghostShadow = J.F(J.Get(light, "fade"), "ghostShadow");
             }
             var host = PlayInstall.Install(WorldReader.Load(Path.Combine(HarbourWorldBuilder.RepoRoot, Export)), DZ);
+            DistrictBuild.AssignStreetKits(host);
             host.playCamera = PlayCam;
             var look = cam.GetComponent<Suborned.OldTown.OldTownPlayLook>();
             // today's lens (AtmosphereLens' play rig: bloom threshold, the clamp that holds the glitter fix, the play saturation and lift) must win over the scene's grade, as in our scene: the swap's play grade stood at priority 100 over it, so the scene grade's bloom (threshold 0.48, no clamp) washed the view out

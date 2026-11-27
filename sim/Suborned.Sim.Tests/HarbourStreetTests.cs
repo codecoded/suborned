@@ -9,6 +9,34 @@ public sealed class HarbourStreetTests
     static Game Open() => Engine.New(Repo.Inputs, new Start { District = true, Seed = 9 });
 
     [Fact]
+    public void HarbourMachinesStowTheirLoadBeforeRollingAndKeepTheRightStock()
+    {
+        var traffic = Open().District!.Traffic;
+        var workers = Enumerable.Range(0, traffic.RobotCount).Where(i =>
+            traffic.RobotKind(i) == StreetRobot.Porter || traffic.RobotKind(i) == StreetRobot.Shopkeeper).ToArray();
+        Assert.Contains(workers, i => traffic.CarriesPapers(i));
+        Assert.Contains(workers, i => traffic.RobotKind(i) == StreetRobot.Shopkeeper && !traffic.CarriesPapers(i));
+        foreach (int i in workers)
+        {
+            if (traffic.CarriesPapers(i)) Assert.Equal(StreetRobot.Shopkeeper, traffic.RobotKind(i));
+            var last = traffic.ServiceMechanism(i, 0);
+            bool worked = false, rolled = false;
+            for (int tick = 1; tick <= 4000; tick++)
+            {
+                var now = traffic.ServiceMechanism(i, tick);
+                Assert.InRange(now.lift, 0, 1000);
+                Assert.True(now.wheelMm >= last.wheelMm);
+                if (now.lift > 0) Assert.Equal(last.wheelMm, now.wheelMm);
+                if (traffic.Robot(i, tick).Moving) Assert.Equal(0, now.lift);
+                worked |= now.lift == 1000;
+                rolled |= now.wheelMm > last.wheelMm;
+                last = now;
+            }
+            Assert.True(worked && rolled);
+        }
+    }
+
+    [Fact]
     public void PublicGroundReachesThePierLawnsAndBothEndsOfCrownWalk()
     {
         var game = Open();

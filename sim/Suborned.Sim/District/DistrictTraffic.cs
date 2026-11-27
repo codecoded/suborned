@@ -84,6 +84,8 @@ namespace Suborned.Sim
         public Pose Tram(int i, int tick) => rail.At(i, tick);
         public bool DeliveryVan(int i) => vans[i];
         public StreetRobot RobotKind(int i) => map.RobotRounds[i].Kind;
+        public bool CarriesPapers(int i) => map.RobotRounds[i].CarriesPapers;
+        public (int lift, long wheelMm) ServiceMechanism(int i, int tick) => map.RobotRounds[i].Mechanism(tick);
         public Pose Robot(int i, int tick) => map.RobotRounds[i].At(tick);
         public Pose Car(int i, int tick)
         {

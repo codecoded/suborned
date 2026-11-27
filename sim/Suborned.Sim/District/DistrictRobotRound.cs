@@ -10,12 +10,14 @@ namespace Suborned.Sim
     internal sealed class DistrictRobotRound
     {
         public readonly StreetRobot Kind;
+        public readonly bool CarriesPapers;
         readonly Path route;
         readonly int phase, pace, dwell;
 
-        DistrictRobotRound(StreetRobot kind, DistrictResident resident)
+        DistrictRobotRound(StreetRobot kind, DistrictResident resident, bool papers = false)
         {
             Kind = kind;
+            CarriesPapers = papers;
             route = resident.Walk;
             phase = resident.Phase;
             (pace, dwell) = kind switch {
@@ -29,6 +31,15 @@ namespace Suborned.Sim
         {
             var s = DistrictMap.Shuttle(route, tick, phase, pace, dwell);
             return new DistrictTraffic.Pose(s.at, s.facing, s.moving);
+        }
+
+        public (int lift, long wheelMm) Mechanism(int tick)
+        {
+            var (number, leg) = DistrictMap.ShuttleLeg(route, tick, phase, pace, dwell);
+            long distance = number * route.Length + Math.Min(route.Length, Math.Max(0, leg - dwell) * pace);
+            // The deck or hand rises, holds for inspection, then stows before the wheels start.
+            int lift = (int)Math.Clamp(Math.Min(leg, dwell - leg) * 2500 / dwell, 0, 1000);
+            return (lift, distance);
         }
 
         public static DistrictRobotRound[] Make(DistrictMap map)
@@ -49,7 +60,7 @@ namespace Suborned.Sim
                 var locals = map.People.Where(p => p.Id.Length == prefix.Length + 2 && p.Id.StartsWith(prefix, StringComparison.Ordinal)
                     && p.Walk.Length > 1500).OrderBy(p => Math.Abs(p.Walk.Length - 26000)).ToArray();
                 if (locals.Length == 0) continue;
-                rounds.Add(new DistrictRobotRound(kind, locals[0]));
+                rounds.Add(new DistrictRobotRound(kind, locals[0], venue.Style == "papers"));
                 // The porter brings stock in while the shop machine tends its counter.
                 if (venue.Style == "market" && locals.Length > 1)
                     rounds.Add(new DistrictRobotRound(StreetRobot.Porter, locals[locals.Length - 1]));

@@ -20,6 +20,7 @@ namespace Suborned.Play
             public Transform carBody;
             public string carModel;
             public Suborned.Robots.RobotFace display;
+            public DistrictServiceMotion service;
         }
 
         readonly Dictionary<int, View> activeViews = new();
@@ -189,6 +190,12 @@ namespace Suborned.Play
                     activeViews.Add(id, view);
                 }
                 view.root.transform.SetPositionAndRotation(pos, rotation);
+                if (view.service != null)
+                {
+                    float halfHeight = host.View.orthographic ? host.View.orthographicSize
+                        : Vector3.Dot(pos - host.View.transform.position, host.View.transform.forward) * Mathf.Tan(host.View.fieldOfView * .5f * Mathf.Deg2Rad);
+                    view.service.Apply(d.Traffic, id - Robot, g.Tick, host.StreetFrameAlpha, moving, halfHeight <= 23f * QualitySettings.lodBias);
+                }
                 if (view.hidden != hide)
                 {
                     foreach (var r in view.renderers) r.forceRenderingOff = hide;
@@ -264,6 +271,7 @@ namespace Suborned.Play
             FigureLibrary.Figure figure = null;
             string skin;
             HandoverHost.ServiceRobotModel robot = null;
+            bool papers = false;
             string carKit = null;
             int paint = -1;
             if (id < Tram)
@@ -277,7 +285,8 @@ namespace Suborned.Play
             {
                 var kind = current.District.Traffic.RobotKind(id - Robot);
                 foreach (var kit in host.districtServiceRobots) if (kit.kind == kind) { robot = kit; break; }
-                skin = "robot-" + kind;
+                papers = current.District.Traffic.CarriesPapers(id - Robot);
+                skin = "robot-" + kind + (papers ? "-papers" : "");
                 prefab = robot != null ? robot.near : host.patrolRobot ? host.patrolRobot : host.robotUnit;
             }
             else if (id >= Sedan)
@@ -301,6 +310,7 @@ namespace Suborned.Play
             {
                 var used = pool.Pop();
                 if (used.display) used.display.Seed = skin + "/" + id;
+                used.service?.ResetRound();
                 used.root.SetActive(true);
                 return used;
             }
@@ -339,8 +349,13 @@ namespace Suborned.Play
             else if (id >= Robot)
             {
                 DistrictVehicleLod.AddKitLevels(root, model, robot?.middle ?? host.districtRobotMid, robot?.far ?? host.districtRobotFar);
-                var kind = robot == null ? Suborned.Robots.PatrolBot.Kind : "Robot" + robot.kind;
-                v.display = Suborned.Robots.RobotRigs.Attach(root, host.robotRigs, host.robotGlyphs, skin + "/" + id, kind);
+                if (robot != null && (robot.kind == StreetRobot.Porter || robot.kind == StreetRobot.Shopkeeper))
+                    v.service = new DistrictServiceMotion(root.transform, robot.kind, papers);
+                else
+                {
+                    var kind = robot == null ? Suborned.Robots.PatrolBot.Kind : "Robot" + robot.kind;
+                    v.display = Suborned.Robots.RobotRigs.Attach(root, host.robotRigs, host.robotGlyphs, skin + "/" + id, kind);
+                }
             }
             else
             {

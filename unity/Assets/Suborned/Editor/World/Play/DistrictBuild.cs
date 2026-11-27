@@ -21,28 +21,38 @@ namespace Suborned.World.Play
                     continue;
                 h.districtCrowd = DistrictCrowdBake.Make(h.figures);
                 DistrictPublicRealm.Install(h, scene);
-                h.districtTram = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Prefabs/Vehicles/DK_Tram.prefab");
-                h.districtTramMid = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Vehicles/DK_Tram_L1.fbx");
-                h.districtTramFar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Vehicles/DK_Tram_L2.fbx");
-                h.districtRobotMid = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Robots/DK_PatrolBot104_L1.fbx");
-                h.districtRobotFar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Robots/DK_PatrolBot104_L2.fbx");
-                if (!h.districtRobotMid || !h.districtRobotFar)
-                    throw new BuildFailedException("The patrol robot LODs are required.");
-                h.districtServiceRobots = new[] {
-                    Service(StreetRobot.Porter), Service(StreetRobot.Shopkeeper), Service(StreetRobot.Waiter),
-                    Service(StreetRobot.Nanny), Service(StreetRobot.Butler)
-                };
-                if (!h.districtTram || !h.districtTramMid || !h.districtTramFar)
-                    throw new BuildFailedException("The district tram and both kit LODs are required.");
+                AssignStreetKits(h);
             }
+        }
+
+        public static void AssignStreetKits(HandoverHost h)
+        {
+            h.districtTram = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Prefabs/Vehicles/DK_Tram.prefab");
+            h.districtTramMid = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Vehicles/DK_Tram_L1.fbx");
+            h.districtTramFar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Vehicles/DK_Tram_L2.fbx");
+            h.districtRobotMid = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Robots/DK_PatrolBot104_L1.fbx");
+            h.districtRobotFar = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/Robots/DK_PatrolBot104_L2.fbx");
+            if (!h.districtRobotMid || !h.districtRobotFar)
+                throw new BuildFailedException("The patrol robot LODs are required.");
+            h.districtServiceRobots = new[] {
+                Service(StreetRobot.Porter), Service(StreetRobot.Shopkeeper), Service(StreetRobot.Waiter),
+                Service(StreetRobot.Nanny), Service(StreetRobot.Butler)
+            };
+            if (!h.districtTram || !h.districtTramMid || !h.districtTramFar)
+                throw new BuildFailedException("The district tram and both kit LODs are required.");
         }
 
         static HandoverHost.ServiceRobotModel Service(StreetRobot kind)
         {
-            var path = "Assets/Suborned/Kit/Models/Robots/DK_Robot" + kind + "_Play";
-            GameObject Load(string suffix) => AssetDatabase.LoadAssetAtPath<GameObject>(path + suffix + ".fbx")
-                ?? throw new BuildFailedException("Missing service robot mesh " + path + suffix);
-            return new HandoverHost.ServiceRobotModel { kind = kind, near = Load(""), middle = Load("_L1"), far = Load("_L2") };
+            GameObject Load(int level)
+            {
+                string name = kind switch { StreetRobot.Porter => "Porter", StreetRobot.Shopkeeper => "Clerk", _ => null };
+                string path = name != null
+                    ? $"Assets/Suborned/Scenery/HarbourRobots/{name}-L{level}.fbx"
+                    : $"Assets/Suborned/Kit/Models/Robots/DK_Robot{kind}_Play{(level == 0 ? "" : "_L" + level)}.fbx";
+                return AssetDatabase.LoadAssetAtPath<GameObject>(path) ?? throw new BuildFailedException("Missing service robot mesh " + path);
+            }
+            return new HandoverHost.ServiceRobotModel { kind = kind, near = Load(0), middle = Load(1), far = Load(2) };
         }
     }
 }
