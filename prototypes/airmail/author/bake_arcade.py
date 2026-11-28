@@ -36,7 +36,7 @@ def read_meshes(source):
         mesh.calc_loop_triangles()
         positions = [(v.co.x, v.co.z, -v.co.y) for v in mesh.vertices]
         faces, finishes = [], []
-        uv = mesh.uv_layers.active.data
+        uv = mesh.uv_layers[0].data
         for triangle in mesh.loop_triangles:
             faces.append(tuple(triangle.vertices))
             center = sum((uv[i].uv for i in triangle.loops), Vector((0.0, 0.0))) / 3

@@ -65,6 +65,7 @@ func surface(original: StandardMaterial3D, pavement = false) -> ShaderMaterial:
     m.set_shader_parameter("drawn_metal", preload("res://assets/finish_metal.png"))
     m.set_shader_parameter("roof_sheet", preload("res://assets/finish_roof.png"))
     m.set_shader_parameter("postal_plates", preload("res://assets/postal_plates.png"))
+    m.set_shader_parameter("sorting_rooms", preload("res://assets/sorting_rooms.png"))
     m.set_shader_parameter("door_coat", preload("res://assets/collection_coat.png"))
     m.set_shader_parameter("door_finish", preload("res://assets/collection_finish.png"))
     surfaces[original] = m

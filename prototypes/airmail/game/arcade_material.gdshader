@@ -35,11 +35,17 @@ void fragment() {
     }
     float contact = packed_surface ? data.r : 1.0;
     float macro_bump = 1.;
+    vec3 room_light = vec3(0.);
     if (dressed && (architecture || (paving && !rough_map))) {
         vec3 tilt;
         postal_finish(surface_world,surface_normal,UV,UV2,paving,ALBEDO,ROUGHNESS,METALLIC,
             contact,tilt,macro_bump);
         NORMAL = normalize(NORMAL + mat3(VIEW_MATRIX)*tilt);
+        if (architecture && UV.y >= .75 && UV.x < .5) {
+            vec3 eye = PROJECTION_MATRIX[3][3] > .5 ? INV_VIEW_MATRIX[2].xyz : normalize(CAMERA_POSITION_WORLD - surface_world);
+            room_light = workroom(UV,eye,normalize(surface_normal),ALBEDO,ROUGHNESS,METALLIC);
+            macro_bump = 0.;
+        }
     }
     if (bump_depth>0.0) {
         NORMAL_MAP = texture(bump,uv).rgb;
@@ -49,5 +55,5 @@ void fragment() {
     AO = contact * mix(0.28,1.0,field.a);
     AO_LIGHT_AFFECT = 0.0;
     vec3 diffuse_bounce = field.rgb * vec3(1.37,1.06,.79);
-    EMISSION = texture(lamps,uv).rgb * lamp_energy + ALBEDO * (1.0-METALLIC) * diffuse_bounce;
+    EMISSION = texture(lamps,uv).rgb * lamp_energy + ALBEDO * (1.0-METALLIC) * diffuse_bounce + room_light;
 }

@@ -4,10 +4,33 @@ uniform sampler2D glaze_tile : filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D drawn_metal : filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D roof_sheet : filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D postal_plates : filter_linear_mipmap_anisotropic, repeat_disable;
+uniform sampler2D sorting_rooms : source_color, filter_linear_mipmap_anisotropic, repeat_disable;
 uniform sampler2D door_coat : source_color, filter_linear_mipmap_anisotropic, repeat_disable;
 uniform sampler2D door_finish : filter_linear_mipmap_anisotropic, repeat_disable;
 uniform bool dressed = false;
 uniform bool architecture = false;
+
+vec3 workroom(vec2 atlas, vec3 eye, vec3 outward, inout vec3 color, inout float roughness, inout float metalness) {
+    ivec2 cell = ivec2(floor(atlas * vec2(8.,4.)));
+    if (cell.y != 3 || cell.x > 3) { return vec3(0.); }
+    vec2 opening = clamp((fract(atlas*vec2(8.,4.))-.021)/.958,0.,1.);
+    vec2 origin = vec2(float(cell.x%2),float(cell.x/2))*.5;
+    vec3 right = normalize(cross(vec3(0.,1.,0.),outward));
+    float face = max(.28,dot(outward,eye));
+    vec2 shift = clamp(vec2(dot(right,eye),-eye.y)/face * vec2(.72/5.45,.72/2.87),vec2(-.24),vec2(.24));
+    // The depth of the sorting desk and the lamp differs from the shelving behind them.
+    float depth = texture(sorting_rooms,origin+clamp(opening,.003,.997)*.5).a;
+    vec2 behind = opening-shift*depth;
+    vec4 room = texture(sorting_rooms,origin+clamp(behind,.003,.997)*.5);
+    // A jamb occludes the painting when viewed across the entrance.
+    vec2 margin = min(behind,1.-behind);
+    float reveal = smoothstep(-.014,.008,min(margin.x,margin.y));
+    color = mix(vec3(.126,.081,.043),room.rgb*.50,reveal);
+    roughness = mix(.42,.57,reveal);
+    metalness = .035;
+    float lit = smoothstep(.40,.89,dot(room.rgb,vec3(.2126,.7152,.0722)));
+    return room.rgb*(.14+.40*lit)*reveal;
+}
 
 void postal_finish(vec3 pos, vec3 outwards, vec2 atlas, vec2 service, bool sidewalk,
         inout vec3 color, inout float roughness, inout float metalness, inout float occlusion,

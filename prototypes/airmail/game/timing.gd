@@ -36,7 +36,7 @@ func start(owner_node, opts):
     DirAccess.make_dir_recursive_absolute(path)
     RenderingServer.viewport_set_measure_render_time(get_viewport().get_viewport_rid(), true)
     shots = (
-        ["hero", "vault", "aerial", "detail", "lane", "street", "tactical", "threshold", "collection", "sill", "stone"]
+        ["hero", "vault", "aerial", "detail", "lane", "street", "tactical", "threshold", "collection", "sill", "stone", "sorting"]
         if options.has("shots")
         else []
     )

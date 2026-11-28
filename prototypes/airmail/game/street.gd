@@ -260,6 +260,7 @@ func portrait(view):
         return
     pose_portrait_life(14.)
     var positions = {
+        "sorting": [Vector3(4.63, 1.92, -.98), Vector3(6.06, 1.92, -3.38)],
         "collection": [Vector3(9.51, 1.33, 4.02), Vector3(9.00, 1.14, 3.13)],
         "sill": [Vector3(4.03, 1.27, -1.28), Vector3(6.18, .77, -2.66)],
         "stone": [Vector3(8.14, 1.30, -.40), Vector3(8.79, 1.13, -1.97)],

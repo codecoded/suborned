@@ -40,31 +40,41 @@ def summarize(repeats):
     }
 
 
-def load_suite(directory):
+def load_suite(directory, finishes=False, resolution=(1920, 1080)):
     groups = defaultdict(list)
+    variant = "lighting" if finishes else "mode"
+    expected_viewport = "(%.1f, %.1f)" % resolution
     for path in sorted(directory.glob("*/run.json")):
         run = json.loads(path.read_text())
         options = run["options"]
-        if run["viewport"] != "(1920.0, 1080.0)" or run["render_scale"] != 1 or run["vsync"] != 0:
+        if run["viewport"] != expected_viewport or run["render_scale"] != 1 or run["vsync"] != 0:
             raise ValueError(f"Unexpected resolution, scale or VSync at {path}")
         if len(run["samples"]) != 220:
             raise ValueError(f"Unexpected sample count at {path}")
-        key = "/".join(str(options[k]) for k in ("mode", "corner", "view"))
+        key = "/".join(str(options[k]) for k in (variant, "corner", "view"))
         groups[key].append(run)
-    if len(groups) != 9 or any(len(runs) != 2 for runs in groups.values()):
+    if len(groups) != 9 or any(
+        sorted(int(r["options"]["repeat"]) for r in runs) != [0, 1] for runs in groups.values()
+    ):
         raise ValueError(f"Expected two passes through all nine conditions in {directory}")
+    if finishes and set(groups) != {
+        f"{look}/turned/{view}"
+        for look in ("original", "arcade", "surfaced")
+        for view in ("street", "threshold", "iso")
+    }:
+        raise ValueError(f"Incomplete lighting and material comparison in {directory}")
     one = next(iter(groups.values()))[0]
     return {
         "adapter": one["device"],
         "renderer": one["renderer"],
         "driver": one["driver"],
-        "viewport": [1920, 1080],
+        "viewport": list(resolution),
         "frames_total": sum(len(run["samples"]) for group in groups.values() for run in group),
         "cases": {name: summarize(runs) for name, runs in groups.items()},
     }
 
 
-def write_frames(path, sources):
+def write_frames(path, sources, finishes=False):
     metrics = [
         "wall_ms",
         "render_cpu_ms",
@@ -77,13 +87,14 @@ def write_frames(path, sources):
     with path.open("wb") as binary, gzip.GzipFile(filename="", fileobj=binary, mode="wb", mtime=0) as stream:
         with io.TextIOWrapper(stream, encoding="utf-8", newline="") as text:
             writer = csv.writer(text)
-            writer.writerow(["machine", "mode", "corner", "view", "repeat", "frame"] + metrics)
+            variant = "lighting" if finishes else "mode"
+            writer.writerow(["machine", variant, "corner", "view", "repeat", "frame"] + metrics)
             for machine, directory in sources:
                 if directory is None:
                     continue
                 for run_path in sorted(directory.glob("*/run.json")):
                     run = json.loads(run_path.read_text())
-                    case = [run["options"][key] for key in ("mode", "corner", "view", "repeat")]
+                    case = [run["options"][key] for key in (variant, "corner", "view", "repeat")]
                     columns = [run["columns"].index(name) for name in metrics]
                     for frame, sample in enumerate(run["samples"]):
                         writer.writerow([machine, *case, frame, *(sample[index] for index in columns)])
@@ -93,6 +104,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--studio", type=Path, required=True)
     parser.add_argument("--air", type=Path)
+    parser.add_argument(
+        "--air-window", type=Path, help="Optional matched series at the 1280 by 720 play window"
+    )
+    parser.add_argument(
+        "--finishes", action="store_true", help="Compare the original, lighting and material treatments"
+    )
     parser.add_argument("--soak", type=Path)
     parser.add_argument("--resident", type=Path)
     parser.add_argument("--archive", type=Path, required=True)
@@ -103,9 +120,11 @@ def main():
         "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
         "player_sha256": hashlib.sha256(args.archive.read_bytes()).hexdigest(),
         "player_zip_bytes": args.archive.stat().st_size,
-        "studio": load_suite(args.studio),
-        "air": load_suite(args.air) if args.air else None,
+        "studio": load_suite(args.studio, args.finishes),
+        "air": load_suite(args.air, args.finishes) if args.air else None,
     }
+    if args.air_window:
+        report["air_window"] = load_suite(args.air_window, args.finishes, (1280, 720))
     if args.soak:
         raw = json.loads(args.soak.read_text())
         stable = [row for row in raw if row[0] >= 25]
@@ -128,7 +147,11 @@ def main():
             }
     args.output.write_text(json.dumps(report, indent=2) + "\n")
     if args.csv_output:
-        write_frames(args.csv_output, [("studio", args.studio), ("air", args.air)])
+        write_frames(
+            args.csv_output,
+            [("studio", args.studio), ("air", args.air), ("air_window", args.air_window)],
+            args.finishes,
+        )
 
 
 if __name__ == "__main__":

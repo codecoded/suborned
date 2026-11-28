@@ -85,6 +85,8 @@ Horror Asylum's shipped `mat_asylum_arch` and `mat_asylum_props` informed the ma
 
 The new sun direction matches the daylight panorama. A 50 × 12 × 20 irradiance grid stores sky visibility and a first warm reflection off the static arcade for architecture, paving and moving residents. Four unshadowed, limited-range counter lights share one visible fitting mesh. A fixed reflection capture carries the shape of the street into the polished metal.
 
+The booking, dispatch, travel and locker windows use the original paintings at their full resolution. A depth mask places the ornaments and desks forward of the shelves as the camera passes. Warm interior light is strongest on the lamps and the illuminated route map.
+
 ## Rebuild the architecture
 
 Use Blender 5.2 and Python with Pillow, NumPy and SciPy. Run from this directory. The resulting Blender file packs the texture maps. The portable GLB embeds them. `author/split_images.py` prepares the Godot copy with external images so a fresh checkout can import the compressed textures before loading the meshes.
@@ -104,3 +106,15 @@ godot --headless --path game --import
 ```
 
 The authoring scripts also include the six-face static reflection capture and the image projection used by the sky shader. To rebake after changing the street, run `godot --path game --script "$PWD/author/reflection_faces.gd" --resolution 512x512 -- "$build_dir/faces"`, then `python3 author/reflection.py "$build_dir/faces" game/assets/arcade_reflection.jpg`.
+
+For the updated kit, run `python3 author/finish_library.py "$build_dir/kit/meridian.blend" game/assets "$build_dir/Meridian postal kit.blend"`. The Blender file has all 42 meshes, 12 reusable material assets, metric UVs and packed base colour, normal and ORM maps. The single-material game shader additionally applies the handled-counter polish and view-dependent depth at the service windows.
+
+To rebuild the lighting field and reflection, use the same module placements and meshes as the player.
+
+```sh
+godot --headless --path game --script "$PWD/author/arcade_positions.gd" -- "$build_dir/positions.json"
+blender -b -P author/bake_arcade.py -- "$PWD/game/assets/meridian.glb" "$build_dir/positions.json" "$build_dir/arcade.rgba"
+godot --headless --path game --script "$PWD/author/pack_irradiance.gd" -- "$build_dir/arcade.rgba" "$PWD/game/assets/arcade-field.res"
+godot --path game --script "$PWD/author/reflection_faces.gd" --resolution 512x512 -- "$build_dir/late-faces" lighting=arcade
+python3 author/reflection.py "$build_dir/late-faces" game/assets/arcade_latelight.jpg
+```

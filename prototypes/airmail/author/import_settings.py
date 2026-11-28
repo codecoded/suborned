@@ -13,7 +13,7 @@ for path in sorted(root.glob("*.import")):
         text = text.replace("mipmaps/generate=false", "mipmaps/generate=true")
         if "normal." in path.name or "_n." in path.name:
             text = re.sub(r"(?m)^compress/normal_map=\d+", "compress/normal_map=1", text)
-        if path.name.startswith(("finish_", "collection_", "postal_plates.")):
+        if path.name.startswith(("finish_", "collection_", "postal_plates.", "sorting_rooms.")):
             text = text.replace("compress/high_quality=false", "compress/high_quality=true")
             text = text.replace("process/fix_alpha_border=true", "process/fix_alpha_border=false")
             text = re.sub(r"(?m)^compress/normal_map=\d+", "compress/normal_map=2", text)
