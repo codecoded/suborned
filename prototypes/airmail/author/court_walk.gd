@@ -43,13 +43,13 @@ class Walk:
             if not street.iso:
                 street.yaw = lerp_angle(street.yaw, look, 1. - exp(-delta * 2.8))
             else:
-                street.yaw = lerp_angle(street.yaw, -2.84, 1. - exp(-delta * 2.2))
+                street.yaw = lerp_angle(street.yaw, street.PLAN_HEADING, 1. - exp(-delta * 2.2))
         if orders.done[0] and street.court.gate_lift > .92 and not crossed:
             crossed = true
             street.walk_to(Vector2(-2, -21))
             if not street.iso:
                 key(KEY_TAB)
-            street.yaw = 2.78
+            street.yaw = -.95
             street.zoom = 12.
             print("Recorded open shortcut at frame ", frame)
         if frame == 902:

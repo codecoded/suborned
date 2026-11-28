@@ -95,15 +95,6 @@ func press_room():
         )
     b.finish(["brick", "zincrim"])
     yard.city.block.solids.append(yard.ISLAND)
-    yard.cut_groups.append(
-        [
-            node,
-            AABB(
-                Vector3(yard.ISLAND.position.x, yard.GROUND, yard.ISLAND.position.y),
-                Vector3(yard.ISLAND.size.x, 3.60, yard.ISLAND.size.y)
-            )
-        ]
-    )
 
 
 func transfer_bridge():
@@ -126,9 +117,6 @@ func transfer_bridge():
     for z in [-5.1, -2.7, 0, 2.7, 5.1]:
         b.box(Vector3(0, -.095, z), Vector3(2.13, .17, .11), "zincrim")
     b.finish(["iron", "enamel"])
-    yard.cut_groups.append(
-        [node, AABB(node.position + Vector3(-1., -.15, -length * .5), Vector3(2., 2., length))]
-    )
 
 
 func returns_dock():
@@ -147,7 +135,6 @@ func returns_dock():
     b.poster(Vector3(-.03, .90, 2.44), 1.06, 1.27, 3)
     b.finish(["enamel", "zincrim"])
     yard.city.block.core(15.23, -18.5, 2.40, 5.02, 0.)
-    yard.cut_groups.append([node, AABB(node.position + Vector3(-1.24, 0, -2.63), Vector3(2.90, 3.27, 5.26))])
 
 
 func crate(b, at, row):

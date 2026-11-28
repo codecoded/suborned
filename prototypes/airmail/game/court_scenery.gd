@@ -12,7 +12,7 @@ const ISLAND = Rect2(-4.8, -18.85, 9.3, 3.15)
 var city
 var meshes = {}
 var mats = {}
-var cut_groups = []
+var detail = preload("res://detail_ranges.gd").new()
 var cart: Node3D
 var gate: Node3D
 var market_lid: Node3D
@@ -98,21 +98,6 @@ func setup(street):
     rooms.shader = preload("res://court_window.gdshader")
     rooms.set_shader_parameter("rooms", preload("res://assets/yard_workrooms.jpg"))
     mats["rooms"] = rooms
-    var pavement = PlaneMesh.new()
-    pavement.size = Vector2(39, 22)
-    var surface = ShaderMaterial.new()
-    surface.shader = preload("res://court_ground.gdshader")
-    surface.set_shader_parameter("setts", preload("res://assets/yard_cobbles.jpg"))
-    surface.set_shader_parameter("relief", preload("res://assets/yard_cobbles_n.jpg"))
-    surface.set_shader_parameter("stone_arm", preload("res://assets/yard_cobbles_arm.jpg"))
-    surface.set_shader_parameter("wear", preload("res://assets/yard_wear.png"))
-    surface.set_shader_parameter("asphalt", preload("res://assets/road.jpg"))
-    pavement.material = surface
-    var floor_mesh = MeshInstance3D.new()
-    floor_mesh.mesh = pavement
-    floor_mesh.position = Vector3(.5, GROUND + .002, -15)
-    floor_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-    add_child(floor_mesh)
     var fixed = Builder.new(group("Yard fittings"), mats)
     for i in range(5):
         frontage(-12. + i * 6., -22.6, 0, ["TicketBay", "FloristBay", "MarketBay"][i % 3], i)
@@ -166,8 +151,7 @@ func trade(id, at: Vector3, yaw: float, parent: Node3D = null):
     for i in range(3):
         var item = MeshInstance3D.new()
         item.mesh = meshes[id + "_L" + str(i)]
-        item.visibility_range_begin = [0., 15., 37.][i]
-        item.visibility_range_end = [15., 37., 110.][i]
+        detail.add(item, i, Vector4(0, 15, 37, 110), 0)
         item.visibility_range_begin_margin = .5
         item.visibility_range_end_margin = .5
         if i == 2 or parent != null:
@@ -223,15 +207,6 @@ func frontage(x, z, yaw, id, variant):
             )
     b.finish(["brick", "stripe"])
     city.block.core(center.x, center.z, 5.95, depth, 0.)
-    cut_groups.append(
-        [
-            part,
-            AABB(
-                Vector3(x - 3., GROUND, z + minf(back * depth, 0.) - .42),
-                Vector3(6., height + 1.1, depth + .85)
-            )
-        ]
-    )
 
 
 func awning(b, width, reach, high):
@@ -351,16 +326,3 @@ func animate(delta):
     gate.scale.y = maxf(.02, 1. - gate_lift * .98)
     gate.position.y = GROUND + 2.56 * gate_lift
     market_lid.rotation.x = market_lift * 1.45
-
-
-func cutaway(at: Vector3, eye: Vector3, tactical: bool):
-    var inside = tactical && Rect2(-20, -28, 41, 23).has_point(Vector2(at.x, at.z))
-    var sideways = Vector3.UP.cross(eye - at).normalized() * 2.7
-    for item in cut_groups:
-        var hit = false
-        if inside:
-            for span in [-sideways, Vector3.ZERO, sideways]:
-                if item[1].intersects_segment(at + Vector3.UP * 1.05 + span, eye + span) != null:
-                    hit = true
-                    break
-        item[0].visible = not hit

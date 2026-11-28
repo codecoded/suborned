@@ -4,7 +4,7 @@ from pathlib import Path
 import argparse
 import json
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont
 from scipy.ndimage import gaussian_filter
 
 
@@ -99,79 +99,6 @@ def blade(out, rng):
     im.save(out / "yard_blade.jpg", quality=91)
 
 
-def floor(out, rng):
-    # Site mask shares its rectangle with CourtScenery. Rain follows the downpipes and the gutter.
-    w, h = 1024, 640
-    wet, track, patch = [Image.new("L", (w, h)) for _ in range(3)]
-
-    def at(px, pz):
-        return (round((px + 19) * w / 39), round((pz + 26) * h / 22))
-
-    pen = ImageDraw.Draw(wet)
-    for cx, cz, sx, sz in [
-        (-7.0, -21.65, 2.0, 0.58),
-        (5.7, -19.1, 1.5, 0.47),
-        (11.5, -12.9, 2.4, 0.65),
-        (-6.8, -13.3, 1.6, 0.35),
-        (-5.65, -17.5, 0.45, 1.15),
-    ]:
-        for _ in range(100):
-            xx = cx + rng.normal() * sx
-            zz = cz + rng.normal() * sz
-            rad = rng.uniform(0.08, 0.46)
-            pen.ellipse(
-                [at(xx - rad, zz - rad * 0.48), at(xx + rad, zz + rad * 0.48)],
-                fill=int(rng.integers(110, 249)),
-            )
-    for z in [-21.85, -13.55]:
-        pen.line([at(-15, z), at(14, z + 0.10)], fill=177, width=4)
-
-    def bezier(points, off):
-        a, b, c, d = np.array(points)
-        t = np.linspace(0, 1, 200)[:, None]
-        q = (1 - t) ** 3 * a + 3 * t * (1 - t) ** 2 * b + 3 * t * t * (1 - t) * c + t**3 * d
-        v = np.gradient(q, axis=0)
-        q += (
-            off
-            * np.stack((-v[:, 1], v[:, 0]), axis=1)
-            / np.maximum(0.0001, np.linalg.norm(v, axis=1)[:, None])
-        )
-        return [at(*xy) for xy in q]
-
-    for path in [
-        [(-13, -16), (-5, -12.6), (6, -15.1), (11, -13.4)],
-        [(-7, -14.0), (-12, -23), (2, -20.3), (11, -20.8)],
-    ]:
-        for width in [-0.37, 0.37]:
-            for _ in range(5):
-                ImageDraw.Draw(track).line(
-                    bezier(path, width + rng.normal(0, 0.04)),
-                    fill=int(rng.integers(85, 190)),
-                    width=int(rng.integers(1, 4)),
-                )
-    d = ImageDraw.Draw(patch)
-    for px, pz, sx, sz in [(-8.7, -16.7, 2.6, 1.12), (7.2, -19.9, 3.6, 0.94), (0.8, -13.3, 1.8, 0.69)]:
-        d.polygon(
-            [
-                at(px, pz + 0.08),
-                at(px + sx * 0.28, pz - 0.06),
-                at(px + sx, pz),
-                at(px + sx + 0.08, pz + sz * 0.68),
-                at(px + sx * 0.87, pz + sz),
-                at(px - 0.04, pz + sz - 0.12),
-            ],
-            fill=230,
-        )
-    Image.merge(
-        "RGB",
-        (
-            wet.filter(ImageFilter.GaussianBlur(1.9)),
-            track.filter(ImageFilter.GaussianBlur(0.55)),
-            patch.filter(ImageFilter.GaussianBlur(1.3)),
-        ),
-    ).save(out / "yard_wear.png", optimize=True)
-
-
 def contacts(district, out):
     city = json.loads(district.read_text())
     keys = ["p-z-harbour-lantern-papers-04", "p-z-harbour-meridian-court-02", "p-z-harbour-lantern-market-02"]
@@ -200,6 +127,5 @@ if __name__ == "__main__":
     out = lab / "game/assets"
     rng = np.random.default_rng(6631)
     print_sheet(out, rng)
-    floor(out, rng)
     blade(out, rng)
     contacts(lab.parents[1] / "sim/Suborned.Sim/District/harbour.json", lab / "game/court_contacts.json")

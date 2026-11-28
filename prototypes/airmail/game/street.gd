@@ -9,6 +9,7 @@ const Deliveries = preload("res://court_orders.gd")
 const Conversation = preload("res://court_dialogue.gd")
 const CourtAudio = preload("res://court_audio.gd")
 const FIXER = preload("res://assets/fixer.glb")
+const PLAN_HEADING = -1.12
 const PEOPLE = [preload("res://assets/c1.glb"), preload("res://assets/c6.glb")]
 const COURT_PEOPLE = [
     preload("res://assets/cafe_w3.glb"), preload("res://assets/sh2.glb"), preload("res://assets/workers_d5.glb")
@@ -24,7 +25,7 @@ var grid = AStarGrid2D.new()
 var waypoints = PackedVector2Array()
 var yaw = .47
 var street_heading = -.87
-var court_heading = -2.85
+var court_heading = PLAN_HEADING
 var iso = false
 var zoom = 23.
 var elapsed = 0.
@@ -37,7 +38,9 @@ var court
 var orders
 var dialogue
 var court_audio
-var yard_shadows = false
+var plan_ink = ShaderMaterial.new()
+var plan_active = false
+var plan_contact = -1
 var leaving = false
 
 
@@ -113,6 +116,10 @@ func _ready():
     arcade_light = ArcadeLight.new()
     add_child(arcade_light)
     arcade_light.prepare(self)
+    if court:
+        plan_ink.shader = preload("res://plan_figure.gdshader")
+        arcade_light.sunlight.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+        arcade_light.sunlight.directional_shadow_max_distance = 55.
     var initial_light = "original" if run_options.has("suite") else "surfaced"
     arcade_light.set_look(run_options.get("lighting", initial_light))
     update_hint()
@@ -132,6 +139,8 @@ func change_block(mode, corner):
     block = Block.new()
     add_child(block)
     block.build(mode != "full", corner == "turned", mode != "instances")
+    if court:
+        block.detail.set_plan(iso)
     if streetscape:
         streetscape.combine_fixtures(mode in ["lod", "optimized"])
     if arcade_light:
@@ -375,7 +384,7 @@ func update_camera():
     if iso:
         camera.projection = Camera3D.PROJECTION_ORTHOGONAL
         camera.size = zoom
-        camera.position = p + offset * 19. + Vector3.UP * 17.5
+        camera.position = p + (offset * 13. + Vector3.UP * 25. if court else offset * 19. + Vector3.UP * 17.5)
         camera.look_at(p + Vector3.UP * .9)
     else:
         camera.projection = Camera3D.PROJECTION_PERSPECTIVE
@@ -390,19 +399,32 @@ func update_camera():
         camera.position = p + offset * reach + Vector3.UP * 2.18
         camera.look_at(p - offset * 3.8 + Vector3.UP * (1.73 if in_yard else 2.43))
     if court:
-        court.cutaway(p, camera.position, iso)
-        var sheltered = Rect2(-20, -28, 41, 23).has_point(Vector2(p.x, p.z))
-        if yard_shadows != sheltered:
-            yard_shadows = sheltered
-            arcade_light.sunlight.directional_shadow_mode = (
-                DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if sheltered else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
-            )
-            arcade_light.sunlight.directional_shadow_max_distance = 45. if sheltered else 65.
-        var reveal = iso and sheltered
-        arcade_light.kit_surface.set_shader_parameter("court_reveal", reveal)
-        if reveal:
-            arcade_light.kit_surface.set_shader_parameter("court_focus", p + Vector3.UP)
-            arcade_light.kit_surface.set_shader_parameter("court_eye", camera.position)
+        update_plan()
+
+
+func update_plan():
+    if plan_active != iso:
+        plan_active = iso
+        block.detail.set_plan(iso)
+        court.detail.set_plan(iso)
+        mark_figure(guide, iso)
+    var contact = -1
+    if iso:
+        contact = dialogue.speaker if dialogue.speaker >= 0 else dialogue.approach
+    if contact != plan_contact:
+        if plan_contact >= 0:
+            mark_figure(orders.person(plan_contact), false)
+        if contact >= 0:
+            mark_figure(orders.person(contact), true)
+        plan_contact = contact
+
+
+func mark_figure(actor: Node3D, enabled: bool):
+    if DisplayServer.get_name() == "headless":
+        return
+    for mesh in actor.find_children("*", "MeshInstance3D", true, false):
+        mesh.material_overlay = plan_ink if enabled else null
+        mesh.ignore_occlusion_culling = enabled
 
 
 func tour(t: float, view: String):
@@ -414,7 +436,7 @@ func tour(t: float, view: String):
         var part = mini(floori(s), turn.size() - 2)
         var at = turn[part].lerp(turn[part + 1], s - part)
         guide.position = Vector3(at.x, .165, at.y)
-        yaw = lerpf(-2.85, -2.48, q) if view == "iso" else lerpf(-.87, -.25, q * q)
+        yaw = PLAN_HEADING + .37 * q if view == "iso" else lerpf(-.87, -.25, q * q)
         var heading = turn[part + 1] - turn[part]
         guide.rotation.y = atan2(heading.x, heading.y)
         iso = view == "iso"

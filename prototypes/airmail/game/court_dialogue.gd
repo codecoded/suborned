@@ -218,7 +218,13 @@ func close():
 func tick(delta):
     var pos = orders.point(city.guide)
     var near = nearest()
+    var pointed = speaker if speaker >= 0 else approach
+    if city.iso and city.hud.visible and pointed < 0:
+        pointed = pick(city.get_viewport().get_mouse_position())
     for i in range(3):
+        if city.iso:
+            tags[i].visible = city.hud.visible and i == pointed
+            continue
         var focus = (
             (speaker < 0 or speaker == i)
             and (near < 0 or near == i or (not orders.pending.is_empty() and i == orders.chain[orders.heard]))
@@ -226,8 +232,8 @@ func tick(delta):
         tags[i].visible = (
             city.hud.visible
             and focus
-            and pos.distance_to(position2(i)) < (10. if city.iso else 7.)
-            and (city.iso or city.straight_clear(pos, position2(i)))
+            and pos.distance_to(position2(i)) < 7.
+            and city.straight_clear(pos, position2(i))
         )
     if approach >= 0:
         if pos.distance_to(position2(approach)) <= 2.7 and city.straight_clear(pos, position2(approach)):

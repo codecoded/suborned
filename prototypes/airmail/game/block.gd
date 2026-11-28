@@ -11,6 +11,7 @@ var turned = true
 var batches = []
 var occluders = []
 var grouped = true
+var detail = preload("res://detail_ranges.gd").new()
 
 
 func build(use_lods: bool, corner: bool, combine: bool = true):
@@ -176,8 +177,7 @@ func render_placements():
                 instances.multimesh = mm
                 node = instances
             node.position = center
-            node.visibility_range_begin = [0., near, far][lod]
-            node.visibility_range_end = [near, far, 90. if small else 250.][lod]
+            detail.add(node, lod, Vector4(0, near, far, 90. if small else 250.), 0)
             node.visibility_range_begin_margin = 1.4
             node.visibility_range_end_margin = 1.4
             if lod == 2 and small:
