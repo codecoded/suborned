@@ -109,6 +109,8 @@ func set_look(next: String):
     for pair in ground:
         pair[1].set_shader_parameter("dressed", look == "surfaced")
     on = enabled
+    if city.extras:
+        city.extras.material.set_shader_parameter("bounced", enabled)
     visible = enabled
     for lamp in standard_lamps:
         lamp.visible = not enabled

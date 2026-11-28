@@ -59,13 +59,15 @@ func add_fixture(pos, mesh, id, casts):
     return obj
 
 
-func setup():
+func setup(inhabited = false):
     var env = Environment.new()
     environment = env
     var sky = Sky.new()
     var pan = ShaderMaterial.new()
     pan.shader = preload("res://daylight.gdshader")
     pan.set_shader_parameter("daylight", preload("res://assets/sky.hdr"))
+    pan.set_shader_parameter("city_air", inhabited)
+    pan.set_shader_parameter("far_quays", preload("res://assets/far_quays.png"))
     pan.set_shader_parameter("arcade", preload("res://assets/arcade_reflection.jpg"))
     sky.sky_material = pan
     sky.radiance_size = Sky.RADIANCE_SIZE_256
@@ -88,7 +90,8 @@ func setup():
     var world = WorldEnvironment.new()
     world.environment = env
     add_child(world)
-    shoreline()
+    if not inhabited:
+        shoreline()
     var sun = DirectionalLight3D.new()
     sun.rotation_degrees = Vector3(-35, -61, 0)
     sun.light_color = Color("#ffe3bf")

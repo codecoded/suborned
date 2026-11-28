@@ -2,7 +2,9 @@ shader_type sky;
 
 uniform sampler2D daylight : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D arcade : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D far_quays : source_color, filter_linear_mipmap, repeat_disable;
 uniform bool low_sun = false;
+uniform bool city_air = false;
 uniform float reflection_mix = 0.67;
 
 void sky() {
@@ -18,6 +20,22 @@ void sky() {
         }
     }
     vec3 light = texture(daylight, sky_uv).rgb;
+    if (city_air && !AT_CUBEMAP_PASS) {
+        float air = 1.0 - smoothstep(.04,.62,EYEDIR.y);
+        light = mix(light,vec3(.51,.65,.77),.18*air);
+        // The painted far shore sits at infinity. The lower tiers occupy more
+        // of the horizon; nearby towers and the train have real parallax.
+        float bearing = atan(EYEDIR.z, EYEDIR.x) / TAU;
+        float azimuth = 2.*bearing + .83 + .045*sin(bearing*TAU*2.);
+        float quarter = fract(azimuth);
+        float u = mix(quarter,1.-quarter,mod(floor(azimuth),2.));
+        float elevation = asin(clamp(EYEDIR.y,-1.,1.));
+        float h = clamp((elevation+.04)/.58,0.,1.);
+        vec4 shore = texture(far_quays,vec2(u,1.-pow(h,1.53)));
+        float coverage = shore.a * smoothstep(-.052,-.012,elevation) * (1.-smoothstep(.64,.66,elevation));
+        vec3 distant = mix(shore.rgb,mix(vec3(.47,.61,.73),light,.42),.26);
+        light = mix(light,distant,coverage);
+    }
     if (AT_CUBEMAP_PASS) {
         // Keep direct daylight overhead and include the facing shops in metal and glazing.
         float frontage = reflection_mix * (1.0 - smoothstep(0.08, 0.58, EYEDIR.y));

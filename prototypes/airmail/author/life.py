@@ -1,4 +1,4 @@
-"""Convert two of Harbour's citizens and its tram for the standalone material test."""
+"""Convert Harbour’s own figures, motion and tram for the standalone block."""
 
 import bpy, sys
 from pathlib import Path
@@ -35,7 +35,7 @@ def glb(path, objects, animation=False):
     )
 
 
-def citizen(id):
+def citizen(id, extra=False):
     fresh()
     loaded = fbx(fig / "Figures" / id / (id + ".fbx"))
     rig = next(o for o in loaded if o.type == "ARMATURE")
@@ -45,7 +45,7 @@ def citizen(id):
         bpy.context.view_layer.objects.active = body
         simplify = body.modifiers.new("Street silhouette", "DECIMATE")
         triangles = sum(len(face.vertices) - 2 for face in body.data.polygons)
-        simplify.ratio = min(1.0, 11000 / triangles)
+        simplify.ratio = min(1.0, (1500 if extra else 11000) / triangles)
         bpy.ops.object.modifier_move_to_index(modifier=simplify.name, index=0)
         bpy.ops.object.modifier_apply(modifier=simplify.name)
     mat = bpy.data.materials.new("Harbour resident " + id)
@@ -80,8 +80,14 @@ def citizen(id):
             ("LowerArm", "ForeArm"),
         ):
             aliases[side + target] = side + source
-    for clip in ["idle", "walk", "push"] if id == "workers_d5" else ["idle", "walk"]:
+    clips = ["idle", "walk", "talk"] if extra else (["idle", "walk", "push"] if id == "workers_d5" else ["idle", "walk"])
+    for clip in clips:
         source_clip = "walk" if clip == "push" else clip
+        if extra and clip == "walk":
+            if id == "el1":
+                source_clip = "walk_old"
+            elif id in {"d5c", "d6", "cafe_w2", "cafe_w5"}:
+                source_clip = "walk_f"
         source = fbx(fig / "Clips" / (source_clip + ".fbx"))
         src = next(o for o in source if o.type == "ARMATURE")
         act = src.animation_data.action
@@ -176,7 +182,8 @@ def tram():
     glb(out / "tram.glb", objs)
 
 
-for name in arguments[2:] or ["c1", "c6"]:
-    citizen(name)
+extra = "--extras" in arguments[2:]
+for name in [arg for arg in arguments[2:] if arg != "--extras"] or ["c1", "c6"]:
+    citizen(name, extra)
 if not arguments[2:]:
     tram()

@@ -10,10 +10,9 @@ const Conversation = preload("res://court_dialogue.gd")
 const CourtAudio = preload("res://court_audio.gd")
 const FIXER = preload("res://assets/fixer.glb")
 const PLAN_HEADING = -1.12
-const PEOPLE = [preload("res://assets/c1.glb"), preload("res://assets/c6.glb")]
-const COURT_PEOPLE = [
-    preload("res://assets/cafe_w3.glb"), preload("res://assets/sh2.glb"), preload("res://assets/workers_d5.glb")
-]
+const Cast = preload("res://street_cast.gd")
+var extras
+var horizon
 var block
 var streetscape
 var arcade_light
@@ -58,13 +57,14 @@ func _ready():
     change_block(run_options.get("mode", "optimized"), run_options.get("corner", "turned"))
     streetscape = Streetscape.new()
     add_child(streetscape)
-    streetscape.setup()
+    var inhabited = not run_options.has("out") or run_options.has("yard")
+    streetscape.setup(inhabited)
     streetscape.combine_fixtures(run_options.get("mode", "optimized") in ["lod", "optimized"])
     if not run_options.has("avenue") and (run_options.has("yard") or not run_options.has("out")):
         court = ParcelCourt.new()
         add_child(court)
         court.setup(self)
-    guide = (FIXER if court else PEOPLE[0]).instantiate()
+    guide = (FIXER if court else Cast.PEOPLE[0]).instantiate()
     add_child(guide)
     guide.position = Vector3(13, .16, 4.2)
     if court:
@@ -73,23 +73,7 @@ func _ready():
         guide.rotation.y = yaw + PI
         zoom = 13.
     guide_anim = animation(guide, "idle")
-    for i in range(14):
-        var model = COURT_PEOPLE[Deliveries.CAST.find(i)] if court and i in Deliveries.CAST else PEOPLE[i % 2]
-        var actor = model.instantiate()
-        add_child(actor)
-        var moving = i % 3 != 0
-        var player = animation(actor, "walk" if moving else "idle")
-        if player:
-            player.seek(fposmod(i * .31, maxf(.1, player.current_animation_length)), true)
-        var x = -38. + i * 6.5
-        var z = [3.74, 4.09, 22.9, 1.95][i % 4]
-        if i == 0:
-            x = 6.
-            z = -2.05
-        if i == 9:
-            x = -7.
-            z = -1.25
-        people.append([actor, Vector3(x, .16, z), moving, i * .49])
+    Cast.populate(self)
     add_child(camera)
     camera.current = true
     camera.far = 250.
@@ -129,6 +113,14 @@ func _ready():
         add_child(timings)
         timings.start(self, run_options)
     update_camera()
+    if inhabited:
+        horizon = preload("res://harbour_horizon.gd").new()
+        add_child(horizon)
+        horizon.setup()
+        extras = preload("res://street_extras.gd").new()
+        add_child(extras)
+        extras.setup(self)
+        extras.material.set_shader_parameter("bounced", arcade_light.on)
 
 
 func change_block(mode, corner):
@@ -356,19 +348,7 @@ func _process(delta):
         if next != phase:
             phase = next
             animation(guide, next)
-    for i in range(people.size()):
-        if orders and orders.owns(i):
-            continue
-        var rec = people[i]
-        var actor = rec[0]
-        var p: Vector3 = rec[1]
-        var a = elapsed * .17 + rec[3]
-        if rec[2]:
-            p.x += sin(a) * 5.7
-            actor.rotation.y = PI * .5 if cos(a) > 0 else -PI * .5
-        else:
-            actor.rotation.y = PI + rec[3] * .64
-        actor.position = p
+    Cast.advance(self)
     if orders:
         orders.tick(minf(delta, .15))
         dialogue.tick(delta)
@@ -376,6 +356,10 @@ func _process(delta):
             court_audio.tick()
     streetscape.advance(elapsed)
     update_camera()
+    if extras:
+        var time_step = 1. / 60. if timings else minf(delta, .15)
+        horizon.advance(time_step)
+        extras.advance(time_step)
 
 
 func update_camera():

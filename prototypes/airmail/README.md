@@ -22,15 +22,22 @@ The original pale cut-stone paving runs from the postal concourse into Parcel Co
 
 The overhead camera looks along the lane. Shops, roofs and the conveyor stay in view as you walk, turn and zoom. When a roof covers the Fixer or a resident you have selected, you can still follow their moving silhouette. Point at a resident to see their name.
 
-Run the following checks after importing the Godot project. The third check uses the real renderer to compare the Fixer on open paving and under the conveyor. To start on the original avenue, add `-- avenue=1` to the player command. A court benchmark accepts `-- yard=1 out=/tmp/parcel-court view=street raster=1080` or `view=iso`.
+Sixty street extras join the original fourteen residents. Thirty-nine walk eight pavement circuits through the court and both sides of the tram avenue. The others meet at shop windows and wait for the tram. The press workers can take Press Cut after the first edition arrives. Jamie, Angela and Gustav remain the people to speak to for the deliveries.
+
+Beyond the roofs, a three-car skytrain runs around the Skyport and a pair of air cabs cross the bay. Forty-six buildings form the nearer skyline. The distant quays use the towers from Harbour’s Atomic Age panorama. At street level the nearby spires move against that painted shore as you turn a corner.
+
+Run the following checks after importing the Godot project. The street life check follows every extra for a minute and checks both shutter states. The last check uses the real renderer to compare the Fixer on open paving and under the conveyor. To start on the original avenue, add `-- avenue=1` to the player command. A court benchmark accepts `-- yard=1 out=/tmp/parcel-court view=street raster=1080` or `view=iso`.
 
 ```sh
 godot --headless --path game --script "$PWD/author/court_smoke.gd" -- memory=1
+godot --headless --path game --script "$PWD/author/street_life_check.gd" -- memory=1
 godot --headless --path game --script "$PWD/author/input_smoke.gd" -- avenue=1
 godot --path game --script "$PWD/author/court_plan.gd" -- memory=1
 ```
 
 ### Parcel Court on Mac
+
+To record the 21-second walk through the populated court and along the tram avenue, use `godot --path game --script "$PWD/author/street_walk.gd" --fixed-fps 30 --write-movie /tmp/harbour.avi --quit-after 630 -- memory=1`.
 
 The build with the restored paving and intact overhead roofs ran on both machines at 1920 × 1080. Each camera followed the route twice, with 90 warm-up and 300 measured frames per pass. The Air ran on AC power.
 
@@ -142,6 +149,20 @@ The new sun direction matches the daylight panorama. A 50 × 12 × 20 irradiance
 The booking, dispatch, travel and locker windows use the original paintings at their full resolution. A depth mask places the ornaments and desks forward of the shelves as the camera passes. Warm interior light is strongest on the lamps and the illuminated route map.
 
 ## Rebuild the architecture
+
+The eight crowd outfits share one wardrobe atlas. Walk, idle and conversation clips from the Harbour rigs are baked to a lossless vertex animation texture, with one instanced mesh per outfit. The skyline uses the district kit’s authored tower LODs, reduced sky vehicles and one shared material. To regenerate these assets from a full checkout, run the following from this directory. The source rigs go in a temporary directory.
+
+```sh
+repo="$(git rev-parse --show-toplevel)"
+rigs="$(mktemp -d)"
+blender -b -P author/life.py -- "$repo" "$rigs" --extras d2m d4 cafe_w2 d5c d6 el1 cafe_w5 d4b
+python3 author/crowd_bake.py "$rigs" game/assets
+blender -b -P author/horizon_kit.py -- "$repo/unity/Assets/Suborned/Kit" "$PWD/game/assets/sky_district.glb"
+python3 author/far_quays.py game/assets/shore.png game/assets/far_quays.png
+godot --headless --path game --import
+python3 author/import_settings.py game/assets
+godot --headless --path game --import
+```
 
 Use Blender 5.2 and Python with Pillow, NumPy and SciPy. Run from this directory. The resulting Blender file packs the texture maps. The portable GLB embeds them. `author/split_images.py` prepares the Godot copy with external images so a fresh checkout can import the compressed textures before loading the meshes.
 
