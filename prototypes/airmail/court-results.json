@@ -1,0 +1,107 @@
+{
+  "scene": "Parcel Court",
+  "source_revision": "9f731fa4b4f238a4c2f5e32d4e3c25f863dd5581",
+  "engine": "Godot 4.7.2.stable.ed1daf0bf",
+  "renderer": "Forward+ / Metal",
+  "raster": [
+    1920,
+    1080
+  ],
+  "warm_frames_per_pass": 90,
+  "measured_frames_per_pass": 300,
+  "order": [
+    "street",
+    "iso",
+    "iso",
+    "street"
+  ],
+  "game_pack_sha256": "da6eba2c4617a4acff3fb0aa4560fa485ead314342f86295edb65ff427c6a899",
+  "native_binary_sha256": "cdeaea3f5d953f54a50f5368bb9b70a9b0acbd110e4547a338391c121eeb7c5a",
+  "archive_sha256": "cc32db535ba725bdb95c97e464e3a2b8e7fe1a9a6d9f92b85d847ab95524edf9",
+  "M5 Max Studio": {
+    "adapter": "Apple M5 Max (Apple9)",
+    "passes": {
+      "street": {
+        "frames": 600,
+        "mean_fps": 120.0,
+        "median_ms": 8.48,
+        "p95_ms": 8.62,
+        "p99_ms": 8.69,
+        "within_60fps_budget_pct": 100.0,
+        "repeat_p95_ms": [
+          8.63,
+          8.6
+        ],
+        "median_visible_draws": 82.0,
+        "median_visible_primitives": 51313.0,
+        "median_shadow_draws": 39.0,
+        "median_shadow_primitives": 56359.0,
+        "median_total_draws": 122.0,
+        "median_render_cpu_ms": 0.355,
+        "median_gpu_ms": null
+      },
+      "iso": {
+        "frames": 600,
+        "mean_fps": 120.0,
+        "median_ms": 8.47,
+        "p95_ms": 8.62,
+        "p99_ms": 8.79,
+        "within_60fps_budget_pct": 100.0,
+        "repeat_p95_ms": [
+          8.6,
+          8.65
+        ],
+        "median_visible_draws": 88.5,
+        "median_visible_primitives": 46403.0,
+        "median_shadow_draws": 78.5,
+        "median_shadow_primitives": 91003.5,
+        "median_total_draws": 166.5,
+        "median_render_cpu_ms": 0.371,
+        "median_gpu_ms": null
+      }
+    }
+  },
+  "M4 Air": {
+    "adapter": "Apple M4 (Apple9)",
+    "passes": {
+      "street": {
+        "frames": 600,
+        "mean_fps": 66.1,
+        "median_ms": 16.61,
+        "p95_ms": 17.63,
+        "p99_ms": 18.33,
+        "within_60fps_budget_pct": 55.7,
+        "repeat_p95_ms": [
+          17.69,
+          17.49
+        ],
+        "median_visible_draws": 81.0,
+        "median_visible_primitives": 51311.0,
+        "median_shadow_draws": 39.0,
+        "median_shadow_primitives": 56580.0,
+        "median_total_draws": 121.0,
+        "median_render_cpu_ms": 0.698,
+        "median_gpu_ms": null
+      },
+      "iso": {
+        "frames": 600,
+        "mean_fps": 70.0,
+        "median_ms": 16.55,
+        "p95_ms": 17.61,
+        "p99_ms": 18.05,
+        "within_60fps_budget_pct": 60.7,
+        "repeat_p95_ms": [
+          17.66,
+          17.48
+        ],
+        "median_visible_draws": 88.5,
+        "median_visible_primitives": 46698.0,
+        "median_shadow_draws": 78.0,
+        "median_shadow_primitives": 91417.0,
+        "median_total_draws": 166.5,
+        "median_render_cpu_ms": 0.661,
+        "median_gpu_ms": null
+      }
+    }
+  }
+}
