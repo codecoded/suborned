@@ -185,7 +185,189 @@
       }
     }
   },
-  "air": null,
+  "air": {
+    "adapter": "Apple M4 (Apple9)",
+    "renderer": "forward_plus",
+    "driver": "metal",
+    "viewport": [
+      1920,
+      1080
+    ],
+    "frames_total": 3960,
+    "cases": {
+      "full/turned/iso": {
+        "frames": 440,
+        "mean_fps": 73.5,
+        "median_ms": 16.52,
+        "p95_ms": 17.44,
+        "p99_ms": 17.85,
+        "within_60fps_budget_pct": 62.7,
+        "repeat_p95_ms": [
+          17.18,
+          17.56
+        ],
+        "median_visible_draws": 52.0,
+        "median_visible_primitives": 46466.0,
+        "median_shadow_draws": 132.0,
+        "median_shadow_primitives": 112690.0,
+        "median_total_draws": 188.0,
+        "median_render_cpu_ms": 0.485,
+        "median_gpu_ms": null
+      },
+      "full/turned/street": {
+        "frames": 440,
+        "mean_fps": 60.1,
+        "median_ms": 16.68,
+        "p95_ms": 17.86,
+        "p99_ms": 19.06,
+        "within_60fps_budget_pct": 49.3,
+        "repeat_p95_ms": [
+          18.07,
+          17.62
+        ],
+        "median_visible_draws": 44.0,
+        "median_visible_primitives": 42866.0,
+        "median_shadow_draws": 57.5,
+        "median_shadow_primitives": 84820.0,
+        "median_total_draws": 99.0,
+        "median_render_cpu_ms": 0.492,
+        "median_gpu_ms": null
+      },
+      "instances/turned/street": {
+        "frames": 440,
+        "mean_fps": 69.8,
+        "median_ms": 16.52,
+        "p95_ms": 17.68,
+        "p99_ms": 18.4,
+        "within_60fps_budget_pct": 58.4,
+        "repeat_p95_ms": [
+          17.7,
+          17.65
+        ],
+        "median_visible_draws": 49.0,
+        "median_visible_primitives": 37008.0,
+        "median_shadow_draws": 61.0,
+        "median_shadow_primitives": 78229.0,
+        "median_total_draws": 108.0,
+        "median_render_cpu_ms": 0.501,
+        "median_gpu_ms": null
+      },
+      "lod/open/corner": {
+        "frames": 440,
+        "mean_fps": 77.2,
+        "median_ms": 16.48,
+        "p95_ms": 17.38,
+        "p99_ms": 17.81,
+        "within_60fps_budget_pct": 65.0,
+        "repeat_p95_ms": [
+          17.33,
+          17.4
+        ],
+        "median_visible_draws": 19.0,
+        "median_visible_primitives": 20364.0,
+        "median_shadow_draws": 33.0,
+        "median_shadow_primitives": 61798.0,
+        "median_total_draws": 51.0,
+        "median_render_cpu_ms": 0.385,
+        "median_gpu_ms": null
+      },
+      "lod/turned/corner": {
+        "frames": 440,
+        "mean_fps": 73.6,
+        "median_ms": 16.57,
+        "p95_ms": 17.36,
+        "p99_ms": 18.09,
+        "within_60fps_budget_pct": 63.6,
+        "repeat_p95_ms": [
+          17.23,
+          17.42
+        ],
+        "median_visible_draws": 19.0,
+        "median_visible_primitives": 20584.0,
+        "median_shadow_draws": 34.0,
+        "median_shadow_primitives": 67310.0,
+        "median_total_draws": 52.0,
+        "median_render_cpu_ms": 0.388,
+        "median_gpu_ms": null
+      },
+      "optimized/open/corner": {
+        "frames": 440,
+        "mean_fps": 65.1,
+        "median_ms": 16.61,
+        "p95_ms": 17.37,
+        "p99_ms": 17.65,
+        "within_60fps_budget_pct": 56.8,
+        "repeat_p95_ms": [
+          17.39,
+          17.28
+        ],
+        "median_visible_draws": 16.0,
+        "median_visible_primitives": 15750.0,
+        "median_shadow_draws": 32.0,
+        "median_shadow_primitives": 61308.0,
+        "median_total_draws": 47.0,
+        "median_render_cpu_ms": 0.75,
+        "median_gpu_ms": null
+      },
+      "optimized/turned/corner": {
+        "frames": 440,
+        "mean_fps": 67.3,
+        "median_ms": 16.61,
+        "p95_ms": 17.32,
+        "p99_ms": 18.13,
+        "within_60fps_budget_pct": 58.0,
+        "repeat_p95_ms": [
+          17.35,
+          17.31
+        ],
+        "median_visible_draws": 16.0,
+        "median_visible_primitives": 15970.0,
+        "median_shadow_draws": 34.0,
+        "median_shadow_primitives": 67310.0,
+        "median_total_draws": 48.0,
+        "median_render_cpu_ms": 0.721,
+        "median_gpu_ms": null
+      },
+      "optimized/turned/iso": {
+        "frames": 440,
+        "mean_fps": 64.7,
+        "median_ms": 16.62,
+        "p95_ms": 17.44,
+        "p99_ms": 17.96,
+        "within_60fps_budget_pct": 55.0,
+        "repeat_p95_ms": [
+          17.25,
+          17.47
+        ],
+        "median_visible_draws": 35.5,
+        "median_visible_primitives": 41874.0,
+        "median_shadow_draws": 102.0,
+        "median_shadow_primitives": 92847.0,
+        "median_total_draws": 138.0,
+        "median_render_cpu_ms": 0.759,
+        "median_gpu_ms": null
+      },
+      "optimized/turned/street": {
+        "frames": 440,
+        "mean_fps": 61.4,
+        "median_ms": 16.67,
+        "p95_ms": 17.6,
+        "p99_ms": 18.03,
+        "within_60fps_budget_pct": 49.1,
+        "repeat_p95_ms": [
+          17.67,
+          17.5
+        ],
+        "median_visible_draws": 30.0,
+        "median_visible_primitives": 40622.0,
+        "median_shadow_draws": 48.0,
+        "median_shadow_primitives": 90506.0,
+        "median_total_draws": 80.0,
+        "median_render_cpu_ms": 0.718,
+        "median_gpu_ms": null
+      }
+    }
+  },
   "studio_soak": {
     "duration_seconds": 125,
     "warmup_seconds": 25,

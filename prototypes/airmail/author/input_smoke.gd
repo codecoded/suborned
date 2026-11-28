@@ -48,6 +48,19 @@ func check_street():
     if street.hud.visible:
         fail("The hide key left the player hints visible.")
         return
+    key.keycode = KEY_L
+    root.push_input(key, true)
+    if street.arcade_light.on or street.streetscape.environment.fog_enabled:
+        fail("The original daylight could not be restored in the tactical view.")
+        return
+    root.push_input(key, true)
+    if not street.arcade_light.on or street.arcade_light.Field.get_depth() != 20:
+        fail("The arcade light volume could not be restored.")
+        return
+    root.push_input(key, true)
+    if street.arcade_light.look != "surfaced" or not street.arcade_light.kit_surface.get_shader_parameter("dressed"):
+        fail("The postal finishes could not be restored.")
+        return
     if street.block.catalog.size() != 42 or street.people.size() != 14:
         fail("The street is missing a kit mesh or a resident.")
         return

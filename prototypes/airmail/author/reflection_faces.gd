@@ -16,9 +16,9 @@ func capture():
         actor[0].hide()
     var environment = street.get_world_3d().environment
     # Always start from the original daylight, even when regenerating the shipped reflection.
-    var sun_sky = PanoramaSkyMaterial.new()
-    sun_sky.panorama = load("res://assets/sky.hdr")
-    environment.sky.sky_material = sun_sky
+    var low_sun = "lighting=arcade" in OS.get_cmdline_user_args()
+    street.arcade_light.set_look("arcade" if low_sun else "original")
+    environment.sky.sky_material.set_shader_parameter("reflection_mix", 0.)
     environment.tonemap_mode = Environment.TONE_MAPPER_LINEAR
     environment.tonemap_exposure = 1.
     var camera = street.camera

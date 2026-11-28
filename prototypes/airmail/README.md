@@ -14,6 +14,8 @@ godot --path game
 
 Click pavement to walk, or use WASD. Right-drag to turn. Tab switches between the shoulder camera and a rotatable orthographic camera. Scroll to zoom in the overhead view, H to hide the controls and Escape to leave. Both cameras follow one resident. The study includes fourteen other residents and a moving Harbour tram. It covers this postal block and runs independently of the Unity campaign.
 
+L cycles through the original daylight, the relit arcade and the relit arcade with the postal finishes. The player opens with all finishes enabled. Walk from the tram stop to the booking counter to cross the sun line. The collection box opposite that counter carries a cast roundel, letter slot and service door.
+
 ## Studio result
 
 Measured on a Mac Studio with an M5 Max and 128 GB of unified memory, running macOS 27.0.1 and native Metal. Draw calls below are the median total per frame, including shadows. The 95th percentile is the frame interval that 95% of the samples met or beat.
@@ -25,7 +27,7 @@ Measured on a Mac Studio with an M5 Max and 128 GB of unified memory, running ma
 
 Both versions settled near the Studio's 120 Hz presentation cadence. Grouping reduced submissions by 19% on the street and 26% overhead. Instancing each repeated module type separately increased the street total to 108 draws. Spatially combining different modules that shared the atlas handled this block better.
 
-The open passage took 8.38 ms at the median with 47 draws. Turning the same three bays into an L took 8.39 ms with 48 draws. The end wall changed the view significantly and delivered no measurable frame-time saving on this route. The M4 Air went offline before transfer completed. Its performance is unmeasured.
+The open passage took 8.38 ms at the median with 47 draws. Turning the same three bays into an L took 8.39 ms with 48 draws. The M4 MacBook Air completed the same geometry test on AC power. The grouped street averaged 61.4 fps at 17.60 ms p95. The grouped isometric route averaged 64.7 fps at 17.44 ms p95.
 
 During a separate 125-second run alternating between cameras, the player's macOS resident set went from 263.3 to 264.7 MiB after warm-up. Godot reported 144 live resources at both ends. The native player archive is 35.0 MiB.
 
@@ -77,6 +79,12 @@ The two animated figures and the tram derive from existing Harbour L1 meshes. Th
 
 The road, terrazzo aggregate and daylight panorama incorporate CC0 source material. [Asphalt 04](https://polyhaven.com/a/asphalt_04) · [Terrazzo Tiles](https://polyhaven.com/a/terrazzo_tiles) · [Kloofendal partly cloudy pure sky](https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky)
 
+The stone courses use the photographed colour, OpenGL normal and roughness from Poly Haven's Marble 01, repeated across 2.40 m on walls and 2.85 m on paving. The stone keeps the scan's natural pits and coursing. The other finish maps and the lettering are authored for this kit. [Marble 01](https://polyhaven.com/a/marble_01) · [CC0 licence](https://polyhaven.com/license)
+
+Horror Asylum's shipped `mat_asylum_arch` and `mat_asylum_props` informed the material treatment. Its 2K architecture page gives glazed tile, plaster and flooring distinct colour, relief and roughness. Meridian uses a vitreous 240 × 120 mm faience wainscot, a polished loading edge, folded copper roof sheets and a collection hatch. Graphics occupy their own UVs. Each bay and prop retains one opaque material and all three mesh LODs. Source reference in the neighbouring project is `src/blender/common/materials_high.py` and the 2K glTF material resources under `viewer/public/models`.
+
+The new sun direction matches the daylight panorama. A 50 × 12 × 20 irradiance grid stores sky visibility and a first warm reflection off the static arcade for architecture, paving and moving residents. Four unshadowed, limited-range counter lights share one visible fitting mesh. A fixed reflection capture carries the shape of the street into the polished metal.
+
 ## Rebuild the architecture
 
 Use Blender 5.2 and Python with Pillow, NumPy and SciPy. Run from this directory. The resulting Blender file packs the texture maps. The portable GLB embeds them. `author/split_images.py` prepares the Godot copy with external images so a fresh checkout can import the compressed textures before loading the meshes.
@@ -89,6 +97,9 @@ python3 author/pavement.py art game/assets "$build_dir/bake" "$build_dir/maps"
 blender -b -P author/build.py -- --maps "$build_dir/maps" --dest "$build_dir/kit"
 cp "$build_dir/kit/meridian.glb" game/assets/meridian.glb
 python3 author/split_images.py game/assets/meridian.glb
+python3 author/finishes.py art game/assets
+godot --headless --path game --import
+python3 author/import_settings.py game/assets
 godot --headless --path game --import
 ```
 

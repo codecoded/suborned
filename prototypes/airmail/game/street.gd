@@ -3,9 +3,11 @@ extends Node3D
 const Block = preload("res://block.gd")
 const Streetscape = preload("res://set.gd")
 const Bench = preload("res://timing.gd")
+const ArcadeLight = preload("res://arcade_light.gd")
 const PEOPLE = [preload("res://assets/c1.glb"), preload("res://assets/c6.glb")]
 var block
 var streetscape
+var arcade_light
 var camera = Camera3D.new()
 var guide
 var guide_anim
@@ -62,6 +64,11 @@ func _ready():
     caption.add_theme_color_override("font_shadow_color", Color(0, 0, 0, .85))
     caption.add_theme_constant_override("shadow_offset_x", 1)
     caption.add_theme_constant_override("shadow_offset_y", 1)
+    arcade_light = ArcadeLight.new()
+    add_child(arcade_light)
+    arcade_light.prepare(self)
+    var initial_light = "original" if run_options.has("suite") else "surfaced"
+    arcade_light.set_look(run_options.get("lighting", initial_light))
     update_hint()
     if run_options.has("out"):
         hud.visible = false
@@ -81,6 +88,8 @@ func change_block(mode, corner):
     block.build(mode != "full", corner == "turned", mode != "instances")
     if streetscape:
         streetscape.combine_fixtures(mode in ["lod", "optimized"])
+    if arcade_light:
+        arcade_light.apply_block()
 
 
 func person(index):
@@ -115,7 +124,8 @@ func update_hint():
     caption.text = (
         "Meridian Air Post   ·   "
         + ("Tactical" if iso else "Street")
-        + "\nClick to walk   ·   Tab to switch view   ·   Right-drag to turn   ·   H to hide"
+        + "   ·   " + ArcadeLight.NAMES[ArcadeLight.LOOKS.find(arcade_light.look)]
+        + "\nClick to walk   ·   Tab for view   ·   L to compare finishes   ·   Right-drag to turn   ·   H to hide"
     )
 
 
@@ -128,6 +138,10 @@ func _unhandled_input(event):
             update_hint()
         if event.keycode == KEY_H:
             hud.visible = not hud.visible
+        if event.keycode == KEY_L:
+            var next = (ArcadeLight.LOOKS.find(arcade_light.look) + 1) % ArcadeLight.LOOKS.size()
+            arcade_light.set_look(ArcadeLight.LOOKS[next])
+            update_hint()
         if event.keycode == KEY_ESCAPE:
             get_tree().quit()
     if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
@@ -219,7 +233,11 @@ func update_camera():
 func tour(t: float, view: String):
     elapsed = t * 14.0
     var q = clampf(t, 0, 1)
-    if view == "corner":
+    if view == "threshold":
+        guide.position = Vector3(7.7 - q * 1.3, .16, 6.2 - 9.0 * q)
+        yaw = .12 + .33 * q
+        iso = false
+    elif view == "corner":
         guide.position = Vector3(29. + 3. * q, .16, 5.4 - 10. * q)
         yaw = -.16 + .24 * q
         iso = false
@@ -227,7 +245,7 @@ func tour(t: float, view: String):
         guide.position = Vector3(20. - q * 22., .16, 3.84 + .30 * sin(q * PI))
         yaw = .65 - .68 * q
         iso = view == "iso"
-    guide.rotation.y = -PI * .5
+    guide.rotation.y = atan2(-1.3, -9.0) if view == "threshold" else -PI * .5
     if phase != "walk":
         phase = "walk"
         animation(guide, "walk")
@@ -237,9 +255,15 @@ func portrait(view):
     streetscape.presentation(view in ["hero", "vault", "aerial", "detail"])
     if view in ["street", "tactical"]:
         tour(.32, "iso" if view == "tactical" else "street")
+        pose_portrait_life(elapsed)
         update_camera()
         return
+    pose_portrait_life(14.)
     var positions = {
+        "collection": [Vector3(9.51, 1.33, 4.02), Vector3(9.00, 1.14, 3.13)],
+        "sill": [Vector3(4.03, 1.27, -1.28), Vector3(6.18, .77, -2.66)],
+        "stone": [Vector3(8.14, 1.30, -.40), Vector3(8.79, 1.13, -1.97)],
+        "threshold": [Vector3(7.55, 1.90, -1.75), Vector3(-1.5, 2.03, 3.8)],
         "hero": [Vector3(26, 3.45, 19.4), Vector3(-5, 8.8, -2.)],
         "vault": [Vector3(8.3, 2.25, 2.6), Vector3(-2, 4.2, -2.4)],
         "aerial": [Vector3(27, 23, 28), Vector3(-1, 3., -1)],
@@ -251,3 +275,15 @@ func portrait(view):
     camera.fov = 56.
     camera.position = at[0]
     camera.look_at(at[1])
+
+
+func pose_portrait_life(time: float):
+    # The two lighting plates must show the same pose, even on displays with different cadence.
+    streetscape.advance(time)
+    for i in range(people.size()):
+        var actor = people[i][0]
+        var animator = actor.find_child("AnimationPlayer", true, false) as AnimationPlayer
+        if animator and animator.current_animation_length > 0.:
+            animator.seek(fposmod(time + i * .31, animator.current_animation_length), true)
+    if guide_anim and guide_anim.current_animation_length > 0.:
+        guide_anim.seek(fposmod(time, guide_anim.current_animation_length), true)

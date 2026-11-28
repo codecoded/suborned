@@ -22,6 +22,7 @@ class Part:
         self.points = []
         self.faces = []
         self.coords = []
+        self.service_coords = []
         self.frame = Matrix.Identity(4)
 
     @contextmanager
@@ -60,6 +61,12 @@ class Part:
         self.coords.extend(
             [((col + 0.021 + u * 0.958) / 8, 1 - (row + 0.979 - v * 0.958) / 4) for u, v in uv]
         )
+        service = [(0., 1.)] * len(pts)
+        if self.name.startswith("LetterBox") and finish == "jade" and max(p.y for p in pts) < -.251:
+            service = [(p.x / .74 + .5, (p.z - .15) / 1.48) for p in pts]
+        if "Vault" in self.name and finish == "bronze" and all(.68 < p.z < .84 and 2.38 < p.y < 3.42 for p in pts):
+            service = [(max(.001, min(.999, .5 + p.x / 6.)), min(1., max(0., p.y - 2.4))) for p in pts]
+        self.service_coords.extend(service)
 
     def solid(self, loop, low, high, finish, top=None):
         bot = [(x, y, low) for x, y in loop]
@@ -132,6 +139,11 @@ class Part:
         uv = mesh.uv_layers.new(name="Surface")
         for elem, coord in zip(uv.data, self.coords):
             elem.uv = coord
+        service = mesh.uv_layers.new(name="Postal service")
+        for elem, coord in zip(service.data, self.service_coords):
+            elem.uv = coord
+        mesh.uv_layers.active_index = 0
+        uv.active_render = True
         editable = bmesh.new()
         editable.from_mesh(mesh)
         bmesh.ops.triangulate(editable, faces=list(editable.faces))

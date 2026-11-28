@@ -24,7 +24,7 @@ func start(owner_node, opts):
     options = opts.duplicate()
     root_path = options["out"]
     path = root_path
-    suite = options.has("suite")
+    suite = options.has("suite") or options.has("lightbench")
     if options.get("raster", "") == "1080":
         # Render the same number of pixels even if macOS limits the window's height.
         var window = get_window()
@@ -36,7 +36,9 @@ func start(owner_node, opts):
     DirAccess.make_dir_recursive_absolute(path)
     RenderingServer.viewport_set_measure_render_time(get_viewport().get_viewport_rid(), true)
     shots = (
-        ["hero", "vault", "aerial", "detail", "lane", "street", "tactical"] if options.has("shots") else []
+        ["hero", "vault", "aerial", "detail", "lane", "street", "tactical", "threshold", "collection", "sill", "stone"]
+        if options.has("shots")
+        else []
     )
     if suite:
         var cases = [
@@ -50,6 +52,11 @@ func start(owner_node, opts):
             ["lod", "turned", "corner"],
             ["optimized", "turned", "corner"]
         ]
+        if options.has("lightbench"):
+            cases = []
+            for view in ["street", "threshold", "iso"]:
+                for light in ["original", "arcade", "surfaced"]:
+                    cases.append([light, "turned", view])
         for rep in range(int(options.get("repeats", "2"))):
             var order = cases.duplicate()
             if rep % 2 == 1:
@@ -62,13 +69,17 @@ func start(owner_node, opts):
 
 func next_job():
     var row = jobs.pop_front()
-    options["mode"] = row[0]
+    options["mode"] = "optimized" if options.has("lightbench") else row[0]
     options["corner"] = row[1]
     options["view"] = row[2]
     options["repeat"] = row[3]
     path = root_path + "/%s-%s-%s-%d" % row
     DirAccess.make_dir_recursive_absolute(path)
-    host.change_block(row[0], row[1])
+    if options.has("lightbench"):
+        options["lighting"] = row[0]
+        host.arcade_light.set_look(row[0])
+    else:
+        host.change_block(row[0], row[1])
     index = 0
     data.clear()
     last = Time.get_ticks_usec()
