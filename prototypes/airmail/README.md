@@ -16,7 +16,21 @@ Click pavement to walk, or use WASD. Right-drag to turn. Tab switches between th
 
 L cycles through the original daylight, the relit arcade and the relit arcade with the postal finishes. The player opens with all finishes enabled. Walk from the tram stop to the booking counter to cross the sun line. The collection box opposite that counter carries a cast roundel, letter slot and service door.
 
-## Studio result
+## Finished arcade
+
+The same signed Apple Silicon player ran on the M4 MacBook Air and the M5 Max Studio. Each cell below gives mean fps and the 95th-percentile frame interval for the finished materials. The Air ran on AC power. Each route has two passes in opposite test order, 85 warm-up frames per pass and 440 measured intervals.
+
+| Device and render target | Pavement | Entering the arcade | Squad view |
+| --- | --- | --- | --- |
+| M4 Air, 1920 × 1080 | 60.7 fps / 17.39 ms | 66.3 fps / 17.68 ms | 64.0 fps / 17.55 ms |
+| M4 Air, 1280 × 720 | 65.8 fps / 17.61 ms | 65.5 fps / 17.50 ms | 64.7 fps / 17.77 ms |
+| M5 Max Studio, 1920 × 1080 | 120.0 fps / 9.30 ms | 119.9 fps / 9.32 ms | 120.1 fps / 9.32 ms |
+
+The relit and finished treatments both drew a median of 80 total draws on the pavement, 78 at the threshold and 117 overhead on both machines. The eight additional finish textures occupy 6.0 MiB in the imported ASTC payloads including mip levels. The baked diffuse grid adds 47 KiB. The final player archive is 39.6 MiB.
+
+On the Air the relit 1080p control measured 17.40, 17.56 and 17.57 ms p95 on those routes. With the finished surfaces, 51–59% of the individual Air frame intervals at 1080p met 16.67 ms. Dropping to 720p left p95 close to the 1080p result. These are presentation intervals from short runs. Metal returned no per-frame GPU times in this player. The raw comparisons include per-pass percentiles. [Lighting and material results](lighting-results.json)
+
+## Original geometry study
 
 Measured on a Mac Studio with an M5 Max and 128 GB of unified memory, running macOS 27.0.1 and native Metal. Draw calls below are the median total per frame, including shadows. The 95th percentile is the frame interval that 95% of the samples met or beat.
 
@@ -62,6 +76,15 @@ Each repetition follows the same street, isometric and corner routes. The second
 
 The open and turned corner use the same three frontage bays and their dispatch return. Only their positions and orientations change. The route, sky, actors, number of modules and material set match. Visible and shadow-pass counters are reported separately. Frame intervals include presentation and scheduling. The Metal backend returned no GPU timing samples.
 
+For the lighting and material comparison, use the following release commands. The 720p control uses the ordinary player viewport. Run the three treatments on both routes and the threshold crossing before comparing percentiles.
+
+```sh
+"$player" --resolution 1280x720 --disable-vsync -- out=/tmp/postal-1080 raster=1080 lightbench=1 repeats=2 warm=85 frames=220
+"$player" --resolution 1280x720 --disable-vsync -- out=/tmp/postal-720 lightbench=1 repeats=2 warm=85 frames=220
+python3 author/report.py --finishes --studio /path/to/studio-1080 --air /path/to/air-1080 \
+  --air-window /path/to/air-720 --archive "/tmp/Meridian Air Post.zip" --output lighting-results.json
+```
+
 For the 125-second camera loop, `python3 author/resident_memory.py "$player" /tmp/meridian-soak` records the macOS process resident set alongside Godot's resource counts. This Metal build returned an invalid texture byte counter. The report leaves that field empty.
 
 To capture the four-shot camera move at a fixed 30 fps, run the following. Movie capture is separate from the benchmark.
@@ -70,6 +93,8 @@ To capture the four-shot camera move at a fixed 30 fps, run the following. Movie
 godot --path game --script "$PWD/author/film.gd" --resolution 1440x810 \
   --fixed-fps 30 --write-movie /tmp/meridian.avi --quit-after 420
 ```
+
+For the updated 20-second street, collection box, loading counter, threshold and squad shots, change the frame count to 600 and append `-- postal`.
 
 ## Asset sources
 
