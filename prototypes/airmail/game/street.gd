@@ -1,0 +1,253 @@
+extends Node3D
+
+const Block = preload("res://block.gd")
+const Streetscape = preload("res://set.gd")
+const Bench = preload("res://timing.gd")
+const PEOPLE = [preload("res://assets/c1.glb"), preload("res://assets/c6.glb")]
+var block
+var streetscape
+var camera = Camera3D.new()
+var guide
+var guide_anim
+var people = []
+var grid = AStarGrid2D.new()
+var waypoints = PackedVector2Array()
+var yaw = .47
+var iso = false
+var zoom = 23.
+var elapsed = 0.
+var run_options = {}
+var timings
+var caption = Label.new()
+var phase = "idle"
+var hud = CanvasLayer.new()
+
+
+func _ready():
+    for value in OS.get_cmdline_user_args():
+        var key = value.get_slice("=", 0)
+        run_options[key] = value.get_slice("=", 1) if "=" in value else "1"
+    change_block(run_options.get("mode", "optimized"), run_options.get("corner", "turned"))
+    streetscape = Streetscape.new()
+    add_child(streetscape)
+    streetscape.setup()
+    streetscape.combine_fixtures(run_options.get("mode", "optimized") in ["lod", "optimized"])
+    guide = person(0)
+    guide.position = Vector3(13, .16, 4.2)
+    guide_anim = animation(guide, "idle")
+    for i in range(14):
+        var actor = person(i % 2)
+        var moving = i % 3 != 0
+        var player = animation(actor, "walk" if moving else "idle")
+        if player:
+            player.seek(fposmod(i * .31, maxf(.1, player.current_animation_length)), true)
+        var x = -38. + i * 6.5
+        var z = [3.74, 4.09, 22.9, 1.95][i % 4]
+        if i == 0:
+            x = 6.
+            z = -2.05
+        if i == 9:
+            x = -7.
+            z = -1.25
+        people.append([actor, Vector3(x, .16, z), moving, i * .49])
+    add_child(camera)
+    camera.current = true
+    camera.far = 250.
+    camera.near = .09
+    setup_navigation()
+    add_child(hud)
+    hud.add_child(caption)
+    caption.position = Vector2(23, 18)
+    caption.add_theme_font_size_override("font_size", 15)
+    caption.add_theme_color_override("font_shadow_color", Color(0, 0, 0, .85))
+    caption.add_theme_constant_override("shadow_offset_x", 1)
+    caption.add_theme_constant_override("shadow_offset_y", 1)
+    update_hint()
+    if run_options.has("out"):
+        hud.visible = false
+        timings = Bench.new()
+        add_child(timings)
+        timings.start(self, run_options)
+    update_camera()
+
+
+func change_block(mode, corner):
+    if block:
+        remove_child(block)
+        block.free()
+    get_viewport().use_occlusion_culling = mode == "optimized"
+    block = Block.new()
+    add_child(block)
+    block.build(mode != "full", corner == "turned", mode != "instances")
+    if streetscape:
+        streetscape.combine_fixtures(mode in ["lod", "optimized"])
+
+
+func person(index):
+    var actor = PEOPLE[index].instantiate()
+    add_child(actor)
+    return actor
+
+
+func animation(actor, clip):
+    var player = actor.find_child("AnimationPlayer", true, false) as AnimationPlayer
+    if player:
+        for name in player.get_animation_list():
+            if String(name).to_lower().ends_with(clip):
+                player.get_animation(name).loop_mode = Animation.LOOP_LINEAR
+                player.play(name)
+                return player
+    return player
+
+
+func setup_navigation():
+    grid.region = Rect2i(-56, -29, 125, 54)
+    grid.cell_size = Vector2.ONE
+    grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
+    grid.update()
+    for x in range(-56, 69):
+        for y in range(-29, 25):
+            if not block.clear_at(Vector2(x, y), .48):
+                grid.set_point_solid(Vector2i(x, y))
+
+
+func update_hint():
+    caption.text = (
+        "Meridian Air Post   ·   "
+        + ("Tactical" if iso else "Street")
+        + "\nClick to walk   ·   Tab to switch view   ·   Right-drag to turn   ·   H to hide"
+    )
+
+
+func _unhandled_input(event):
+    if timings:
+        return
+    if event is InputEventKey and event.pressed and not event.echo:
+        if event.keycode == KEY_TAB:
+            iso = not iso
+            update_hint()
+        if event.keycode == KEY_H:
+            hud.visible = not hud.visible
+        if event.keycode == KEY_ESCAPE:
+            get_tree().quit()
+    if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+        yaw -= event.relative.x * .007
+    if event is InputEventMouseButton and event.pressed:
+        if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+            zoom = clampf(zoom - 2, 14, 34)
+        if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+            zoom = clampf(zoom + 2, 14, 34)
+        if event.button_index == MOUSE_BUTTON_LEFT:
+            var plane = Plane(Vector3.UP, .16)
+            var hit = plane.intersects_ray(
+                camera.project_ray_origin(event.position), camera.project_ray_normal(event.position)
+            )
+            if hit != null:
+                var point = Vector2i(roundi(hit.x), roundi(hit.z))
+                var start = Vector2i(roundi(guide.position.x), roundi(guide.position.z))
+                if grid.is_in_boundsv(point) and not grid.is_point_solid(point) and grid.is_in_boundsv(start):
+                    waypoints = grid.get_point_path(start, point)
+                    if waypoints.size() > 0:
+                        waypoints.remove_at(0)
+
+
+func _process(delta):
+    if not guide:
+        return
+    if timings:
+        timings.tick()
+    else:
+        elapsed += delta
+        var axis = Vector2(
+            float(Input.is_physical_key_pressed(KEY_D)) - float(Input.is_physical_key_pressed(KEY_A)),
+            float(Input.is_physical_key_pressed(KEY_S)) - float(Input.is_physical_key_pressed(KEY_W))
+        )
+        var from = Vector2(guide.position.x, guide.position.z)
+        var toward = Vector2.ZERO
+        if axis.length_squared() > 0:
+            waypoints.clear()
+            toward = axis.normalized().rotated(-yaw)
+        elif not waypoints.is_empty():
+            var difference = waypoints[0] - from
+            toward = difference.normalized()
+            if difference.length() <= 3.0 * delta:
+                waypoints.remove_at(0)
+        var step = from + toward * minf(delta, .1) * 3.0
+        if toward.length_squared() > 0 and block.clear_at(step):
+            guide.position.x = step.x
+            guide.position.z = step.y
+            guide.rotation.y = atan2(toward.x, toward.y)
+        var next = "walk" if toward.length_squared() > 0 else "idle"
+        if next != phase:
+            phase = next
+            animation(guide, next)
+    for rec in people:
+        var actor = rec[0]
+        var p: Vector3 = rec[1]
+        var a = elapsed * .17 + rec[3]
+        if rec[2]:
+            p.x += sin(a) * 5.7
+            actor.rotation.y = PI * .5 if cos(a) > 0 else -PI * .5
+        else:
+            actor.rotation.y = PI + rec[3] * .64
+        actor.position = p
+    streetscape.advance(elapsed)
+    update_camera()
+
+
+func update_camera():
+    var offset = Vector3(sin(yaw), 0, cos(yaw))
+    var p = guide.position
+    if iso:
+        camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+        camera.size = zoom
+        camera.position = p + offset * 19. + Vector3.UP * 17.5
+        camera.look_at(p + Vector3.UP * .9)
+    else:
+        camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+        camera.fov = 60.
+        var reach = 4.65
+        for i in range(1, 11):
+            var test = p + offset * (reach * i / 10.)
+            if not block.clear_at(Vector2(test.x, test.z), .12):
+                reach = maxf(.8, reach * (i - 1) / 10.)
+                break
+        camera.position = p + offset * reach + Vector3.UP * 2.18
+        camera.look_at(p - offset * 3.8 + Vector3.UP * 2.43)
+
+
+func tour(t: float, view: String):
+    elapsed = t * 14.0
+    var q = clampf(t, 0, 1)
+    if view == "corner":
+        guide.position = Vector3(29. + 3. * q, .16, 5.4 - 10. * q)
+        yaw = -.16 + .24 * q
+        iso = false
+    else:
+        guide.position = Vector3(20. - q * 22., .16, 3.84 + .30 * sin(q * PI))
+        yaw = .65 - .68 * q
+        iso = view == "iso"
+    guide.rotation.y = -PI * .5
+    if phase != "walk":
+        phase = "walk"
+        animation(guide, "walk")
+
+
+func portrait(view):
+    streetscape.presentation(view in ["hero", "vault", "aerial", "detail"])
+    if view in ["street", "tactical"]:
+        tour(.32, "iso" if view == "tactical" else "street")
+        update_camera()
+        return
+    var positions = {
+        "hero": [Vector3(26, 3.45, 19.4), Vector3(-5, 8.8, -2.)],
+        "vault": [Vector3(8.3, 2.25, 2.6), Vector3(-2, 4.2, -2.4)],
+        "aerial": [Vector3(27, 23, 28), Vector3(-1, 3., -1)],
+        "detail": [Vector3(10.7, 1.82, 4.13), Vector3(8.9, 1.85, 2.6)],
+        "lane": [Vector3(29.1, 2.25, 2.6), Vector3(30., 2.85, -24)]
+    }
+    var at = positions[view]
+    camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+    camera.fov = 56.
+    camera.position = at[0]
+    camera.look_at(at[1])

@@ -1,0 +1,45 @@
+[remap]
+
+importer="texture"
+type="CompressedTexture2D"
+uid="uid://ddu6n1weak2wp"
+path.s3tc="res://.godot/imported/tram_decals_transit_v1_alpha.png-efa42fd1b8f53acc38170fa384b6e3af.s3tc.ctex"
+path.etc2="res://.godot/imported/tram_decals_transit_v1_alpha.png-efa42fd1b8f53acc38170fa384b6e3af.etc2.ctex"
+metadata={
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
+}
+generator_parameters={
+"md5": "994f9256973c95269761c4226450d992"
+}
+
+[deps]
+
+source_file="res://assets/tram_decals_transit_v1_alpha.png"
+dest_files=["res://.godot/imported/tram_decals_transit_v1_alpha.png-efa42fd1b8f53acc38170fa384b6e3af.s3tc.ctex", "res://.godot/imported/tram_decals_transit_v1_alpha.png-efa42fd1b8f53acc38170fa384b6e3af.etc2.ctex"]
+
+[params]
+
+compress/mode=2
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/uastc_level=0
+compress/rdo_quality_loss=0.0
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=true
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/channel_remap/red=0
+process/channel_remap/green=1
+process/channel_remap/blue=2
+process/channel_remap/alpha=3
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=1
