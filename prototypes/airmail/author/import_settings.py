@@ -6,8 +6,10 @@ import re, sys
 root = Path(sys.argv[1])
 for path in sorted(root.glob("*.import")):
     text = path.read_text()
-    if path.name == "meridian.glb.import":
+    if path.name in ("meridian.glb.import", "yard_trades.glb.import"):
         text = text.replace("meshes/generate_lods=true", "meshes/generate_lods=false")
+    elif path.name == "yard_ambience.wav.import":
+        text = re.sub(r"(?m)^edit/loop_mode=\d+", "edit/loop_mode=1", text)
     elif path.name.endswith((".png.import", ".jpg.import")):
         text = re.sub(r"(?m)^compress/mode=\d+", "compress/mode=2", text)
         text = text.replace("mipmaps/generate=false", "mipmaps/generate=true")

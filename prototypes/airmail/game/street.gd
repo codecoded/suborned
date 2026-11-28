@@ -4,7 +4,15 @@ const Block = preload("res://block.gd")
 const Streetscape = preload("res://set.gd")
 const Bench = preload("res://timing.gd")
 const ArcadeLight = preload("res://arcade_light.gd")
+const ParcelCourt = preload("res://court_scenery.gd")
+const Deliveries = preload("res://court_orders.gd")
+const Conversation = preload("res://court_dialogue.gd")
+const CourtAudio = preload("res://court_audio.gd")
+const FIXER = preload("res://assets/fixer.glb")
 const PEOPLE = [preload("res://assets/c1.glb"), preload("res://assets/c6.glb")]
+const COURT_PEOPLE = [
+    preload("res://assets/cafe_w3.glb"), preload("res://assets/sh2.glb"), preload("res://assets/workers_d5.glb")
+]
 var block
 var streetscape
 var arcade_light
@@ -15,6 +23,8 @@ var people = []
 var grid = AStarGrid2D.new()
 var waypoints = PackedVector2Array()
 var yaw = .47
+var street_heading = -.87
+var court_heading = -2.85
 var iso = false
 var zoom = 23.
 var elapsed = 0.
@@ -23,6 +33,19 @@ var timings
 var caption = Label.new()
 var phase = "idle"
 var hud = CanvasLayer.new()
+var court
+var orders
+var dialogue
+var court_audio
+var yard_shadows = false
+var leaving = false
+
+
+func _exit_tree():
+    if dialogue:
+        dialogue.callback.clear()
+        dialogue.orders = null
+        orders.talk = null
 
 
 func _ready():
@@ -34,11 +57,23 @@ func _ready():
     add_child(streetscape)
     streetscape.setup()
     streetscape.combine_fixtures(run_options.get("mode", "optimized") in ["lod", "optimized"])
-    guide = person(0)
+    if not run_options.has("avenue") and (run_options.has("yard") or not run_options.has("out")):
+        court = ParcelCourt.new()
+        add_child(court)
+        court.setup(self)
+    guide = (FIXER if court else PEOPLE[0]).instantiate()
+    add_child(guide)
     guide.position = Vector3(13, .16, 4.2)
+    if court:
+        guide.position = Vector3(ParcelCourt.START.x, .165, ParcelCourt.START.y)
+        yaw = -.87
+        guide.rotation.y = yaw + PI
+        zoom = 13.
     guide_anim = animation(guide, "idle")
     for i in range(14):
-        var actor = person(i % 2)
+        var model = COURT_PEOPLE[Deliveries.CAST.find(i)] if court and i in Deliveries.CAST else PEOPLE[i % 2]
+        var actor = model.instantiate()
+        add_child(actor)
         var moving = i % 3 != 0
         var player = animation(actor, "walk" if moving else "idle")
         if player:
@@ -64,6 +99,17 @@ func _ready():
     caption.add_theme_color_override("font_shadow_color", Color(0, 0, 0, .85))
     caption.add_theme_constant_override("shadow_offset_x", 1)
     caption.add_theme_constant_override("shadow_offset_y", 1)
+    if court:
+        orders = Deliveries.new()
+        dialogue = Conversation.new()
+        orders.setup(self, court, dialogue)
+        dialogue.setup(self, orders)
+        if not run_options.has("out") and DisplayServer.get_name() != "headless":
+            court_audio = CourtAudio.new()
+            add_child(court_audio)
+            court_audio.setup(self)
+            get_tree().auto_accept_quit = false
+            get_window().close_requested.connect(leave_block)
     arcade_light = ArcadeLight.new()
     add_child(arcade_light)
     arcade_light.prepare(self)
@@ -92,12 +138,6 @@ func change_block(mode, corner):
         arcade_light.apply_block()
 
 
-func person(index):
-    var actor = PEOPLE[index].instantiate()
-    add_child(actor)
-    return actor
-
-
 func animation(actor, clip):
     var player = actor.find_child("AnimationPlayer", true, false) as AnimationPlayer
     if player:
@@ -120,11 +160,87 @@ func setup_navigation():
                 grid.set_point_solid(Vector2i(x, y))
 
 
+func update_gate(open: bool):
+    block.closed_passages.clear()
+    if not open:
+        block.closed_passages.append(ParcelCourt.GATE)
+    var rect = Rect2i(ParcelCourt.GATE.grow(2.).abs())
+    for x in range(rect.position.x, rect.end.x + 2):
+        for z in range(rect.position.y, rect.end.y + 2):
+            grid.set_point_solid(Vector2i(x, z), not block.clear_at(Vector2(x, z), .48))
+
+
+func straight_clear(a: Vector2, b: Vector2, margin = .12) -> bool:
+    var steps = maxi(1, ceili(a.distance_to(b) / .32))
+    for i in range(steps + 1):
+        if not block.clear_at(a.lerp(b, float(i) / steps), margin):
+            return false
+    return true
+
+
+func grid_entry(at: Vector2) -> Vector2i:
+    var cell = Vector2i(at.round())
+    if grid.is_in_boundsv(cell) and not grid.is_point_solid(cell) and straight_clear(at, Vector2(cell), .26):
+        return cell
+    var best = Vector2i(-1000, -1000)
+    var distance = INF
+    for x in range(cell.x - 1, cell.x + 2):
+        for z in range(cell.y - 1, cell.y + 2):
+            var test = Vector2i(x, z)
+            if not grid.is_in_boundsv(test) or grid.is_point_solid(test):
+                continue
+            var d = at.distance_squared_to(Vector2(test))
+            if d < distance and straight_clear(at, Vector2(test), .26):
+                best = test
+                distance = d
+    return best
+
+
+func route_between(from: Vector2, to: Vector2) -> PackedVector2Array:
+    var route = PackedVector2Array()
+    if not block.clear_at(to):
+        return route
+    var a = grid_entry(from)
+    var b = grid_entry(to)
+    if not grid.is_in_boundsv(a) or not grid.is_in_boundsv(b):
+        return route
+    route = grid.get_point_path(a, b)
+    if route.is_empty():
+        return route
+    if route.size() > 1 and straight_clear(from, route[1], .27):
+        route.remove_at(0)
+    elif route[0].distance_to(from) < .01:
+        route.remove_at(0)
+    if route.is_empty() or route[-1].distance_to(to) > .01:
+        route.append(to)
+    return route
+
+
+func route_length(start: Vector2, route: PackedVector2Array) -> float:
+    var distance = 0.
+    for point in route:
+        distance += start.distance_to(point)
+        start = point
+    return distance
+
+
+func walk_to(point: Vector2) -> bool:
+    var route = route_between(Vector2(guide.position.x, guide.position.z), point)
+    if route.is_empty():
+        return false
+    waypoints = route
+    return true
+
+
 func update_hint():
+    if court:
+        caption.text = "Parcel Court    /    Meridian Air Post\nClick to walk or talk   ·   Tab for view   ·   Right-drag to turn   ·   H to hide"
+        return
     caption.text = (
         "Meridian Air Post   ·   "
         + ("Tactical" if iso else "Street")
-        + "   ·   " + ArcadeLight.NAMES[ArcadeLight.LOOKS.find(arcade_light.look)]
+        + "   ·   "
+        + ArcadeLight.NAMES[ArcadeLight.LOOKS.find(arcade_light.look)]
         + "\nClick to walk   ·   Tab for view   ·   L to compare finishes   ·   Right-drag to turn   ·   H to hide"
     )
 
@@ -133,9 +249,30 @@ func _unhandled_input(event):
     if timings:
         return
     if event is InputEventKey and event.pressed and not event.echo:
+        if dialogue and event.keycode == KEY_E:
+            if dialogue.speaker >= 0:
+                dialogue.close()
+            elif dialogue.nearest() >= 0:
+                dialogue.open(dialogue.nearest())
+            return
+        if dialogue and dialogue.speaker >= 0:
+            if event.keycode == KEY_ESCAPE:
+                dialogue.close()
+                return
+            if event.keycode in [KEY_1, KEY_2, KEY_3]:
+                dialogue.choose(event.keycode - KEY_1)
+                return
         if event.keycode == KEY_TAB:
+            if court:
+                if iso:
+                    court_heading = yaw
+                    yaw = street_heading
+                else:
+                    street_heading = yaw
+                    yaw = court_heading
             iso = not iso
             update_hint()
+            update_camera()
         if event.keycode == KEY_H:
             hud.visible = not hud.visible
         if event.keycode == KEY_L:
@@ -143,26 +280,37 @@ func _unhandled_input(event):
             arcade_light.set_look(ArcadeLight.LOOKS[next])
             update_hint()
         if event.keycode == KEY_ESCAPE:
-            get_tree().quit()
+            leave_block()
     if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
         yaw -= event.relative.x * .007
     if event is InputEventMouseButton and event.pressed:
         if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-            zoom = clampf(zoom - 2, 14, 34)
+            zoom = clampf(zoom - 2, 10 if court else 14, 34)
         if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-            zoom = clampf(zoom + 2, 14, 34)
+            zoom = clampf(zoom + 2, 10 if court else 14, 34)
         if event.button_index == MOUSE_BUTTON_LEFT:
+            if dialogue:
+                var person_index = dialogue.pick(event.position)
+                if person_index >= 0:
+                    dialogue.visit(person_index)
+                    return
+                dialogue.close()
             var plane = Plane(Vector3.UP, .16)
-            var hit = plane.intersects_ray(
-                camera.project_ray_origin(event.position), camera.project_ray_normal(event.position)
-            )
+            var hit = plane.intersects_ray(camera.project_ray_origin(event.position), camera.project_ray_normal(event.position))
             if hit != null:
-                var point = Vector2i(roundi(hit.x), roundi(hit.z))
-                var start = Vector2i(roundi(guide.position.x), roundi(guide.position.z))
-                if grid.is_in_boundsv(point) and not grid.is_point_solid(point) and grid.is_in_boundsv(start):
-                    waypoints = grid.get_point_path(start, point)
-                    if waypoints.size() > 0:
-                        waypoints.remove_at(0)
+                walk_to(Vector2(hit.x, hit.z))
+
+
+func leave_block():
+    if leaving:
+        return
+    leaving = true
+    if court_audio:
+        set_process(false)
+        set_process_unhandled_input(false)
+        court_audio.silence()
+        await get_tree().create_timer(.16, true, false, true).timeout
+    get_tree().quit()
 
 
 func _process(delta):
@@ -178,15 +326,19 @@ func _process(delta):
         )
         var from = Vector2(guide.position.x, guide.position.z)
         var toward = Vector2.ZERO
+        var distance = minf(delta, .1) * 3.
         if axis.length_squared() > 0:
+            if dialogue and (dialogue.speaker >= 0 or dialogue.approach >= 0):
+                dialogue.close()
             waypoints.clear()
             toward = axis.normalized().rotated(-yaw)
         elif not waypoints.is_empty():
             var difference = waypoints[0] - from
             toward = difference.normalized()
-            if difference.length() <= 3.0 * delta:
+            if difference.length() <= distance:
+                distance = difference.length()
                 waypoints.remove_at(0)
-        var step = from + toward * minf(delta, .1) * 3.0
+        var step = from + toward * distance
         if toward.length_squared() > 0 and block.clear_at(step):
             guide.position.x = step.x
             guide.position.z = step.y
@@ -195,7 +347,10 @@ func _process(delta):
         if next != phase:
             phase = next
             animation(guide, next)
-    for rec in people:
+    for i in range(people.size()):
+        if orders and orders.owns(i):
+            continue
+        var rec = people[i]
         var actor = rec[0]
         var p: Vector3 = rec[1]
         var a = elapsed * .17 + rec[3]
@@ -205,6 +360,11 @@ func _process(delta):
         else:
             actor.rotation.y = PI + rec[3] * .64
         actor.position = p
+    if orders:
+        orders.tick(minf(delta, .15))
+        dialogue.tick(delta)
+        if court_audio:
+            court_audio.tick()
     streetscape.advance(elapsed)
     update_camera()
 
@@ -220,20 +380,45 @@ func update_camera():
     else:
         camera.projection = Camera3D.PROJECTION_PERSPECTIVE
         camera.fov = 60.
-        var reach = 4.65
+        var in_yard = court and Rect2(-20, -28, 41, 23).has_point(Vector2(p.x, p.z))
+        var reach = 3.85 if in_yard else 4.65
         for i in range(1, 11):
             var test = p + offset * (reach * i / 10.)
             if not block.clear_at(Vector2(test.x, test.z), .12):
                 reach = maxf(.8, reach * (i - 1) / 10.)
                 break
         camera.position = p + offset * reach + Vector3.UP * 2.18
-        camera.look_at(p - offset * 3.8 + Vector3.UP * 2.43)
+        camera.look_at(p - offset * 3.8 + Vector3.UP * (1.73 if in_yard else 2.43))
+    if court:
+        court.cutaway(p, camera.position, iso)
+        var sheltered = Rect2(-20, -28, 41, 23).has_point(Vector2(p.x, p.z))
+        if yard_shadows != sheltered:
+            yard_shadows = sheltered
+            arcade_light.sunlight.directional_shadow_mode = (
+                DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if sheltered else DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+            )
+            arcade_light.sunlight.directional_shadow_max_distance = 45. if sheltered else 65.
+        var reveal = iso and sheltered
+        arcade_light.kit_surface.set_shader_parameter("court_reveal", reveal)
+        if reveal:
+            arcade_light.kit_surface.set_shader_parameter("court_focus", p + Vector3.UP)
+            arcade_light.kit_surface.set_shader_parameter("court_eye", camera.position)
 
 
 func tour(t: float, view: String):
     elapsed = t * 14.0
     var q = clampf(t, 0, 1)
-    if view == "threshold":
+    if court:
+        var turn = [ParcelCourt.START, Vector2(-7, -15), Vector2(-2, -14), Vector2(6, -14), Vector2(8, -18), Vector2(9, -21)]
+        var s = q * (turn.size() - 1)
+        var part = mini(floori(s), turn.size() - 2)
+        var at = turn[part].lerp(turn[part + 1], s - part)
+        guide.position = Vector3(at.x, .165, at.y)
+        yaw = lerpf(-2.85, -2.48, q) if view == "iso" else lerpf(-.87, -.25, q * q)
+        var heading = turn[part + 1] - turn[part]
+        guide.rotation.y = atan2(heading.x, heading.y)
+        iso = view == "iso"
+    elif view == "threshold":
         guide.position = Vector3(7.7 - q * 1.3, .16, 6.2 - 9.0 * q)
         yaw = .12 + .33 * q
         iso = false
@@ -245,13 +430,18 @@ func tour(t: float, view: String):
         guide.position = Vector3(20. - q * 22., .16, 3.84 + .30 * sin(q * PI))
         yaw = .65 - .68 * q
         iso = view == "iso"
-    guide.rotation.y = atan2(-1.3, -9.0) if view == "threshold" else -PI * .5
+    if not court:
+        guide.rotation.y = atan2(-1.3, -9.0) if view == "threshold" else -PI * .5
     if phase != "walk":
         phase = "walk"
         animation(guide, "walk")
 
 
 func portrait(view):
+    if court:
+        tour(.05 if view == "court" else .68, "iso" if view == "court-iso" else "street")
+        update_camera()
+        return
     streetscape.presentation(view in ["hero", "vault", "aerial", "detail"])
     if view in ["street", "tactical"]:
         tour(.32, "iso" if view == "tactical" else "street")

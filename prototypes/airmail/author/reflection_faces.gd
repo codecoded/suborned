@@ -7,6 +7,7 @@ func _initialize():
 
 func capture():
     var street = load("res://street.tscn").instantiate()
+    street.run_options["avenue"] = "1"
     root.add_child(street)
     street.set_process(false)
     street.hud.visible = false

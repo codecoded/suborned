@@ -121,6 +121,8 @@ func set_look(next: String):
     sunlight.rotation_degrees = Vector3(-27, -108, 0) if enabled else Vector3(-35, -61, 0)
     sunlight.light_color = Color("#ffcf9c") if enabled else Color("#ffe3bf")
     sunlight.light_energy = 2.02 if enabled else 1.33
+    if city.court and enabled:
+        sunlight.light_energy = 1.59
     sunlight.light_angular_distance = .52 if enabled else 0.
     env.ambient_light_color = Color("#b4cce8") if enabled else Color.BLACK
     env.ambient_light_sky_contribution = .70 if enabled else 1.0

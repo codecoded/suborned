@@ -16,6 +16,9 @@ uniform bool paving = false;
 uniform bool packed_surface = false;
 uniform bool rough_map = false;
 uniform float paving_scale = 1.0;
+uniform bool court_reveal = false;
+uniform vec3 court_focus;
+uniform vec3 court_eye;
 
 void vertex() {
     surface_world = (MODEL_MATRIX * vec4(VERTEX,1.0)).xyz;
@@ -23,6 +26,13 @@ void vertex() {
 }
 
 void fragment() {
+    if (court_reveal && architecture && distance(INV_VIEW_MATRIX[3].xyz,court_eye)<.5) {
+        vec3 ray = normalize(court_eye-court_focus);
+        vec3 offset = surface_world-court_focus;
+        float along = dot(offset,ray);
+        float radius = length(offset-ray*along);
+        if (along>1.0 && radius<3.1) { discard; }
+    }
     // The pavement and road receive the same world-space tiling as the original slab tops.
     vec2 uv = paving ? surface_world.xz*paving_scale : UV;
     ALBEDO = texture(base_map,uv).rgb * tint.rgb;

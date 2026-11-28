@@ -1,0 +1,34 @@
+{
+  "graph": "459c7cecc1500d1a2497e4df8edfb3b69ddc2fc63d9c9ef88cb1312c0f844b11",
+  "people": [
+    {
+      "key": "p-z-harbour-lantern-papers-04",
+      "name": "Jamie Smalls",
+      "job": "server"
+    },
+    {
+      "key": "p-z-harbour-meridian-court-02",
+      "name": "Angela Hardin",
+      "job": "flower-seller"
+    },
+    {
+      "key": "p-z-harbour-lantern-market-02",
+      "name": "Gustav Lindahl",
+      "job": "fruiterer"
+    }
+  ],
+  "ties": [
+    {
+      "a": "p-z-harbour-lantern-papers-04",
+      "b": "p-z-harbour-meridian-court-02",
+      "kind": "regular",
+      "mutual": false
+    },
+    {
+      "a": "p-z-harbour-meridian-court-02",
+      "b": "p-z-harbour-lantern-market-02",
+      "kind": "regular",
+      "mutual": false
+    }
+  ]
+}

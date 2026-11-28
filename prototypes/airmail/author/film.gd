@@ -57,6 +57,7 @@ func _initialize():
 
 func film():
     var street = load("res://street.tscn").instantiate()
+    street.run_options["avenue"] = "1"
     root.add_child(street)
     street.hud.visible = false
     var move = CameraMove.new()

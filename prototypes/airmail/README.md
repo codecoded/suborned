@@ -1,6 +1,6 @@
 # Meridian Air Post
 
-A playable art and rendering study for The Suborned. A four-bay postal concourse, a clock tower and a corner dispatch office sit along a working tram street. Walk under the roof you can see from the squad camera. The brass letterbox seal comes from a high-resolution Blender casting. The service windows have recessed counters, frames and four painted sorting rooms. The far shore uses the Harbour skyline painting.
+A playable street and rendering study for The Suborned. The Fixer starts at the Evening Post in Parcel Court, the working yard behind Meridian's tram avenue. A flower seller, a print shop and a fruit receiving dock share two narrow lanes. The exits lead back to the original postal concourse and tram stop.
 
 ## Play
 
@@ -12,7 +12,20 @@ godot --headless --path game --import
 godot --path game
 ```
 
-Click pavement to walk, or use WASD. Right-drag to turn. Tab switches between the shoulder camera and a rotatable orthographic camera. Scroll to zoom in the overhead view, H to hide the controls and Escape to leave. Both cameras follow one resident. The study includes fourteen other residents and a moving Harbour tram. It covers this postal block and runs independently of the Unity campaign.
+Click pavement to walk, or use WASD. Click a resident to walk up and talk, or press E beside them. Click an answer or use its number. Escape closes a conversation. Right-drag to turn, Tab to switch between street and overhead views, scroll to zoom overhead and H to hide the interface. Both cameras follow the Fixer. The block runs independently of the Unity campaign.
+
+Jamie Smalls knows Angela Hardin, the flower seller. Angela knows Gustav Lindahl, the fruiterer with the handcart. Ask Jamie to get the first edition to the press. Follow the handoff or carry on walking. When Gustav arrives, the shutter lifts and everyone can use Press Cut. Sending his next load to Fruit Returns opens the receiving hatch and draws shoppers. You can also help Angela or Gustav and ask directly. The person you ask remembers you. Each person farther down the chain remembers their own contact. The rounds cost nothing, work in either order, and stay available. Closing the game preserves who knows you, earlier deliveries and any errand in progress.
+
+The three residents and the two directed introductions come from Harbour's exported SurrealDB graph. The standalone player reads the baked subset in `game/court_contacts.json`. `author/court_art.py` regenerates it from the same district data the simulation consumes. The press and market work, player trust and trolley movements run locally in this pilot.
+
+The yard uses the existing three-level Harbour trading kit, four cropped workroom paintings behind three-dimensional sills, scalloped awnings, an overhead parcel conveyor and the Fixer's rig. A site-specific texture locates wheel wear, drainage and asphalt repairs on the stone scan. The building shell and awning cast the large shadows. Printed bills, drain bars and lamp filaments share material batches. The ground uses Poly Haven's two-metre scanned setts and the bindery uses its weathered brick. [Cobblestone Floor 02](https://polyhaven.com/a/cobblestone_floor_02) · [Brick Wall 02](https://polyhaven.com/a/brick_wall_02)
+
+Run both input checks from this directory after importing the Godot project. To start on the original avenue, add `-- avenue=1` to the player command. A court benchmark accepts `-- yard=1 out=/tmp/parcel-court view=street raster=1080` or `view=iso`.
+
+```sh
+godot --headless --path game --script "$PWD/author/court_smoke.gd" -- memory=1
+godot --headless --path game --script "$PWD/author/input_smoke.gd" -- avenue=1
+```
 
 L cycles through the original daylight, the relit arcade and the relit arcade with the postal finishes. The player opens with all finishes enabled. Walk from the tram stop to the booking counter to cross the sun line. The collection box opposite that counter carries a cast roundel, letter slot and service door.
 

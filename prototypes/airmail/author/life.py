@@ -4,7 +4,8 @@ import bpy, sys
 from pathlib import Path
 from mathutils import Vector, Quaternion
 
-root, out = (Path(x).resolve() for x in sys.argv[sys.argv.index("--") + 1 :])
+arguments = sys.argv[sys.argv.index("--") + 1 :]
+root, out = (Path(x).resolve() for x in arguments[:2])
 out.mkdir(exist_ok=True, parents=True)
 fig = root / "unity/Assets/Suborned/People"
 models = root / "unity/Assets/Suborned/Kit/Models"
@@ -38,14 +39,29 @@ def citizen(id):
     fresh()
     loaded = fbx(fig / "Figures" / id / (id + ".fbx"))
     rig = next(o for o in loaded if o.type == "ARMATURE")
-    body = next(o for o in loaded if o.type == "MESH" and "LOD1" in o.name)
+    body = next((o for o in loaded if o.type == "MESH" and "LOD1" in o.name), None)
+    if body is None:
+        body = next(o for o in loaded if o.name == id + "_LOD0")
+        bpy.context.view_layer.objects.active = body
+        simplify = body.modifiers.new("Street silhouette", "DECIMATE")
+        triangles = sum(len(face.vertices) - 2 for face in body.data.polygons)
+        simplify.ratio = min(1.0, 11000 / triangles)
+        bpy.ops.object.modifier_move_to_index(modifier=simplify.name, index=0)
+        bpy.ops.object.modifier_apply(modifier=simplify.name)
     mat = bpy.data.materials.new("Harbour resident " + id)
     mat.use_nodes = True
     mat.use_backface_culling = True
     shader = mat.node_tree.nodes.get("Principled BSDF")
     shader.inputs["Roughness"].default_value = 0.72
     node = mat.node_tree.nodes.new("ShaderNodeTexImage")
-    node.image = bpy.data.images.load(str(next((fig / "Figures" / id / "Textures").glob("*512_albedo.jpg"))))
+    textures = fig / "Figures" / id / "Textures"
+    texture = next(textures.glob("*512_albedo.jpg"), None)
+    if texture:
+        node.image = bpy.data.images.load(str(texture))
+    else:
+        node.image = bpy.data.images.load(str(textures / (id + "_body_albedo.jpg")))
+        node.image.scale(1024, 1024)
+        node.image.pack()
     mat.node_tree.links.new(node.outputs[0], shader.inputs["Base Color"])
     body.data.materials.clear()
     body.data.materials.append(mat)
@@ -54,8 +70,19 @@ def citizen(id):
     rig.animation_data_clear()
     ad = rig.animation_data_create()
     bones = sorted(rig.pose.bones, key=lambda b: len(b.parent_recursive))
-    for clip in ["idle", "walk"]:
-        source = fbx(fig / "Clips" / (clip + ".fbx"))
+    aliases = {"Chest": "Spine2"}
+    for side in ("Left", "Right"):
+        for target, source in (
+            ("UpperLeg", "UpLeg"),
+            ("LowerLeg", "Leg"),
+            ("Toes", "ToeBase"),
+            ("UpperArm", "Arm"),
+            ("LowerArm", "ForeArm"),
+        ):
+            aliases[side + target] = side + source
+    for clip in ["idle", "walk", "push"] if id == "workers_d5" else ["idle", "walk"]:
+        source_clip = "walk" if clip == "push" else clip
+        source = fbx(fig / "Clips" / (source_clip + ".fbx"))
         src = next(o for o in source if o.type == "ARMATURE")
         act = src.animation_data.action
         lo, hi = map(int, act.frame_range)
@@ -66,7 +93,13 @@ def citizen(id):
         frames = sorted(set(range(lo, hi + 1, step)) | {hi})
         for frame in frames:
             scene.frame_set(frame)
-            poses.append({n: (convert @ (b.tail - b.head)).normalized() for n, b in mapped.items()})
+            directions = {n: (convert @ (b.tail - b.head)).normalized() for n, b in mapped.items()}
+            if clip == "push":
+                to_rig = rig.matrix_world.to_quaternion().inverted()
+                for side, spread in (("Left", 0.12), ("Right", -0.12)):
+                    directions[side + "Arm"] = to_rig @ Vector((spread, -0.52, -0.85)).normalized()
+                    directions[side + "ForeArm"] = to_rig @ Vector((0, -0.99, 0.12)).normalized()
+            poses.append(directions)
         for o in source:
             bpy.data.objects.remove(o, do_unlink=True)
         action = bpy.data.actions.new(clip)
@@ -74,15 +107,16 @@ def citizen(id):
         for frame, dirs in zip(frames, poses):
             inherit = {}
             for b in bones:
+                name = aliases.get(b.name, b.name)
                 rest = b.bone.matrix_local.to_quaternion()
                 parent = inherit[b.parent.name] if b.parent else Quaternion()
                 base = parent @ rest
                 rot = (
-                    Vector((0, 1, 0)).rotation_difference(base.inverted() @ dirs[b.name])
-                    if b.name in dirs
+                    Vector((0, 1, 0)).rotation_difference(base.inverted() @ dirs[name])
+                    if name in dirs
                     else Quaternion()
                 )
-                if b.name in ("Hips", "Head", "Neck", "Spine", "Spine1", "Spine2") or "Finger" in b.name:
+                if name in ("Hips", "Head", "Neck", "Spine", "Spine1", "Spine2") or "Finger" in name:
                     rot = Quaternion()
                 b.rotation_mode = "QUATERNION"
                 rot.make_compatible(b.rotation_quaternion)
@@ -142,6 +176,7 @@ def tram():
     glb(out / "tram.glb", objs)
 
 
-for name in ["c1", "c6"]:
+for name in arguments[2:] or ["c1", "c6"]:
     citizen(name)
-tram()
+if not arguments[2:]:
+    tram()

@@ -5,6 +5,7 @@ const KIT = preload("res://assets/meridian.glb")
 var catalog = {}
 var pieces = []
 var solids = []
+var closed_passages: Array[Rect2] = []
 var optimized = true
 var turned = true
 var batches = []
@@ -105,6 +106,9 @@ func core(x: float, z: float, w: float, d: float, h: float):
 func clear_at(p: Vector2, margin: float = .27):
     if p.x < -56 or p.x > 68 or p.y < -29 or p.y > 24:
         return false
+    for passage in closed_passages:
+        if passage.grow(margin).has_point(p):
+            return false
     for rect in solids:
         if rect.grow(margin).has_point(p):
             return false

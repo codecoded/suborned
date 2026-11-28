@@ -40,6 +40,7 @@ func start(owner_node, opts):
         if options.has("shots")
         else []
     )
+    if host.court and not shots.is_empty(): shots = ["court","east-turn","court-iso"]
     if suite:
         var cases = [
             ["full", "turned", "street"],

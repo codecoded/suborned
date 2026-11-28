@@ -8,6 +8,7 @@ func _initialize():
 
 func check_street():
     var street = load("res://street.tscn").instantiate()
+    street.run_options["avenue"] = "1"
     root.add_child(street)
     await process_frame
     await process_frame
