@@ -39,6 +39,10 @@ godot --path game --script "$PWD/author/court_plan.gd" -- memory=1
 
 To record the 21-second walk through the populated court and along the tram avenue, use `godot --path game --script "$PWD/author/street_walk.gd" --fixed-fps 30 --write-movie /tmp/harbour.avi --quit-after 630 -- memory=1`.
 
+The populated release averaged 120.0 fps in both cameras on the M5 Max Studio at 1920 × 1080. Across 600 measured frames per camera the 95th-percentile intervals were 9.21 ms on foot and 9.29 ms overhead. Median total draws including shadows increased from 127 to 164 on foot and from 161 to 184 overhead. Every sampled frame met 16.67 ms. The M4 Air was offline for this release check. [Populated build measurements and package hashes](street-life-results.json)
+
+#### Earlier build with the restored paving
+
 The build with the restored paving and intact overhead roofs ran on both machines at 1920 × 1080. Each camera followed the route twice, with 90 warm-up and 300 measured frames per pass. The Air ran on AC power.
 
 | Device | Street, mean fps / p95 frame interval | Overhead, mean fps / p95 frame interval |

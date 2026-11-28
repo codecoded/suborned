@@ -1,0 +1,73 @@
+{
+  "scene": "Parcel Court with crowds and sky traffic",
+  "source_revision": "e8e213b4bac366b8a2c8110976d58d9b276246ac",
+  "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+  "renderer": "Forward+ / Metal",
+  "raster": [
+    1920,
+    1080
+  ],
+  "warm_frames_per_pass": 90,
+  "measured_frames_per_pass": 300,
+  "order": [
+    "street",
+    "iso",
+    "iso",
+    "street"
+  ],
+  "extras": 60,
+  "walking_extras": 39,
+  "outfits": 8,
+  "skyline_buildings": 46,
+  "game_pack_sha256": "9ad903a0a88cc905603065916adbce64455d5e582a8888f0f8ab7dc3a87c9253",
+  "native_binary_sha256": "753509371318633b92b7f5c3f7f5080bc4155718d2c00056c82d8da7c1c1ac8d",
+  "archive_sha256": "2a1365f3bdd16a4f8ae1bfa331340e36899273dfba8a8cd0c30a8e0647916983",
+  "archive_bytes": 55117148,
+  "M5 Max Studio": {
+    "adapter": "Apple M5 Max (Apple9)",
+    "passes": {
+      "street": {
+        "frames": 600,
+        "mean_fps": 120.0,
+        "median_ms": 8.36,
+        "p95_ms": 9.21,
+        "p99_ms": 9.5,
+        "within_60fps_budget_pct": 100.0,
+        "repeat_p95_ms": [
+          9.22,
+          9.15
+        ],
+        "median_visible_draws": 102.0,
+        "median_visible_primitives": 101183.0,
+        "median_shadow_draws": 59.0,
+        "median_shadow_primitives": 84693.0,
+        "median_total_draws": 164.0,
+        "median_render_cpu_ms": 0.494,
+        "median_gpu_ms": null
+      },
+      "iso": {
+        "frames": 600,
+        "mean_fps": 120.0,
+        "median_ms": 8.37,
+        "p95_ms": 9.29,
+        "p99_ms": 9.5,
+        "within_60fps_budget_pct": 100.0,
+        "repeat_p95_ms": [
+          9.37,
+          9.13
+        ],
+        "median_visible_draws": 103.0,
+        "median_visible_primitives": 82655.0,
+        "median_shadow_draws": 79.0,
+        "median_shadow_primitives": 106190.0,
+        "median_total_draws": 184.0,
+        "median_render_cpu_ms": 0.533,
+        "median_gpu_ms": null
+      }
+    }
+  },
+  "M4 Air": {
+    "status": "unmeasured",
+    "reason": "Air offline during this release check."
+  }
+}
